@@ -594,6 +594,9 @@ test("replacement-file failure preserves the published attachment and removal re
   await page.getByLabel("I have the rights").check();
   await page.getByRole("button", { name: "Preview matches" }).click();
   await page.getByRole("button", { name: "Publish to demo library" }).click();
+  await expect(
+    page.getByText("Published to your local demo library.", { exact: true }),
+  ).toBeVisible();
   const originalId = await page.evaluate(
     () => JSON.parse(localStorage.getItem("pd-demo-v1")!).custom[0].assetId,
   );
