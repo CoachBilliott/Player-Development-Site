@@ -1,5 +1,6 @@
 {
   "enabled": false,
   "url": "",
-  "publishableKey": ""
+  "publishableKey": "",
+  "membersEnabled": false
 }
