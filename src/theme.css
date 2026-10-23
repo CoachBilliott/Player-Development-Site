@@ -1,0 +1,1623 @@
+/* Night stadium: shared color, type, surface and motion tokens. */
+:root {
+  color-scheme: dark;
+  --green: #c4fa5d;
+  --lime: #c4fa5d;
+  --ink: #eef4fa;
+  --muted: #a8b6c4;
+  --line: #293846;
+  --paper: #0a121c;
+  --surface: #111e2a;
+  --surface-raised: #172635;
+  --cyan: #80dcff;
+  --on-accent: #101b12;
+  --font-body: "DM Sans", sans-serif;
+  --font-display: "Barlow Condensed", sans-serif;
+  font-family: var(--font-body);
+  background: var(--paper);
+  color: var(--ink);
+}
+body {
+  background: var(--paper);
+}
+.experience {
+  min-height: 100dvh;
+  position: relative;
+  isolation: isolate;
+  background:
+    radial-gradient(ellipse at 92% 0, #112a3a90, transparent 35%), var(--paper);
+}
+.experience h1,
+.experience h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+.experience h1 {
+  font-size: 48px;
+}
+.experience h3 {
+  letter-spacing: -0.025em;
+  font-family: var(--font-body);
+  font-weight: 600;
+}
+.experience .button {
+  background: var(--lime);
+  border-color: var(--lime);
+  color: var(--on-accent);
+  box-shadow: 0 0 0 0 #c4fa5d00;
+  transition:
+    transform 0.22s,
+    background 0.22s,
+    box-shadow 0.22s;
+}
+.experience .button:hover:not(:disabled) {
+  background: #d5ff86;
+  box-shadow: 0 0 28px #c4fa5d20;
+  transform: translateY(-2px);
+}
+.experience .button svg,
+.experience .text-button svg {
+  transition: transform 0.22s;
+}
+.experience .button:hover:not(:disabled) svg,
+.experience .text-button:hover svg {
+  transform: translateX(3px);
+}
+.experience .button.secondary {
+  background: transparent;
+  border-color: #4b6071;
+  color: var(--ink);
+  box-shadow: none;
+}
+.experience .button.secondary:hover {
+  background: #1c3040;
+  border-color: #7391a3;
+}
+.experience .button.danger {
+  background: #994d3e;
+  border-color: #c77665;
+  color: #fff;
+}
+.experience .button.lime {
+  background: var(--lime);
+  border-color: var(--lime);
+  color: var(--on-accent);
+}
+.experience .text-button {
+  color: var(--ink);
+}
+.experience .text-button:hover {
+  color: var(--lime);
+  text-decoration: none;
+}
+.experience :is(button, a, input, select, textarea):focus-visible {
+  outline-color: var(--cyan);
+}
+.experience .icon-button:hover {
+  background: #203242;
+}
+.experience .demo-strip {
+  background: #101e29;
+  color: #c0cdd7;
+  border-bottom: 1px solid #263746;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+}
+.experience .header {
+  background: #0a121ce8;
+  border-color: #253342;
+  backdrop-filter: blur(18px);
+}
+.experience .brand-mark {
+  background: var(--lime);
+  color: #0c1713;
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 700;
+  border-radius: 3px;
+  transform: skewX(-7deg);
+}
+.experience .brand-name {
+  color: var(--ink);
+  font-weight: 600;
+}
+.experience .brand-name > span {
+  color: #a8b6c4;
+}
+.experience .desktop-nav a {
+  color: #acbac6;
+}
+.experience .desktop-nav a.active,
+.experience .desktop-nav a:hover {
+  color: var(--lime);
+}
+.experience .desktop-nav a.active:after {
+  background: var(--lime);
+  box-shadow: 0 0 15px #c4fa5d44;
+}
+.experience .header-demo {
+  background: #172735;
+  border-color: #355064;
+  color: #d9e7ef;
+  transition:
+    border-color 0.2s,
+    background 0.2s;
+}
+.experience .header-demo:hover {
+  background: #1e3544;
+  border-color: #709565;
+}
+.experience .mobile-nav {
+  background: #101e2a;
+  border-color: var(--line);
+}
+.experience .mobile-nav a {
+  border-color: #283c4b;
+  color: var(--ink);
+}
+.experience .tag {
+  background: #c4fa5d0b;
+  border-color: #53683e;
+  color: #d0eeb0;
+}
+.experience .tag-light {
+  background: #c4fa5d09;
+  border-color: #708c4e;
+  color: #d7f2ba;
+}
+.experience
+  :is(
+    .panel,
+    .profile-option,
+    .profile-badge,
+    .why-card,
+    .routine-card,
+    .library-tools,
+    .session-list,
+    .drill-card,
+    .stats-grid > article,
+    .history-list,
+    .package-card,
+    .modal
+  ) {
+  background: var(--surface);
+  border-color: var(--line);
+}
+.experience :is(.page-intro, .dashboard-heading, .training-heading) > .tag {
+  background: none;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  color: var(--cyan);
+  letter-spacing: 1.8px;
+}
+.experience .page-intro h1,
+.experience .dashboard-heading h1,
+.experience .training-heading h1 {
+  font-size: 46px;
+  line-height: 1.06;
+}
+.experience .page-intro > p {
+  color: var(--muted);
+}
+.experience .eyebrow {
+  color: #b7c5d1;
+}
+.experience
+  :is(
+    .profile-option > small,
+    .profile-badge span span,
+    .profile-badge span small,
+    .profile-badge strong small,
+    .form-footnote,
+    .list-time,
+    .session-list button > div > span,
+    .drill-bottom,
+    .metric-note,
+    .local-note,
+    .studio-steps > span,
+    .attachment small,
+    .modal > small,
+    .stats-grid article > span,
+    .history-list article .eyebrow,
+    .preview-duration
+  ) {
+  color: var(--muted);
+}
+.experience .avatar {
+  background: #203c48;
+  color: #c5ecf0;
+}
+.experience .avatar-avery {
+  background: #413027;
+  color: #ffd3a3;
+}
+.experience .avatar-casey {
+  background: #173c4a;
+  color: #a9e9ff;
+}
+.experience .avatar-morgan {
+  background: #352e4a;
+  color: #ddd1ff;
+}
+.experience .profile-option {
+  transition:
+    transform 0.22s,
+    border-color 0.22s,
+    background 0.22s;
+}
+.experience .profile-option.selected {
+  border-color: #93ba57;
+  box-shadow:
+    inset 0 0 0 1px #7aa540,
+    0 0 30px #c4fa5d05;
+  background: linear-gradient(130deg, #263b2b, #14252e);
+}
+.experience .profile-option:hover {
+  border-color: #7d9e59;
+  transform: translateY(-3px);
+}
+.experience .profile-selected {
+  color: var(--lime);
+}
+.experience :is(input, select, textarea) {
+  background: #0b1722;
+  border-color: #415869;
+  color: var(--ink);
+}
+.experience input::placeholder,
+.experience textarea::placeholder {
+  color: #a0b3c3;
+  opacity: 1;
+}
+.experience .checkbox-label input,
+.experience .check-chip input {
+  accent-color: var(--lime);
+}
+.experience .guardian-box {
+  background: #192b29;
+  border: 1px solid #354e3e;
+}
+.experience .guardian-box > svg,
+.experience .notice > svg {
+  color: #c0e4a2;
+}
+.experience .notice {
+  background: #14242c;
+  border-color: #30483c;
+  color: #c6d6c0;
+}
+.experience .notice strong {
+  color: #e0efcf;
+}
+.experience .green-dot {
+  background: var(--lime);
+  box-shadow: 0 0 14px #c4fa5d55;
+}
+.experience .next-session {
+  background:
+    radial-gradient(ellipse at 100% 0, #28535e70, transparent 70%),
+    linear-gradient(135deg, #153a35, #11232f);
+  border: 1px solid #41615b;
+  box-shadow: 0 12px 40px #00000015;
+}
+.experience .next-copy h2 {
+  font-size: 38px;
+  line-height: 1.08;
+}
+.experience .next-copy > p {
+  color: #bed1d1;
+}
+.experience .session-meta > span {
+  color: #d3e2e4;
+}
+.experience .next-art {
+  background: #0b2430;
+  border: 1px solid #456c6966;
+  border-radius: 6px;
+  opacity: 0.85;
+  transform: perspective(600px) rotateY(-12deg);
+}
+.experience .next-art .field-art {
+  background: transparent;
+}
+.experience
+  :is(
+    .why-card > .eyebrow,
+    .why-note > svg,
+    .routine-card > svg,
+    .empty-state > svg,
+    .stats-grid > article > svg,
+    .training-kit > svg,
+    .package-card > svg,
+    .aspiration > svg
+  ) {
+  color: var(--cyan);
+}
+.experience .why-card h3 {
+  font-size: 20px;
+}
+.experience .why-note {
+  color: #d5e2e7;
+}
+.experience .why-card > small {
+  color: #a5b8c1;
+}
+.experience .session-list button {
+  background: var(--surface);
+  border-color: var(--line);
+  transition:
+    background 0.2s,
+    padding-left 0.2s;
+}
+.experience .session-list button:hover {
+  background: #1a2f3d;
+  padding-left: 27px;
+}
+.experience .list-number {
+  color: var(--lime);
+  font-family: var(--font-display);
+  font-size: 17px;
+}
+.experience .routine-card > strong {
+  color: var(--lime);
+  font-family: var(--font-display);
+  font-size: 51px;
+}
+.experience .routine-card > strong > small {
+  font-family: var(--font-body);
+  color: var(--muted);
+}
+.experience .search-input {
+  background: #0b1722;
+  border-color: #415869;
+}
+.experience .search-input input {
+  background: transparent;
+}
+.experience .search-input input::placeholder {
+  color: #a0b3c3;
+}
+.experience .drill-card {
+  transition:
+    transform 0.25s,
+    border-color 0.25s,
+    box-shadow 0.25s;
+}
+.experience .drill-card:hover {
+  transform: translateY(-5px);
+  border-color: #61845c;
+  box-shadow: 0 16px 38px #00000025;
+}
+.experience .drill-image > .field-art {
+  background: #102b35;
+  transition: transform 0.5s cubic-bezier(0.2, 0.65, 0.3, 1);
+}
+.experience .drill-card:hover .drill-image > .field-art {
+  transform: scale(1.045);
+}
+.experience .art-hands .field-art {
+  background: #273643;
+}
+.experience .art-read .field-art {
+  background: #172c3a;
+}
+.experience .image-time {
+  background: #07151ce8;
+  border-color: #657e83;
+  color: #e4eef2;
+}
+.experience .play-bubble {
+  background: var(--lime);
+  color: #112318;
+  transition: transform 0.2s;
+}
+.experience .drill-card:hover .play-bubble {
+  transform: scale(1.08);
+}
+.experience .drill-info .eyebrow {
+  color: #b7e998;
+}
+.experience .drill-info .eyebrow > .muted {
+  color: #a4b9c6;
+}
+.experience .stats-grid strong {
+  color: var(--lime);
+  font-family: var(--font-display);
+  font-size: 58px;
+  font-weight: 700;
+}
+.experience .history-check {
+  background: #293f2a;
+  color: var(--lime);
+}
+.experience .reflection {
+  background: #1d303b;
+  color: #cedde5;
+}
+.experience .training-top,
+.experience .training-heading {
+  color: var(--ink);
+}
+.experience .session-progress > div {
+  border-color: #304151;
+  color: #b3c4cf;
+}
+.experience .session-progress > div.current {
+  border-color: var(--cyan);
+  color: #dbf3ff;
+}
+.experience .session-progress > div.finished {
+  border-color: var(--lime);
+  color: #def9bb;
+}
+.experience .session-progress > div > span {
+  background: #213645;
+  color: #d7e8ee;
+}
+.experience .session-progress > div.finished > span {
+  background: var(--lime);
+  color: #112118;
+}
+.experience .lesson-art {
+  background: #0d2330;
+}
+.experience .lesson-art > .field-art {
+  background: #102b35;
+}
+.experience .lesson-art > div:last-child {
+  color: #b8d4df;
+}
+.experience .training-kit small {
+  color: var(--muted);
+}
+.experience .up-next {
+  background: #162936;
+  border-color: #365267;
+}
+.experience .up-next p {
+  color: #b5cbd9;
+}
+.experience .instruction-list > li {
+  color: #d0dde5;
+  border-color: var(--line);
+}
+.experience .instruction-list > li:before {
+  background: #1b3544;
+  color: var(--cyan);
+  border: 1px solid #385c70;
+}
+.experience .coaching-cue {
+  background: #152b37;
+  border-color: var(--cyan);
+}
+.experience .coaching-cue > svg {
+  color: var(--cyan);
+}
+.experience .coaching-cue p {
+  color: #c7dce7;
+}
+.experience .coaching-cue strong {
+  color: #c5efff;
+}
+.experience .finish-icon {
+  background: #253d28;
+  color: var(--lime);
+}
+.experience .studio-steps > span.active {
+  color: var(--lime);
+  border-color: var(--lime);
+}
+.experience .upload-zone {
+  background: #0c1b25;
+  border-color: #526d65;
+}
+.experience .studio {
+  grid-template-columns: minmax(0, 1fr);
+}
+.experience .upload-zone input::file-selector-button {
+  background: #213541;
+  color: #dcf0ec;
+  border-color: #5e7e76;
+}
+.experience .check-chip {
+  background: #13212e;
+  border-color: #455d6d;
+  color: #d0dde5;
+}
+.experience .check-chip.selected {
+  background: #273b2b;
+  border-color: #87a95b;
+  color: #ddf3c6;
+}
+.experience .form-error {
+  color: #ffbaab;
+}
+.experience .success {
+  background: #192f29;
+  border-color: #426c4b;
+  color: #e2f2d3;
+}
+.experience .success > svg,
+.experience .match-list svg {
+  color: var(--lime);
+}
+.experience .success p {
+  color: #c6d9bd;
+}
+.experience .discard-box {
+  background: #30281f;
+  border-color: #7b6243;
+  color: #f6dfbd;
+}
+.experience .discard-box > p {
+  color: #e0cfb5;
+}
+.experience .match-list > div {
+  background: #1c302a;
+}
+.experience .match-list span > small {
+  color: #b9cdbb;
+}
+.experience .attachment img,
+.experience .attachment video {
+  background: #071018;
+}
+.experience .package-card.featured {
+  background:
+    radial-gradient(ellipse at 0 0, #c4fa5d0a, transparent 70%), var(--surface);
+  border-color: #6d8d4d;
+  box-shadow: inset 0 3px 0 #a5ce69;
+}
+.experience .package-card > .tag {
+  background: #263927;
+  border-color: #52723c;
+  color: #d4edb7;
+}
+.experience .package-price {
+  color: #c6dfa9;
+}
+.experience .check-line svg {
+  color: var(--lime);
+}
+.experience .package-status {
+  background: #1d303b;
+  color: #bdcfdb;
+}
+.experience .modal {
+  box-shadow: 0 30px 100px #00000088;
+}
+.experience .modal::backdrop {
+  background: #03070dbb;
+}
+.experience .storage-warning {
+  background: #332b20;
+  border-color: #786448;
+  color: #f1d6aa;
+}
+.experience .toast {
+  background: #1e3443;
+  border-color: #64865b;
+  color: #eef7e5;
+}
+.experience footer {
+  background: #080f17;
+  border-color: #263340;
+  padding-bottom: 42px;
+}
+.experience .footer-inner > p {
+  color: #9fb2c0;
+}
+.experience .footer-inner > div > a {
+  color: #c3d1db;
+}
+.experience .footer-inner > div > a:hover {
+  color: var(--lime);
+}
+.experience .footer-bottom {
+  border-color: #263340;
+  color: #a5b7c6;
+}
+/* A field scene replaces the static dashboard mockup on the homepage. */
+.experience .home {
+  overflow: clip;
+  background: radial-gradient(ellipse at 68% 7%, #17384b70, transparent 30%);
+}
+.experience .hero {
+  grid-template-columns: 1fr 1.04fr;
+  gap: 30px;
+  max-width: 1320px;
+  padding: 64px 60px 56px;
+  position: relative;
+  min-height: 680px;
+}
+.experience .hero:before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(#7fb9d605 1px, transparent 1px),
+    linear-gradient(90deg, #7fb9d605 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: linear-gradient(black, transparent);
+}
+.experience .hero-copy {
+  position: relative;
+  z-index: 2;
+  animation: copy-arrive 0.8s cubic-bezier(0.2, 0.65, 0.3, 1) both;
+}
+.experience .hero .sport-tag {
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  color: #a8c0cf;
+  margin-bottom: 34px;
+}
+.experience .hero .sport-tag > span {
+  background: var(--lime);
+  box-shadow: 0 0 16px #c4fa5d50;
+}
+.hero-kicker {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 10px;
+  letter-spacing: 1.8px;
+  color: #b4cfde;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+.hero-kicker > span {
+  height: 1px;
+  width: 32px;
+  background: var(--cyan);
+}
+.experience .hero h1 {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 800;
+  font-size: clamp(78px, 8.4vw, 120px);
+  letter-spacing: -0.035em;
+  line-height: 0.88;
+  text-transform: uppercase;
+  text-wrap: initial;
+  max-width: 620px;
+}
+.electric-text {
+  color: var(--lime);
+  text-shadow: 0 0 65px #c4fa5d16;
+  position: relative;
+}
+.experience .hero-description {
+  color: #b4c5d2;
+  font-size: 16px;
+  max-width: 435px;
+  margin: 29px 0 28px;
+  line-height: 1.85;
+}
+.experience .hero .button {
+  font-size: 14px;
+  padding: 16px 24px;
+  min-height: 54px;
+  box-shadow: 0 0 30px #c4fa5d0f;
+}
+.experience .hero .text-button {
+  color: #ccdae5;
+}
+.experience .hero-proof {
+  margin-top: 28px;
+}
+.experience .hero-proof > svg {
+  color: var(--cyan);
+}
+.experience .hero-proof p {
+  color: #c1d2de;
+  font-size: 11px;
+}
+.experience .hero-proof p > span {
+  color: #9fb3c3;
+}
+.field-scene {
+  position: relative;
+  isolation: isolate;
+  min-width: 0;
+  animation: scene-arrive 1.1s cubic-bezier(0.2, 0.65, 0.3, 1) both;
+}
+.scene-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  position: relative;
+  z-index: 1;
+  padding: 0 8px;
+}
+.scene-head .eyebrow {
+  font-size: 9px;
+  color: #bdd1df;
+  letter-spacing: 1.6px;
+}
+.signal-dot {
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--cyan);
+  box-shadow: 0 0 10px #80dcff60;
+}
+.scene-index {
+  font-size: 9px;
+  letter-spacing: 1.8px;
+  color: #9cb1c4;
+  white-space: nowrap;
+}
+.field-stage {
+  position: relative;
+  height: 440px;
+  --pointer-x: 60%;
+  --pointer-y: 35%;
+  background: radial-gradient(
+    ellipse at var(--pointer-x) var(--pointer-y),
+    #81c9fb08,
+    transparent 70%
+  );
+}
+.stadium-halo {
+  position: absolute;
+  inset: 5% -10%;
+  background: radial-gradient(ellipse, #5fd7ff19, transparent 64%);
+  filter: blur(30px);
+  animation: stadium-light 10s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+.stadium-surface {
+  width: 100%;
+  height: 100%;
+  transform: perspective(900px) rotateX(44deg) rotateZ(-25deg) scale(1.04);
+  transform-origin: center;
+  filter: drop-shadow(15px 55px 20px #00000065);
+  animation: field-hover 8s ease-in-out infinite alternate;
+}
+.stadium-surface svg {
+  height: 100%;
+  width: 100%;
+  display: block;
+  overflow: visible;
+}
+.route-trace {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: trace-route 4.2s cubic-bezier(0.2, 0.65, 0.3, 1) forwards;
+}
+.target-ring {
+  animation: target-glow 4.2s ease-out both;
+}
+.field-annotation {
+  position: absolute;
+  left: 9px;
+  bottom: 26px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 15px;
+  background: #0c1c29e6;
+  border: 1px solid #41667c;
+  border-left: 2px solid var(--cyan);
+  box-shadow: 0 12px 30px #00000030;
+  backdrop-filter: blur(10px);
+  z-index: 2;
+  border-radius: 5px;
+  animation: annotation-arrive 1s 0.5s both;
+}
+.annotation-icon {
+  height: 32px;
+  width: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #183b4a;
+  color: var(--cyan);
+}
+.field-annotation strong {
+  display: block;
+  font-size: 13px;
+  color: #e1eff6;
+  font-weight: 600;
+  letter-spacing: -0.1px;
+}
+.field-annotation div > span {
+  display: block;
+  font-size: 10px;
+  color: #a4bfce;
+  margin-top: 5px;
+}
+.field-coordinate {
+  position: absolute;
+  bottom: 58px;
+  right: -42px;
+  transform: rotate(-90deg);
+  font-size: 9px;
+  letter-spacing: 2.8px;
+  color: #9ab5c5;
+}
+.scene-orbit {
+  pointer-events: none;
+  position: absolute;
+  border: 1px solid #80dcff0d;
+  border-radius: 50%;
+  width: 95%;
+  height: 80%;
+  top: 6%;
+  left: 4%;
+  transform: rotate(-30deg);
+  z-index: -1;
+}
+.orbit-two {
+  inset: 14% 8%;
+  width: auto;
+  height: 62%;
+  border-color: #80dcff08;
+  transform: rotate(-30deg);
+}
+.scene-controls {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  border-top: 1px solid #334a5a;
+  padding: 19px 3px 0;
+}
+.scene-tabs {
+  display: flex;
+  gap: 5px;
+  padding: 4px;
+  background: #0b1823;
+  border: 1px solid #2c4354;
+  border-radius: 6px;
+}
+.scene-tabs button {
+  background: transparent;
+  color: #b0c1d0;
+  font-size: 11px;
+  padding: 10px 14px;
+  min-height: 40px;
+  border-radius: 4px;
+  transition:
+    color 0.2s,
+    background 0.2s;
+}
+.scene-tabs button[aria-pressed="true"] {
+  background: #243a44;
+  color: #d8f4b5;
+  box-shadow: inset 0 0 0 1px #597a51;
+}
+.replay-button {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: #c4d6e3;
+  min-height: 44px;
+  padding: 10px;
+  font-size: 11px;
+}
+.replay-button:hover:not(:disabled) {
+  color: var(--lime);
+}
+.scene-footnote {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 9px;
+  color: #9db4c5;
+  padding: 14px 4px 0;
+  line-height: 1.7;
+}
+.scene-footnote > span {
+  flex: 1;
+}
+.experience .how-section {
+  border-color: #263846;
+  padding-top: 56px;
+  padding-bottom: 60px;
+}
+.experience .how-section .section-heading {
+  margin-bottom: 36px;
+}
+.experience .how-section h2 {
+  font-size: 41px;
+  max-width: 530px;
+}
+.experience .how-section .eyebrow {
+  color: var(--cyan);
+  font-size: 10px;
+  letter-spacing: 2px;
+}
+.experience .how-card {
+  border: 0;
+  border-top: 1px solid #354a5b;
+  border-radius: 0;
+  background: transparent;
+  padding: 24px 22px 5px 0;
+  position: relative;
+}
+.experience .how-card > div {
+  color: var(--cyan);
+  margin-bottom: 26px;
+}
+.experience .how-card > div > span {
+  font-family: var(--font-display);
+  font-size: 50px;
+  font-weight: 700;
+  line-height: 1;
+  color: #9aacbb;
+}
+.experience .how-card h3 {
+  font-size: 20px;
+  color: #edf4f8;
+  margin-bottom: 15px;
+}
+.experience .how-card p {
+  font-size: 14px;
+  color: #a9bac9;
+}
+.experience .parent-section {
+  border-top: 1px solid #263846;
+  padding-top: 52px;
+  padding-bottom: 54px;
+  gap: 64px;
+}
+.experience .parent-section .eyebrow {
+  color: var(--cyan);
+  letter-spacing: 1.8px;
+  font-size: 10px;
+}
+.experience .parent-section h2 {
+  font-size: 43px;
+  line-height: 1.05;
+  max-width: 430px;
+}
+.experience .parent-section > div > p {
+  font-size: 15px;
+  color: #a9bac9;
+}
+.experience .safeguard-list {
+  background: transparent;
+  border: 0;
+  padding: 0;
+}
+.experience .safeguard-list > div {
+  border-color: #2c4152;
+  padding: 24px 0;
+}
+.experience .safeguard-list > div > span {
+  background: #182e3a;
+  color: var(--cyan);
+  border: 1px solid #35596a;
+  border-radius: 6px;
+}
+.experience .safeguard-list h3 {
+  color: #e1edf4;
+  font-size: 16px;
+}
+.experience .safeguard-list p {
+  color: #aabfcd;
+}
+.experience .scope-strip {
+  background:
+    radial-gradient(ellipse at 5% 0, #c4fa5d15, transparent 65%), #13212d;
+  border-color: #3a5142;
+  border-radius: 9px;
+  padding: 35px;
+}
+.experience .scope-strip .eyebrow {
+  color: var(--lime);
+}
+.experience .scope-strip h3 {
+  color: #e7f0f3;
+  font-size: 24px;
+}
+.experience .scope-strip p {
+  color: #b3c3ce;
+}
+.experience .home-disclaimer {
+  color: #a4b8c7;
+}
+/* Motion is optional and never hides access to a control. */
+.page-transition {
+  animation: page-arrive 0.35s cubic-bezier(0.2, 0.65, 0.3, 1) both;
+}
+.reveal {
+  transition:
+    opacity 0.7s cubic-bezier(0.2, 0.65, 0.3, 1),
+    transform 0.7s cubic-bezier(0.2, 0.65, 0.3, 1);
+  opacity: 0;
+  transform: translateY(24px);
+}
+.reveal[data-visible="true"],
+.reveal:focus-within {
+  opacity: 1;
+  transform: none;
+}
+.motion-toggle {
+  position: fixed;
+  right: 20px;
+  bottom: 18px;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 11px 14px;
+  border: 1px solid #536d7d;
+  border-radius: 24px;
+  background: #101f2cf2;
+  color: #d8e8f0;
+  box-shadow: 0 5px 22px #00000030;
+  font-size: 11px;
+  backdrop-filter: blur(12px);
+}
+.motion-toggle:disabled {
+  opacity: 1;
+  color: #a7bac8;
+  border-color: #3a5262;
+  cursor: default;
+}
+.motion-toggle:hover:not(:disabled) {
+  background: #1b3543;
+  border-color: #82a276;
+  color: var(--lime);
+}
+.experience:has(dialog[open]) > .motion-toggle {
+  visibility: hidden;
+}
+.experience[data-motion="paused"] *,
+.experience[data-motion="paused"] *:before,
+.experience[data-motion="paused"] *:after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+.experience[data-motion="paused"] .reveal {
+  opacity: 1;
+  transform: none;
+}
+.experience[data-motion="paused"] .route-trace {
+  stroke-dashoffset: 0;
+}
+@keyframes trace-route {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes stadium-light {
+  from {
+    transform: translate(-3%, -3%);
+    opacity: 0.55;
+  }
+  to {
+    transform: translate(3%, 3%);
+    opacity: 1;
+  }
+}
+@keyframes field-hover {
+  from {
+    transform: perspective(900px) rotateX(44deg) rotateZ(-25deg) scale(1.04)
+      translateY(-4px);
+  }
+  to {
+    transform: perspective(900px) rotateX(44deg) rotateZ(-25deg) scale(1.04)
+      translateY(5px);
+  }
+}
+@keyframes target-glow {
+  0%,
+  65% {
+    opacity: 0.2;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.5;
+  }
+}
+@keyframes copy-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes scene-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(25px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes annotation-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes page-arrive {
+  from {
+    opacity: 0.7;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (max-width: 1100px) {
+  .experience .hero {
+    padding-left: 40px;
+    padding-right: 40px;
+    gap: 18px;
+    min-height: 630px;
+  }
+  .experience .hero h1 {
+    font-size: 100px;
+  }
+  .field-stage {
+    height: 390px;
+  }
+  .scene-head .eyebrow {
+    font-size: 8px;
+  }
+  .field-coordinate {
+    right: -50px;
+    bottom: 60px;
+  }
+  .experience .next-copy h2 {
+    font-size: 35px;
+  }
+}
+@media (max-width: 900px) {
+  .experience .hero {
+    padding: 45px 28px;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    min-height: 610px;
+  }
+  .experience .hero h1 {
+    font-size: 83px;
+  }
+  .experience .hero .sport-tag {
+    font-size: 8px;
+    letter-spacing: 0.8px;
+    margin-bottom: 26px;
+  }
+  .hero-kicker {
+    font-size: 8px;
+    letter-spacing: 1.2px;
+  }
+  .experience .hero-description {
+    font-size: 14px;
+    line-height: 1.85;
+    max-width: 350px;
+  }
+  .experience .hero .actions {
+    gap: 9px;
+  }
+  .experience .hero .button {
+    font-size: 13px;
+    padding: 14px 20px;
+  }
+  .experience .hero .text-button {
+    font-size: 12px;
+  }
+  .field-stage {
+    height: 330px;
+  }
+  .field-annotation {
+    left: 2px;
+    bottom: 12px;
+    padding: 11px 12px;
+    gap: 9px;
+  }
+  .field-annotation strong {
+    font-size: 12px;
+  }
+  .field-annotation div > span {
+    font-size: 9px;
+  }
+  .field-coordinate {
+    display: none;
+  }
+  .scene-head {
+    padding: 0 2px;
+  }
+  .scene-head .eyebrow {
+    font-size: 7px;
+    letter-spacing: 1px;
+  }
+  .scene-index {
+    font-size: 7px;
+  }
+  .scene-tabs button {
+    font-size: 10px;
+    padding: 9px 10px;
+  }
+  .replay-button {
+    font-size: 10px;
+    padding: 8px;
+    gap: 5px;
+  }
+  .scene-footnote {
+    font-size: 8px;
+  }
+  .experience .how-section h2 {
+    font-size: 35px;
+  }
+  .experience .parent-section h2 {
+    font-size: 37px;
+  }
+  .experience .parent-section {
+    gap: 35px;
+  }
+  .experience .how-card h3 {
+    font-size: 19px;
+  }
+  .experience .how-card p {
+    font-size: 13px;
+  }
+  .experience .next-copy h2 {
+    font-size: 34px;
+  }
+  .experience .page-intro h1,
+  .experience .dashboard-heading h1,
+  .experience .training-heading h1 {
+    font-size: 42px;
+  }
+}
+@media (max-width: 640px) {
+  .experience .demo-strip {
+    font-size: 8px;
+    letter-spacing: 0.6px;
+  }
+  .experience .brand-mark {
+    font-size: 22px;
+  }
+  .experience .hero {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 35px;
+    padding: 38px 20px 35px;
+    min-height: 0;
+    background: radial-gradient(ellipse at 85% 55%, #16374b80, transparent 65%);
+  }
+  .experience .hero .sport-tag {
+    font-size: 9px;
+    letter-spacing: 1px;
+    margin-bottom: 26px;
+  }
+  .hero-kicker {
+    font-size: 8px;
+    letter-spacing: 1.3px;
+    gap: 9px;
+    margin-bottom: 15px;
+  }
+  .hero-kicker > span {
+    width: 24px;
+  }
+  .experience .hero h1 {
+    font-size: clamp(76px, 20vw, 108px);
+    line-height: 0.88;
+    letter-spacing: -0.025em;
+    max-width: 500px;
+  }
+  .experience .hero-description {
+    font-size: 15px;
+    line-height: 1.9;
+    max-width: 450px;
+    margin: 24px 0;
+  }
+  .experience .hero .actions {
+    gap: 22px;
+    flex-direction: row;
+    align-items: center;
+  }
+  .experience .hero .button {
+    font-size: 13px;
+    min-height: 51px;
+    padding: 14px 20px;
+    gap: 20px;
+  }
+  .experience .hero .text-button {
+    font-size: 12px;
+    gap: 7px;
+  }
+  .experience .hero-proof {
+    margin-top: 22px;
+  }
+  .experience .hero-proof p {
+    font-size: 10px;
+    line-height: 1.9;
+  }
+  .field-scene {
+    margin-top: 8px;
+  }
+  .scene-head {
+    padding: 0 2px;
+  }
+  .scene-head .eyebrow {
+    font-size: 8px;
+    letter-spacing: 1px;
+  }
+  .scene-index {
+    font-size: 8px;
+  }
+  .field-stage {
+    height: 340px;
+  }
+  .stadium-surface {
+    transform: perspective(900px) rotateX(44deg) rotateZ(-25deg) scale(1.04);
+  }
+  .field-annotation {
+    left: 1px;
+    bottom: 18px;
+    padding: 12px 13px;
+    gap: 10px;
+  }
+  .field-annotation strong {
+    font-size: 12px;
+  }
+  .field-annotation div > span {
+    font-size: 9px;
+  }
+  .field-coordinate {
+    display: block;
+    bottom: 42px;
+    right: -38px;
+    font-size: 8px;
+    letter-spacing: 2px;
+  }
+  .scene-controls {
+    padding-top: 16px;
+    gap: 12px;
+  }
+  .scene-tabs button {
+    font-size: 11px;
+    min-height: 40px;
+    padding: 10px 13px;
+  }
+  .replay-button {
+    font-size: 11px;
+    gap: 6px;
+    padding: 10px;
+  }
+  .scene-footnote {
+    font-size: 9px;
+    padding-top: 13px;
+    line-height: 1.8;
+  }
+  .scene-footnote > svg:last-child {
+    display: none;
+  }
+  .experience .how-section {
+    padding-top: 32px;
+    padding-bottom: 36px;
+  }
+  .experience .how-section h2 {
+    font-size: 35px;
+    max-width: 340px;
+    line-height: 1.05;
+  }
+  .experience .how-section .section-heading {
+    margin-bottom: 30px;
+    gap: 13px;
+  }
+  .experience .how-section .eyebrow {
+    font-size: 9px;
+  }
+  .experience .how-section .section-heading > p {
+    font-size: 13px;
+  }
+  .experience .how-section .three-grid {
+    gap: 27px;
+  }
+  .experience .how-card {
+    padding: 22px 0 0;
+  }
+  .experience .how-card > div {
+    margin-bottom: 17px;
+  }
+  .experience .how-card > div > span {
+    font-size: 43px;
+  }
+  .experience .how-card h3 {
+    font-size: 22px;
+    margin-bottom: 12px;
+  }
+  .experience .how-card p {
+    font-size: 14px;
+    line-height: 1.85;
+  }
+  .experience .parent-section {
+    padding-top: 34px;
+    padding-bottom: 36px;
+    gap: 26px;
+  }
+  .experience .parent-section .eyebrow {
+    font-size: 9px;
+    letter-spacing: 1.5px;
+  }
+  .experience .parent-section h2 {
+    font-size: 38px;
+    line-height: 1.05;
+  }
+  .experience .parent-section > div > p {
+    font-size: 14px;
+  }
+  .experience .safeguard-list > div {
+    padding: 23px 0;
+  }
+  .experience .safeguard-list h3 {
+    font-size: 16px;
+  }
+  .experience .safeguard-list p {
+    font-size: 12px;
+  }
+  .experience .scope-strip {
+    padding: 25px;
+    gap: 23px;
+  }
+  .experience .scope-strip h3 {
+    font-size: 25px;
+    line-height: 1.2;
+  }
+  .experience .scope-strip p {
+    font-size: 13px;
+  }
+  .experience .home-disclaimer {
+    font-size: 11px;
+    line-height: 1.9;
+  }
+  .experience .page-intro h1,
+  .experience .dashboard-heading h1,
+  .experience .training-heading h1 {
+    font-size: 40px;
+  }
+  .experience .next-copy h2 {
+    font-size: 37px;
+  }
+  .experience .stats-grid strong {
+    font-size: 46px;
+  }
+  .experience .drill-info h3 {
+    font-size: 21px;
+  }
+  .experience .session-list button:hover {
+    padding-left: 17px;
+  }
+  .experience .how-card h3,
+  .experience .safeguard-list h3 {
+    letter-spacing: -0.025em;
+  }
+  .experience .routine-card > strong {
+    font-size: 48px;
+  }
+  .experience .routine-card > strong > small {
+    font-size: 12px;
+  }
+  .experience footer {
+    padding-bottom: 70px;
+  }
+  .motion-toggle {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    right: 16px;
+    bottom: 15px;
+    border-radius: 50%;
+  }
+  .motion-toggle > span {
+    display: none;
+  }
+  .experience .footer-bottom {
+    font-size: 10px;
+  }
+  .experience .session-finish h1 {
+    font-size: 40px;
+  }
+  .experience .package-card h2 {
+    font-size: 34px;
+  }
+  .experience .modal > h2 {
+    font-size: 32px;
+    letter-spacing: -0.01em;
+  }
+}
+@media (max-width: 360px) {
+  .experience .hero .sport-tag {
+    font-size: 8px;
+  }
+  .experience .hero h1 {
+    font-size: 74px;
+  }
+  .experience .hero .actions {
+    gap: 14px;
+  }
+  .experience .hero .button {
+    padding: 14px 16px;
+    font-size: 12px;
+    gap: 14px;
+  }
+  .experience .hero .text-button {
+    font-size: 11px;
+  }
+  .field-stage {
+    height: 300px;
+  }
+  .scene-head .eyebrow {
+    font-size: 7px;
+  }
+  .scene-index {
+    font-size: 7px;
+  }
+  .field-coordinate {
+    right: -40px;
+    font-size: 7px;
+  }
+  .scene-tabs button {
+    padding: 9px 11px;
+    font-size: 10px;
+  }
+  .scene-footnote {
+    font-size: 8px;
+  }
+  .field-annotation strong {
+    font-size: 11px;
+  }
+  .field-annotation div > span {
+    font-size: 8px;
+  }
+  .field-annotation {
+    padding: 11px;
+    gap: 8px;
+  }
+  .experience .page-intro h1,
+  .experience .dashboard-heading h1 {
+    font-size: 37px;
+  }
+  .experience .next-copy h2 {
+    font-size: 34px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .experience *,
+  .experience *:before,
+  .experience *:after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+  .experience .reveal {
+    opacity: 1;
+    transform: none;
+  }
+  .experience .route-trace {
+    stroke-dashoffset: 0;
+  }
+}

@@ -51,6 +51,7 @@ import {
   Tag,
 } from "./components";
 import { Admin } from "./Admin";
+import { CinematicField, MotionShell, Reveal } from "./Experience";
 const NAV = [
   ["today", "Today"],
   ["library", "Drill library"],
@@ -190,7 +191,7 @@ export default function App() {
     ((page === "today" || page === "session" || page === "progress") &&
       !profile);
   return (
-    <>
+    <MotionShell>
       <div className="demo-strip">
         <span className="live-dot" /> SAMPLE-DATA DEMO{" "}
         <span className="strip-divider">/</span>
@@ -265,7 +266,7 @@ export default function App() {
           {toast}
         </div>
       )}
-      <div ref={mainRef}>
+      <div ref={mainRef} className="page-transition" key={page}>
         {onboarding ? (
           <Onboarding
             current={profile}
@@ -479,7 +480,7 @@ export default function App() {
           </div>
         </Modal>
       )}
-    </>
+    </MotionShell>
   );
 }
 function Home() {
@@ -490,14 +491,18 @@ function Home() {
           <div className="sport-tag">
             <span /> AMERICAN FOOTBALL · AGES 5 TO ADULT
           </div>
+          <div className="hero-kicker">
+            <span /> BUILT FOR YOUR NEXT CHAPTER
+          </div>
           <h1 tabIndex={-1}>
-            Better practice
+            Your game.
             <br />
-            starts with a plan.
+            <span className="electric-text">Your next rep.</span>
           </h1>
           <p className="hero-description">
-            A clear next step for every player. Explore guided football sessions
-            matched to age, position, experience, and goals.
+            Turn “what should I work on?” into a clear next step. Guided
+            football practice matched to your age, position, experience, and
+            goals.
           </p>
           <div className="actions">
             <a className="button" href="#onboarding">
@@ -508,7 +513,13 @@ function Home() {
               onClick={() =>
                 document
                   .getElementById("how-it-works")
-                  ?.scrollIntoView({ behavior: "smooth" })
+                  ?.scrollIntoView({
+                    behavior: window.matchMedia(
+                      "(prefers-reduced-motion: reduce)",
+                    ).matches
+                      ? "auto"
+                      : "smooth",
+                  })
               }
             >
               See how it works <ArrowDown size={16} />
@@ -522,176 +533,124 @@ function Home() {
             </p>
           </div>
         </div>
-        <div className="hero-preview" aria-label="Sample training plan preview">
-          <div className="preview-heading">
+        <CinematicField />
+      </section>
+      <Reveal>
+        <section id="how-it-works" className="page how-section">
+          <div className="section-heading">
             <div>
-              <span className="eyebrow">YOUR DAILY GAME PLAN</span>
-              <h2>Today’s training</h2>
+              <span className="eyebrow">A SIMPLE ROUTINE</span>
+              <h2>A clear path from plan to practice.</h2>
             </div>
-            <Tag>DEMO</Tag>
+            <p>Three steps. One focused session.</p>
           </div>
-          <div className="preview-field">
-            <Field hero />
-            <span className="diagram-label">Illustrative field diagram</span>
-          </div>
-          <div className="preview-plan">
-            <div className="preview-plan-heading">
-              <div>
-                <span className="eyebrow">FOUNDATIONS</span>
-                <h3>Footwork fundamentals</h3>
-              </div>
-              <span className="preview-duration">
-                <Clock3 size={15} />
-                12 min
-              </span>
-            </div>
-            <div className="preview-drills">
-              {[
-                {
-                  title: "Ready. Step. Reset.",
-                  detail: "Build a balanced starting point",
-                },
-                {
-                  title: "Find the open space",
-                  detail: "Learn to look before you move",
-                },
-                {
-                  title: "Mirror the markers",
-                  detail: "Make each step intentional",
-                },
-              ].map((d, i) => (
-                <div key={d.title}>
-                  <span className="preview-number">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <div>
-                    <strong>{d.title}</strong>
-                    <span>{d.detail}</span>
-                  </div>
-                  <CheckCircle2 size={17} />
+          <div className="three-grid">
+            {[
+              {
+                n: "01",
+                title: "Choose your player",
+                text: "Start with a fictional profile. Adjust age, position, experience, and a primary goal.",
+                icon: Users,
+              },
+              {
+                n: "02",
+                title: "Follow your session",
+                text: "Learn the idea, work through the practice steps, and use a clear cue for each drill.",
+                icon: Footprints,
+              },
+              {
+                n: "03",
+                title: "Record your practice",
+                text: "Log completed sessions and a simple reflection. Build a record of participation.",
+                icon: TrendingUp,
+              },
+            ].map((c) => (
+              <article className="how-card" key={c.n}>
+                <div>
+                  <span>{c.n}</span>
+                  <c.icon size={22} />
                 </div>
-              ))}
-            </div>
-            <div className="preview-footer">
-              <ShieldCheck size={16} />
-              <span>Noncontact activities · sample plan</span>
-              <a href="#onboarding" aria-label="Try this sample plan">
-                <ArrowUpRight size={19} />
-              </a>
-            </div>
+                <h3>{c.title}</h3>
+                <p>{c.text}</p>
+              </article>
+            ))}
           </div>
-        </div>
-      </section>
-      <section id="how-it-works" className="page how-section">
-        <div className="section-heading">
+        </section>
+      </Reveal>
+      <Reveal>
+        <section className="page parent-section">
           <div>
-            <span className="eyebrow">A SIMPLE ROUTINE</span>
-            <h2>A clear path from plan to practice.</h2>
-          </div>
-          <p>Three steps. One focused session.</p>
-        </div>
-        <div className="three-grid">
-          {[
-            {
-              n: "01",
-              title: "Choose your player",
-              text: "Start with a fictional profile. Adjust age, position, experience, and a primary goal.",
-              icon: Users,
-            },
-            {
-              n: "02",
-              title: "Follow your session",
-              text: "Learn the idea, work through the practice steps, and use a clear cue for each drill.",
-              icon: Footprints,
-            },
-            {
-              n: "03",
-              title: "Record your practice",
-              text: "Log completed sessions and a simple reflection. Build a record of participation.",
-              icon: TrendingUp,
-            },
-          ].map((c) => (
-            <article className="how-card" key={c.n}>
-              <div>
-                <span>{c.n}</span>
-                <c.icon size={22} />
-              </div>
-              <h3>{c.title}</h3>
-              <p>{c.text}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-      <section className="page parent-section">
-        <div>
-          <span className="eyebrow">DESIGNED AROUND THE PLAYER</span>
-          <h2>
-            The right starting point.
-            <br />
-            Support at every age.
-          </h2>
-          <p>
-            Young players need short, playful activities and an adult alongside
-            them. Older players get a structured starting point for their
-            experience and goals.
-          </p>
-          <a className="text-button" href="#onboarding">
-            Meet the sample players <ArrowRight size={17} />
-          </a>
-        </div>
-        <div className="safeguard-list">
-          {[
-            {
-              icon: ShieldCheck,
-              title: "Parent-managed for minors",
-              text: "An adult manages preferences and supervises practice.",
-            },
-            {
-              icon: Footprints,
-              title: "Noncontact sample activities",
-              text: "Illustrative instruction, pending qualified coaching review.",
-            },
-            {
-              icon: Users,
-              title: "Private by design in this demo",
-              text: "Fictional profiles. No public profiles or direct messages.",
-            },
-          ].map((item) => (
-            <div key={item.title}>
-              <span>
-                <item.icon size={22} />
-              </span>
-              <div>
-                <h3>{item.title}</h3>
-                <p>{item.text}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-      <section className="page home-scope">
-        <div className="scope-strip">
-          <div>
-            <span className="eyebrow">FOOTBALL FIRST</span>
-            <h3>Built for today. Room for what’s next.</h3>
+            <span className="eyebrow">DESIGNED AROUND THE PLAYER</span>
+            <h2>
+              The right starting point.
+              <br />
+              Support at every age.
+            </h2>
             <p>
-              {SPORTS.filter((s) => !s.available)
-                .map((s) => s.name)
-                .join(" and ")}{" "}
-              remain future offerings.
+              Young players need short, playful activities and an adult
+              alongside them. Older players get a structured starting point for
+              their experience and goals.
             </p>
+            <a className="text-button" href="#onboarding">
+              Meet the sample players <ArrowRight size={17} />
+            </a>
           </div>
-          <a className="button secondary" href="#membership">
-            Future packages <ArrowUpRight size={17} />
-          </a>
-        </div>
-        <p className="home-disclaimer">
-          Sample-data prototype. All training content is illustrative and
-          pending qualified review. Practice records show participation, not
-          proven improvement. Scholarship and recruiting outcomes are never
-          guaranteed.
-        </p>
-      </section>
+          <div className="safeguard-list">
+            {[
+              {
+                icon: ShieldCheck,
+                title: "Parent-managed for minors",
+                text: "An adult manages preferences and supervises practice.",
+              },
+              {
+                icon: Footprints,
+                title: "Noncontact sample activities",
+                text: "Illustrative instruction, pending qualified coaching review.",
+              },
+              {
+                icon: Users,
+                title: "Private by design in this demo",
+                text: "Fictional profiles. No public profiles or direct messages.",
+              },
+            ].map((item) => (
+              <div key={item.title}>
+                <span>
+                  <item.icon size={22} />
+                </span>
+                <div>
+                  <h3>{item.title}</h3>
+                  <p>{item.text}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      </Reveal>
+      <Reveal>
+        <section className="page home-scope">
+          <div className="scope-strip">
+            <div>
+              <span className="eyebrow">FOOTBALL FIRST</span>
+              <h3>Built for today. Room for what’s next.</h3>
+              <p>
+                {SPORTS.filter((s) => !s.available)
+                  .map((s) => s.name)
+                  .join(" and ")}{" "}
+                remain future offerings.
+              </p>
+            </div>
+            <a className="button secondary" href="#membership">
+              Future packages <ArrowUpRight size={17} />
+            </a>
+          </div>
+          <p className="home-disclaimer">
+            Sample-data prototype. All training content is illustrative and
+            pending qualified review. Practice records show participation, not
+            proven improvement. Scholarship and recruiting outcomes are never
+            guaranteed.
+          </p>
+        </section>
+      </Reveal>
     </main>
   );
 }

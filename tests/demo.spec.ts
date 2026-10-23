@@ -46,9 +46,7 @@ test("homepage is responsive and sample demo is obvious", async ({
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto("./");
-  await expect(
-    page.getByRole("heading", { name: /Better practice/ }),
-  ).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Your game/i })).toBeVisible();
   await page.getByRole("button", { name: "See how it works" }).click();
   await expect(
     page.getByRole("heading", { name: /A clear path from plan/ }),

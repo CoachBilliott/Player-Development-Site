@@ -32,6 +32,12 @@ The `dist/` folder is a static website with relative asset paths and hash naviga
 - Coach demo studio: select a file, write instructions, set audience and primary goal, preview matching fictional profiles, and publish once to the local library. Supports MP4/WebM video, PNG/JPEG/WebP, PDF, and plain text, up to 12 MB. Video and images preview; PDFs/text download. No embedded executable HTML/SVG uploads.
 - Future package concepts without prices, payments, signup, or promised scholarships/recruiting results. Other sports are future offerings only.
 
+## Stadium theme and motion
+
+The original field illustration uses SVG and CSS perspective, with a route trace, a moving marker, and ambient lighting. Visitors can switch between Footwork and Field Vision, replay the route, or pause visual animation. These are decorative illustrations, not coaching demonstrations or measured player movements. They never create practice records.
+
+The motion control pauses ambient effects, route playback, reveals, and page transitions; its preference lasts for the current browser session. Device `prefers-reduced-motion` is respected automatically, with static visible content and no animated route. Section reveals also show immediately for keyboard focus. The training workflow remains usable when motion is off. No custom cursor or third-party animation runtime is required.
+
 ## Storage and prototype limits
 
 Profiles, history, active sessions and published resource metadata use versioned `localStorage`, validated with Zod. Files use IndexedDB. Blob URLs are temporary playback/download references, created when needed and revoked when views close.
@@ -51,7 +57,7 @@ npx playwright install chromium # only if a compatible Chromium is not already i
 npm run test:e2e
 ```
 
-Playwright uses `/usr/bin/chromium` when present; otherwise its managed Chromium. `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` can select another installed Chromium. The test suite starts Vite automatically. Desktop and phone projects cover onboarding, guardian acknowledgment, every selection control, session steps, pause/resume, refresh persistence, repeated completion, profile isolation, filters, upload cancellation/rejection, matches, publish/retry behavior, media playback, storage errors, destructive-action cancellation, memberships, multiple viewport widths, and automated WCAG A/AA checks. Axe checks do not replace a human accessibility audit.
+Playwright uses `/usr/bin/chromium` when present; otherwise its managed Chromium. `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` can select another installed Chromium. The test suite starts Vite automatically. Desktop and phone projects cover onboarding, guardian acknowledgment, every selection control, session steps, pause/resume, refresh persistence, repeated completion, profile isolation, filters, upload cancellation/rejection, matches, publish/retry behavior, media playback, storage errors, destructive-action cancellation, memberships, multiple viewport widths, interactive route focus/replay, pause persistence, reduced-motion behavior, and automated WCAG A/AA checks. Axe checks do not replace a human accessibility audit.
 
 To test the production server or a deployed website with the same journeys:
 
@@ -89,4 +95,4 @@ Qualified review and replacement/approval of all instructional material; validat
 
 ## Originality and dependencies
 
-Copy, field diagrams, layouts, and practice examples were authored for this prototype. System fonts require no external font download. No competitor media, external stock photos, child images, analytics, or third-party video embeds are used. React, Vite, Zod and other open-source dependencies retain their own licenses; Lucide icons are ISC-licensed. The distributed notices are included in `THIRD_PARTY_NOTICES.md` and `public/third-party-notices.txt`; development tools retain additional notices in their installed packages. No claim of trademark registration is made for the temporary product name.
+Copy, field diagrams, layouts, and practice examples were authored for this prototype. Barlow Condensed and DM Sans are served locally with the site under the SIL Open Font License; their notices are bundled with the project. No external font service is contacted. No competitor media, external stock photos, child images, analytics, or third-party video embeds are used. React, Vite, Zod and other open-source dependencies retain their own licenses; Lucide icons are ISC-licensed. The distributed notices are included in `THIRD_PARTY_NOTICES.md` and `public/third-party-notices.txt`; development tools retain additional notices in their installed packages. No claim of trademark registration is made for the temporary product name.

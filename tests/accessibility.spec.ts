@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 test("main screens have no detected WCAG A/AA violations", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("./#onboarding");
   await page.getByRole("button", { name: /Morgan/ }).click();
   await page.getByRole("button", { name: "See my training" }).click();
