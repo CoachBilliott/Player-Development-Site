@@ -9,6 +9,7 @@ export default defineConfig({
   outputDir: "test-results-app",
   reporter: [
     ["list"],
+    ...(process.env.CI ? [["github"] as [string]] : []),
     ["html", { open: "never", outputFolder: "playwright-report-app" }],
   ],
   use: { ...base.use, baseURL: "http://127.0.0.1:4180" },
