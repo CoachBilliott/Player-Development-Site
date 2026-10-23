@@ -7,6 +7,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { MotionContext, useMotion } from "./motion";
+import { FootballScene } from "./FootballScene";
 
 export function MotionShell({ children }: { children: ReactNode }) {
   const [reduced, setReduced] = useState(
@@ -116,6 +117,11 @@ export function CinematicField() {
   const { enabled } = useMotion();
   const [focus, setFocus] = useState<"footwork" | "vision">("footwork");
   const [replay, setReplay] = useState(0);
+  const routeAnimation = useRef<SVGAnimateMotionElement>(null);
+  useEffect(() => {
+    // SMIL uses the document timeline; remounting alone does not restart playback.
+    if (enabled) routeAnimation.current?.beginElement();
+  }, [enabled, focus, replay]);
   const id = useId();
   const route =
     focus === "footwork"
@@ -147,6 +153,7 @@ export function CinematicField() {
           );
         }}
       >
+        <FootballScene />
         <div className="stadium-halo" aria-hidden="true" />
         <div className="stadium-surface">
           <svg
@@ -173,6 +180,25 @@ export function CinematicField() {
                 <feGaussianBlur stdDeviation="5" />
               </filter>
             </defs>
+            <rect
+              x="34"
+              y="44"
+              width="552"
+              height="404"
+              rx="14"
+              fill="#081722"
+              stroke="#325365"
+            />
+            <rect
+              x="34"
+              y="36"
+              width="552"
+              height="404"
+              rx="14"
+              fill="#122a38"
+              stroke="#48788a"
+              strokeOpacity=".6"
+            />
             <rect
               x="34"
               y="28"
@@ -274,6 +300,8 @@ export function CinematicField() {
               {enabled ? (
                 <circle r="7" fill="#efffc9" stroke="#c4fa5d" strokeWidth="3">
                   <animateMotion
+                    ref={routeAnimation}
+                    begin="indefinite"
                     path={route}
                     dur="4.2s"
                     repeatCount="1"

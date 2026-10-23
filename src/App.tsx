@@ -52,6 +52,7 @@ import {
 } from "./components";
 import { Admin } from "./Admin";
 import { CinematicField, MotionShell, Reveal } from "./Experience";
+import { useMotion } from "./motion";
 const NAV = [
   ["today", "Today"],
   ["library", "Drill library"],
@@ -484,6 +485,7 @@ export default function App() {
   );
 }
 function Home() {
+  const { enabled: motionEnabled } = useMotion();
   return (
     <main className="home">
       <section className="hero page">
@@ -511,15 +513,9 @@ function Home() {
             <button
               className="text-button"
               onClick={() =>
-                document
-                  .getElementById("how-it-works")
-                  ?.scrollIntoView({
-                    behavior: window.matchMedia(
-                      "(prefers-reduced-motion: reduce)",
-                    ).matches
-                      ? "auto"
-                      : "smooth",
-                  })
+                document.getElementById("how-it-works")?.scrollIntoView({
+                  behavior: motionEnabled ? "smooth" : "auto",
+                })
               }
             >
               See how it works <ArrowDown size={16} />

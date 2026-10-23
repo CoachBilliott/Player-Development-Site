@@ -34,9 +34,11 @@ The `dist/` folder is a static website with relative asset paths and hash naviga
 
 ## Stadium theme and motion
 
-The original field illustration uses SVG and CSS perspective, with a route trace, a moving marker, and ambient lighting. Visitors can switch between Footwork and Field Vision, replay the route, or pause visual animation. These are decorative illustrations, not coaching demonstrations or measured player movements. They never create practice records.
+The homepage includes an original real-time 3D football with procedural leather, raised laces, curved stripes, and stadium lighting. Visitors can drag it with a mouse or use large rotate buttons on touch devices and keyboards. The Three.js renderer loads separately from the training app; no external model or texture is downloaded. Pixel density is capped, rendering stops offscreen or in a hidden tab, and GPU resources are released when leaving the homepage. Unsupported WebGL or graphics context loss shows original static SVG artwork while the app remains usable.
 
-The motion control pauses ambient effects, route playback, reveals, and page transitions; its preference lasts for the current browser session. Device `prefers-reduced-motion` is respected automatically, with static visible content and no animated route. Section reveals also show immediately for keyboard focus. The training workflow remains usable when motion is off. No custom cursor or third-party animation runtime is required.
+The field illustration uses SVG and CSS perspective with layered edges, with a route trace, a moving marker, and ambient lighting. Visitors can switch between Footwork and Field Vision, replay the route, or pause visual animation. These are decorative illustrations, not coaching demonstrations or measured player movements. They never create practice records.
+
+The motion control pauses ambient effects, route playback, reveals, and page transitions; its preference lasts for the current browser session. Device `prefers-reduced-motion` is respected automatically, with static visible content and no animated route. Section reveals also show immediately for keyboard focus. The training workflow remains usable when motion is off. With motion off, the football stays still; explicit rotate-button presses change its view instantly. No automatic movement or interpolation runs in reduced-motion mode.
 
 ## Storage and prototype limits
 
@@ -57,7 +59,7 @@ npx playwright install chromium # only if a compatible Chromium is not already i
 npm run test:e2e
 ```
 
-Playwright uses `/usr/bin/chromium` when present; otherwise its managed Chromium. `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` can select another installed Chromium. The test suite starts Vite automatically. Desktop and phone projects cover onboarding, guardian acknowledgment, every selection control, session steps, pause/resume, refresh persistence, repeated completion, profile isolation, filters, upload cancellation/rejection, matches, publish/retry behavior, media playback, storage errors, destructive-action cancellation, memberships, multiple viewport widths, interactive route focus/replay, pause persistence, reduced-motion behavior, and automated WCAG A/AA checks. Axe checks do not replace a human accessibility audit.
+Playwright uses `/usr/bin/chromium` when present; otherwise its managed Chromium. `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` can select another installed Chromium. The test suite starts Vite automatically. Desktop and phone projects cover onboarding, guardian acknowledgment, every selection control, session steps, pause/resume, refresh persistence, repeated completion, profile isolation, filters, upload cancellation/rejection, matches, publish/retry behavior, media playback, storage errors, destructive-action cancellation, memberships, multiple viewport widths, interactive route focus/replay, 3D rotation and static rendering, missing WebGL and graphics-context-loss fallback, navigation cleanup, pause persistence, reduced-motion behavior, and automated WCAG A/AA checks. Axe checks do not replace a human accessibility audit.
 
 To test the production server or a deployed website with the same journeys:
 
@@ -79,7 +81,7 @@ npm run deploy:pages
 
 The publishing script builds `dist/`, uses an isolated temporary Git index, preserves the current source checkout, and pushes a new commit on top of the current remote `gh-pages` branch. It permits only this repository, verifies the pushed ref, and never force-pushes. A dirty source checkout stops publication. No new credentials, API access, or cloud environment publication is needed for this route; it reuses existing Git access.
 
-Check the **pages build and deployment** run in this repository's GitHub Actions page, confirm it succeeded for the published commit, and read the actual deployment URL. An independent HTTP/browser check of the public site is still required when network access permits it. A successful build or push alone is not evidence of a successful live deployment. The current cloud proxy blocks direct access to the Pages hostname; report that limit if it remains in effect. Do not bypass the proxy.
+Check the **pages build and deployment** run in this repository's GitHub Actions page, confirm it succeeded for the published commit, and read the actual deployment URL. An independent HTTP/browser check of the public site is still required when network access permits it. A successful build or push alone is not evidence of a successful live deployment. Network availability depends on the cloud environment. Report any verification limit, and do not bypass the proxy.
 
 `checks.yml` validates source pushes and pull requests. The manual `pages.yml` file is an alternative for repositories configured with GitHub Actions as the Pages source; do not use it to change the current branch publishing configuration. Keep this project separate from unrelated projects and never buy a hosting plan or change repository visibility to deploy the demo.
 
