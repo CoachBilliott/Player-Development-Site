@@ -200,6 +200,10 @@ function ConnectedAccount({
     event.preventDefault();
     await act(async () => {
       if (mode === "signup") {
+        if (!shared.signupEnabled)
+          throw new Error(
+            "Public registration is not open. Use your activation email or sign in with an existing pilot account.",
+          );
         if (!adult)
           throw new Error(
             "Accounts must be created by someone aged 18 or older.",
@@ -289,6 +293,14 @@ function ConnectedAccount({
       {!userId ? (
         <div className="member-layout">
           <section className="panel member-panel">
+            {!shared.signupEnabled && (
+              <Notice>
+                Private account pilot. Public registration is not open yet. Use
+                the activation email sent to you, or sign in with an existing
+                account. Adult profiles only while parental-consent setup is
+                completed.
+              </Notice>
+            )}
             <div
               className="scene-tabs"
               role="group"
@@ -301,13 +313,15 @@ function ConnectedAccount({
               >
                 Sign in
               </button>
-              <button
-                disabled={busy}
-                aria-pressed={mode === "signup"}
-                onClick={() => switchMode("signup")}
-              >
-                Create account
-              </button>
+              {shared.signupEnabled && (
+                <button
+                  disabled={busy}
+                  aria-pressed={mode === "signup"}
+                  onClick={() => switchMode("signup")}
+                >
+                  Create account
+                </button>
+              )}
             </div>
             <h2>
               {mode === "signup"

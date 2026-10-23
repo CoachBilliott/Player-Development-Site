@@ -85,7 +85,8 @@ let redirectExchange: Promise<void> | undefined;
 export function finishAuthRedirect(connection: SharedContent) {
   if (redirectExchange) return redirectExchange;
   const url = new URL(window.location.href);
-  if (url.searchParams.has("error")) {
+  const fragment = new URLSearchParams(url.hash.slice(1));
+  if (url.searchParams.has("error") || fragment.has("error")) {
     for (const key of ["error", "error_code", "error_description"])
       url.searchParams.delete(key);
     url.hash = "account";
@@ -96,6 +97,39 @@ export function finishAuthRedirect(connection: SharedContent) {
         "This email link is invalid or expired. Sign in or request a fresh verification or recovery link.",
       ),
     );
+  }
+  // Provider-issued email links can use an implicit callback (for invitations
+  // and owner activation). Validate the session through Auth before using it,
+  // and remove credentials from the address bar before any network request.
+  if (fragment.has("access_token")) {
+    const access = fragment.get("access_token");
+    const refresh = fragment.get("refresh_token");
+    const kind = fragment.get("type");
+    if (kind === "recovery" || kind === "invite")
+      url.searchParams.set("flow", "recovery");
+    url.hash = "account";
+    window.history.replaceState(null, "", url);
+    window.dispatchEvent(new HashChangeEvent("hashchange"));
+    redirectExchange = (async () => {
+      if (
+        !access ||
+        !refresh ||
+        !kind ||
+        !["signup", "invite", "recovery", "magiclink"].includes(kind)
+      )
+        throw new Error(
+          "This email link is incomplete. Request a fresh sign-in or recovery link.",
+        );
+      const { error } = await connection.client.auth.setSession({
+        access_token: access,
+        refresh_token: refresh,
+      });
+      if (error)
+        throw new Error(
+          "This email link is invalid or expired. Request a fresh sign-in or recovery link.",
+        );
+    })();
+    return redirectExchange;
   }
   const code = url.searchParams.get("code");
   if (!code) return Promise.resolve();

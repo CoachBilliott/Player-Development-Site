@@ -1,3 +1,4 @@
+import { disableBackend } from "./backendFixture";
 import { test, expect, type Page } from "@playwright/test";
 async function onboard(page: Page, name = "Jordan") {
   await page.goto("./#onboarding");
@@ -40,6 +41,10 @@ async function finish(page: Page) {
     .getByRole("button", { name: "Record completed practice" })
     .dblclick();
 }
+test.beforeEach(async ({ context }) => {
+  await disableBackend(context);
+});
+
 test("homepage is responsive and sample demo is obvious", async ({
   page,
 }, info) => {

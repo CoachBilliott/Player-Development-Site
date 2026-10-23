@@ -18,6 +18,7 @@ export function useSharedContent() {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [membersEnabled, setMembersEnabled] = useState(false);
+  const [signupEnabled, setSignupEnabled] = useState(false);
   const [connectionError, setConnectionError] = useState("");
   useEffect(() => {
     let stopped = false;
@@ -39,6 +40,7 @@ export function useSharedContent() {
         if (stopped) return;
         setService(connection);
         setMembersEnabled(raw.membersEnabled === true);
+        setSignupEnabled(raw.membersSignupEnabled !== false);
         const subscription = connection.client.auth.onAuthStateChange(
           (_event, current) => {
             if (!stopped) setSession(current);
@@ -117,6 +119,7 @@ export function useSharedContent() {
     session,
     loading,
     membersEnabled,
+    signupEnabled,
     connectionError,
     clearConnectionError: () => setConnectionError(""),
     configured: Boolean(service),

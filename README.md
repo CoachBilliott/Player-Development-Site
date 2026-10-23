@@ -2,11 +2,11 @@
 
 A standalone, responsive virtual player-practice demo, beginning with American football. This project is independent of Coach Workroom and Spawnative; it uses neither their code, brands, accounts, nor hosting.
 
-## Private member accounts — implemented, backend activation pending
+## Private member accounts — connected for an adult pilot
 
-Open [Member access](https://coachbilliott.github.io/Player-Development-Site/#account). Registration stays closed while no backend is connected. The repository now includes adult signup, email verification/recovery, private parent/adult account setup, private player create/edit/delete, identity isolation and server row-level security. Under-18 enrollment is closed at the database until consent/privacy setup is complete. No demo records are imported. No payment package or price is needed for profile setup.
+Open [Member access](https://coachbilliott.github.io/Player-Development-Site/#account). The dedicated backend is connected for an invite-only adult pilot. Public registration remains closed; existing pilot accounts can sign in and reset their password. The repository now includes adult signup, email verification/recovery, private parent/adult account setup, private player create/edit/delete, identity isolation and server row-level security. Under-18 enrollment is closed at the database until consent/privacy setup is complete. No demo records are imported. No payment package or price is needed for profile setup.
 
-See [backend activation instructions](backend/SETUP.md) and apply both migrations in the dedicated owner-controlled project. The code and simulated-service tests do not constitute a live database or verified email delivery. Do not add real child information in the pilot. Full Auth-login erasure requires the owner; the self-service delete action removes member/profile data only. Real member practice-history syncing and subscriptions remain future work.
+See [backend setup and current pilot status](backend/SETUP.md). Both initial migrations have been applied to the dedicated owner-controlled project; do not rerun them. Live database privacy checks pass, while inbox delivery and owner activation require confirmation. Do not add real child information in the pilot. Full Auth-login erasure requires the owner; the self-service delete action removes member/profile data only. Real member practice-history syncing and subscriptions remain future work.
 
 ## Run locally
 
@@ -54,7 +54,7 @@ Profiles, history, active sessions and published resource metadata use versioned
 
 Data stays in the current browser and origin. Your partner will see the same built-in samples, **not** your local progress or published resources. Clearing browser site data removes saved content. Private browsing and quota/storage restrictions may prevent persistence; visible error messages explain when changes are temporary or publication fails. Unsaved coach drafts are discarded on navigation or refresh. Sample profile histories are isolated from one another.
 
-Shared coach publishing is prepared but disabled by default. Its Supabase client, migration and activation checks are described in [backend/SETUP.md](backend/SETUP.md); the owner-supplied Supabase URL and public publishable key are recorded, but management access, migrations and live acceptance remain outstanding. The deployed demo has no connected backend or active real accounts. Private accounts and coach authorization are implemented but require the separate owner-controlled backend and live acceptance. There are no actual training assessments, AI coaching, public player profiles, messaging, medical advice, checkout, or real child records. The open coach editor is deliberately a demo, not a secure admin console. All training content is illustrative and pending qualified coaching review.
+Shared coach publishing uses the connected backend and an explicit coach allowlist. Its Supabase client, migration and activation checks are described in [backend/SETUP.md](backend/SETUP.md); the owner-supplied Supabase connection is configured and the database privacy checks pass. Real adult pilot accounts are separate from the fictional public demo. Public enrollment and children’s enrollment remain closed pending the documented launch requirements. There are no actual training assessments, AI coaching, public player profiles, messaging, medical advice, checkout, or real child records. The open coach editor is deliberately a demo, not a secure admin console. All training content is illustrative and pending qualified coaching review.
 
 ## Checks
 

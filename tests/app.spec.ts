@@ -1,7 +1,12 @@
+import { disableBackend } from "./backendFixture";
 import { test, expect } from "@playwright/test";
 import { createServer } from "node:http";
 import { readFile } from "node:fs/promises";
 import { resolve, extname } from "node:path";
+
+test.beforeEach(async ({ context }) => {
+  await disableBackend(context);
+});
 
 test("installed-app shell reopens offline and saves completed sample practice", async ({
   page,

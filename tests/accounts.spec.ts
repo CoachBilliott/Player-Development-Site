@@ -1,3 +1,4 @@
+import { disableBackend } from "./backendFixture";
 import { test, expect, type BrowserContext } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
@@ -9,7 +10,7 @@ function jwt(id: string) {
     Buffer.from(JSON.stringify(value)).toString("base64url");
   return `${b64({ alg: "HS256", typ: "JWT" })}.${b64({ sub: id, role: "authenticated", aud: "authenticated", exp: Math.floor(Date.now() / 1000) + 3600 })}.fictional-signature`;
 }
-function fixture(under18Enabled = true) {
+function fixture(under18Enabled = true, signupEnabled = true) {
   const accounts = new Map<string, Row>();
   const players = new Map<string, Row>();
   const counts = { writes: 0, signup: 0, recover: 0, password: 0, resend: 0 };
@@ -34,6 +35,7 @@ function fixture(under18Enabled = true) {
         json: {
           enabled: true,
           membersEnabled: true,
+          membersSignupEnabled: signupEnabled,
           url: "https://member-fixture.supabase.co",
           publishableKey: "sb_publishable_fixture_only",
         },
@@ -199,6 +201,10 @@ async function setup(
     page.getByRole("heading", { name: "A fresh start for your players." }),
   ).toBeVisible();
 }
+test.beforeEach(async ({ context }) => {
+  await disableBackend(context);
+});
+
 test("unconfigured public member entry is honest and collects no profile data", async ({
   page,
 }) => {
@@ -495,5 +501,42 @@ test("expired email callbacks recover safely and the closed under-18 gate is ref
   ).toHaveText(["18+"]);
   await expect(
     page.getByText("Under-18 enrollment is not open yet.", { exact: false }),
+  ).toBeVisible();
+});
+
+test("private pilot accepts a verified email session, removes URL credentials and sets a password without opening signup", async ({
+  page,
+  context,
+}) => {
+  const backend = fixture(false, false);
+  await backend.install(context);
+  const fragment = new URLSearchParams({
+    access_token: jwt(parentId),
+    refresh_token: "fictional-refresh",
+    type: "magiclink",
+    token_type: "bearer",
+  });
+  await page.goto("./?flow=recovery#" + fragment.toString());
+  await expect(
+    page.getByRole("heading", { name: "Choose a new password." }),
+  ).toBeVisible();
+  await expect(page).not.toHaveURL(/access_token=|refresh_token=/);
+  await page
+    .getByLabel("New password", { exact: true })
+    .fill("fictional-owner-password-only");
+  await page.getByRole("button", { name: "Save new password" }).click();
+  await expect(page.getByLabel("Account type")).toBeVisible();
+  expect(backend.counts.password).toBe(1);
+  await setup(page, "adult");
+  await page.getByRole("button", { name: "Sign out of this browser" }).click();
+  await expect(
+    page.getByRole("button", { name: "Create account", exact: true }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByText("Private account pilot.", { exact: false }),
+  ).toBeVisible();
+  await page.reload();
+  await expect(
+    page.getByRole("button", { name: "Sign in securely" }),
   ).toBeVisible();
 });

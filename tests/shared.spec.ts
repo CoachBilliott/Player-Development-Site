@@ -1,3 +1,4 @@
+import { disableBackend } from "./backendFixture";
 import { test, expect, type BrowserContext } from "@playwright/test";
 
 type Row = {
@@ -148,6 +149,10 @@ async function sharedSignIn(page: import("@playwright/test").Page) {
     .fill("fictional-demo-password");
   await page.getByRole("button", { name: "Sign in to publish" }).click();
 }
+
+test.beforeEach(async ({ context }) => {
+  await disableBackend(context);
+});
 
 test("configured shared publishing saves, edits across visitors, and removes a sample resource", async ({
   page,

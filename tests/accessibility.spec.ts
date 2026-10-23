@@ -1,5 +1,10 @@
+import { disableBackend } from "./backendFixture";
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+test.beforeEach(async ({ context }) => {
+  await disableBackend(context);
+});
+
 test("main screens have no detected WCAG A/AA violations", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("./#onboarding");

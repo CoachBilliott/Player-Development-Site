@@ -1,4 +1,9 @@
+import { disableBackend } from "./backendFixture";
 import { test, expect } from "@playwright/test";
+
+test.beforeEach(async ({ context }) => {
+  await disableBackend(context);
+});
 
 test("field illustration responds to focus, replay, and pause without recording practice", async ({
   page,
