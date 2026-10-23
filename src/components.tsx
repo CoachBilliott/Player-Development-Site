@@ -311,6 +311,10 @@ export function AssetPreview({ drill, file }: { drill?: Drill; file?: File }) {
     let url = "";
     async function load() {
       try {
+        if (!file && drill?.source === "shared" && drill.assetUrl) {
+          if (active) setAsset({ url: drill.assetUrl, error: "" });
+          return;
+        }
         const blob =
           file || (drill?.assetId ? await getAsset(drill.assetId) : undefined);
         if (!blob) {
@@ -339,10 +343,10 @@ export function AssetPreview({ drill, file }: { drill?: Drill; file?: File }) {
       active = false;
       if (url) URL.revokeObjectURL(url);
     };
-  }, [drill?.assetId, file]);
+  }, [drill?.assetId, drill?.assetUrl, drill?.source, file]);
   const type = file?.type || drill?.assetType || "";
   if (asset.error) return <Notice>{asset.error}</Notice>;
-  if (!asset.url) return <p role="status">Loading local attachment…</p>;
+  if (!asset.url) return <p role="status">Loading attachment…</p>;
   return (
     <div className="attachment">
       {type.startsWith("video/") ? (
@@ -362,7 +366,7 @@ export function AssetPreview({ drill, file }: { drill?: Drill; file?: File }) {
       ) : type.startsWith("image/") ? (
         <img
           src={asset.url}
-          alt="Locally uploaded practice reference"
+          alt="Uploaded practice reference"
           onError={() =>
             setAsset((current) => ({
               ...current,
@@ -380,7 +384,10 @@ export function AssetPreview({ drill, file }: { drill?: Drill; file?: File }) {
           Download {file?.name || drill?.assetName} <ArrowUpRight size={16} />
         </a>
       )}
-      <small>Local attachment · not a verified coaching demonstration</small>
+      <small>
+        {drill?.source === "shared" ? "Shared" : "Local"} attachment · not a
+        verified coaching demonstration
+      </small>
     </div>
   );
 }

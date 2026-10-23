@@ -50,9 +50,12 @@ import {
   Notice,
   Tag,
 } from "./components";
-import { Admin } from "./Admin";
+import { ContentStudio } from "./ContentStudio";
+import { useSharedContent } from "./useSharedContent";
 import { CinematicField, MotionShell, Reveal } from "./Experience";
 import { useMotion } from "./motion";
+import { usePwa } from "./pwa";
+import { InstallApp } from "./InstallApp";
 const NAV = [
   ["today", "Today"],
   ["library", "Drill library"],
@@ -70,6 +73,7 @@ const safeHash = () => {
     "session",
     "coach",
     "membership",
+    "install",
   ].includes(value)
     ? value
     : "home";
@@ -78,8 +82,11 @@ function go(page: string) {
   window.location.hash = page;
 }
 export default function App() {
+  const app = usePwa();
+  const shared = useSharedContent();
   const [initial] = useState(loadState);
   const [state, setState] = useState<State>(initial.state);
+  const stateSnapshot = useRef<State>(initial.state);
   const [warning, setWarning] = useState(initial.warning);
   const [page, setPage] = useState(safeHash);
   const [menu, setMenu] = useState(false);
@@ -109,6 +116,7 @@ export default function App() {
     return () => clearTimeout(t);
   }, [toast]);
   function commit(next: State) {
+    stateSnapshot.current = next;
     try {
       saveState(next);
       setState(next);
@@ -122,7 +130,7 @@ export default function App() {
       return false;
     }
   }
-  const drills = [...DRILLS, ...state.custom];
+  const drills = [...DRILLS, ...shared.resources, ...state.custom];
   const profile = state.profile;
   function requestStart(ids: string[]) {
     if (!profile) {
@@ -165,10 +173,11 @@ export default function App() {
   }
   async function publish(drill: Drill, file: File) {
     await putAsset(drill.id, file);
+    const current = stateSnapshot.current;
     const next = {
-      ...state,
+      ...current,
       custom: [
-        ...state.custom,
+        ...current.custom,
         {
           ...drill,
           assetId: drill.id,
@@ -185,7 +194,82 @@ export default function App() {
         "Publishing failed because browser storage is unavailable or full. Free space or allow site storage, then try again.",
       );
     }
+    stateSnapshot.current = next;
     setState(next);
+  }
+  async function updateResource(drill: Drill, file?: File) {
+    const previous = state.custom.find((d) => d.id === drill.id);
+    if (!previous)
+      throw new Error(
+        "This resource is no longer in the local library. Refresh and try again.",
+      );
+    if (state.run?.drillIds.includes(drill.id))
+      throw new Error(
+        "Finish or end the active session before editing its resource.",
+      );
+    const assetId = file ? crypto.randomUUID() : previous.assetId;
+    if (file && assetId) await putAsset(assetId, file);
+    const current = stateSnapshot.current;
+    if (
+      current.run?.drillIds.includes(drill.id) ||
+      !current.custom.some((d) => d.id === drill.id)
+    ) {
+      if (file && assetId) await deleteAsset(assetId).catch(() => undefined);
+      throw new Error(
+        "This resource changed or entered an active session. Cancel and reopen it before editing.",
+      );
+    }
+    const updated = {
+      ...drill,
+      assetId,
+      assetType: file?.type || previous.assetType,
+      assetName: file?.name || previous.assetName,
+    };
+    const next = {
+      ...current,
+      custom: current.custom.map((d) => (d.id === drill.id ? updated : d)),
+    };
+    try {
+      saveState(next);
+    } catch {
+      if (file && assetId) await deleteAsset(assetId).catch(() => undefined);
+      throw new Error(
+        "Changes could not be saved. Your published resource is unchanged. Free browser storage and try again.",
+      );
+    }
+    stateSnapshot.current = next;
+    setState(next);
+    if (file && previous.assetId)
+      await deleteAsset(previous.assetId).catch(() =>
+        setToast(
+          "Changes saved. The previous attachment could not be cleared from browser storage.",
+        ),
+      );
+  }
+  async function removeResource(drill: Drill) {
+    if (state.run?.drillIds.includes(drill.id))
+      throw new Error(
+        "Finish or end the active session before removing its resource.",
+      );
+    const next = {
+      ...state,
+      custom: state.custom.filter((d) => d.id !== drill.id),
+    };
+    try {
+      saveState(next);
+    } catch {
+      throw new Error(
+        "Could not save removal. The resource is still available; allow browser storage and try again.",
+      );
+    }
+    stateSnapshot.current = next;
+    setState(next);
+    if (drill.assetId)
+      await deleteAsset(drill.assetId).catch(() =>
+        setToast(
+          "Resource removed. Its attachment could not be cleared from browser storage.",
+        ),
+      );
   }
   const onboarding =
     page === "onboarding" ||
@@ -254,9 +338,18 @@ export default function App() {
               Future memberships
               <ArrowUpRight size={18} />
             </a>
+            <a href="#install">
+              Get the app <ArrowUpRight size={18} />
+            </a>
           </nav>
         )}
       </header>
+      {!app.online && (
+        <div className="connection-banner" role="status">
+          You’re offline. Built-in demo practice can continue after setup.
+          Shared content and uploads need a connection.
+        </div>
+      )}
       {warning && (
         <div className="storage-warning" role="alert">
           {warning}
@@ -310,8 +403,17 @@ export default function App() {
               setToast("Practice recorded. Showing your session history.");
             }}
           />
+        ) : page === "install" ? (
+          <InstallApp app={app} />
         ) : page === "coach" ? (
-          <Admin onPublish={publish} />
+          <ContentStudio
+            shared={shared}
+            onPublish={publish}
+            onUpdate={updateResource}
+            onRemove={removeResource}
+            resources={state.custom}
+            lockedIds={state.run?.drillIds}
+          />
         ) : (
           <Membership />
         )}
@@ -325,6 +427,9 @@ export default function App() {
               Future memberships <ArrowUpRight size={14} />
             </a>
             <a href="#home">About the demo</a>
+            <a href="#install">
+              Get the app <ArrowUpRight size={14} />
+            </a>
           </div>
         </div>
         <div className="footer-bottom">

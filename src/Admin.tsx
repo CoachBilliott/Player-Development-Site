@@ -9,10 +9,30 @@ import {
   matches,
   type Drill,
 } from "./model";
-import { AssetPreview, Notice, Tag } from "./components";
+import { AssetPreview, Modal, Notice, Tag } from "./components";
 import { validateFile } from "./storage";
-type Props = { onPublish: (drill: Drill, file: File) => Promise<void> };
-export function Admin({ onPublish }: Props) {
+type Props = {
+  onPublish: (drill: Drill, file: File) => Promise<void>;
+  onUpdate?: (drill: Drill, file?: File) => Promise<void>;
+  onRemove?: (drill: Drill) => Promise<void>;
+  resources?: Drill[];
+  lockedIds?: string[];
+  scope?: "local" | "shared";
+};
+export function Admin({
+  onPublish,
+  onUpdate,
+  onRemove,
+  resources = [],
+  lockedIds = [],
+  scope = "local",
+}: Props) {
+  const shared = scope === "shared";
+  const [editing, setEditing] = useState<Drill | null>(null);
+  const [pendingEdit, setPendingEdit] = useState<Drill | null>(null);
+  const [removing, setRemoving] = useState<Drill | null>(null);
+  const [savedEdit, setSavedEdit] = useState(false);
+  const [draftId, setDraftId] = useState(() => crypto.randomUUID());
   const [file, setFile] = useState<File>();
   const [error, setError] = useState("");
   const [title, setTitle] = useState("");
@@ -32,7 +52,7 @@ export function Admin({ onPublish }: Props) {
   const toggle = (v: string, list: string[], set: (v: string[]) => void) =>
     set(list.includes(v) ? list.filter((a) => a !== v) : [...list, v]);
   const draft: Drill = {
-    id: "preview",
+    id: editing?.id || draftId,
     sport: "football",
     title: title.trim(),
     skill: goal as Drill["skill"],
@@ -40,18 +60,28 @@ export function Admin({ onPublish }: Props) {
     positions: position ? [position as Drill["positions"][number]] : [],
     levels: levels as Drill["levels"],
     minutes,
-    equipment: "See uploaded practice instructions",
-    lesson:
-      "Coach-created local demo content. Illustrative and pending qualified review.",
+    equipment: editing?.equipment || "See uploaded practice instructions",
+    lesson: `Coach-created ${shared ? "shared" : "local"} demo content. Illustrative and pending qualified review.`,
     steps: instructions
       .split("\n")
       .map((s) => s.trim())
       .filter(Boolean),
     cue: "Take your time and pause whenever needed.",
     kind: "movement",
-    source: "local",
+    source: shared ? "shared" : "local",
+    ...(editing
+      ? {
+          assetId: editing.assetId,
+          assetType: editing.assetType,
+          assetName: editing.assetName,
+          assetUrl: editing.assetUrl,
+          backendVersion: editing.backendVersion,
+        }
+      : {}),
   };
   function reset() {
+    setEditing(null);
+    setDraftId(crypto.randomUUID());
     setFile(undefined);
     setTitle("");
     setInstructions("");
@@ -66,13 +96,55 @@ export function Admin({ onPublish }: Props) {
     setError("");
     if (input.current) input.current.value = "";
   }
-  async function publish() {
-    if (locked.current || !file) return;
+  function edit(resource: Drill) {
+    setEditing(resource);
+    setFile(undefined);
+    setTitle(resource.title);
+    setInstructions(resource.steps.join("\n"));
+    setAges(resource.ages);
+    setLevels(resource.levels);
+    setPosition(resource.positions[0] || "");
+    setGoal(resource.skill);
+    setMinutes(resource.minutes);
+    setPermission(false);
+    setReview(false);
+    setPublished(false);
+    setError("");
+    setPendingEdit(null);
+    if (input.current) input.current.value = "";
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }
+  async function remove(resource: Drill) {
+    if (locked.current || !onRemove) return;
     locked.current = true;
     setBusy(true);
     setError("");
     try {
-      await onPublish({ ...draft, id: crypto.randomUUID() }, file);
+      await onRemove(resource);
+      setPublished(false);
+      setRemoving(null);
+      if (editing?.id === resource.id) reset();
+    } catch (e) {
+      setError(
+        e instanceof Error
+          ? e.message
+          : "Could not remove the resource. Try again.",
+      );
+    } finally {
+      locked.current = false;
+      setBusy(false);
+    }
+  }
+  async function publish() {
+    if (locked.current || (!file && !editing)) return;
+    locked.current = true;
+    setBusy(true);
+    setError("");
+    try {
+      if (editing && onUpdate) await onUpdate(draft, file);
+      else if (file) await onPublish(draft, file);
+      else return;
+      setSavedEdit(Boolean(editing));
       reset();
       setPublished(true);
     } catch (e) {
@@ -89,29 +161,47 @@ export function Admin({ onPublish }: Props) {
   return (
     <main className="page narrow">
       <div className="page-intro">
-        <Tag>CONTENT STUDIO · DEMO</Tag>
+        <Tag>CONTENT STUDIO · {shared ? "SHARED SAMPLE LIBRARY" : "DEMO"}</Tag>
         <h1 tabIndex={-1}>Coach content studio</h1>
         <p>
           Add a practice resource, choose who it fits, and see the match before
           you publish.
         </p>
       </div>
-      <Notice>
-        <strong>Only in this browser.</strong> Files and published drills stay
-        on this device in browser storage. They are not shared with your partner
-        or uploaded to a server. Clearing site data removes them. Unsaved drafts
-        are lost if you leave this screen or refresh. This is an unrestricted
-        demo editor, not production admin security. Use original or licensed,
-        fictional sample content only.
-      </Notice>
+      {shared ? (
+        <Notice>
+          <strong>Shared sample publishing.</strong> Changes reach visitors to
+          this website after refresh. Only approved coach accounts can publish.
+          Use original or licensed, fictional sample content only. This does not
+          create player accounts or sync practice history. Save drafts before
+          leaving this screen.
+        </Notice>
+      ) : (
+        <Notice>
+          <strong>Only in this browser.</strong> Files and published drills stay
+          on this device in browser storage. They are not shared with your
+          partner or uploaded to a server. Clearing site data removes them.
+          Unsaved drafts are lost if you leave this screen or refresh. This is
+          an unrestricted demo editor, not production admin security. Use
+          original or licensed, fictional sample content only.
+        </Notice>
+      )}
       {published && (
         <div className="success" role="status">
           <Check size={22} />
           <div>
-            <strong>Published to your local demo library.</strong>
+            <strong>
+              {savedEdit
+                ? "Resource changes saved."
+                : shared
+                  ? "Published to the shared sample library."
+                  : "Published to your local demo library."}
+            </strong>
             <p>
-              Find your drill in the <a href="#library">drill library</a>. It
-              will remain here after refresh on this browser.
+              Find your drill in the <a href="#library">drill library</a>.
+              {shared
+                ? "Refresh another device to see the shared update."
+                : "It will remain here after refresh on this browser."}
             </p>
           </div>
         </div>
@@ -124,6 +214,12 @@ export function Admin({ onPublish }: Props) {
           02 <b>Preview & publish</b>
         </span>
       </div>
+      {editing && (
+        <div className="editing-notice" role="status">
+          Editing: <strong>{editing.title}</strong>. Keep the existing file or
+          choose a replacement.
+        </div>
+      )}
       {review ? (
         <section className="panel studio">
           <button
@@ -138,7 +234,11 @@ export function Admin({ onPublish }: Props) {
             {draft.minutes} minute practice · {draft.skill} ·{" "}
             {draft.ages.join(", ")}
           </p>
-          {file && <AssetPreview file={file} />}
+          {file ? (
+            <AssetPreview file={file} />
+          ) : editing?.assetId ? (
+            <AssetPreview drill={editing} />
+          ) : null}
           <h3>Practice instructions</h3>
           <ol className="instruction-list">
             {draft.steps.map((s, i) => (
@@ -174,9 +274,10 @@ export function Admin({ onPublish }: Props) {
             </Notice>
           )}
           <Notice>
-            Publishing makes this illustrative resource available locally. It
-            does not certify its safety, accuracy, or coaching quality.
-            Qualified content review is required before real training use.
+            Publishing makes this illustrative resource available{" "}
+            {shared ? "to website visitors" : "locally"}. It does not certify
+            its safety, accuracy, or coaching quality. Qualified content review
+            is required before real training use.
           </Notice>
           <p className="form-error" role="alert">
             {error}
@@ -186,7 +287,13 @@ export function Admin({ onPublish }: Props) {
             onClick={() => void publish()}
             disabled={busy}
           >
-            {busy ? "Saving locally…" : "Publish to demo library"}{" "}
+            {busy
+              ? "Saving…"
+              : editing
+                ? "Save resource changes"
+                : shared
+                  ? "Publish to shared library"
+                  : "Publish to demo library"}{" "}
             <ArrowRight size={18} />
           </button>
         </section>
@@ -195,7 +302,7 @@ export function Admin({ onPublish }: Props) {
           className="panel studio"
           onSubmit={(e) => {
             e.preventDefault();
-            if (!file) {
+            if (!file && !editing?.assetId) {
               setError("Choose a sample file first.");
               return;
             }
@@ -211,10 +318,18 @@ export function Admin({ onPublish }: Props) {
             setReview(true);
           }}
         >
-          <h2>Build a practice resource</h2>
+          <h2>
+            {editing ? "Edit a practice resource" : "Build a practice resource"}
+          </h2>
           <label className="upload-zone">
             <FileUp size={30} />
-            <strong>{file ? file.name : "Choose a video or file"}</strong>
+            <strong>
+              {file
+                ? file.name
+                : editing?.assetName
+                  ? `Current file: ${editing.assetName}`
+                  : "Choose a video or file"}
+            </strong>
             <span>MP4, WebM, PNG, JPEG, WebP, PDF or TXT · up to 12 MB</span>
             <input
               ref={input}
@@ -351,7 +466,7 @@ export function Admin({ onPublish }: Props) {
               type="button"
               onClick={() => setCancel(true)}
             >
-              Discard draft
+              {editing ? "Cancel edits" : "Discard draft"}
             </button>
           </div>
           {cancel && (
@@ -374,6 +489,118 @@ export function Admin({ onPublish }: Props) {
             </div>
           )}
         </form>
+      )}
+      {resources.length > 0 && (
+        <section className="panel content-manager">
+          <h2>{shared ? "Shared resources" : "Your uploaded resources"}</h2>
+          <p>
+            {shared
+              ? "Edit a resource or remove it from the shared library."
+              : "Edit or remove content saved in this browser."}{" "}
+            Resources used by your active session are locked until you finish or
+            end it.
+          </p>
+          <ul className="resource-manager-list">
+            {resources.map((resource) => (
+              <li key={resource.id}>
+                <div>
+                  <strong>{resource.title}</strong>
+                  <small>
+                    {resource.assetName} · {resource.minutes} min
+                  </small>
+                </div>
+                <div className="actions">
+                  {onUpdate && (
+                    <button
+                      className="button secondary"
+                      disabled={busy || lockedIds.includes(resource.id)}
+                      aria-label={`Edit ${resource.title}`}
+                      onClick={() => {
+                        if (title || instructions || file || editing)
+                          setPendingEdit(resource);
+                        else edit(resource);
+                      }}
+                    >
+                      Edit
+                    </button>
+                  )}
+                  {onRemove && (
+                    <button
+                      className="text-button"
+                      disabled={busy || lockedIds.includes(resource.id)}
+                      aria-label={`Remove ${resource.title}`}
+                      onClick={() => {
+                        setError("");
+                        setRemoving(resource);
+                      }}
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+      {pendingEdit && (
+        <Modal
+          title="Discard this draft to edit another resource?"
+          onClose={() => setPendingEdit(null)}
+        >
+          <p>
+            Your unsaved changes will be discarded. Published resources will
+            stay unchanged.
+          </p>
+          <div className="actions">
+            <button className="button" onClick={() => edit(pendingEdit)}>
+              Discard draft and edit
+            </button>
+            <button
+              className="button secondary"
+              onClick={() => setPendingEdit(null)}
+            >
+              Keep current draft
+            </button>
+          </div>
+        </Modal>
+      )}
+      {removing && (
+        <Modal
+          title="Remove this resource?"
+          onClose={() => {
+            if (!busy) setRemoving(null);
+          }}
+        >
+          <p>
+            Remove “{removing.title}”{" "}
+            {shared
+              ? "from the shared library for all visitors"
+              : "and its attachment from this browser"}
+            ? Existing practice history stays saved.
+          </p>
+          {error && (
+            <p className="form-error" role="alert">
+              {error}
+            </p>
+          )}
+          <div className="actions">
+            <button
+              className="button danger"
+              disabled={busy}
+              onClick={() => void remove(removing)}
+            >
+              {busy ? "Removing…" : "Yes, remove resource"}
+            </button>
+            <button
+              className="button secondary"
+              disabled={busy}
+              onClick={() => setRemoving(null)}
+            >
+              Keep resource
+            </button>
+          </div>
+        </Modal>
       )}
     </main>
   );

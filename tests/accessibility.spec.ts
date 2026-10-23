@@ -12,6 +12,7 @@ test("main screens have no detected WCAG A/AA violations", async ({ page }) => {
     "progress",
     "coach",
     "membership",
+    "install",
     "onboarding",
   ]) {
     await page.goto("./#" + route);

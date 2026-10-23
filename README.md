@@ -29,7 +29,7 @@ The `dist/` folder is a static website with relative asset paths and hash naviga
 - Guided lessons, ordered practice steps, coaching cues, breaks, next drill, optional reflection, and explicit confirmation of practice. Watching media alone never creates a practice record.
 - Combined library filters for search, age, position, experience, and skill; drill detail and age/level/position eligibility checks.
 - Per-profile practice history, estimated planned minutes, reflections, reset confirmation, and idempotent recording. Participation is self-reported, not evidence of athletic improvement.
-- Coach demo studio: select a file, write instructions, set audience and primary goal, preview matching fictional profiles, and publish once to the local library. Supports MP4/WebM video, PNG/JPEG/WebP, PDF, and plain text, up to 12 MB. Video and images preview; PDFs/text download. No embedded executable HTML/SVG uploads.
+- Coach demo studio: select a file, write instructions, set audience and primary goal, preview matching fictional profiles, and publish once to the local library; edit instructions/audience, keep or replace media, and remove resources with confirmation. Supports MP4/WebM video, PNG/JPEG/WebP, PDF, and plain text, up to 12 MB. Video and images preview; PDFs/text download. No embedded executable HTML/SVG uploads.
 - Future package concepts without prices, payments, signup, or promised scholarships/recruiting results. Other sports are future offerings only.
 
 ## Stadium theme and motion
@@ -38,13 +38,17 @@ The field illustration uses SVG and CSS perspective with layered edges, with a r
 
 The motion control pauses ambient effects, route playback, reveals, and page transitions; its preference lasts for the current browser session. Device `prefers-reduced-motion` is respected automatically, with static visible content and no animated route. Section reveals also show immediately for keyboard focus. The training workflow remains usable when motion is off. Motion-off also disables smooth section scrolling. No automatic movement runs in reduced-motion mode.
 
+## Installable phone app
+
+The `#install` screen explains iPhone/Android home-screen installation. The production build includes an app manifest, original local icons and a scoped service worker. After initial online setup, built-in fictional sessions and local progress can reopen offline. Shared resources, sign-in, uploads and updates require a connection; media may not work offline. Updates require a confirmed reload rather than interrupting training. Installing does not sync browser data. This is an installable web app, not an App Store or Google Play release. See [APP-TESTING.md](APP-TESTING.md) for device steps, update behavior and tests.
+
 ## Storage and prototype limits
 
 Profiles, history, active sessions and published resource metadata use versioned `localStorage`, validated with Zod. Files use IndexedDB. Blob URLs are temporary playback/download references, created when needed and revoked when views close.
 
 Data stays in the current browser and origin. Your partner will see the same built-in samples, **not** your local progress or published resources. Clearing browser site data removes saved content. Private browsing and quota/storage restrictions may prevent persistence; visible error messages explain when changes are temporary or publication fails. Unsaved coach drafts are discarded on navigation or refresh. Sample profile histories are isolated from one another.
 
-No backend, real accounts, admin authorization, actual training assessments, AI coaching, public player profiles, messaging, medical advice, checkout, or real child information is implemented. The open coach editor is deliberately a demo, not a secure admin console. All training content is illustrative and pending qualified coaching review.
+Shared coach publishing is prepared but disabled by default. Its Supabase client, migration and activation checks are described in [backend/SETUP.md](backend/SETUP.md); no service project or credentials have been created. The active public demo has no backend, real accounts, admin authorization, actual training assessments, AI coaching, public player profiles, messaging, medical advice, checkout, or real child information is implemented. The open coach editor is deliberately a demo, not a secure admin console. All training content is illustrative and pending qualified coaching review.
 
 ## Checks
 
@@ -55,14 +59,16 @@ npm test
 npm run build
 npx playwright install chromium # only if a compatible Chromium is not already installed
 npm run test:e2e
+npm run test:app # builds and checks the production service worker
 ```
 
-Playwright uses `/usr/bin/chromium` when present; otherwise its managed Chromium. `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` can select another installed Chromium. The test suite starts Vite automatically. Desktop and phone projects cover onboarding, guardian acknowledgment, every selection control, session steps, pause/resume, refresh persistence, repeated completion, profile isolation, filters, upload cancellation/rejection, matches, publish/retry behavior, media playback, storage errors, destructive-action cancellation, memberships, multiple viewport widths, interactive route focus/replay, pause persistence, reduced-motion behavior, and automated WCAG A/AA checks. Axe checks do not replace a human accessibility audit.
+Playwright uses `/usr/bin/chromium` when present; otherwise its managed Chromium. `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` can select another installed Chromium. The test suite starts Vite automatically. Desktop and phone projects cover onboarding, guardian acknowledgment, every selection control, session steps, pause/resume, refresh persistence, repeated completion, profile isolation, filters, upload cancellation/rejection, matches, publish/retry behavior, media playback, storage errors, destructive-action cancellation, memberships, multiple viewport widths, interactive route focus/replay, pause persistence, reduced-motion behavior, and automated WCAG A/AA checks. Additional tests exercise real service-worker caching/offline completion/update confirmation, intercepted shared-service publishing across two visitor contexts, and actual PostgreSQL RLS with Auth/Storage schema fixtures. Those fixtures do not replace live-provider acceptance checks after setup. Axe checks do not replace a human accessibility audit.
 
 To test the production server or a deployed website with the same journeys:
 
 ```sh
 DEMO_BASE_URL=https://your-verified-demo.example npm run test:e2e
+npm run test:app # builds and checks the production service worker
 ```
 
 Tests use fresh isolated browser contexts, create original test media, and only write local browser storage. They do not contact third-party services. Screenshots are generated under `artifacts/`; the HTML report is in `playwright-report/`.

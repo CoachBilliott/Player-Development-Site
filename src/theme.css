@@ -1725,3 +1725,143 @@ body {
     height: 290px;
   }
 }
+
+/* Installable demo and coach resource management. */
+.connection-banner {
+  background: #243749;
+  color: #e2eff7;
+  padding: 14px 22px;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.6;
+  border-bottom: 1px solid #4a6475;
+}
+.install-page > .panel,
+.install-grid {
+  margin-bottom: 24px;
+}
+.install-page .panel h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.install-page .panel p {
+  color: #b9cad7;
+  line-height: 1.8;
+}
+.install-status {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 22px;
+}
+.install-status > svg {
+  color: var(--lime);
+  flex-shrink: 0;
+}
+.install-status > div {
+  flex: 1;
+  min-width: 180px;
+}
+.install-status h2 {
+  margin-top: 0;
+}
+.install-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+}
+.install-grid .panel {
+  min-width: 0;
+}
+.app-cache-status {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.install-page .success .button {
+  margin-top: 12px;
+}
+.publishing-mode {
+  padding-top: 30px;
+  padding-bottom: 0;
+}
+.publishing-mode .scene-tabs {
+  width: fit-content;
+  max-width: 100%;
+}
+.editing-notice {
+  margin: 22px 0;
+  padding: 16px;
+  border-left: 2px solid var(--cyan);
+  background: #132a38;
+  color: #d7e8ef;
+  line-height: 1.7;
+}
+.content-manager {
+  margin-top: 32px;
+}
+.content-manager > p {
+  color: #b3c6d3;
+  line-height: 1.7;
+}
+.resource-manager-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.resource-manager-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 20px 0;
+  border-top: 1px solid #334b5b;
+}
+.resource-manager-list li > div {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.resource-manager-list small {
+  display: block;
+  margin-top: 8px;
+  color: #a5bbcb;
+  line-height: 1.6;
+}
+.resource-manager-list .actions {
+  gap: 18px;
+}
+.shared-toolbar {
+  padding-top: 20px;
+  padding-bottom: 0;
+}
+.shared-toolbar > span {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  color: var(--cyan);
+  margin-bottom: 16px;
+  font-size: 13px;
+}
+@media (max-width: 600px) {
+  .install-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .install-page .panel {
+    padding: 22px 18px;
+  }
+  .install-status {
+    gap: 16px;
+  }
+  .install-page .panel h2 {
+    font-size: 24px;
+  }
+  .publishing-mode .scene-tabs {
+    width: 100%;
+  }
+  .publishing-mode .scene-tabs button {
+    flex: 1;
+    font-size: 12px;
+  }
+}

@@ -518,6 +518,7 @@ test("small phones and tablets have no horizontal overflow", async ({
       "coach",
       "progress",
       "membership",
+      "install",
     ]) {
       await page.goto("./#" + route);
       await expect(page.locator("h1")).toBeVisible();
@@ -527,4 +528,156 @@ test("small phones and tablets have no horizontal overflow", async ({
       ).toBeLessThanOrEqual(width);
     }
   }
+});
+
+test("uploaded resource edits preserve its file, support cancellation, and persist", async ({
+  page,
+}) => {
+  await fillResource(page);
+  await page.getByLabel("I have the rights").check();
+  await page.getByRole("button", { name: "Preview matches" }).click();
+  await page.getByRole("button", { name: "Publish to demo library" }).click();
+  await page
+    .getByRole("button", {
+      name: "Edit Our original paper practice",
+      exact: true,
+    })
+    .click();
+  await page.getByLabel("Resource title").fill("Unsaved title");
+  await page.getByRole("button", { name: "Cancel edits" }).click();
+  await page.getByRole("button", { name: "Keep editing", exact: true }).click();
+  await expect(page.getByLabel("Resource title")).toHaveValue("Unsaved title");
+  await page.getByRole("button", { name: "Cancel edits" }).click();
+  await page.getByRole("button", { name: "Yes, discard draft" }).click();
+  await page
+    .getByRole("button", {
+      name: "Edit Our original paper practice",
+      exact: true,
+    })
+    .click();
+  await expect(page.getByLabel("Resource title")).toHaveValue(
+    "Our original paper practice",
+  );
+  await page
+    .getByLabel("Resource title")
+    .fill("Updated original paper practice");
+  await page
+    .getByLabel("Step-by-step instructions")
+    .fill("Draw one shape.\nPoint to it with an adult.\nPause.");
+  await page.getByLabel("I have the rights").check();
+  await page.getByRole("button", { name: "Preview matches" }).click();
+  await expect(
+    page.getByRole("link", { name: "Download original-demo.txt" }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Save resource changes" }).dblclick();
+  await expect(
+    page.getByText("Resource changes saved.", { exact: true }),
+  ).toBeVisible();
+  await page.reload();
+  await page
+    .getByRole("button", { name: "Edit Updated original paper practice" })
+    .click();
+  await expect(page.getByLabel("Step-by-step instructions")).toHaveValue(
+    "Draw one shape.\nPoint to it with an adult.\nPause.",
+  );
+  expect(
+    await page.evaluate(
+      () => JSON.parse(localStorage.getItem("pd-demo-v1")!).custom.length,
+    ),
+  ).toBe(1);
+});
+
+test("replacement-file failure preserves the published attachment and removal requires confirmation", async ({
+  page,
+}) => {
+  await fillResource(page);
+  await page.getByLabel("I have the rights").check();
+  await page.getByRole("button", { name: "Preview matches" }).click();
+  await page.getByRole("button", { name: "Publish to demo library" }).click();
+  const originalId = await page.evaluate(
+    () => JSON.parse(localStorage.getItem("pd-demo-v1")!).custom[0].assetId,
+  );
+  await page
+    .getByRole("button", { name: "Edit Our original paper practice" })
+    .click();
+  await page
+    .getByLabel("Choose a video or file", { exact: true })
+    .setInputFiles({
+      name: "replacement.txt",
+      mimeType: "text/plain",
+      buffer: Buffer.from(
+        "Original replacement sample, no real player information.",
+      ),
+    });
+  await page.getByLabel("I have the rights").check();
+  await page.getByRole("button", { name: "Preview matches" }).click();
+  await page.evaluate(() => {
+    Reflect.set(window, "savedSetItem", Storage.prototype.setItem);
+    Storage.prototype.setItem = () => {
+      throw new DOMException("Full", "QuotaExceededError");
+    };
+  });
+  await page.getByRole("button", { name: "Save resource changes" }).click();
+  await expect(page.getByRole("alert")).toContainText(
+    "published resource is unchanged",
+  );
+  expect(
+    await page.evaluate(
+      () => JSON.parse(localStorage.getItem("pd-demo-v1")!).custom[0].assetId,
+    ),
+  ).toBe(originalId);
+  await page.evaluate(() => {
+    Storage.prototype.setItem = Reflect.get(window, "savedSetItem");
+  });
+  await page.getByRole("button", { name: "Save resource changes" }).click();
+  await expect(
+    page.getByText("Resource changes saved.", { exact: true }),
+  ).toBeVisible();
+  await page
+    .getByRole("button", { name: "Remove Our original paper practice" })
+    .click();
+  await page.getByRole("button", { name: "Keep resource" }).click();
+  await expect(
+    page.getByRole("button", { name: "Edit Our original paper practice" }),
+  ).toBeVisible();
+  await page
+    .getByRole("button", { name: "Edit Our original paper practice" })
+    .click();
+  await expect(
+    page.getByText("Current file: replacement.txt", { exact: true }),
+  ).toBeVisible();
+  await page
+    .getByRole("button", { name: "Remove Our original paper practice" })
+    .click();
+  await page.getByRole("button", { name: "Yes, remove resource" }).dblclick();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await page.reload();
+  expect(
+    await page.evaluate(
+      () => JSON.parse(localStorage.getItem("pd-demo-v1")!).custom.length,
+    ),
+  ).toBe(0);
+});
+
+test("shared publishing is explicitly unavailable until connected, and switching destinations can be canceled", async ({
+  page,
+}) => {
+  await fillResource(page);
+  await page
+    .getByRole("button", { name: "Shared website", exact: true })
+    .click();
+  await page.getByRole("button", { name: "Keep editing", exact: true }).click();
+  await expect(page.getByLabel("Resource title")).toHaveValue(
+    "Our original paper practice",
+  );
+  await page
+    .getByRole("button", { name: "Shared website", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Switch destination", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "Shared publishing needs setup." }),
+  ).toBeVisible();
+  await expect(page.getByRole("button", { name: /Publish to/ })).toHaveCount(0);
 });

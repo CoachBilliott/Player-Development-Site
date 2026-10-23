@@ -6,3 +6,6 @@ test-results/
 *.tsbuildinfo
 
 artifacts/
+
+playwright-report-app/
+test-results-app/

@@ -75,7 +75,7 @@ export const PROFILES: Profile[] = [
     guardian: false,
   },
 ];
-const drillSchema = z.object({
+export const drillSchema = z.object({
   id: z.string(),
   sport: z.literal("football"),
   title: z.string(),
@@ -89,10 +89,12 @@ const drillSchema = z.object({
   steps: z.array(z.string()).min(1),
   cue: z.string(),
   kind: z.enum(["movement", "hands", "read"]),
-  source: z.enum(["sample", "local"]),
+  source: z.enum(["sample", "local", "shared"]),
   assetId: z.string().optional(),
   assetType: z.string().optional(),
   assetName: z.string().optional(),
+  assetUrl: z.string().url().startsWith("https://").optional(),
+  backendVersion: z.number().int().positive().optional(),
 });
 export type Drill = z.infer<typeof drillSchema>;
 export const runSchema = z.object({
