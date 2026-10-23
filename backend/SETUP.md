@@ -1,12 +1,20 @@
 # Player Development backend activation
 
-The website is live at https://coachbilliott.github.io/Player-Development-Site/. Its private member entry is `#account`; the fictional demo remains available without login. **No Supabase account/project or live database has been created.** The public configuration is disabled. Signup and shared publishing are unavailable until the owner-controlled backend is connected.
+The website is live at https://coachbilliott.github.io/Player-Development-Site/. Its private member entry is `#account`; the fictional demo remains available without login. The owner supplied project URL `https://iilbulpqbuknhdpmtrvm.supabase.co`. Its connection, schema and email setup have not yet been verified. The project URL and owner-supplied public publishable key are recorded in the website configuration. Management access is not configured, and live connectivity has not been verified. The public configuration remains disabled. Signup and shared publishing are unavailable until the owner-controlled backend is connected.
 
-## The step that needs the owner
+## Owner-controlled project and access
 
 Open https://supabase.com/dashboard and sign in or create an account. Create a **separate Player Development project on the available free plan**, reviewing its current limits and terms. Do not reuse Coach Workroom, Spawnative or an unrelated organization/project. Keep ownership in your or your partner's account. Do not enable paid billing. Creating an account requires your sign-in and may require email verification; this coding workspace cannot perform that owner interaction.
 
 Passwords, database passwords, secret/service-role keys and personal access tokens must never be sent in chat or committed. The frontend needs only the project URL and public publishable key. Those public values alone do not authorize running database migrations. A signed-in owner must apply the migrations in the provider's SQL editor, or securely provision management access through the environment's credential settings for an authorized setup session.
+
+## Pending cloud access review
+
+A reusable cloud environment draft now preserves the existing GitHub destinations and proposes access to only `iilbulpqbuknhdpmtrvm.supabase.co` and `api.supabase.com`. It also declares a private `SUPABASE_ACCESS_TOKEN` requirement whose proxy destination is only `api.supabase.com`, plus the non-secret `PLAYER_DEVELOPMENT_SUPABASE_PROJECT_REF` value. No token value has been supplied or saved. The configuration draft is saved, but not applied/published; an HTTPS connection to the project was rejected by the current cloud proxy with CONNECT 403.
+
+For the agent to install the database and configure Auth for you, review/save the environment changes, enter the management access token through secure environment credentials, and publish the environment. This is an administrative credential; the website's publishable key cannot install tables or change Auth settings. Never put a management token in this repository, the frontend configuration or chat. Use a token restricted to the required project/organization where the provider supports it, and revoke temporary setup access afterward. The agent must act only on project `iilbulpqbuknhdpmtrvm`, recheck runtime readiness and verify the service after access is applied. No database password or frontend service-role key is needed for this route.
+
+An owner may instead run the two prepared migrations directly in the project's SQL editor and configure the Auth settings below. That avoids sharing administrative credentials. The public connection key does not prove that migrations, RLS or email delivery work, and registration must remain disabled until acceptance passes.
 
 ## Database and login setup
 
@@ -15,7 +23,7 @@ Passwords, database passwords, secret/service-role keys and personal access toke
 3. Set Site URL to `https://coachbilliott.github.io/Player-Development-Site/`. Allow these exact email redirect URLs:
    - `https://coachbilliott.github.io/Player-Development-Site/`
    - `https://coachbilliott.github.io/Player-Development-Site/?flow=recovery`
-   The app uses the `#account` fragment for its screen. Verification and recovery use PKCE; open the email link in the same browser where signup/reset began. Never use a broad wildcard redirect for production. Keep the provider's confirmation/recovery templates using its standard confirmation URL.
+     The app uses the `#account` fragment for its screen. Verification and recovery use PKCE; open the email link in the same browser where signup/reset began. Never use a broad wildcard redirect for production. Keep the provider's confirmation/recovery templates using its standard confirmation URL.
 4. Test email delivery to the owner and partner. Supabase's built-in sender is restricted and rate limited; it is not a general public enrollment email service. Before public registration, connect an owner-controlled SMTP provider permitted for your audience, verify its sender and delivery, and review any free-plan limits. No email provider has been purchased or configured here.
 5. Provision the owner and partner as adult Auth users. If they will publish training, grant their verified Auth UUIDs through the provider SQL editor: `insert into public.coach_members(user_id) values ('REPLACE-WITH-APPROVED-AUTH-UUID');`. Never add this privilege based on a signup field or browser request. Coaches do not receive private player access.
 6. Put the HTTPS Supabase project URL and **public publishable key** (or legacy anon key) in `public/content-config.json`. Set `enabled: true`. Leave `membersEnabled: false` during live acceptance. These values are public; secret/service-role keys are rejected by the client and must never appear here. Redeploy through this repository's existing Pages route. If the managed cloud network needs the exact project hostname allowed, use its supported configuration workflow.
