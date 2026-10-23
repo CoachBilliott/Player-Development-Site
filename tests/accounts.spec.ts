@@ -331,7 +331,7 @@ test("signup verifies email, recovery updates a password and adult accounts cann
   expect(backend.counts.signup).toBe(1);
   // The real SDK created a PKCE verifier. Intercept only the service response,
   // then exercise the actual callback exchange and URL cleanup.
-  await page.goto("./?code=fictional-verification-code#account");
+  await page.goto("./?code=fictional-verification-code");
   await expect(page.getByLabel("Account type")).toBeVisible();
   await expect(page).not.toHaveURL(/code=/);
   await setup(page, "adult");
@@ -348,7 +348,7 @@ test("signup verifies email, recovery updates a password and adult accounts cann
   await page.getByRole("button", { name: "Send reset link" }).click();
   await expect(page.getByRole("status")).toContainText("If an account exists");
   expect(backend.counts.recover).toBe(1);
-  await page.goto("./?flow=recovery&code=fictional-recovery-code#account");
+  await page.goto("./?flow=recovery&code=fictional-recovery-code");
   await page
     .getByLabel("New password", { exact: true })
     .fill("another-fictional-password");

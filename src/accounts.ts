@@ -138,6 +138,8 @@ export function authRedirect(recovery = false) {
   const url = new URL(window.location.href);
   url.search = "";
   if (recovery) url.searchParams.set("flow", "recovery");
-  url.hash = "account";
+  // Use an exact allowlisted redirect. The code-exchange handler opens
+  // #account after verification; the fragment is not sent to the provider.
+  url.hash = "";
   return url.href;
 }
