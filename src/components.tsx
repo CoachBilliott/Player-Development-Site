@@ -6,12 +6,10 @@ export function Logo() {
   return (
     <a className="brand" href="#home" title="Player Development home">
       <span className="brand-mark" aria-hidden="true">
-        p<span>d</span>
-        <i />
+        PD
       </span>
-      <span>
-        PLAYER <br />
-        DEVELOPMENT
+      <span className="brand-name">
+        Player <span>Development</span>
       </span>
     </a>
   );

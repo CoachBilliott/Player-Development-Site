@@ -61,16 +61,21 @@ DEMO_BASE_URL=https://your-verified-demo.example npm run test:e2e
 
 Tests use fresh isolated browser contexts, create original test media, and only write local browser storage. They do not contact third-party services. Screenshots are generated under `artifacts/`; the HTML report is in `playwright-report/`.
 
-## Free deployment option
+## Published demo and deployment
 
-GitHub Pages can serve this static prototype without visitor sign-in, if the repository/account is eligible for free Pages. Do not change repository visibility or buy a plan to enable it. The manual `pages.yml` workflow builds and publishes `dist/` after Pages is enabled with **GitHub Actions** as the source. `checks.yml` validates pushes to main and pull requests.
+The public sample-data demo is hosted at https://coachbilliott.github.io/Player-Development-Site/ . This repository uses GitHub Pages' branch publishing: source code lives on `main`; the built static website lives on `gh-pages`. Pages automatically builds and deploys when `gh-pages` is updated. Visitors need no account.
 
-1. Confirm repository eligibility, access, and the desired public exposure of the sample demo. Keep the repository's current visibility.
-2. In this repository only, enable Pages with GitHub Actions as the source.
-3. Run **Publish sample demo to GitHub Pages**.
-4. Verify the workflow's actual `page_url` with an HTTP request and browser checks. A push or successful build alone is not deployment evidence.
+After checks pass, commit source changes and run:
 
-The cloud environment's restricted network must permit `api.github.com` for Pages configuration/dispatch and `coachbilliott.github.io` to verify this repository's hosted result. Changes to that access require the user's permission. Existing Git authentication does not by itself prove API/Pages permissions. Do not extract tokens or request secret values in chat.
+```sh
+npm run deploy:pages
+```
+
+The publishing script builds `dist/`, uses an isolated temporary Git index, preserves the current source checkout, and pushes a new commit on top of the current remote `gh-pages` branch. It permits only this repository, verifies the pushed ref, and never force-pushes. A dirty source checkout stops publication. No new credentials, API access, or cloud environment publication is needed for this route; it reuses existing Git access.
+
+Check the **pages build and deployment** run in this repository's GitHub Actions page, confirm it succeeded for the published commit, and read the actual deployment URL. An independent HTTP/browser check of the public site is still required when network access permits it. A successful build or push alone is not evidence of a successful live deployment. The current cloud proxy blocks direct access to the Pages hostname; report that limit if it remains in effect. Do not bypass the proxy.
+
+`checks.yml` validates source pushes and pull requests. The manual `pages.yml` file is an alternative for repositories configured with GitHub Actions as the Pages source; do not use it to change the current branch publishing configuration. Keep this project separate from unrelated projects and never buy a hosting plan or change repository visibility to deploy the demo.
 
 ## Architecture and future sports
 

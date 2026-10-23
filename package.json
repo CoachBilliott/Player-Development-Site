@@ -10,7 +10,8 @@
     "typecheck": "tsc -b",
     "lint": "eslint .",
     "test": "vitest run",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "deploy:pages": "npm run build && node scripts/publish-pages.mjs"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",

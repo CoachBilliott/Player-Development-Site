@@ -90,11 +90,7 @@ export function Admin({ onPublish }: Props) {
     <main className="page narrow">
       <div className="page-intro">
         <Tag>CONTENT STUDIO · DEMO</Tag>
-        <h1>
-          A little knowledge.
-          <br />
-          <span className="serif">A new starting point.</span>
-        </h1>
+        <h1 tabIndex={-1}>Coach content studio</h1>
         <p>
           Add a practice resource, choose who it fits, and see the match before
           you publish.

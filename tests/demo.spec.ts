@@ -6,28 +6,32 @@ async function onboard(page: Page, name = "Jordan") {
     await page.getByLabel("I’m exploring as a parent or guardian").check();
   await page.getByRole("button", { name: "See my training" }).click();
   await expect(
-    page.getByRole("heading", { name: /better at showing up/ }),
+    page.getByRole("heading", { name: "Today’s training", level: 1 }),
   ).toBeVisible();
 }
 async function start(page: Page) {
   await page.getByRole("button", { name: "Start today’s session" }).click();
   await page.getByRole("dialog").getByRole("checkbox").check();
   await page.getByRole("button", { name: "Begin guided session" }).click();
+  await expect(
+    page.getByRole("button", { name: "Show practice steps" }),
+  ).toBeVisible();
 }
 async function finish(page: Page) {
-  while (
-    await page.getByRole("button", { name: "Show practice steps" }).isVisible()
-  ) {
+  for (;;) {
+    await expect(
+      page.getByRole("button", { name: "Show practice steps" }),
+    ).toBeVisible();
     await page.getByRole("button", { name: "Show practice steps" }).click();
     await page
       .getByRole("checkbox", { name: /completed the practice steps/ })
       .check();
-    const next = page.getByRole("button", { name: "Next drill", exact: true });
-    if (await next.isVisible()) await next.click();
-    else {
+    const finish = page.getByRole("button", { name: "Finish & reflect" });
+    if (await finish.isVisible()) {
       await page.getByRole("button", { name: "Finish & reflect" }).click();
       break;
     }
+    await page.getByRole("button", { name: "Next drill", exact: true }).click();
   }
   await page
     .getByRole("checkbox", { name: /confirm the sample practice/ })
@@ -43,11 +47,11 @@ test("homepage is responsive and sample demo is obvious", async ({
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto("./");
   await expect(
-    page.getByRole("heading", { name: /A little practice/ }),
+    page.getByRole("heading", { name: /Better practice/ }),
   ).toBeVisible();
   await page.getByRole("button", { name: "See how it works" }).click();
   await expect(
-    page.getByRole("heading", { name: /Less guesswork/ }),
+    page.getByRole("heading", { name: /A clear path from plan/ }),
   ).toBeInViewport();
   await page.evaluate(() => window.scrollTo(0, 0));
   await expect(
@@ -393,7 +397,7 @@ test("all screens fit mobile and navigation is keyboard accessible", async ({
       .getByRole("link", { name: "Coach studio" })
       .click();
     await expect(
-      page.getByRole("heading", { name: /A little knowledge/ }),
+      page.getByRole("heading", { name: "Coach content studio" }),
     ).toBeVisible();
     await expect(
       page.getByRole("button", { name: "Open navigation" }),

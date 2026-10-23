@@ -194,7 +194,7 @@ export default function App() {
       <div className="demo-strip">
         <span className="live-dot" /> SAMPLE-DATA DEMO{" "}
         <span className="strip-divider">/</span>
-        <span>Fictional players. Real possibilities.</span>
+        <span>Fictional profiles · No account required</span>
         <span className="strip-note">
           No account needed <ArrowUpRight size={13} />
         </span>
@@ -301,6 +301,9 @@ export default function App() {
               if (!state.run) return;
               const next = completeRun(state, state.run, drills, reflection);
               commit(next);
+              // Update the view in the same render that clears the run so a
+              // second tap cannot activate the empty-session fallback.
+              setPage("progress");
               go("progress");
               setToast("Practice recorded. Showing your session history.");
             }}
@@ -314,7 +317,7 @@ export default function App() {
       <footer>
         <div className="footer-inner">
           <Logo />
-          <p>Small steps. Strong foundations.</p>
+          <p>A clear plan. A purposeful practice.</p>
           <div>
             <a href="#membership">
               Future memberships <ArrowUpRight size={14} />
@@ -485,21 +488,20 @@ function Home() {
       <section className="hero page">
         <div className="hero-copy">
           <div className="sport-tag">
-            <span /> AMERICAN FOOTBALL <span className="sport-line" /> BUILT
-            AROUND YOU
+            <span /> AMERICAN FOOTBALL · AGES 5 TO ADULT
           </div>
           <h1 tabIndex={-1}>
-            A little practice.
-            <br />A <span className="serif">bigger game.</span>
+            Better practice
+            <br />
+            starts with a plan.
           </h1>
           <p className="hero-description">
-            Give the next step a little direction. Guided football practice that
-            meets players where they are — and helps them build a routine, one
-            session at a time.
+            A clear next step for every player. Explore guided football sessions
+            matched to age, position, experience, and goals.
           </p>
           <div className="actions">
             <a className="button" href="#onboarding">
-              Try the demo <ArrowUpRight size={20} />
+              Try the demo <ArrowRight size={19} />
             </a>
             <button
               className="text-button"
@@ -509,101 +511,110 @@ function Home() {
                   ?.scrollIntoView({ behavior: "smooth" })
               }
             >
-              See how it works <ArrowDown size={17} />
+              See how it works <ArrowDown size={16} />
             </button>
           </div>
           <div className="hero-proof">
-            <div className="avatar-stack">
-              <span>A</span>
-              <span>J</span>
-              <span>C</span>
-            </div>
+            <ShieldCheck size={19} />
             <p>
-              <strong>A starting point for every player.</strong>
-              <span>Ages 5–18+ · Parent-managed for minors</span>
+              Fictional players. No account needed.
+              <span>Parent-managed for all players under 18.</span>
             </p>
           </div>
         </div>
-        <div className="hero-visual">
-          <div className="hero-visual-top">
-            <span className="field-label">THE NEXT REP STARTS HERE</span>
-            <span className="field-icon">↗</span>
-          </div>
-          <Field hero />
-          <div className="hero-caption">
-            <span>01 / FOUNDATIONS</span>
-            <span>Move with intention.</span>
-          </div>
-          <div className="floating-session">
-            <div className="session-icon">
-              <Footprints size={24} />
-            </div>
+        <div className="hero-preview" aria-label="Sample training plan preview">
+          <div className="preview-heading">
             <div>
-              <small>YOUR NEXT SMALL STEP</small>
-              <strong>Ready. Step. Reset.</strong>
-              <span>Guided practice · 4 min</span>
+              <span className="eyebrow">YOUR DAILY GAME PLAN</span>
+              <h2>Today’s training</h2>
             </div>
-            <span className="round-arrow">
-              <ArrowUpRight size={22} />
-            </span>
+            <Tag>DEMO</Tag>
           </div>
-          <div className="illustration-label">
-            ORIGINAL FIELD ILLUSTRATION · NOT A COACHING VIDEO
+          <div className="preview-field">
+            <Field hero />
+            <span className="diagram-label">Illustrative field diagram</span>
+          </div>
+          <div className="preview-plan">
+            <div className="preview-plan-heading">
+              <div>
+                <span className="eyebrow">FOUNDATIONS</span>
+                <h3>Footwork fundamentals</h3>
+              </div>
+              <span className="preview-duration">
+                <Clock3 size={15} />
+                12 min
+              </span>
+            </div>
+            <div className="preview-drills">
+              {[
+                {
+                  title: "Ready. Step. Reset.",
+                  detail: "Build a balanced starting point",
+                },
+                {
+                  title: "Find the open space",
+                  detail: "Learn to look before you move",
+                },
+                {
+                  title: "Mirror the markers",
+                  detail: "Make each step intentional",
+                },
+              ].map((d, i) => (
+                <div key={d.title}>
+                  <span className="preview-number">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <div>
+                    <strong>{d.title}</strong>
+                    <span>{d.detail}</span>
+                  </div>
+                  <CheckCircle2 size={17} />
+                </div>
+              ))}
+            </div>
+            <div className="preview-footer">
+              <ShieldCheck size={16} />
+              <span>Noncontact activities · sample plan</span>
+              <a href="#onboarding" aria-label="Try this sample plan">
+                <ArrowUpRight size={19} />
+              </a>
+            </div>
           </div>
         </div>
-      </section>
-      <section className="benefit-bar">
-        <span>
-          <Target size={20} /> Matched to your starting point
-        </span>
-        <span>
-          <Play size={20} /> Guided from first step to last
-        </span>
-        <span>
-          <TrendingUp size={20} /> A practice history you can see
-        </span>
       </section>
       <section id="how-it-works" className="page how-section">
         <div className="section-heading">
           <div>
-            <span className="eyebrow">A CLEAR PATH TO PRACTICE</span>
-            <h2>
-              Less guesswork.
-              <br />
-              <span className="serif">More getting started.</span>
-            </h2>
+            <span className="eyebrow">A SIMPLE ROUTINE</span>
+            <h2>A clear path from plan to practice.</h2>
           </div>
-          <p>
-            You bring the curiosity. We bring a simple structure.
-            <br />
-            Try the complete journey with a fictional player.
-          </p>
+          <p>Three steps. One focused session.</p>
         </div>
         <div className="three-grid">
           {[
             {
               n: "01",
-              title: "Find your starting point",
-              text: "Choose an age group, position, experience level, and goal. Start instantly with a sample player.",
+              title: "Choose your player",
+              text: "Start with a fictional profile. Adjust age, position, experience, and a primary goal.",
               icon: Users,
             },
             {
               n: "02",
-              title: "Practice with a purpose",
-              text: "Understand the idea, follow each practice step, and get a clear cue for what comes next.",
+              title: "Follow your session",
+              text: "Learn the idea, work through the practice steps, and use a clear cue for each drill.",
               icon: Footprints,
             },
             {
               n: "03",
-              title: "Build your routine",
-              text: "Record completed practice and a simple reflection. See the sessions you’ve put time into.",
+              title: "Record your practice",
+              text: "Log completed sessions and a simple reflection. Build a record of participation.",
               icon: TrendingUp,
             },
           ].map((c) => (
             <article className="how-card" key={c.n}>
               <div>
                 <span>{c.n}</span>
-                <c.icon size={24} />
+                <c.icon size={22} />
               </div>
               <h3>{c.title}</h3>
               <p>{c.text}</p>
@@ -611,69 +622,76 @@ function Home() {
           ))}
         </div>
       </section>
-      <section className="parent-section page">
-        <div className="parent-art">
-          <ShieldCheck size={56} strokeWidth={1.2} />
-          <span>
-            ROOM TO LEARN.
-            <br />
-            SUPPORT TO GROW.
-          </span>
-          <div className="parent-art-lines" />
-        </div>
+      <section className="page parent-section">
         <div>
-          <span className="eyebrow">PLAYER FIRST. PARENT INCLUDED.</span>
+          <span className="eyebrow">DESIGNED AROUND THE PLAYER</span>
           <h2>
-            Big ambitions.
+            The right starting point.
             <br />
-            <span className="serif">Age-appropriate steps.</span>
+            Support at every age.
           </h2>
           <p>
-            A five-year-old’s first experience should feel different from an
-            adult’s next practice. Younger players get short, playful activities
-            and a parent-managed experience.
+            Young players need short, playful activities and an adult alongside
+            them. Older players get a structured starting point for their
+            experience and goals.
           </p>
-          <div className="check-lines">
-            <CheckLine>
-              Fictional profiles only — no child data collected
-            </CheckLine>
-            <CheckLine>Noncontact illustrative activities</CheckLine>
-            <CheckLine>No public profiles or direct messages</CheckLine>
-          </div>
-          <a href="#onboarding" className="text-button">
-            Meet the sample players <ArrowRight size={18} />
+          <a className="text-button" href="#onboarding">
+            Meet the sample players <ArrowRight size={17} />
           </a>
         </div>
-      </section>
-      <section className="future-banner page">
-        <div>
-          <span className="eyebrow">ONE SPORT TO START. ROOM TO GROW.</span>
-          <h2>
-            Football first.
-            <br />
-            <span className="serif">Possibilities ahead.</span>
-          </h2>
-        </div>
-        <div className="sports-list">
-          {SPORTS.map((s) => (
-            <div key={s.id}>
-              <span>{s.name}</span>
-              <Tag light>{s.available ? "IN THE DEMO" : "FUTURE OFFERING"}</Tag>
+        <div className="safeguard-list">
+          {[
+            {
+              icon: ShieldCheck,
+              title: "Parent-managed for minors",
+              text: "An adult manages preferences and supervises practice.",
+            },
+            {
+              icon: Footprints,
+              title: "Noncontact sample activities",
+              text: "Illustrative instruction, pending qualified coaching review.",
+            },
+            {
+              icon: Users,
+              title: "Private by design in this demo",
+              text: "Fictional profiles. No public profiles or direct messages.",
+            },
+          ].map((item) => (
+            <div key={item.title}>
+              <span>
+                <item.icon size={22} />
+              </span>
+              <div>
+                <h3>{item.title}</h3>
+                <p>{item.text}</p>
+              </div>
             </div>
           ))}
-          <a href="#membership" className="text-button">
-            Explore future packages <ArrowUpRight size={17} />
-          </a>
         </div>
       </section>
-      <div className="page home-disclaimer">
-        <Notice>
-          This is a sample-data prototype, not a live training service. All
-          training content is illustrative and pending qualified review.
-          Scholarship and recruiting readiness are longer-term aspirations,
-          never promised outcomes.
-        </Notice>
-      </div>
+      <section className="page home-scope">
+        <div className="scope-strip">
+          <div>
+            <span className="eyebrow">FOOTBALL FIRST</span>
+            <h3>Built for today. Room for what’s next.</h3>
+            <p>
+              {SPORTS.filter((s) => !s.available)
+                .map((s) => s.name)
+                .join(" and ")}{" "}
+              remain future offerings.
+            </p>
+          </div>
+          <a className="button secondary" href="#membership">
+            Future packages <ArrowUpRight size={17} />
+          </a>
+        </div>
+        <p className="home-disclaimer">
+          Sample-data prototype. All training content is illustrative and
+          pending qualified review. Practice records show participation, not
+          proven improvement. Scholarship and recruiting outcomes are never
+          guaranteed.
+        </p>
+      </section>
     </main>
   );
 }
@@ -696,11 +714,7 @@ function Onboarding({
     <main className="page onboarding">
       <div className="page-intro centered">
         <Tag>YOUR STARTING POINT</Tag>
-        <h1 tabIndex={-1}>
-          Every player starts
-          <br />
-          <span className="serif">somewhere.</span>
-        </h1>
+        <h1 tabIndex={-1}>Choose your demo player</h1>
         <p>
           Choose a fictional player, or adjust their training preferences.
           <br />
@@ -875,13 +889,9 @@ function Dashboard({
       <div className="dashboard-heading">
         <div>
           <div className="eyebrow">
-            <span className="green-dot" /> YOUR PERSONAL PRACTICE SPACE
+            <span className="green-dot" /> YOUR TRAINING PLAN
           </div>
-          <h1 tabIndex={-1}>
-            Let’s get a little
-            <br />
-            <span className="serif">better at showing up.</span>
-          </h1>
+          <h1 tabIndex={-1}>Today’s training</h1>
           <p>
             {profile.guardian
               ? `You’re managing ${profile.name}’s fictional training.`
@@ -952,22 +962,13 @@ function Dashboard({
           </div>
           <div className="next-art">
             <Field kind={plan[0]?.kind} />
-            <span className="art-stamp">
-              FOUNDATIONS
-              <br />
-              01 — {String(plan.length).padStart(2, "0")}
-            </span>
           </div>
         </section>
         <aside className="why-card">
           <span className="eyebrow">
             <Sparkles size={17} /> WHY THIS FITS
           </span>
-          <h3>
-            Your starting point.
-            <br />
-            Your kind of practice.
-          </h3>
+          <h3>Matched to your player</h3>
           <p>
             Selected for{" "}
             <strong>
@@ -1043,19 +1044,14 @@ function Dashboard({
         each activity. All content is illustrative and pending qualified
         coaching review.
       </Notice>
-      <div className="section-heading compact">
-        <h2>Explore a little more</h2>
-        <a className="text-button" href="#library">
-          Full drill library <ArrowRight size={17} />
+      <div className="library-prompt">
+        <div>
+          <h3>Keep exploring</h3>
+          <p>Find more activities in the drill library.</p>
+        </div>
+        <a className="button secondary" href="#library">
+          Browse drills <ArrowRight size={17} />
         </a>
-      </div>
-      <div className="three-grid">
-        {drills
-          .filter((d) => d.ages.includes(profile.age))
-          .slice(0, 3)
-          .map((d) => (
-            <DrillCard key={d.id} drill={d} onOpen={onOpen} />
-          ))}
       </div>
     </main>
   );
@@ -1081,11 +1077,7 @@ function Library({
     <main className="page library">
       <div className="page-intro">
         <Tag>THE PRACTICE PLAYBOOK</Tag>
-        <h1 tabIndex={-1}>
-          Find your next
-          <br />
-          <span className="serif">small step.</span>
-        </h1>
+        <h1 tabIndex={-1}>Drill library</h1>
         <p>
           Short lessons. Clear instructions. A purpose for every rep.
           <br />
@@ -1295,11 +1287,7 @@ function Session({
             <Flag size={34} />
           </span>
           <Tag>YOU SHOWED UP</Tag>
-          <h1 tabIndex={-1}>
-            That’s a practice
-            <br />
-            <span className="serif">worth recording.</span>
-          </h1>
+          <h1 tabIndex={-1}>Practice complete</h1>
           <p>
             You’ve reached the end of {run.drillIds.length} guided{" "}
             {run.drillIds.length === 1 ? "activity" : "activities"}. Record only
@@ -1525,11 +1513,7 @@ function Progress({
     <main className="page progress-page">
       <div className="page-intro">
         <Tag>THE WORK YOU’VE PUT IN</Tag>
-        <h1 tabIndex={-1}>
-          Small steps.
-          <br />
-          <span className="serif">A growing routine.</span>
-        </h1>
+        <h1 tabIndex={-1}>Practice progress</h1>
         <p>
           {profile.name}’s fictional practice history. A record of showing up,
           <br />
@@ -1624,11 +1608,7 @@ function Membership() {
     <main className="page memberships">
       <div className="page-intro centered">
         <Tag>LOOKING AHEAD</Tag>
-        <h1 tabIndex={-1}>
-          Room to grow.
-          <br />
-          <span className="serif">No shortcuts promised.</span>
-        </h1>
+        <h1 tabIndex={-1}>Future memberships</h1>
         <p>
           A look at possible future memberships.
           <br />
