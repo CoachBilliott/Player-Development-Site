@@ -1622,7 +1622,7 @@ body {
   }
 }
 
-/* A floating, real-time 3D football above a layered tactical field. */
+/* Layered tactical field with a compact, unobstructed hero. */
 .experience .hero {
   grid-template-columns: 1fr 1.1fr;
   gap: 18px;
@@ -1631,136 +1631,15 @@ body {
   align-items: center;
 }
 .field-stage {
-  height: 520px;
+  height: 420px;
   perspective: 1000px;
 }
 .field-stage .stadium-surface {
   position: absolute;
   width: 100%;
-  height: 290px;
-  bottom: 60px;
+  height: 100%;
+  bottom: 18px;
   transform-origin: center;
-}
-
-.football-art {
-  position: absolute;
-  inset: 0 0 auto;
-  height: 345px;
-  z-index: 2;
-  isolation: isolate;
-}
-.football-aura {
-  position: absolute;
-  inset: 16% 5% 4%;
-  background: radial-gradient(
-    ellipse,
-    #f4ac6b0d,
-    #72c8fa0c 45%,
-    transparent 68%
-  );
-  pointer-events: none;
-}
-.football-art:after {
-  content: "";
-  position: absolute;
-  width: 52%;
-  height: 22px;
-  bottom: 12px;
-  left: 24%;
-  background: #0009;
-  filter: blur(13px);
-  border-radius: 50%;
-  z-index: -1;
-  transform: rotate(-18deg);
-  animation: football-shadow 7.8s ease-in-out infinite alternate;
-}
-.football-canvas {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  touch-action: pan-y;
-}
-.football-canvas canvas {
-  display: block;
-  width: 100%;
-  height: 100%;
-  touch-action: pan-y;
-}
-.football-fallback {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  inset: 0;
-  filter: drop-shadow(12px 22px 13px #0006);
-}
-.football-art[data-renderer="ready"] .football-fallback {
-  visibility: hidden;
-}
-.football-art:not([data-renderer="ready"]) canvas {
-  visibility: hidden;
-}
-.football-caption {
-  position: absolute;
-  inset: 9px 15px auto;
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  font-size: 8px;
-  font-weight: 600;
-  letter-spacing: 1.7px;
-  color: #b3c9d7;
-  pointer-events: none;
-}
-.football-caption-line {
-  width: 22px;
-  height: 1px;
-  background: #c4fa5d;
-}
-.football-dimension {
-  margin-left: auto;
-  color: #8da6ba;
-}
-.football-turn {
-  position: absolute;
-  right: 8px;
-  bottom: 10px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-.football-turn > span {
-  font-size: 7px;
-  letter-spacing: 1.5px;
-  color: #a8c0cf;
-  margin-right: 7px;
-}
-.football-turn button {
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  border: 1px solid #4b697a;
-  background: #102230e8;
-  color: #d7f6ff;
-  backdrop-filter: blur(8px);
-  transition:
-    background 0.2s,
-    border-color 0.2s;
-}
-.football-turn button:hover:not(:disabled) {
-  background: #243f4e;
-  border-color: var(--cyan);
-}
-.football-turn button:disabled {
-  opacity: 0.4;
-}
-.field-stage .field-annotation {
-  bottom: 7px;
-  left: 0;
-}
-.field-stage .field-coordinate {
-  bottom: 45px;
 }
 .scene-controls {
   margin-top: 8px;
@@ -1785,16 +1664,6 @@ body {
 .experience .hero .button:hover:after {
   animation: button-light 0.65s ease-out;
 }
-@keyframes football-shadow {
-  from {
-    opacity: 0.6;
-    transform: rotate(-18deg) scale(0.92);
-  }
-  to {
-    opacity: 0.9;
-    transform: rotate(-18deg) scale(1.06);
-  }
-}
 @keyframes button-light {
   to {
     transform: translateX(140%);
@@ -1810,13 +1679,7 @@ body {
 }
 @media (min-width: 601px) and (max-width: 1100px) {
   .field-stage {
-    height: 465px;
-  }
-  .football-art {
-    height: 305px;
-  }
-  .field-stage .stadium-surface {
-    height: 280px;
+    height: 380px;
   }
 }
 @media (max-width: 600px) {
@@ -1847,40 +1710,7 @@ body {
     margin-top: 0;
   }
   .field-stage {
-    height: 420px;
-  }
-  .football-art {
-    height: 275px;
-    top: 5px;
-  }
-  .football-caption {
-    inset: 11px 0 auto;
-    font-size: 7px;
-    letter-spacing: 1px;
-  }
-  .football-caption-line {
-    width: 15px;
-  }
-  .football-dimension {
-    font-size: 7px;
-  }
-  .football-turn {
-    right: 0;
-    bottom: 0;
-  }
-  .football-turn > span {
-    font-size: 7px;
-    letter-spacing: 1px;
-  }
-  .field-stage .stadium-surface {
-    height: 245px;
-    bottom: 40px;
-  }
-  .field-stage .field-annotation {
-    bottom: 5px;
-  }
-  .scene-controls {
-    margin-top: 8px;
+    height: 320px;
   }
 }
 @media (max-width: 360px) {
@@ -1891,16 +1721,7 @@ body {
   .experience .hero h1 {
     font-size: 56px;
   }
-  .football-art {
-    height: 250px;
-  }
   .field-stage {
-    height: 390px;
-  }
-  .field-stage .stadium-surface {
-    height: 225px;
-  }
-  .football-turn > span {
-    display: none;
+    height: 290px;
   }
 }

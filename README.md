@@ -34,11 +34,9 @@ The `dist/` folder is a static website with relative asset paths and hash naviga
 
 ## Stadium theme and motion
 
-The homepage includes an original real-time 3D football with procedural leather, raised laces, curved stripes, and stadium lighting. Visitors can drag it with a mouse or use large rotate buttons on touch devices and keyboards. The Three.js renderer loads separately from the training app; no external model or texture is downloaded. Pixel density is capped, rendering stops offscreen or in a hidden tab, and GPU resources are released when leaving the homepage. Unsupported WebGL or graphics context loss shows original static SVG artwork while the app remains usable.
-
 The field illustration uses SVG and CSS perspective with layered edges, with a route trace, a moving marker, and ambient lighting. Visitors can switch between Footwork and Field Vision, replay the route, or pause visual animation. These are decorative illustrations, not coaching demonstrations or measured player movements. They never create practice records.
 
-The motion control pauses ambient effects, route playback, reveals, and page transitions; its preference lasts for the current browser session. Device `prefers-reduced-motion` is respected automatically, with static visible content and no animated route. Section reveals also show immediately for keyboard focus. The training workflow remains usable when motion is off. With motion off, the football stays still; explicit rotate-button presses change its view instantly. No automatic movement or interpolation runs in reduced-motion mode.
+The motion control pauses ambient effects, route playback, reveals, and page transitions; its preference lasts for the current browser session. Device `prefers-reduced-motion` is respected automatically, with static visible content and no animated route. Section reveals also show immediately for keyboard focus. The training workflow remains usable when motion is off. Motion-off also disables smooth section scrolling. No automatic movement runs in reduced-motion mode.
 
 ## Storage and prototype limits
 
@@ -59,7 +57,7 @@ npx playwright install chromium # only if a compatible Chromium is not already i
 npm run test:e2e
 ```
 
-Playwright uses `/usr/bin/chromium` when present; otherwise its managed Chromium. `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` can select another installed Chromium. The test suite starts Vite automatically. Desktop and phone projects cover onboarding, guardian acknowledgment, every selection control, session steps, pause/resume, refresh persistence, repeated completion, profile isolation, filters, upload cancellation/rejection, matches, publish/retry behavior, media playback, storage errors, destructive-action cancellation, memberships, multiple viewport widths, interactive route focus/replay, 3D rotation and static rendering, missing WebGL and graphics-context-loss fallback, navigation cleanup, pause persistence, reduced-motion behavior, and automated WCAG A/AA checks. Axe checks do not replace a human accessibility audit.
+Playwright uses `/usr/bin/chromium` when present; otherwise its managed Chromium. `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` can select another installed Chromium. The test suite starts Vite automatically. Desktop and phone projects cover onboarding, guardian acknowledgment, every selection control, session steps, pause/resume, refresh persistence, repeated completion, profile isolation, filters, upload cancellation/rejection, matches, publish/retry behavior, media playback, storage errors, destructive-action cancellation, memberships, multiple viewport widths, interactive route focus/replay, pause persistence, reduced-motion behavior, and automated WCAG A/AA checks. Axe checks do not replace a human accessibility audit.
 
 To test the production server or a deployed website with the same journeys:
 

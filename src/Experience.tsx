@@ -7,7 +7,6 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { MotionContext, useMotion } from "./motion";
-import { FootballScene } from "./FootballScene";
 
 export function MotionShell({ children }: { children: ReactNode }) {
   const [reduced, setReduced] = useState(
@@ -153,7 +152,6 @@ export function CinematicField() {
           );
         }}
       >
-        <FootballScene />
         <div className="stadium-halo" aria-hidden="true" />
         <div className="stadium-surface">
           <svg
