@@ -58,16 +58,59 @@ const rowSchema = z.object({
 });
 const columns = "id,content,asset_path,asset_type,asset_name,version";
 const bucket = "training-media";
+const connections = new Map<string, Promise<SharedContent>>();
 export async function connectSharedContent(config: SharedConfig) {
+  const existing = connections.get(config.url);
+  if (existing) return existing;
+  const pending = createConnection(config);
+  connections.set(config.url, pending);
+  return pending;
+}
+async function createConnection(config: SharedConfig) {
   const { createClient } = await import("@supabase/supabase-js");
   const client = createClient(config.url, config.publishableKey, {
+    global: {
+      fetch: (input, init) => fetch(input, { ...init, cache: "no-store" }),
+    },
     auth: {
       persistSession: true,
       autoRefreshToken: true,
       detectSessionInUrl: false,
+      flowType: "pkce",
     },
   });
   return new SharedContent(client);
+}
+let redirectExchange: Promise<void> | undefined;
+export function finishAuthRedirect(connection: SharedContent) {
+  if (redirectExchange) return redirectExchange;
+  const url = new URL(window.location.href);
+  if (url.searchParams.has("error")) {
+    for (const key of ["error", "error_code", "error_description"])
+      url.searchParams.delete(key);
+    url.hash = "account";
+    window.history.replaceState(null, "", url);
+    window.dispatchEvent(new HashChangeEvent("hashchange"));
+    return Promise.reject(
+      new Error(
+        "This email link is invalid or expired. Sign in or request a fresh verification or recovery link.",
+      ),
+    );
+  }
+  const code = url.searchParams.get("code");
+  if (!code) return Promise.resolve();
+  redirectExchange = (async () => {
+    const { error } = await connection.client.auth.exchangeCodeForSession(code);
+    url.searchParams.delete("code");
+    url.hash = "account";
+    window.history.replaceState(null, "", url);
+    window.dispatchEvent(new HashChangeEvent("hashchange"));
+    if (error)
+      throw new Error(
+        "This email link expired or was opened in a different browser. Sign in or request a fresh link in the browser where you started.",
+      );
+  })();
+  return redirectExchange;
 }
 export class SharedContent {
   constructor(readonly client: SupabaseClient) {}

@@ -1865,3 +1865,212 @@ body {
     font-size: 12px;
   }
 }
+
+/* Private member space. Deliberately separate from browser-local sample profiles. */
+.experience .member-header-link {
+  color: var(--ink);
+  font-size: 0.82rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.experience .member-home-link {
+  margin-top: 1.25rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.experience .member-home-link a {
+  color: var(--lime);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.experience .member-page {
+  padding-top: clamp(2rem, 5vw, 4.5rem);
+  padding-bottom: 4rem;
+  min-height: 70vh;
+}
+.experience .member-heading {
+  max-width: 850px;
+  margin-bottom: 2rem;
+}
+.experience .member-heading h1 {
+  font-size: clamp(2.7rem, 6vw, 5rem);
+  line-height: 1;
+  margin: 1rem 0;
+}
+.experience .member-heading p {
+  max-width: 660px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+.experience .member-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+.experience .member-panel {
+  padding: clamp(1.25rem, 3vw, 2.25rem);
+  min-width: 0;
+  border-radius: 18px;
+}
+.experience .member-panel h2 {
+  font-size: clamp(1.7rem, 3vw, 2.4rem);
+  margin: 1rem 0;
+}
+.experience .member-panel p {
+  line-height: 1.65;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.experience .member-panel .notice {
+  margin: 1.5rem 0;
+}
+.experience .member-principles {
+  background: linear-gradient(150deg, #192b29, #10181d 65%);
+}
+.experience .member-principles > svg {
+  color: var(--lime);
+}
+.experience .member-principles ul {
+  padding-left: 1.2rem;
+  color: var(--muted);
+  line-height: 1.75;
+}
+.experience .member-principles li {
+  margin-bottom: 1rem;
+}
+.experience .member-form,
+.experience .member-form fieldset {
+  display: grid;
+  gap: 1.25rem;
+  min-width: 0;
+}
+.experience .member-form fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+.experience .member-form label:not(.checkbox-label) {
+  display: grid;
+  gap: 0.5rem;
+}
+.experience .member-form input:not([type="checkbox"]),
+.experience .member-form select {
+  width: 100%;
+  min-width: 0;
+  min-height: 50px;
+  font-size: 1rem;
+}
+.experience .member-form small,
+.experience .member-fineprint {
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.6;
+}
+.experience .member-fineprint .text-button {
+  padding: 0.3rem 0;
+  display: inline;
+  text-align: left;
+}
+.experience .member-toolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.25rem;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 2rem 0;
+}
+.experience .member-toolbar p {
+  overflow-wrap: anywhere;
+}
+.experience .member-player-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 310px), 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+.experience .private-player h2 {
+  overflow-wrap: anywhere;
+}
+.experience .player-monogram {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: #c7ff3520;
+  color: var(--lime);
+  font-size: 2rem;
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 700;
+  margin-bottom: 1.25rem;
+}
+.experience .private-player dl {
+  margin: 1.5rem 0;
+  display: grid;
+  gap: 1rem;
+}
+.experience .private-player dt {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+}
+.experience .private-player dd {
+  margin: 0.3rem 0 0;
+}
+.experience .account-narrow {
+  max-width: 700px;
+  margin-bottom: 2rem;
+}
+.experience .empty-private {
+  margin-bottom: 1.5rem;
+  max-width: 850px;
+}
+.experience .empty-private > svg {
+  color: var(--lime);
+}
+.experience .member-feedback {
+  padding: 1rem 1.25rem;
+  border: 1px solid #647f5a;
+  background: #18271e;
+  border-radius: 12px;
+  overflow-wrap: anywhere;
+}
+.experience .member-feedback.form-error {
+  border-color: #b96565;
+  background: #301d21;
+}
+.experience .member-data-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+.experience .member-signout {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #ffffff18;
+}
+.experience .member-signout p {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+@media (max-width: 760px) {
+  .experience .member-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .experience .member-header-link {
+    display: none;
+  }
+  .experience .member-toolbar .actions {
+    width: 100%;
+  }
+  .experience .member-toolbar .button {
+    flex: 1;
+  }
+  .experience .member-heading h1 {
+    font-size: clamp(2.4rem, 10vw, 3.8rem);
+  }
+}

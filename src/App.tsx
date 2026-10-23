@@ -56,6 +56,7 @@ import { CinematicField, MotionShell, Reveal } from "./Experience";
 import { useMotion } from "./motion";
 import { usePwa } from "./pwa";
 import { InstallApp } from "./InstallApp";
+import { MemberAccountPage } from "./MemberAccount";
 const NAV = [
   ["today", "Today"],
   ["library", "Drill library"],
@@ -74,6 +75,7 @@ const safeHash = () => {
     "coach",
     "membership",
     "install",
+    "account",
   ].includes(value)
     ? value
     : "home";
@@ -278,11 +280,19 @@ export default function App() {
   return (
     <MotionShell>
       <div className="demo-strip">
-        <span className="live-dot" /> SAMPLE-DATA DEMO{" "}
+        <span className="live-dot" />{" "}
+        {page === "account" ? "MEMBER ACCOUNTS" : "SAMPLE-DATA DEMO"}{" "}
         <span className="strip-divider">/</span>
-        <span>Fictional profiles · No account required</span>
+        <span>
+          {page === "account"
+            ? "Private adult & parent-managed profiles"
+            : "Fictional profiles · No account required"}
+        </span>
         <span className="strip-note">
-          No account needed <ArrowUpRight size={13} />
+          {page === "account"
+            ? "Public demo stays separate"
+            : "No account needed"}{" "}
+          <ArrowUpRight size={13} />
         </span>
       </div>
       <header className="header">
@@ -301,6 +311,9 @@ export default function App() {
             ))}
           </nav>
           <div className="header-actions">
+            <a className="member-header-link" href="#account">
+              {shared.signedIn ? "My account" : "Member access"}
+            </a>
             <a
               className="header-demo"
               href={profile ? "#today" : "#onboarding"}
@@ -334,6 +347,9 @@ export default function App() {
                 <ArrowUpRight size={18} />
               </a>
             ))}
+            <a href="#account">
+              Member access <ArrowUpRight size={18} />
+            </a>
             <a href="#membership">
               Future memberships
               <ArrowUpRight size={18} />
@@ -347,7 +363,7 @@ export default function App() {
       {!app.online && (
         <div className="connection-banner" role="status">
           You’re offline. Built-in demo practice can continue after setup.
-          Shared content and uploads need a connection.
+          Member profiles, shared content and uploads need a connection.
         </div>
       )}
       {warning && (
@@ -367,6 +383,8 @@ export default function App() {
             onChoose={chooseProfile}
             onCancel={() => go(profile ? "today" : "home")}
           />
+        ) : page === "account" ? (
+          <MemberAccountPage shared={shared} />
         ) : page === "home" ? (
           <Home />
         ) : page === "today" && profile ? (
@@ -427,6 +445,7 @@ export default function App() {
               Future memberships <ArrowUpRight size={14} />
             </a>
             <a href="#home">About the demo</a>
+            <a href="#account">Member access</a>
             <a href="#install">
               Get the app <ArrowUpRight size={14} />
             </a>
@@ -626,6 +645,12 @@ function Home() {
               See how it works <ArrowDown size={16} />
             </button>
           </div>
+          <p className="member-home-link">
+            Ready for your own account?{" "}
+            <a href="#account">
+              Member access <ArrowUpRight size={14} />
+            </a>
+          </p>
           <div className="hero-proof">
             <ShieldCheck size={19} />
             <p>

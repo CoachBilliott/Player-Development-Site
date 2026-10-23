@@ -34,3 +34,9 @@ Report each issue with screen/link, device/browser, steps, expected result, actu
 ## Native stores later
 
 If store distribution is required, choose a native wrapper or dedicated native client after validating the web workflows. Then prepare Apple/Google developer accounts, signing, bundle identifiers, privacy disclosures and the applicable TestFlight/Google Play testing tracks. Developer account fees and store review rules may apply; the current web app neither needs nor creates those accounts. Never promise store approval or purchase accounts without owner authorization.
+
+## Private account checks
+
+`tests/accounts.spec.ts` uses fictional intercepted Supabase Auth/REST responses with the actual SDK. It covers signup/PKCE verification, recovery/password updates, parent/adult setup, create/edit/delete/cancel, lost responses, rapid taps, refresh, cross-device reads, account switching, profile-data deletion, accessibility and 320px layouts. `src/accountPolicies.test.ts` executes the member migration in embedded PostgreSQL and verifies household RLS, consent/type restrictions, parent-only under-18 management, the closed enrollment gate, ownership immutability, version conflicts and deletion scope.
+
+Neither proves a live Supabase project, SMTP delivery or physical-device email/browser handoff. Complete the acceptance list in `backend/SETUP.md` before enabling member registration. Private profile data must never appear in the service-worker cache or `pd-demo-v1`; only the Auth session may persist in browser storage.

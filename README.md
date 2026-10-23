@@ -2,9 +2,15 @@
 
 A standalone, responsive virtual player-practice demo, beginning with American football. This project is independent of Coach Workroom and Spawnative; it uses neither their code, brands, accounts, nor hosting.
 
+## Private member accounts — implemented, backend activation pending
+
+Open [Member access](https://coachbilliott.github.io/Player-Development-Site/#account). Registration stays closed while no backend is connected. The repository now includes adult signup, email verification/recovery, private parent/adult account setup, private player create/edit/delete, identity isolation and server row-level security. Under-18 enrollment is closed at the database until consent/privacy setup is complete. No demo records are imported. No payment package or price is needed for profile setup.
+
+See [backend activation instructions](backend/SETUP.md) and apply both migrations in the dedicated owner-controlled project. The code and simulated-service tests do not constitute a live database or verified email delivery. Do not add real child information in the pilot. Full Auth-login erasure requires the owner; the self-service delete action removes member/profile data only. Real member practice-history syncing and subscriptions remain future work.
+
 ## Run locally
 
-Use Node.js 24 (see `.nvmrc`) and npm. No account, API key, database, or application environment variables are needed.
+Use Node.js 24 (see `.nvmrc`) and npm. No account, API key, database, or application environment variables are needed to run the fictional demo. Real member profiles and shared publishing require backend activation.
 
 ```sh
 npm ci
@@ -23,7 +29,7 @@ The `dist/` folder is a static website with relative asset paths and hash naviga
 ## Connected experiences
 
 - Professional homepage and immediate demo entry without sign-in.
-- Four fictional sample players plus adjustable age, football position, experience, and primary goal. No name or contact information inputs. Every minor profile is parent-managed.
+- Four fictional sample players plus adjustable age, football position, experience, and primary goal. No name or contact information inputs in the fictional demo. Every minor profile is parent-managed.
 - Today's Training: deterministic matching, age-eligible drills, suggested duration/equipment, explanation, and resumable sessions.
 - Ten original illustrative, noncontact practice resources. The youngest group has separate, short, parent-led activities. All age/position/level/goal combinations have a foundational plan; position-specific resources appear when available.
 - Guided lessons, ordered practice steps, coaching cues, breaks, next drill, optional reflection, and explicit confirmation of practice. Watching media alone never creates a practice record.
@@ -48,7 +54,7 @@ Profiles, history, active sessions and published resource metadata use versioned
 
 Data stays in the current browser and origin. Your partner will see the same built-in samples, **not** your local progress or published resources. Clearing browser site data removes saved content. Private browsing and quota/storage restrictions may prevent persistence; visible error messages explain when changes are temporary or publication fails. Unsaved coach drafts are discarded on navigation or refresh. Sample profile histories are isolated from one another.
 
-Shared coach publishing is prepared but disabled by default. Its Supabase client, migration and activation checks are described in [backend/SETUP.md](backend/SETUP.md); no service project or credentials have been created. The active public demo has no backend, real accounts, admin authorization, actual training assessments, AI coaching, public player profiles, messaging, medical advice, checkout, or real child information is implemented. The open coach editor is deliberately a demo, not a secure admin console. All training content is illustrative and pending qualified coaching review.
+Shared coach publishing is prepared but disabled by default. Its Supabase client, migration and activation checks are described in [backend/SETUP.md](backend/SETUP.md); no service project or credentials have been created. The deployed demo has no connected backend or active real accounts. Private accounts and coach authorization are implemented but require the separate owner-controlled backend and live acceptance. There are no actual training assessments, AI coaching, public player profiles, messaging, medical advice, checkout, or real child records. The open coach editor is deliberately a demo, not a secure admin console. All training content is illustrative and pending qualified coaching review.
 
 ## Checks
 
@@ -71,7 +77,7 @@ DEMO_BASE_URL=https://your-verified-demo.example npm run test:e2e
 npm run test:app # builds and checks the production service worker
 ```
 
-Tests use fresh isolated browser contexts, create original test media, and only write local browser storage. They do not contact third-party services. Screenshots are generated under `artifacts/`; the HTML report is in `playwright-report/`.
+Tests use fresh isolated browser contexts, original test media, local browser storage, embedded PostgreSQL and intercepted fictional service responses. They do not contact third-party services. Screenshots are generated under `artifacts/`; the HTML report is in `playwright-report/`.
 
 ## Published demo and deployment
 
@@ -91,13 +97,13 @@ Check the **pages build and deployment** run in this repository's GitHub Actions
 
 ## Architecture and future sports
 
-`src/model.ts` contains typed profiles/resources, matching, filtering, session records, and persisted-state validation. `src/data.ts` holds original football sample content. `src/storage.ts` isolates persistence and media. `src/Admin.tsx` implements content publishing; `src/components.tsx` contains shared UI/illustrations; `src/App.tsx` connects the user journeys.
+`src/model.ts` contains typed profiles/resources, matching, filtering, session records, and persisted-state validation. `src/data.ts` holds original football sample content. `src/storage.ts` isolates persistence and media. `src/accounts.ts` and `src/MemberAccount.tsx` implement private member workflows; `backend/002-private-profiles.sql` enforces member privacy and enrollment rules. `src/Admin.tsx` implements content publishing; `src/components.tsx` contains shared UI/illustrations; `src/App.tsx` connects the user journeys.
 
 The sports registry separates available and future offerings, and resources carry a sport discriminator. Football is the only accepted content sport today. Adding a sport requires a new typed position/skill taxonomy, sport-aware profiles/matching, qualified age-appropriate content, and coverage; it is not falsely advertised as already usable.
 
 ## Before a real launch
 
-Qualified review and replacement/approval of all instructional material; validated age and position curricula; licensed coaching media; real parental consent and age handling; privacy/legal and safeguarding review; secure authentication and admin roles; moderated server-backed content/file validation, limits and deletion; account recovery and cross-device storage; human accessibility/device testing; content governance and support; deployment ownership and monitoring. Recruiting/scholarship concepts need separate research and must never guarantee outcomes. Membership scope and pricing remain undecided.
+Qualified review and replacement/approval of all instructional material; validated age and position curricula; licensed coaching media; real parental consent and age handling; privacy/legal and safeguarding review; live authentication/role activation and acceptance; moderated server-backed content/file validation, limits and deletion; live email recovery and cross-device storage validation; human accessibility/device testing; content governance and support; deployment ownership and monitoring. Recruiting/scholarship concepts need separate research and must never guarantee outcomes. Membership scope and pricing remain undecided.
 
 ## Originality and dependencies
 

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import {
   connectSharedContent,
+  finishAuthRedirect,
   parseSharedConfig,
   type SharedContent,
 } from "./sharedContent";
@@ -15,6 +16,9 @@ export function useSharedContent() {
   const [resources, setResources] = useState<Drill[]>([]);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [membersEnabled, setMembersEnabled] = useState(false);
+  const [connectionError, setConnectionError] = useState("");
   useEffect(() => {
     let stopped = false;
     let unsubscribe: (() => void) | undefined;
@@ -28,28 +32,39 @@ export function useSharedContent() {
           throw new Error(
             "Shared-publishing configuration is unavailable. Local demo publishing still works.",
           );
-        const config = parseSharedConfig(await response.json());
+        const raw = await response.json();
+        const config = parseSharedConfig(raw);
         if (!config || stopped) return;
         const connection = await connectSharedContent(config);
         if (stopped) return;
         setService(connection);
+        setMembersEnabled(raw.membersEnabled === true);
         const subscription = connection.client.auth.onAuthStateChange(
           (_event, current) => {
             if (!stopped) setSession(current);
           },
         );
         unsubscribe = () => subscription.data.subscription.unsubscribe();
+        await finishAuthRedirect(connection);
         const current = await connection.client.auth.getSession();
         if (!stopped) setSession(current.data.session);
         const list = await connection.list();
         if (!stopped) setResources(list);
       } catch (e) {
         if (!stopped)
+          setConnectionError(
+            e instanceof Error
+              ? e.message
+              : "The account service could not be connected.",
+          );
+        if (!stopped)
           setError(
             e instanceof Error
               ? e.message
               : "Shared content is unavailable. Built-in and local demo content still work.",
           );
+      } finally {
+        if (!stopped) setLoading(false);
       }
     })();
     return () => {
@@ -98,6 +113,12 @@ export function useSharedContent() {
     }
   }
   return {
+    service,
+    session,
+    loading,
+    membersEnabled,
+    connectionError,
+    clearConnectionError: () => setConnectionError(""),
     configured: Boolean(service),
     signedIn: Boolean(session),
     coach: Boolean(session && session.user.id === coachId),
