@@ -355,13 +355,11 @@ export default function App() {
           </nav>
           <div className="header-actions">
             <a
-              className="member-header-link"
+              className="header-account"
               href={shared.signedIn ? "#workspace" : "#account"}
             >
-              {shared.signedIn ? "My workspace" : "Member access"}
-            </a>
-            <a className="header-demo" href="#demo">
-              Try the demo <ArrowUpRight size={17} />
+              {shared.signedIn ? "My workspace" : "Log in"}{" "}
+              <ArrowUpRight size={17} />
             </a>
             <button
               className="icon-button mobile-menu"
@@ -382,7 +380,7 @@ export default function App() {
               </a>
             ))}
             <a href="#account">
-              {shared.signedIn ? "Account settings" : "Member access"}{" "}
+              {shared.signedIn ? "Account settings" : "Log in"}{" "}
               <ArrowUpRight size={18} />
             </a>
             <a href="#membership">

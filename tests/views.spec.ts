@@ -29,6 +29,20 @@ test("the public website has one customer demo entry, with parent and solo journ
     await page.setViewportSize({ width: 320, height: 800 });
   await page.goto("./#home");
   await expect(page.getByRole("heading", { name: /Your game/ })).toBeVisible();
+  const header = page.getByRole("banner");
+  await expect(
+    header.getByRole("link", { name: "Try the demo", exact: true }),
+  ).toHaveCount(0);
+  await expect(
+    header.getByRole("link", { name: "Log in", exact: true }),
+  ).toBeVisible();
+  await header.getByRole("link", { name: "Log in", exact: true }).click();
+  await expect(page).toHaveURL(/#account$/);
+  await page
+    .getByRole("banner")
+    .getByRole("link", { name: "Player Development", exact: true })
+    .click();
+  await expect(page).toHaveURL(/#home$/);
   const buttons = page.getByRole("link", { name: "Try the demo", exact: true });
   for (let i = 0; i < (await buttons.count()); i++)
     await expect(buttons.nth(i)).toHaveAttribute("href", "#demo");

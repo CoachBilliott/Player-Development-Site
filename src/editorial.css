@@ -64,18 +64,18 @@
   background: var(--lime);
   box-shadow: none;
 }
-.experience .header-demo {
+.experience .header-account {
   background: #ff7846;
   border-color: #ff7846;
   color: #101010;
   border-radius: 3px;
 }
-.experience .header-demo:hover,
+.experience .header-account:hover,
 .experience .icon-button:hover {
   background: #30302e;
   border-color: #ff966f;
 }
-.experience .header-demo:hover {
+.experience .header-account:hover {
   background: #ff966f;
   border-color: #ff966f;
   color: #101010;

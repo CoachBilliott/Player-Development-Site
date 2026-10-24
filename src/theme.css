@@ -136,7 +136,7 @@ body {
   background: var(--lime);
   box-shadow: 0 0 15px #c4fa5d44;
 }
-.experience .header-demo {
+.experience .header-account {
   background: #172735;
   border-color: #355064;
   color: #d9e7ef;
@@ -144,7 +144,7 @@ body {
     border-color 0.2s,
     background 0.2s;
 }
-.experience .header-demo:hover {
+.experience .header-account:hover {
   background: #1e3544;
   border-color: #709565;
 }

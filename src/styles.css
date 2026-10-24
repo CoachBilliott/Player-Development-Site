@@ -349,7 +349,7 @@ svg {
   gap: 8px;
   min-width: 0;
 }
-.header-demo {
+.header-account {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2191,7 +2191,7 @@ footer {
   .header-inner {
     gap: 20px;
   }
-  .header-demo {
+  .header-account {
     font-size: 11px;
     padding: 10px 12px;
   }
@@ -2586,7 +2586,7 @@ footer {
   .brand-name > span {
     font-size: 11px;
   }
-  .header-demo {
+  .header-account {
     font-size: 11px;
     gap: 6px;
     padding: 9px 11px;
@@ -2598,7 +2598,7 @@ footer {
   .header-actions > .icon-button {
     width: 36px;
   }
-  .header-demo .mini {
+  .header-account .mini {
     width: 21px;
     height: 21px;
     font-size: 11px;
@@ -3642,7 +3642,7 @@ footer {
     gap: 8px;
     padding: 0 16px;
   }
-  .header-demo {
+  .header-account {
     font-size: 10px;
     padding: 9px;
   }
