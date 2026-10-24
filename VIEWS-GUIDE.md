@@ -2,6 +2,8 @@
 
 The main website is https://coachbilliott.github.io/Player-Development-Site/. It explains Player Development, family and individual training, membership plans and sign-in. Every public **Try the demo** button leads to the same customer experience at `#demo`.
 
+The photographic theme uses warm charcoal, off-white, restrained green accents and licensed adult-training media. The silent hero footage loops automatically without Replay, Pause or motion controls; a real still appears automatically for device reduced-motion preferences or unavailable playback. The lower-page image is an extracted frame from the same licensed stock footage, with credits linked beside it. These are promotional images, not coaching lessons or actual members. Visual changes do not enable public signup, child access, paid content or checkout.
+
 ## One guided demo
 
 Visitors choose **Parent & family** or **Solo athlete** within the same demo. There is no public staff-role gallery or separate Owner/Manager/Coach demonstration.

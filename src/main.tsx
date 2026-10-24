@@ -7,6 +7,7 @@ import "@fontsource/barlow-condensed/latin-700.css";
 import "@fontsource/barlow-condensed/latin-800-italic.css";
 import "./styles.css";
 import "./theme.css";
+import "./editorial.css";
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <App />

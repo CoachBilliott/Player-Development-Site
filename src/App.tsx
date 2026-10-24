@@ -680,9 +680,6 @@ function Home() {
           <div className="sport-tag">
             <span /> ATHLETE DEVELOPMENT · AGES 5 TO ADULT
           </div>
-          <div className="hero-kicker">
-            <span /> BUILT FOR YOUR NEXT CHAPTER
-          </div>
           <h1 tabIndex={-1}>
             Your game.
             <br />
@@ -766,7 +763,7 @@ function Home() {
           ))}
         </div>
       </section>
-      <Reveal>
+      <Reveal className="practice-section">
         <section id="how-it-works" className="page how-section">
           <div className="section-heading">
             <div>
@@ -775,6 +772,39 @@ function Home() {
             </div>
             <p>Three steps. One focused session.</p>
           </div>
+          <figure className="practice-editorial">
+            <div className="practice-editorial-image">
+              <img
+                src={`${import.meta.env.BASE_URL}media/practice-detail.jpg`}
+                alt="Licensed stock image of an adult athlete’s feet working through an agility ladder."
+                loading="lazy"
+                width={1440}
+                height={810}
+              />
+              <div className="practice-editorial-shade" aria-hidden="true" />
+              <span className="practice-editorial-label">
+                THE EVERYDAY WORK
+              </span>
+              <p className="practice-editorial-title">
+                Less guesswork.
+                <br />
+                More purpose.
+              </p>
+              <span className="practice-editorial-note">
+                A PLAN. A PRACTICE. A RECORD.
+              </span>
+            </div>
+            <figcaption>
+              Licensed stock image · Not a coaching lesson.{" "}
+              <a
+                href={`${import.meta.env.BASE_URL}media/credits.txt`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Image credits
+              </a>
+            </figcaption>
+          </figure>
           <div className="three-grid">
             {[
               {

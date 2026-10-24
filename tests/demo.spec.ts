@@ -81,6 +81,15 @@ test("homepage is responsive and sample demo is obvious", async ({
   await expect(
     page.getByRole("heading", { name: /A clear path from plan/ }),
   ).toBeInViewport();
+  const image = page.locator(".practice-editorial img");
+  await image.scrollIntoViewIfNeeded();
+  await expect
+    .poll(() => image.evaluate((img: HTMLImageElement) => img.naturalWidth))
+    .toBeGreaterThan(0);
+  const accessibility = await new AxeBuilder({ page })
+    .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
+    .analyze();
+  expect(accessibility.violations).toEqual([]);
   await page.evaluate(() => window.scrollTo(0, 0));
   await expect(
     page

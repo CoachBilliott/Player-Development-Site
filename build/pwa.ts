@@ -13,6 +13,7 @@ export function appShell(): Plugin {
         "manifest.webmanifest",
         "favicon.svg",
         "media/training-poster.jpg",
+        "media/practice-detail.jpg",
         "media/credits.txt",
         "icons/app-192.png",
         "icons/app-512.png",
