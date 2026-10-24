@@ -1165,10 +1165,21 @@ function appProfile(
 async function completeAppWorkout(
   page: import("@playwright/test").Page,
   label: string,
+  checkResume = false,
 ) {
   await page.getByRole("button", { name: label, exact: true }).click();
   const dialog = page.getByRole("dialog");
   await dialog.getByRole("checkbox").check();
+  if (checkResume) {
+    const refreshed = page.waitForResponse(
+      (response) =>
+        response.url().includes("/rest/v1/player_profiles") &&
+        response.request().method() === "GET",
+    );
+    await page.evaluate(() => window.dispatchEvent(new Event("focus")));
+    await refreshed;
+    await expect(dialog.getByRole("checkbox")).toBeChecked();
+  }
   await dialog.getByRole("button", { name: "Begin sample practice" }).click();
   for (;;) {
     await dialog.getByRole("button", { name: "Show workout steps" }).click();
@@ -1369,7 +1380,7 @@ test("solo app training reports survive navigation and refresh while failed read
       exact: true,
     }),
   ).toBeVisible();
-  await completeAppWorkout(page, "Start sample workout");
+  await completeAppWorkout(page, "Start sample workout", true);
   const nav = page.getByRole("navigation", { name: "App navigation" });
   await nav.getByRole("link", { name: "Progress", exact: true }).click();
   await expect(

@@ -71,18 +71,19 @@ function ConnectedTraining({ shared, screen, selection, onSelect }: Props) {
     let request = 0;
     const refresh = async () => {
       const current = ++request;
-      setSnapshot(null);
       setError("");
       try {
         const next = await new Accounts(client).load();
         if (!stopped && current === request) setSnapshot(next);
       } catch (e) {
-        if (!stopped && current === request)
+        if (!stopped && current === request) {
+          setSnapshot(null);
           setError(
             e instanceof Error
               ? e.message
               : "Your training could not be loaded. Reconnect and retry.",
           );
+        }
       }
     };
     void refresh();
