@@ -27,3 +27,7 @@ Your uploaded resources appear below the editor. Choose **Edit**, change instruc
 - Drafts stay on the current screen only. Refreshing or leaving loses unpublished details; publication is the save action. Nothing uploads before you confirm Publish.
 - If saving fails, keep the editor open and retry. Repeated taps do not intentionally create extra resources; success is confirmed before the draft resets.
 - Real device acceptance is still needed on iPhone Safari/Android Chrome, including actual video format/playback and the partner's staff login. Tests use fictional accounts. General enrollment and real child access remain closed.
+
+## Private athlete submissions
+
+The native app now separates coaching-resource uploads from athlete review clips. See [the video review guide](VIDEO-REVIEW-GUIDE.md) for the simple Record/Choose → Preview → Send flow, Owner assignment, private coach queue, parent approval, pilot quotas and deletion. The optional feature does not collect a payment.

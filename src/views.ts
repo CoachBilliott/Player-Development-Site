@@ -26,6 +26,7 @@ export function navigationFor(
       "member-library",
       "launch",
       "coach",
+      "video-reviews",
     ].includes(page) &&
     role
   ) {
@@ -33,12 +34,14 @@ export function navigationFor(
       return [
         ["workspace", "Overview"],
         ["coach", "Upload & content"],
+        ["video-reviews", "Video reviews"],
         ["access", "Account access"],
       ];
     if (role === "manager" || role === "coach")
       return [
         ["workspace", "Overview"],
         ["coach", "Upload & content"],
+        ["video-reviews", "Video reviews"],
         ["member-library", "Content library"],
       ];
     return [

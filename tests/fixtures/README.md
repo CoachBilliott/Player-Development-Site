@@ -1,0 +1,1 @@
+`fictional-video.webm` is an original 1-second, 64×64 black-frame file generated with FFmpeg for upload/playback tests. It contains no people or coaching demonstration and is not a production training asset.

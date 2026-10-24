@@ -65,6 +65,7 @@ import {
 } from "./MobileApp";
 import { useNativeApp } from "./useNativeApp";
 import { MobileTraining } from "./MobileTraining";
+import { CoachVideoReviews } from "./VideoReview";
 import { isStaff } from "./roles";
 import {
   Workspace,
@@ -75,6 +76,10 @@ import {
 import { navigationFor, isDemoPage } from "./views";
 const safeHash = () => {
   const value = window.location.hash.slice(1);
+  if (appSurface() && isDemoPage(value)) {
+    window.history.replaceState(null, "", "#app");
+    return "app";
+  }
   const staffPreviews = [
     "demo-owner",
     "demo-manager",
@@ -89,7 +94,11 @@ const safeHash = () => {
     "demo-junior",
   ];
   if (staffPreviews.includes(value) || consumerPreviews.includes(value)) {
-    const target = staffPreviews.includes(value) ? "workspace" : "demo";
+    const target = staffPreviews.includes(value)
+      ? "workspace"
+      : appSurface()
+        ? "app"
+        : "demo";
     window.history.replaceState(null, "", `#${target}`);
     return target;
   }
@@ -99,6 +108,7 @@ const safeHash = () => {
     "app-help",
     "app-workouts",
     "app-progress",
+    "video-reviews",
     "onboarding",
     "today",
     "library",
@@ -441,8 +451,8 @@ export default function App() {
         )}
         {!app.online && (
           <div className="connection-banner" role="status">
-            You’re offline. Built-in demo practice can continue after setup.
-            Member profiles, shared content and uploads need a connection.
+            You’re offline. Private workouts, profiles and video uploads need a
+            connection.
           </div>
         )}
         {warning && (
@@ -485,6 +495,8 @@ export default function App() {
             />
           ) : page === "workspace" ? (
             <Workspace shared={shared} />
+          ) : page === "video-reviews" ? (
+            <CoachVideoReviews shared={shared} />
           ) : page === "access" ? (
             <AccessWorkspace shared={shared} />
           ) : page === "member-library" ? (

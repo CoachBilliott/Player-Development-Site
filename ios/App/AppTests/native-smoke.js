@@ -32,27 +32,11 @@ const acknowledge = async () => {
   (await wait(() => document.querySelector('dialog[open] input[type=checkbox]:not(:disabled)'), 'practice acknowledgement')).click();
   await tick();
 };
-const history = () => JSON.parse(localStorage.getItem('pd-family-demo-v1') || '{"workouts":[]}').workouts;
-const before = history().length;
+if (document.querySelector('a[href="#demo"]')) throw new Error('Customer demo leaked into the native app');
 location.hash = 'demo';
-await click('Solo athlete');
-await click('Start sample workout');
-await acknowledge();
-await click('Begin sample practice');
-let submitted = false;
-for (let drill = 0; drill < 12; drill++) {
-  await click('Show workout steps');
-  await acknowledge();
-  const submit = button('Submit reported workout');
-  if (submit) {
-    submit.click();
-    submitted = true;
-    break;
-  }
-  await click('Next workout drill');
-}
-if (!submitted) throw new Error('Native practice did not reach submission');
-await wait(() => history().length === before + 1, 'persisted practice report');
-await wait(() => document.body.textContent.includes('Self-reported practice'), 'honest practice history');
+await wait(() => location.hash === '#app', 'blocked native demo route');
+location.hash = 'account';
+await wait(() => document.querySelector('input[type="email"]'), 'native account login');
+if (document.querySelector('.family-demo')) throw new Error('Fictional demo is visible in native login');
 location.hash = 'app';
 return true;

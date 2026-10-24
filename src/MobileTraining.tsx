@@ -3,7 +3,6 @@ import {
   ArrowRight,
   BookOpen,
   CircleHelp,
-  LockKeyhole,
   RefreshCw,
   Users,
 } from "lucide-react";
@@ -146,7 +145,7 @@ function ConnectedTraining({ shared, screen, selection, onSelect }: Props) {
           <p>
             {snapshot.guardianManaged
               ? "Use Account to check your family connection. Ask your parent to review access; there is no independent adult setup for a guardian-managed account."
-              : "Open Account to finish setup or manage your private profiles. Fictional demo players stay in the demo."}
+              : "Open Account to finish setup or manage your private profiles."}
           </p>
           <a className="button" href="#account">
             Open account <ArrowRight size={17} />
@@ -208,23 +207,11 @@ function ConnectedTraining({ shared, screen, selection, onSelect }: Props) {
               </a>
             )}
           </section>
-          {screen === "workouts" && (
-            <section className="panel app-package-status">
-              <LockKeyhole size={23} />
-              <div>
-                <h2>Package workouts</h2>
-                <p>
-                  Protected workouts will appear here when package access is
-                  enabled. Packages and payments are not active. The pilot plan
-                  below is illustrative sample training.
-                </p>
-              </div>
-            </section>
-          )}
           <AthleteTraining
             key={player.id}
             player={player}
             service={service}
+            client={client}
             junior={!!linked && player.age_group !== "18+"}
             view={screen}
           />

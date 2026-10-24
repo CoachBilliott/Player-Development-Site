@@ -14,13 +14,14 @@ Install and launch the app, try Parent & family and Solo athlete within the sing
 
 ## Reviewer instructions
 
-1. Launch Player Development.
-2. Tap **Try the sample demo** on the welcome screen. No account is required for this fictional demonstration.
-3. Choose **Solo athlete**, then **Start sample workout**. Review the sample activity notice and acknowledge it to begin. Follow each lesson and practice step, acknowledge completion and submit the practice report.
-4. Confirm the report is labeled **Self-reported practice**. Return to the demo and choose **Parent & family** to explore sample athletes, recording permission and parent review.
-5. Use **Exit demo · Back to app** to return to the welcome screen. **Log in to your account** opens the separate private adult pilot. Website verification/password-reset steps open in the system browser, then the tester returns to sign in.
+The native app now opens private account login; the public sample demo remains on the website. No sample accounts, demo records or built-in demo drills are inserted into real customer plans.
 
-The sample demo does not establish a real account and its records stay on the device. Native sign-in sessions use iOS Keychain storage. Sample records are not imported into private profiles. Public registration, real junior access and checkout are disabled.
+1. Sign in using an approved, verified adult review account supplied privately in App Store Connect. These credentials must be prepared before requesting external beta review; none are invented in this document.
+2. Open Today, begin the assigned workout and confirm each drill shows its attached demonstration and all practice steps together. Complete practice before tapping Complete drill / Finish workout. Reports describe participation, not measured ability.
+3. With optional pilot review access enabled for the adult review account, choose Send a drill video, record or select a short adult/fictional test clip, preview and send. Canceling selection must not upload anything. Check submission status and any privately saved coaching feedback.
+4. Authorized staff can use Reviews for accounts specifically assigned to them. No staff role automatically exposes family profiles or clips. Real junior recording remains closed.
+
+Review clips are stored privately until an authorized family/uploader deletes them. The pilot has no automated retention schedule, live payments or public registration. Include these behaviors accurately in review/privacy disclosures.
 
 ## Owner fields still required
 

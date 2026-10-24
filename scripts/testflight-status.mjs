@@ -73,12 +73,20 @@ const builds = results.data.map((build) => {
   }
 })
 const groups = await read(`apps/${appId}/betaGroups?limit=100`, true)
+const betaGroups = []
+for (const { id, attributes } of groups.data ?? []) {
+  const assigned = await read(`betaGroups/${id}/builds?fields[builds]=version,processingState&limit=100`, true)
+  betaGroups.push({ id, name: attributes.name, isInternalGroup: attributes.isInternalGroup,
+    hasAccessToAllBuilds: attributes.hasAccessToAllBuilds,
+    buildNumbers: assigned.data?.map((b) => b.attributes.version) ?? { unavailable: assigned.unavailable },
+    publicLinkEnabled: attributes.publicLinkEnabled, publicLink: attributes.publicLinkEnabled ? attributes.publicLink : null })
+}
 const review = await read(`apps/${appId}/betaAppReviewDetail`, true)
 const reviewAttributes = review.data?.attributes
 const report = {
   checkedAt: new Date().toISOString(), appId, bundleId, appName: app.attributes.name,
   requestedBuildNumber: buildNumber, builds,
-  betaGroups: groups.data?.map(({ id, attributes }) => ({ id, name: attributes.name, isInternalGroup: attributes.isInternalGroup, publicLinkEnabled: attributes.publicLinkEnabled, publicLink: attributes.publicLinkEnabled ? attributes.publicLink : null })) ?? { unavailable: groups.unavailable },
+  betaGroups: groups.data ? betaGroups : { unavailable: groups.unavailable },
   reviewDetails: reviewAttributes ? {
     hasContactFirstName: !!reviewAttributes.contactFirstName,
     hasContactLastName: !!reviewAttributes.contactLastName,

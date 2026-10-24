@@ -507,3 +507,115 @@
   padding: 18px;
   margin-top: 16px;
 }
+
+/* Focused workout viewer and private coach review. */
+.simple-drill .attachment {
+  margin: 14px 0;
+}
+.simple-drill .attachment video,
+.review-player video {
+  display: block;
+  width: 100%;
+  max-height: 52vh;
+  background: #080b0c;
+  border-radius: 14px;
+  object-fit: contain;
+}
+.simple-drill .drill-summary {
+  font-size: 1.1rem;
+  line-height: 1.55;
+  margin: 18px 0 12px;
+}
+.simple-drill .drill-equipment {
+  color: var(--muted);
+}
+.compact-steps {
+  margin: 20px 0;
+  padding-left: 28px;
+}
+.compact-steps li {
+  padding: 6px 0 6px 5px;
+  line-height: 1.55;
+}
+.video-review-section {
+  margin: 26px 0;
+  padding-top: 26px;
+  border-top: 1px solid #ffffff21;
+}
+.review-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+.review-heading > svg {
+  color: #ff8047;
+  flex-shrink: 0;
+  margin-top: 6px;
+}
+.review-heading h3 {
+  margin: 8px 0;
+  font-size: 1.6rem;
+}
+.review-heading p {
+  margin: 6px 0;
+}
+.review-history {
+  display: grid;
+  gap: 14px;
+  margin-top: 20px;
+}
+.review-card {
+  padding: 20px;
+  background: #10181b;
+  border: 1px solid #ffffff1c;
+  border-radius: 16px;
+  overflow-wrap: anywhere;
+}
+.review-card h4 {
+  font-size: 1.2rem;
+  margin: 12px 0;
+}
+.review-player {
+  margin: 18px 0;
+}
+.coach-feedback {
+  padding: 15px;
+  background: #ffffff08;
+  border-left: 3px solid #ff8047;
+  margin: 15px 0;
+}
+.coach-feedback p {
+  white-space: pre-wrap;
+}
+.training-access label,
+.review-player + label {
+  display: grid;
+  gap: 8px;
+  margin: 18px 0;
+}
+.training-access .checkbox-label {
+  display: flex;
+  align-items: center;
+}
+.training-access fieldset {
+  min-width: 0;
+  border: 1px solid #ffffff26;
+  border-radius: 12px;
+  padding: 16px;
+  margin: 20px 0;
+}
+@media (max-width: 600px) {
+  .simple-drill .button.full {
+    min-height: 56px;
+  }
+  .video-review-section .actions {
+    gap: 12px;
+  }
+  .review-card {
+    padding: 16px;
+  }
+  .mobile-layout .app-tabs:has(a:nth-child(5)) {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}

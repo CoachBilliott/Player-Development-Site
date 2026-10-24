@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>CAPACITOR_DEBUG</key>
 	<string>$(CAPACITOR_DEBUG)</string>
 	<key>CFBundleDevelopmentRegion</key>
@@ -25,11 +27,11 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>Use the camera only when you choose to capture a training resource.</string>
+	<string>Record a practice video only when you choose to submit it privately for coach review.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Record audio only when you choose to capture a training resource.</string>
+	<string>Include audio only when you choose to record a practice video for coach review.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Choose a video or image when uploading a training resource.</string>
+	<string>Choose a practice video for private coach review or a training resource to upload.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

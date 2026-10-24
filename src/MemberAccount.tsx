@@ -66,9 +66,15 @@ export function MemberAccountPage({
               This page will offer real signup once that connection has been
               activated and tested.
             </Notice>
-            <a className="button" href="#onboarding">
-              Try the sample demo <ArrowRight size={18} />
-            </a>
+            {appSurface() ? (
+              <a className="button" href="#app-help">
+                Sign-in help <ArrowRight size={18} />
+              </a>
+            ) : (
+              <a className="button" href="#onboarding">
+                Try the sample demo <ArrowRight size={18} />
+              </a>
+            )}
           </section>
           <AccountPrinciples />
         </div>
@@ -96,7 +102,8 @@ function AccountPrinciples() {
         <li>Private profiles. No public roster or direct messages.</li>
         <li>
           Only a nickname, age group and football preferences. No birth dates,
-          school, address or photos.
+          school, address or profile photo is required. Video review uses
+          separate, optional private uploads.
         </li>
         <li>
           Demo players and practice history never become real member records.
@@ -633,6 +640,7 @@ function ConnectedAccount({
             key={trainingPlayer.id}
             player={trainingPlayer}
             service={familyService}
+            client={client}
           />
         </>
       ) : linkedPlayer ? (
@@ -645,6 +653,7 @@ function ConnectedAccount({
             key={linkedPlayer.id}
             player={linkedPlayer}
             service={familyService}
+            client={client}
             onConnectionChange={refresh}
             junior={linkedPlayer.age_group !== "18+"}
           />
@@ -746,6 +755,7 @@ function ConnectedAccount({
               <AthleteTraining
                 player={ownedPlayers[0]}
                 service={familyService}
+                client={client}
               />
             )}
           {workspace && account.account_type === "parent" && (

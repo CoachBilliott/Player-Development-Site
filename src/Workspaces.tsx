@@ -12,6 +12,7 @@ import { Tag, Notice, Modal, AssetPreview } from "./components";
 import { ROLE_LABELS, isStaff } from "./roles";
 import type { SharedState } from "./useSharedContent";
 import { MemberAccountPage } from "./MemberAccount";
+import { TrainingAccess } from "./TrainingAccess";
 import { AccountAccess } from "./AccountAccess";
 import type { Drill } from "./model";
 
@@ -136,6 +137,14 @@ function StaffDashboard({
               : "Edit your own resources and keep instructions up to date."}
           </WorkspaceLink>
         )}
+        <WorkspaceLink
+          href="#video-reviews"
+          title="Athlete video reviews"
+          icon="library"
+        >
+          Watch private drill submissions and send coaching feedback for
+          accounts assigned to you.
+        </WorkspaceLink>
         <WorkspaceLink href="#launch" title="Launch readiness" icon="library">
           See what is still needed for packages, payments, reviewed training and
           junior enrollment.
@@ -227,6 +236,9 @@ export function AccessWorkspace({ shared }: { shared: SharedState }) {
         </p>
       </div>
       <AccountAccess shared={shared} />
+      {shared.service && (
+        <TrainingAccess key={shared.session?.user.id} shared={shared} />
+      )}
     </main>
   );
 }

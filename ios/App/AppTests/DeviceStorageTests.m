@@ -28,7 +28,7 @@
     }
     return nil;
 }
-- (void)testNativeKeychainAssetsAndGuidedTrainingWithoutCloudAccount {
+- (void)testNativeKeychainAssetsAndPrivateAccountEntry {
     XCTestExpectation *completed = [self expectationWithDescription:@"Native Keychain round trip"];
     NSString *key = [@"pd-native:simulator-test-" stringByAppendingString:NSUUID.UUID.UUIDString];
     dispatch_async(dispatch_get_main_queue(), ^{

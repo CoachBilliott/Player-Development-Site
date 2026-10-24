@@ -124,7 +124,7 @@ test("canceling an offered installation keeps the website usable", async ({
   ).toBeVisible();
 });
 
-test("the installed mobile app reopens its own welcome offline and preserves guided demo history", async ({
+test("the installed app reopens offline without exposing demo or private records", async ({
   page,
   context,
 }) => {
@@ -141,38 +141,15 @@ test("the installed mobile app reopens its own welcome offline and preserves gui
   await expect(
     page.getByRole("navigation", { name: "App navigation" }),
   ).toBeVisible();
-  await page
-    .getByRole("link", { name: "Try the sample demo", exact: true })
-    .click();
-  await page.getByRole("button", { name: "Solo athlete", exact: true }).click();
-  await page
-    .getByRole("button", { name: "Start sample workout", exact: true })
-    .click();
-  const dialog = page.getByRole("dialog");
-  await dialog.getByRole("checkbox").check();
-  await dialog.getByRole("button", { name: "Begin sample practice" }).click();
-  for (;;) {
-    await dialog.getByRole("button", { name: "Show workout steps" }).click();
-    await dialog.getByRole("checkbox").check();
-    const submit = dialog.getByRole("button", {
-      name: "Submit reported workout",
-    });
-    if (await submit.isVisible()) {
-      await submit.click();
-      break;
-    }
-    await dialog.getByRole("button", { name: "Next workout drill" }).click();
-  }
+  await expect(page.locator('a[href="#demo"]')).toHaveCount(0);
   await expect(
-    page.getByText("Self-reported practice", { exact: true }),
-  ).toBeVisible();
-  await page.reload();
-  await page.getByRole("button", { name: "Solo athlete", exact: true }).click();
-  await expect(
-    page.getByText("Self-reported practice", { exact: true }),
+    page.getByText(
+      "Private workouts, profiles and video uploads need a connection.",
+      { exact: false },
+    ),
   ).toBeVisible();
   expect(
-    await page.evaluate(() => localStorage.getItem("pd-demo-v1")),
+    await page.evaluate(() => localStorage.getItem("pd-family-demo-v1")),
   ).toBeNull();
   await context.setOffline(false);
 });

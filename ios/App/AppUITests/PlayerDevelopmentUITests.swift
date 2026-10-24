@@ -3,32 +3,19 @@ import XCTest
 final class PlayerDevelopmentUITests: XCTestCase {
     override func setUpWithError() throws { continueAfterFailure = false }
 
-    func testAppWelcomeDemoAndSavedFamilyRoster() {
+    func testAppWelcomeHasPrivateLoginAndNoDemo() {
         let app = XCUIApplication()
         app.launch()
-        XCTAssertTrue(app.links["Try the sample demo"].waitForExistence(timeout: 30))
+        XCTAssertTrue(app.links["Log in to your account"].waitForExistence(timeout: 30))
+        XCTAssertFalse(app.links["Try the sample demo"].exists)
         let welcome = XCTAttachment(screenshot: app.screenshot())
-        welcome.name = "iPhone-app-welcome"
+        welcome.name = "iPhone-private-app-welcome"
         welcome.lifetime = .keepAlways
         add(welcome)
-        app.links["Try the sample demo"].tap()
-        XCTAssertTrue(app.descendants(matching: .any).matching(NSPredicate(format: "label CONTAINS %@", "Parent & family")).firstMatch.waitForExistence(timeout: 15), app.debugDescription)
-        let addAthlete = app.buttons["Add fictional athlete Jordan"]
-        for _ in 0..<5 {
-            if addAthlete.isHittable { break }
-            app.swipeUp()
-        }
-        if addAthlete.exists { addAthlete.tap() }
-        XCTAssertTrue(app.descendants(matching: .any).matching(NSPredicate(format: "label BEGINSWITH %@", "Jordan")).firstMatch.waitForExistence(timeout: 10), app.debugDescription)
         app.terminate()
         app.launch()
-        XCTAssertTrue(app.links["Try the sample demo"].waitForExistence(timeout: 30))
-        app.links["Try the sample demo"].tap()
-        XCTAssertTrue(app.descendants(matching: .any).matching(NSPredicate(format: "label BEGINSWITH %@", "Jordan")).firstMatch.waitForExistence(timeout: 15), app.debugDescription)
-        let demo = XCTAttachment(screenshot: app.screenshot())
-        demo.name = "iPhone-family-demo"
-        demo.lifetime = .keepAlways
-        add(demo)
+        XCTAssertTrue(app.links["Log in to your account"].waitForExistence(timeout: 30))
+        XCTAssertFalse(app.links["Try the sample demo"].exists)
     }
 
     func testPrivateLoginAndAppNavigationWithoutSendingCredentials() {

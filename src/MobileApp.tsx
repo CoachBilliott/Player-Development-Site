@@ -9,6 +9,7 @@ import {
   TrendingUp,
   ShieldCheck,
   UserRound,
+  Video,
 } from "lucide-react";
 import { Logo, Notice, Tag } from "./components";
 import { mobileNavigation, nativeApp, openWebsite, WEBSITE } from "./mobile";
@@ -69,6 +70,7 @@ export function MobileTabs({
     demo: Dumbbell,
     workspace: Dumbbell,
     coach: BookOpen,
+    "video-reviews": Video,
     "member-library": BookOpen,
     "app-workouts": BookOpen,
     "app-progress": TrendingUp,
@@ -124,19 +126,16 @@ export function MobileWelcome({ signedIn }: { signedIn: boolean }) {
           {signedIn ? "Open my training" : "Log in to your account"}
           <ArrowRight size={19} />
         </a>
-        <a href="#demo" className="button secondary full">
-          Try the sample demo <ArrowRight size={19} />
-        </a>
         <div className="app-start-note">
           <ShieldCheck size={19} />
           <p>
-            Private accounts for individuals and families. The demo uses
-            fictional players and stays separate from real profiles.
+            Your private workouts, practice history and coach video reviews.
+            Sign in with your Player Development account.
           </p>
         </div>
         <p className="app-pilot-note">
           Invite-only adult pilot. Real junior enrollment and payments are not
-          open. Sample activities await qualified review.
+          open. Training activities await qualified review.
         </p>
       </section>
     </main>
@@ -164,7 +163,8 @@ export function MobileHelp({ app }: { app: PwaState }) {
         </p>
         <p>
           The website explains programs, future packages and how to join. Both
-          use the same private account service; demo records stay separate.
+          use the same private account service. The public demo stays on the
+          website.
         </p>
         <WebsiteLink path="#membership">
           View website membership information
@@ -198,18 +198,18 @@ export function MobileHelp({ app }: { app: PwaState }) {
         </WebsiteLink>
       </section>
       <section className="panel">
-        <h2>Practice without a connection</h2>
+        <h2>Workouts & video review</h2>
         <p>
-          {nativeApp()
-            ? "The built-in sample demo is bundled in this app and can run offline. Its records stay on this device."
-            : app.offlineReady
-              ? "The sample demo is ready for offline use on this device."
-              : "Keep the app online once to prepare the sample demo for offline use."}
+          {app.online
+            ? "You’re connected."
+            : "Reconnect to load private training and reviews."}
         </p>
         <p>
-          Real account access, shared resources, uploads and remote media need
-          internet access. Demo records do not sync to real accounts or another
-          device.
+          Assigned workouts, private video submissions and feedback require
+          internet access. Video review is an optional account feature enabled
+          by an Owner; no subscription charge is started here. Keep clips to 60
+          seconds and 40 MB. Real junior video uploads remain closed pending
+          consent and retention review.
         </p>
       </section>
       <section className="panel">
@@ -218,9 +218,9 @@ export function MobileHelp({ app }: { app: PwaState }) {
         </h2>
         {nativeApp() ? (
           <p>
-            This is a native pilot build. App Store and TestFlight distribution
-            are not active yet. Apple membership activation, signing and upload
-            must be confirmed before physical-device distribution.
+            This is a TestFlight pilot build. Updates arrive through TestFlight.
+            Use fictional profiles or approved adult pilot accounts while
+            testing.
           </p>
         ) : (
           <>

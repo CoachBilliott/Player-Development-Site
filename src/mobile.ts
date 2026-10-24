@@ -16,7 +16,6 @@ export function mobileNavigation(signedIn: boolean, role: AccountRole | null) {
   if (!signedIn)
     return [
       ["app", "Start"],
-      ["demo", "Demo"],
       ["account", "Log in"],
       ["app-help", "Help"],
     ] as const;
@@ -24,6 +23,7 @@ export function mobileNavigation(signedIn: boolean, role: AccountRole | null) {
     return [
       ["workspace", "Overview"],
       ["coach", "Content"],
+      ["video-reviews", "Reviews"],
       ["account", "Account"],
       ["app-help", "Help"],
     ] as const;

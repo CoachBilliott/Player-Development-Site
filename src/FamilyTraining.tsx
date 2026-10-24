@@ -7,7 +7,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { DRILLS } from "./data";
-import { planFor, type Profile } from "./model";
+import { planFor, type Profile, type Drill } from "./model";
 import type { PrivatePlayer } from "./accounts";
 import {
   WORKOUT_LABELS,
@@ -15,10 +15,13 @@ import {
   type FamilyState,
   type AthleteWorkout,
 } from "./family";
-import { Field, Modal, Notice, Tag } from "./components";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import { AthleteVideoReview } from "./VideoReview";
+import { AssetPreview, Field, Modal, Notice, Tag } from "./components";
 export function AthleteTraining({
   player,
   service,
+  client,
   demo = false,
   onConnectionChange,
   junior = false,
@@ -26,6 +29,7 @@ export function AthleteTraining({
 }: {
   player: PrivatePlayer;
   service: FamilyService;
+  client?: SupabaseClient;
   demo?: boolean;
   onConnectionChange?: () => Promise<void>;
   junior?: boolean;
@@ -39,27 +43,41 @@ export function AthleteTraining({
     [code, setCode] = useState(""),
     [copyStatus, setCopyStatus] = useState(""),
     [remove, setRemove] = useState(false),
-    [session, setSession] = useState<{ id: string; drills: string[] } | null>(
-      null,
-    ),
+    [session, setSession] = useState<{
+      id: string;
+      drills: string[];
+      items: Drill[];
+    } | null>(null),
     [review, setReview] = useState<{
       workout: AthleteWorkout;
       decision: "approved" | "needs_repeat";
     } | null>(null);
+  const [available, setAvailable] = useState<Drill[]>([]);
   const lock = useRef(false);
   useEffect(() => {
     let stopped = false;
     const refresh = () =>
-      void service
-        .load(player)
-        .then((value) => {
+      void Promise.all([
+        service.load(player),
+        demo
+          ? Promise.resolve(DRILLS)
+          : service.plan
+            ? service.plan(player)
+            : Promise.resolve([]),
+      ])
+        .then(([value, items]) => {
           if (!stopped) {
             setState(value);
+            setAvailable(items);
             setError("");
           }
         })
         .catch((e: Error) => {
-          if (!stopped) setError(e.message);
+          if (!stopped) {
+            setState(null);
+            setAvailable([]);
+            setError(e.message);
+          }
         });
     refresh();
     window.addEventListener("focus", refresh);
@@ -67,7 +85,7 @@ export function AthleteTraining({
       stopped = true;
       window.removeEventListener("focus", refresh);
     };
-  }, [service, player]);
+  }, [service, player, demo]);
   async function act(action: () => Promise<void>) {
     if (lock.current) return;
     lock.current = true;
@@ -86,7 +104,16 @@ export function AthleteTraining({
     }
   }
   async function refresh() {
-    setState(await service.load(player));
+    const [next, items] = await Promise.all([
+      service.load(player),
+      demo
+        ? Promise.resolve(DRILLS)
+        : service.plan
+          ? service.plan(player)
+          : Promise.resolve([]),
+    ]);
+    setState(next);
+    setAvailable(items);
   }
   const profile: Profile = {
     id: player.id,
@@ -97,7 +124,7 @@ export function AthleteTraining({
     goal: player.goal,
     guardian: player.age_group !== "18+",
   };
-  const plan = planFor(profile, DRILLS);
+  const plan = planFor(profile, available);
   return (
     <section
       className="family-training panel member-panel"
@@ -231,7 +258,19 @@ export function AthleteTraining({
           )}
           {view !== "progress" && (
             <div className="family-plan">
-              <h3>Next illustrative session</h3>
+              <h3>
+                {demo
+                  ? "Next illustrative session"
+                  : plan.length
+                    ? "Your assigned workout"
+                    : "Your workouts start here"}
+              </h3>
+              {!demo && !plan.length && (
+                <p>
+                  No matching workouts have been assigned yet. Your coach can
+                  upload a drill and an Owner can add it to your account.
+                </p>
+              )}
               <p>{plan.map((d) => d.title).join(" · ")}</p>
               <p>
                 <Clock3 size={16} />{" "}
@@ -260,12 +299,15 @@ export function AthleteTraining({
                   setSession({
                     id: crypto.randomUUID(),
                     drills: plan.map((d) => d.id),
+                    items: plan,
                   })
                 }
               >
                 {state.is_parent
                   ? "Guide and record practice"
-                  : "Start sample workout"}
+                  : demo
+                    ? "Start sample workout"
+                    : "Start workout"}
                 <ArrowRight size={18} />
               </button>
               <p>
@@ -371,12 +413,16 @@ export function AthleteTraining({
             )}
         </>
       )}
+      {client && !demo && state && (
+        <AthleteVideoReview client={client} player={player} drills={plan} />
+      )}
       <Notice>
         {state?.is_family
           ? "Practice is self-reported; a parent approval records their review, not proof of improved athletic ability."
           : "Practice is self-reported, not proof of improved athletic ability."}{" "}
-        Sample activities are illustrative, noncontact and pending qualified
-        coaching review.
+        {demo
+          ? "Sample activities are illustrative, noncontact and pending qualified coaching review."
+          : "Training activities are noncontact and pending qualified coaching review."}
       </Notice>
       {permission !== null && state && (
         <Modal
@@ -571,6 +617,8 @@ export function AthleteTraining({
       {session && (
         <GuidedWorkout
           key={session.id}
+          demo={demo}
+          items={session.items}
           profile={profile}
           drills={session.drills}
           busy={busy}
@@ -593,7 +641,7 @@ export function AthleteTraining({
     </section>
   );
 }
-function GuidedWorkout({
+function DemoGuidedWorkout({
   profile,
   drills,
   busy,
@@ -720,6 +768,157 @@ function GuidedWorkout({
       ) : (
         <div className="discard-box">
           <p>End this unfinished practice? No completion will be recorded.</p>
+          <div className="actions">
+            <button className="button secondary" onClick={onCancel}>
+              Discard unfinished workout
+            </button>
+            <button className="text-button" onClick={() => setCancel(false)}>
+              Keep practicing
+            </button>
+          </div>
+        </div>
+      )}
+    </Modal>
+  );
+}
+
+function GuidedWorkout(props: {
+  demo: boolean;
+  items: Drill[];
+  profile: Profile;
+  drills: string[];
+  busy: boolean;
+  error: string;
+  onCancel: () => void;
+  onComplete: () => void;
+}) {
+  return props.demo ? (
+    <DemoGuidedWorkout {...props} />
+  ) : (
+    <SimpleWorkout {...props} />
+  );
+}
+function SimpleWorkout({
+  items,
+  profile,
+  busy,
+  error,
+  onCancel,
+  onComplete,
+}: {
+  items: Drill[];
+  profile: Profile;
+  busy: boolean;
+  error: string;
+  onCancel: () => void;
+  onComplete: () => void;
+}) {
+  const [index, setIndex] = useState(0),
+    [ready, setReady] = useState(false),
+    [ack, setAck] = useState(false),
+    [cancel, setCancel] = useState(false);
+  const lastTap = useRef(0);
+  const drill = items[index];
+  return (
+    <Modal
+      title={ready ? drill.title : "Ready to practice?"}
+      onClose={() => {
+        if (!busy) setCancel(true);
+      }}
+    >
+      {!ready ? (
+        <>
+          <p>
+            {profile.name} · {items.length} drills ·{" "}
+            {items.reduce((n, d) => n + d.minutes, 0)} planned minutes
+          </p>
+          <Notice>
+            Noncontact training. Use a clear practice space and appropriate
+            supervision. Content awaits qualified coaching review. Unfinished
+            practice is not saved on refresh.
+          </Notice>
+          <label className="checkbox-label">
+            <input
+              type="checkbox"
+              checked={ack}
+              onChange={(e) => setAck(e.target.checked)}
+            />{" "}
+            I have reviewed the practice space, instructions and supervision
+            needed.
+          </label>
+          <button
+            className="button full"
+            disabled={!ack}
+            onClick={() => setReady(true)}
+          >
+            Begin workout <ArrowRight size={18} />
+          </button>
+        </>
+      ) : (
+        <div className="simple-drill">
+          <Tag>
+            DRILL {index + 1} / {items.length} · {drill.minutes} MIN
+          </Tag>
+          {drill.assetId ? (
+            <AssetPreview drill={drill} />
+          ) : (
+            <Notice>
+              No demonstration is attached to this drill. Follow the written
+              instructions.
+            </Notice>
+          )}
+          <p className="drill-summary">{drill.lesson}</p>
+          <p className="drill-equipment">
+            <strong>You need:</strong> {drill.equipment}
+          </p>
+          <ol className="instruction-list compact-steps">
+            {drill.steps.map((step, n) => (
+              <li key={n}>{step}</li>
+            ))}
+          </ol>
+          <p className="coaching-cue">
+            <strong>Remember:</strong> {drill.cue}
+          </p>
+          {error && (
+            <p role="alert" className="form-error">
+              {error}
+            </p>
+          )}
+          <button
+            className="button full"
+            disabled={busy}
+            onClick={() => {
+              const now = Date.now();
+              if (now - lastTap.current < 650) return;
+              lastTap.current = now;
+              if (index < items.length - 1) setIndex((n) => n + 1);
+              else onComplete();
+            }}
+          >
+            {busy
+              ? "Saving practice…"
+              : index < items.length - 1
+                ? "Complete drill · Next"
+                : "Finish workout"}
+            <Check size={18} />
+          </button>
+          <p className="member-fineprint">
+            Complete a drill after practicing it. Watching a demonstration alone
+            does not record practice.
+          </p>
+        </div>
+      )}
+      {!cancel ? (
+        <button
+          className="text-button"
+          disabled={busy}
+          onClick={() => setCancel(true)}
+        >
+          End workout
+        </button>
+      ) : (
+        <div className="discard-box">
+          <p>Leave without recording this unfinished workout?</p>
           <div className="actions">
             <button className="button secondary" onClick={onCancel}>
               Discard unfinished workout

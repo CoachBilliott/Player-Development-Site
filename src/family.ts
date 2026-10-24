@@ -1,5 +1,7 @@
 import { z } from "zod";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Drill } from "./model";
+import { SharedContent } from "./sharedContent";
 import type { PrivatePlayer } from "./accounts";
 export const workoutSchema = z.object({
   id: z.string().uuid(),
@@ -33,6 +35,7 @@ export const familyStateSchema = z.object({
 });
 export type FamilyState = z.infer<typeof familyStateSchema>;
 export type FamilyService = {
+  plan?: (player: PrivatePlayer) => Promise<Drill[]>;
   load: (player: PrivatePlayer) => Promise<FamilyState>;
   permission: (
     player: PrivatePlayer,
@@ -85,6 +88,9 @@ function failure(error: unknown, fallback: string) {
 }
 export class FamilyTraining implements FamilyService {
   constructor(readonly client: SupabaseClient) {}
+  async plan(player: PrivatePlayer) {
+    return new SharedContent(this.client).listForPlayer(player.id);
+  }
   async load(player: PrivatePlayer) {
     const { data, error } = await this.client.rpc("family_profile_state", {
       target_profile: player.id,

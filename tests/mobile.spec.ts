@@ -3,54 +3,23 @@ import AxeBuilder from "@axe-core/playwright";
 import { disableBackend } from "./backendFixture";
 test.beforeEach(async ({ context }) => disableBackend(context));
 
-test("the app has its own welcome, persistent navigation and one usable customer demo", async ({
+test("the app opens private account access and keeps the customer demo on the website", async ({
   page,
-}, info) => {
-  await page.emulateMedia({ reducedMotion: "reduce" });
+}) => {
   await page.goto("./?source=app#app");
   await expect(
     page.getByRole("heading", { name: "Your training starts here." }),
   ).toBeVisible();
+  await expect(page.locator('a[href="#demo"]')).toHaveCount(0);
   await expect(
-    page.getByRole("navigation", { name: "App navigation" }),
-  ).toBeVisible();
-  await expect(
-    page.locator(".hero-training-video, .desktop-nav, footer"),
-  ).toHaveCount(0);
+    page.getByRole("navigation", { name: "App navigation" }).getByRole("link"),
+  ).toHaveText(["Start", "Log in", "Help"]);
+  await page.goto("./?source=app#demo");
+  await expect(page).toHaveURL(/#app$/);
   await page
-    .getByRole("link", { name: "Try the sample demo", exact: true })
+    .getByRole("link", { name: "Log in to your account", exact: true })
     .click();
-  await page.getByRole("button", { name: "Solo athlete", exact: true }).click();
-  await page
-    .getByRole("button", { name: "Start sample workout", exact: true })
-    .click();
-  const dialog = page.getByRole("dialog");
-  await dialog.getByRole("checkbox").check();
-  await dialog.getByRole("button", { name: "Begin sample practice" }).click();
-  for (;;) {
-    await dialog.getByRole("button", { name: "Show workout steps" }).click();
-    await dialog.getByRole("checkbox").check();
-    const submit = dialog.getByRole("button", {
-      name: "Submit reported workout",
-    });
-    if (await submit.isVisible()) {
-      await submit.dblclick();
-      break;
-    }
-    await dialog.getByRole("button", { name: "Next workout drill" }).click();
-  }
-  await expect(
-    page.getByText("Self-reported practice", { exact: true }),
-  ).toBeVisible();
-  await page.reload();
-  await page.getByRole("button", { name: "Solo athlete", exact: true }).click();
-  await expect(
-    page.getByText("Self-reported practice", { exact: true }),
-  ).toBeVisible();
-  await page
-    .getByRole("link", { name: "Exit demo · Back to app", exact: false })
-    .click();
-  await expect(page).toHaveURL(/source=app#app$/);
+  await expect(page).toHaveURL(/#account$/);
   await page
     .getByRole("navigation", { name: "App navigation" })
     .getByRole("link", { name: "Help", exact: true })
@@ -58,14 +27,13 @@ test("the app has its own welcome, persistent navigation and one usable customer
   await expect(
     page.getByRole("heading", { name: "Your app, explained." }),
   ).toBeVisible();
-  await page.screenshot({
-    path: `artifacts/mobile-help-${info.project.name}.png`,
-    fullPage: true,
-  });
-  const check = await new AxeBuilder({ page })
-    .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
-    .analyze();
-  expect(check.violations).toEqual([]);
+  expect(
+    (
+      await new AxeBuilder({ page })
+        .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+        .analyze()
+    ).violations,
+  ).toEqual([]);
 });
 
 test("app navigation and forms fit small phones while the normal website stays intact", async ({

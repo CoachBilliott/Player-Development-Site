@@ -1,8 +1,14 @@
-import { DRILLS } from "../src/data";
+import { DRILLS as SAMPLES } from "../src/data";
 import { disableBackend } from "./backendFixture";
 import { test, expect, type BrowserContext } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
+// Fictional assigned resources, independent of the public demo catalog.
+const DRILLS = SAMPLES.map((d, i) => ({
+  ...d,
+  id: `70000000-0000-4000-8000-${String(i + 1).padStart(12, "0")}`,
+  source: "shared" as const,
+}));
 const parentId = "10000000-0000-4000-8000-000000000001";
 const otherId = "20000000-0000-4000-8000-000000000002";
 type Row = Record<string, unknown>;
@@ -137,6 +143,31 @@ function fixture(
                 null,
             },
           });
+        if (url.pathname.endsWith("/rpc/athlete_training_plan"))
+          return route.fulfill({
+            json: DRILLS.map((d) => ({
+              id: d.id,
+              content: d,
+              asset_path: `${parentId}/${d.id}/${d.id}.mp4`,
+              asset_type: "video/mp4",
+              asset_name: "fictional.mp4",
+              version: 1,
+              visibility: "member_only",
+            })),
+          });
+        if (url.pathname.includes("/storage/v1/object/sign/"))
+          return route.fulfill({
+            json: {
+              signedURL:
+                "/object/sign/training-media/fictional.mp4?token=fixture",
+            },
+          });
+        if (url.pathname.endsWith("/rpc/athlete_video_state"))
+          return route.fulfill({
+            json: { can_submit: false, adult_only: false, reviews: [] },
+          });
+        if (url.pathname.includes("/member_training_access"))
+          return route.fulfill({ json: null });
         if (url.pathname.endsWith("/rpc/family_profile_state")) {
           const p = players.get(body.target_profile);
           if (!p || (p.owner_id !== id && links.get(p.id as string) !== id))
@@ -970,22 +1001,21 @@ test("a private family athlete joins with a parent code, reports practice withou
     page.getByRole("heading", { name: "Fictional Sibling", exact: true }),
   ).toHaveCount(0);
   await page
-    .getByRole("button", { name: "Start sample workout", exact: true })
+    .getByRole("button", { name: "Start workout", exact: true })
     .click();
   const dialog = page.getByRole("dialog");
   await dialog.getByRole("checkbox").check();
-  await dialog.getByRole("button", { name: "Begin sample practice" }).click();
+  await dialog.getByRole("button", { name: "Begin workout" }).click();
   for (;;) {
-    await dialog.getByRole("button", { name: "Show workout steps" }).click();
-    await dialog.getByRole("checkbox").check();
     const last = dialog.getByRole("button", {
-      name: "Submit reported workout",
+      name: "Finish workout",
     });
     if (await last.isVisible()) {
       await last.dblclick();
       break;
     }
-    await dialog.getByRole("button", { name: "Next workout drill" }).click();
+    await dialog.getByRole("button", { name: "Complete drill · Next" }).click();
+    await page.waitForTimeout(700);
   }
   await expect(
     page.getByText("Awaiting parent review", { exact: true }),
@@ -1136,7 +1166,7 @@ test("Parent and adult Athlete workspaces use private profiles; inactive members
     }),
   ).toBeVisible();
   await expect(
-    page.getByRole("button", { name: "Start sample workout", exact: true }),
+    page.getByRole("button", { name: "Start workout", exact: true }),
   ).toBeVisible();
   await page.goto("./#access");
   await expect(
@@ -1180,18 +1210,17 @@ async function completeAppWorkout(
     await refreshed;
     await expect(dialog.getByRole("checkbox")).toBeChecked();
   }
-  await dialog.getByRole("button", { name: "Begin sample practice" }).click();
+  await dialog.getByRole("button", { name: "Begin workout" }).click();
   for (;;) {
-    await dialog.getByRole("button", { name: "Show workout steps" }).click();
-    await dialog.getByRole("checkbox").check();
     const submit = dialog.getByRole("button", {
-      name: "Submit reported workout",
+      name: "Finish workout",
     });
     if (await submit.isVisible()) {
       await submit.dblclick();
       break;
     }
-    await dialog.getByRole("button", { name: "Next workout drill" }).click();
+    await dialog.getByRole("button", { name: "Complete drill · Next" }).click();
+    await page.waitForTimeout(700);
   }
   await expect(dialog).toHaveCount(0);
 }
@@ -1254,7 +1283,7 @@ test("member app separates Today, Workouts, Progress and Account and keeps famil
     page.getByRole("heading", { name: "Your workouts." }),
   ).toBeVisible();
   await expect(
-    page.getByRole("heading", { name: "Package workouts", exact: true }),
+    page.getByRole("heading", { name: "Your assigned workout", exact: true }),
   ).toBeVisible();
   await expect(page.locator(".app-session-drills li").first()).toBeVisible();
   await page
@@ -1262,7 +1291,7 @@ test("member app separates Today, Workouts, Progress and Account and keeps famil
     .click();
   await page
     .getByRole("dialog")
-    .getByRole("button", { name: "End without recording" })
+    .getByRole("button", { name: "End workout" })
     .click();
   await page
     .getByRole("dialog")
@@ -1380,7 +1409,7 @@ test("solo app training reports survive navigation and refresh while failed read
       exact: true,
     }),
   ).toBeVisible();
-  await completeAppWorkout(page, "Start sample workout", true);
+  await completeAppWorkout(page, "Start workout", true);
   const nav = page.getByRole("navigation", { name: "App navigation" });
   await nav.getByRole("link", { name: "Progress", exact: true }).click();
   await expect(
@@ -1485,14 +1514,14 @@ test("a connected junior app sees one athlete and respects parent recording perm
     page.getByLabel("Training athlete", { exact: true }),
   ).toHaveCount(0);
   await expect(
-    page.getByRole("button", { name: "Start sample workout", exact: true }),
+    page.getByRole("button", { name: "Start workout", exact: true }),
   ).toBeDisabled();
   backend.controls.set(child.id, { allowed: true, version: 1 });
   await page.evaluate(() => window.dispatchEvent(new Event("focus")));
   await expect(
-    page.getByRole("button", { name: "Start sample workout", exact: true }),
+    page.getByRole("button", { name: "Start workout", exact: true }),
   ).toBeEnabled();
-  await completeAppWorkout(page, "Start sample workout");
+  await completeAppWorkout(page, "Start workout");
   await page
     .getByRole("navigation", { name: "App navigation" })
     .getByRole("link", { name: "Progress", exact: true })
@@ -1509,7 +1538,7 @@ test("a connected junior app sees one athlete and respects parent recording perm
     .getByRole("link", { name: "Today", exact: true })
     .click();
   await expect(
-    page.getByRole("button", { name: "Start sample workout", exact: true }),
+    page.getByRole("button", { name: "Start workout", exact: true }),
   ).toBeDisabled();
 });
 
@@ -1525,6 +1554,7 @@ test("staff app navigation stays on authorized content tools rather than member 
   await expect(nav.getByRole("link")).toHaveText([
     "Overview",
     "Content",
+    "Reviews",
     "Account",
     "Help",
   ]);

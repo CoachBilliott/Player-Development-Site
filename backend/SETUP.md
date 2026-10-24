@@ -1,6 +1,6 @@
 # Player Development backend — private adult pilot
 
-The dedicated project `iilbulpqbuknhdpmtrvm` is connected. Migrations `001-shared-content.sql`, `002-private-profiles.sql`, `003-account-levels.sql`, `004-family-athletes.sql` and `005-content-audiences.sql` were applied once and verified against the live project. Do not rerun the initial migrations against this installed schema.
+The dedicated project `iilbulpqbuknhdpmtrvm` is connected. Migrations `001-shared-content.sql`, `002-private-profiles.sql`, `003-account-levels.sql`, `004-family-athletes.sql` and `005-content-audiences.sql` were applied once and verified against the live project. Migration `006-assigned-training-and-video-review.sql` is now also installed; it adds private assigned workouts and optional coach video review without opening billing or junior access. Do not rerun the initial migrations against this installed schema.
 
 The site URL and exact verification/recovery redirect URLs point to `https://coachbilliott.github.io/Player-Development-Site/`. Email confirmation is required and passwords require at least 12 characters. Management access is supplied securely by the owner; no administrative credential belongs in the repository, browser configuration, test fixtures or chat.
 
@@ -85,3 +85,7 @@ Payments, package definitions, recurring billing, unpaid-access suspension, enti
 ## Separate workspaces and protected content
 
 Migration 005 is applied. Existing and new shared resources default to protected staff review (`member_only`). Only explicitly selected `public_sample` resources can be read by visitors. Parent/Athlete sign-in alone grants no protected training entitlement. RLS restricts metadata and media-signing selection; Owners/Managers review all protected resources and Coaches review their own. Existing private-profile policies remain in force. Signed media URLs last five minutes and already issued bearer URLs remain valid until expiry. There are no package grants, payment checkout or active subscriptions. See [VIEWS-GUIDE.md](../VIEWS-GUIDE.md) for routes, the single customer demo, tests and remaining launch requirements. Live verification used only temporary fictional adult identities in a rolled-back transaction and confirmed zero remaining fixtures; no emails or child accounts were created.
+
+## Assigned workouts and private video review
+
+See [VIDEO-REVIEW-GUIDE.md](../VIDEO-REVIEW-GUIDE.md) for the Owner assignment workflow, adult pilot recording/upload, parent approval, coach feedback, quotas and explicit deletion. Migration 006 adds RLS-protected entitlements/reviews and a private 40 MB video bucket. No browser can self-grant access; Owner/Manager status alone does not reveal clips. Real accounts use only assigned matching uploads. The public illustrative catalog remains for the separate website demo. Do not rerun migration 006 on the installed schema.

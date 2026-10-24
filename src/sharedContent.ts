@@ -211,6 +211,16 @@ export class SharedContent {
       ...(data?.signedUrl ? { assetUrl: data.signedUrl } : {}),
     };
   }
+  async listForPlayer(profileId: string) {
+    const { data, error } = await this.client.rpc("athlete_training_plan", {
+      target_profile: profileId,
+    });
+    if (error)
+      throw new Error(
+        "Assigned workouts could not be loaded. Reconnect and retry.",
+      );
+    return Promise.all((data || []).map((row: unknown) => this.convert(row)));
+  }
   async list() {
     const { data, error } = await this.client
       .from("training_resources")
