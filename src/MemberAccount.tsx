@@ -300,6 +300,11 @@ function ConnectedAccount({
         </p>
       )}
       <div className="member-heading">
+        {appSurface() && (
+          <a className="text-button" href="#app-help">
+            App help & support <ArrowRight size={16} />
+          </a>
+        )}
         <Tag>
           <LockKeyhole size={14} /> PRIVATE MEMBER SPACE
         </Tag>
@@ -929,7 +934,7 @@ function ConnectedAccount({
               })
             }
           >
-            Sign out of this browser
+            {appSurface() ? "Sign out" : "Sign out of this browser"}
           </button>
           <p>Sign out before handing a shared device to someone else.</p>
         </div>

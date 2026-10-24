@@ -1,5 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { ArrowRight, Check, Clock3, ShieldCheck } from "lucide-react";
+import {
+  ArrowRight,
+  Check,
+  Clock3,
+  RefreshCw,
+  ShieldCheck,
+} from "lucide-react";
 import { DRILLS } from "./data";
 import { planFor, type Profile } from "./model";
 import type { PrivatePlayer } from "./accounts";
@@ -16,12 +22,14 @@ export function AthleteTraining({
   demo = false,
   onConnectionChange,
   junior = false,
+  view = "all",
 }: {
   player: PrivatePlayer;
   service: FamilyService;
   demo?: boolean;
   onConnectionChange?: () => Promise<void>;
   junior?: boolean;
+  view?: "all" | "today" | "workouts" | "progress";
 }) {
   const [state, setState] = useState<FamilyState | null>(null),
     [error, setError] = useState(""),
@@ -97,22 +105,38 @@ export function AthleteTraining({
     >
       <div className="family-training-heading">
         <div>
-          <Tag>
-            {state?.is_family ? "FAMILY ATHLETE" : "INDIVIDUAL ATHLETE"}
-          </Tag>
-          <h2>{player.nickname}’s workouts</h2>
-          <p>
-            {junior
-              ? "Your next practice, one step at a time. Your parent reviews what you report."
-              : "One athlete. Their own plan and history."}
-          </p>
+          {view !== "today" && (
+            <Tag>
+              {state?.is_family ? "FAMILY ATHLETE" : "INDIVIDUAL ATHLETE"}
+            </Tag>
+          )}
+          <h2>
+            {player.nickname}’s{" "}
+            {view === "today"
+              ? "next session"
+              : view === "progress"
+                ? "practice history"
+                : "workouts"}
+          </h2>
+          {view !== "today" && (
+            <p>
+              {junior
+                ? "Your next practice, one step at a time. Your parent reviews what you report."
+                : "One athlete. Their own plan and history."}
+            </p>
+          )}
         </div>
         <button
           className="button secondary"
+          aria-label="Refresh workout history"
           disabled={busy || !!session}
           onClick={() => void act(refresh)}
         >
-          Refresh workout history
+          {view === "today" ? (
+            <RefreshCw size={18} />
+          ) : (
+            "Refresh workout history"
+          )}
         </button>
       </div>
       {error && permission === null && !review && !remove && !session && (
@@ -129,7 +153,7 @@ export function AthleteTraining({
         </p>
       ) : (
         <>
-          {state.is_parent && (
+          {state.is_parent && view === "all" && (
             <div className="family-permission">
               <ShieldCheck size={24} />
               <div>
@@ -205,110 +229,137 @@ export function AthleteTraining({
                 : "Your parent is managing workout recording. You can view your history; ask your parent to record practice with you."}
             </Notice>
           )}
-          <div className="family-plan">
-            <h3>Next illustrative session</h3>
-            <p>{plan.map((d) => d.title).join(" · ")}</p>
-            <p>
-              <Clock3 size={16} /> {plan.reduce((sum, d) => sum + d.minutes, 0)}{" "}
-              planned minutes · {plan[0]?.equipment}
-            </p>
-            <p>
-              Matched to age {player.age_group},{" "}
-              {player.experience.toLowerCase()} and {player.goal.toLowerCase()}.
-            </p>
-            <button
-              className="button"
-              disabled={busy || !state.can_record || !plan.length || !!session}
-              onClick={() =>
-                setSession({
-                  id: crypto.randomUUID(),
-                  drills: plan.map((d) => d.id),
-                })
-              }
-            >
-              {state.is_parent
-                ? "Guide and record practice"
-                : "Start sample workout"}
-              <ArrowRight size={18} />
-            </button>
-            {!state.can_record && (
-              <p className="member-fineprint">
-                Independent recording is unavailable for this account, or
-                enrollment is still closed.
+          {view !== "progress" && (
+            <div className="family-plan">
+              <h3>Next illustrative session</h3>
+              <p>{plan.map((d) => d.title).join(" · ")}</p>
+              <p>
+                <Clock3 size={16} />{" "}
+                {plan.reduce((sum, d) => sum + d.minutes, 0)} planned minutes ·{" "}
+                {plan[0]?.equipment}
               </p>
-            )}
-          </div>
-          <div className="family-history">
-            <h3>Practice history</h3>
-            <div className="family-counts">
-              <span>
-                <strong>{state.workouts.length}</strong> reported
-              </span>
-              {state.is_family && (
-                <>
-                  <span>
-                    <strong>
-                      {
-                        state.workouts.filter(
-                          (w) => w.status === "pending_parent",
-                        ).length
-                      }
-                    </strong>{" "}
-                    awaiting review
-                  </span>
-                  <span>
-                    <strong>
-                      {
-                        state.workouts.filter((w) => w.status === "approved")
-                          .length
-                      }
-                    </strong>{" "}
-                    parent approved
-                  </span>
-                </>
+              {view === "workouts" && (
+                <ol className="app-session-drills">
+                  {plan.map((drill) => (
+                    <li key={drill.id}>
+                      <strong>{drill.title}</strong>
+                      <span>
+                        {drill.minutes} planned minutes · {drill.equipment}
+                      </span>
+                      <p>{drill.lesson}</p>
+                    </li>
+                  ))}
+                </ol>
+              )}
+              <button
+                className="button"
+                disabled={
+                  busy || !state.can_record || !plan.length || !!session
+                }
+                onClick={() =>
+                  setSession({
+                    id: crypto.randomUUID(),
+                    drills: plan.map((d) => d.id),
+                  })
+                }
+              >
+                {state.is_parent
+                  ? "Guide and record practice"
+                  : "Start sample workout"}
+                <ArrowRight size={18} />
+              </button>
+              <p>
+                Matched to age {player.age_group},{" "}
+                {player.experience.toLowerCase()},{" "}
+                {player.position.toLowerCase()} and {player.goal.toLowerCase()}.
+              </p>
+              {!state.can_record && (
+                <p className="member-fineprint">
+                  Independent recording is unavailable for this account, or
+                  enrollment is still closed.
+                </p>
               )}
             </div>
-            {!state.workouts.length ? (
-              <p>No workouts recorded for this athlete yet.</p>
-            ) : (
-              state.workouts.map((workout) => (
-                <article className="family-workout" key={workout.id}>
-                  <Tag>{WORKOUT_LABELS[workout.status]}</Tag>
-                  <h4>{workout.titles.join(" · ")}</h4>
-                  <p>
-                    {new Date(workout.created_at).toLocaleDateString()} ·{" "}
-                    {workout.minutes} planned minutes
-                  </p>
-                  {state.is_parent && workout.status === "pending_parent" && (
-                    <div className="actions">
-                      <button
-                        className="button secondary"
-                        disabled={busy}
-                        onClick={() =>
-                          setReview({ workout, decision: "approved" })
+          )}
+          {message && view !== "all" && view !== "progress" && (
+            <a className="button secondary" href="#app-progress">
+              View practice history <ArrowRight size={17} />
+            </a>
+          )}
+          {(view === "all" || view === "progress") && (
+            <div className="family-history">
+              <h3>Practice history</h3>
+              <div className="family-counts">
+                <span>
+                  <strong>{state.workouts.length}</strong> reported
+                </span>
+                {state.is_family && (
+                  <>
+                    <span>
+                      <strong>
+                        {
+                          state.workouts.filter(
+                            (w) => w.status === "pending_parent",
+                          ).length
                         }
-                      >
-                        Approve workout
-                      </button>
-                      <button
-                        className="text-button"
-                        disabled={busy}
-                        onClick={() =>
-                          setReview({ workout, decision: "needs_repeat" })
+                      </strong>{" "}
+                      awaiting review
+                    </span>
+                    <span>
+                      <strong>
+                        {
+                          state.workouts.filter((w) => w.status === "approved")
+                            .length
                         }
-                      >
-                        Ask to practice again
-                      </button>
-                    </div>
-                  )}
-                </article>
-              ))
-            )}
-          </div>
+                      </strong>{" "}
+                      parent approved
+                    </span>
+                  </>
+                )}
+              </div>
+              {!state.workouts.length ? (
+                <p>No workouts recorded for this athlete yet.</p>
+              ) : (
+                state.workouts.map((workout) => (
+                  <article className="family-workout" key={workout.id}>
+                    <Tag>{WORKOUT_LABELS[workout.status]}</Tag>
+                    <h4>{workout.titles.join(" · ")}</h4>
+                    <p>
+                      {new Date(workout.created_at).toLocaleDateString()} ·{" "}
+                      {workout.minutes} planned minutes
+                    </p>
+                    {state.is_parent && workout.status === "pending_parent" && (
+                      <div className="actions">
+                        <button
+                          className="button secondary"
+                          disabled={busy}
+                          onClick={() =>
+                            setReview({ workout, decision: "approved" })
+                          }
+                        >
+                          Approve workout
+                        </button>
+                        <button
+                          className="text-button"
+                          disabled={busy}
+                          onClick={() =>
+                            setReview({ workout, decision: "needs_repeat" })
+                          }
+                        >
+                          Ask to practice again
+                        </button>
+                      </div>
+                    )}
+                  </article>
+                ))
+              )}
+            </div>
+          )}
           {!state.is_parent &&
             state.is_family &&
             player.age_group === "18+" &&
             !state.guardian_managed &&
+            view === "all" &&
             !demo && (
               <button
                 className="text-button"

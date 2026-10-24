@@ -1143,3 +1143,391 @@ test("Parent and adult Athlete workspaces use private profiles; inactive members
     page.getByRole("heading", { name: "Owner access is required." }),
   ).toBeVisible();
 });
+
+function appProfile(
+  ownerId: string,
+  nickname: string,
+  age: "18+" | "8–12" | "13–17" = "18+",
+) {
+  return {
+    id: crypto.randomUUID(),
+    owner_id: ownerId,
+    nickname,
+    age_group: age,
+    sport: "football",
+    position: "Quarterback",
+    experience: "New to the game",
+    goal: "Footwork",
+    guardian_confirmed: age !== "18+",
+    version: 1,
+  };
+}
+async function completeAppWorkout(
+  page: import("@playwright/test").Page,
+  label: string,
+) {
+  await page.getByRole("button", { name: label, exact: true }).click();
+  const dialog = page.getByRole("dialog");
+  await dialog.getByRole("checkbox").check();
+  await dialog.getByRole("button", { name: "Begin sample practice" }).click();
+  for (;;) {
+    await dialog.getByRole("button", { name: "Show workout steps" }).click();
+    await dialog.getByRole("checkbox").check();
+    const submit = dialog.getByRole("button", {
+      name: "Submit reported workout",
+    });
+    if (await submit.isVisible()) {
+      await submit.dblclick();
+      break;
+    }
+    await dialog.getByRole("button", { name: "Next workout drill" }).click();
+  }
+  await expect(dialog).toHaveCount(0);
+}
+
+test("member app separates Today, Workouts, Progress and Account and keeps family selection and reviews private", async ({
+  page,
+  context,
+}, info) => {
+  const backend = fixture(false, false, "parent");
+  await backend.install(context);
+  backend.accounts.set(parentId, {
+    user_id: parentId,
+    account_type: "parent",
+    privacy_version: "prototype-2026-01",
+  });
+  const first = appProfile(parentId, "Fictional First"),
+    second = appProfile(parentId, "Fictional Second");
+  backend.players.set(first.id, first);
+  backend.players.set(second.id, second);
+  const report = {
+    id: crypto.randomUUID(),
+    profile_id: first.id,
+    reported_by: otherId,
+    drill_ids: [DRILLS[0].id],
+    titles: ["First athlete only"],
+    minutes: 5,
+    status: "pending_parent",
+    created_at: new Date().toISOString(),
+    reviewed_by: null,
+    reviewed_at: null,
+    version: 1,
+  };
+  backend.workouts.set(report.id, report);
+  await signIn(page);
+  await page.goto("./?source=app#workspace");
+  const nav = page.getByRole("navigation", { name: "App navigation" });
+  await expect(nav.getByRole("link")).toHaveText([
+    "Today",
+    "Workouts",
+    "Progress",
+    "Account",
+  ]);
+  await expect(
+    page.getByRole("heading", { name: "Today’s training." }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Practice history", exact: true }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole("button", { name: /Delete member|Add another/ }),
+  ).toHaveCount(0);
+  await page
+    .getByLabel("Training athlete", { exact: true })
+    .selectOption(second.id);
+  await nav.getByRole("link", { name: "Workouts", exact: true }).click();
+  await expect(
+    page.getByLabel("Training athlete", { exact: true }),
+  ).toHaveValue(second.id);
+  await expect(
+    page.getByRole("heading", { name: "Your workouts." }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Package workouts", exact: true }),
+  ).toBeVisible();
+  await expect(page.locator(".app-session-drills li").first()).toBeVisible();
+  await page
+    .getByRole("button", { name: "Guide and record practice", exact: true })
+    .click();
+  await page
+    .getByRole("dialog")
+    .getByRole("button", { name: "End without recording" })
+    .click();
+  await page
+    .getByRole("dialog")
+    .getByRole("button", { name: "Discard unfinished workout" })
+    .click();
+  expect(backend.counts.workoutWrites).toBe(0);
+  await completeAppWorkout(page, "Guide and record practice");
+  expect(backend.counts.workoutWrites).toBe(1);
+  await nav.getByRole("link", { name: "Progress", exact: true }).click();
+  await expect(
+    page.getByLabel("Training athlete", { exact: true }),
+  ).toHaveValue(second.id);
+  await expect(
+    page.getByText("Parent approved", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", {
+      name: "Guide and record practice",
+      exact: true,
+    }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByText("First athlete only", { exact: true }),
+  ).toHaveCount(0);
+  await page
+    .getByLabel("Training athlete", { exact: true })
+    .selectOption(first.id);
+  await expect(
+    page.getByText("Awaiting parent review", { exact: true }),
+  ).toBeVisible();
+  await page
+    .getByRole("button", { name: "Approve workout", exact: true })
+    .click();
+  await page
+    .getByRole("dialog")
+    .getByRole("button", { name: "Cancel review" })
+    .click();
+  expect(backend.counts.parentReviews).toBe(0);
+  await page
+    .getByRole("button", { name: "Approve workout", exact: true })
+    .click();
+  await page
+    .getByRole("dialog")
+    .getByRole("button", { name: "Confirm parent review" })
+    .dblclick();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  expect(backend.counts.parentReviews).toBe(1);
+  await page.reload();
+  await expect(
+    page.getByText("Parent approved", { exact: true }),
+  ).toBeVisible();
+  await page.setViewportSize({ width: 320, height: 800 });
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+  const axe = await new AxeBuilder({ page })
+    .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+    .analyze();
+  expect(axe.violations).toEqual([]);
+  await page.screenshot({
+    path: `artifacts/focused-app-progress-${info.project.name}.png`,
+    fullPage: true,
+  });
+  await nav.getByRole("link", { name: "Today", exact: true }).click();
+  await expect(
+    page.getByRole("heading", {
+      name: "Fictional First’s next session",
+      exact: true,
+    }),
+  ).toBeVisible();
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.evaluate(
+    () =>
+      new Promise((resolve) =>
+        requestAnimationFrame(() => requestAnimationFrame(resolve)),
+      ),
+  );
+  await page.screenshot({
+    path: `artifacts/focused-app-today-${info.project.name}.png`,
+  });
+  await nav.getByRole("link", { name: "Account", exact: true }).click();
+  await expect(
+    page.getByRole("heading", {
+      name: "Your account. Your players.",
+      exact: true,
+    }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Workouts & permissions" }).first(),
+  ).toBeVisible();
+  const stored = await page.evaluate(() => localStorage.getItem("pd-demo-v1"));
+  expect(stored || "").not.toContain("Fictional First");
+});
+
+test("solo app training reports survive navigation and refresh while failed reads and signout expose no previous profile", async ({
+  page,
+  context,
+}, info) => {
+  const backend = fixture(false, false, "athlete");
+  await backend.install(context);
+  backend.accounts.set(parentId, {
+    user_id: parentId,
+    account_type: "adult",
+    privacy_version: "prototype-2026-01",
+  });
+  const player = appProfile(parentId, "Fictional Solo App");
+  backend.players.set(player.id, player);
+  await signIn(page);
+  await page.goto("./?source=app#workspace");
+  await expect(
+    page.getByRole("heading", {
+      name: "Fictional Solo App’s next session",
+      exact: true,
+    }),
+  ).toBeVisible();
+  await completeAppWorkout(page, "Start sample workout");
+  const nav = page.getByRole("navigation", { name: "App navigation" });
+  await nav.getByRole("link", { name: "Progress", exact: true }).click();
+  await expect(
+    page.getByText("Self-reported practice", { exact: true }),
+  ).toBeVisible();
+  await page.reload();
+  await expect(
+    page.getByText("Self-reported practice", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByLabel("Training athlete", { exact: true }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole("button", { name: "Approve workout" }),
+  ).toHaveCount(0);
+  await page.route("**/rest/v1/player_profiles**", (route) =>
+    route.fulfill({
+      status: 403,
+      json: { message: "Fictional access unavailable" },
+    }),
+  );
+  await nav.getByRole("link", { name: "Today", exact: true }).click();
+  await expect(
+    page.getByRole("button", { name: "Retry loading training" }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Fictional Solo App", { exact: true }),
+  ).toHaveCount(0);
+  await page.unroute("**/rest/v1/player_profiles**");
+  await page.getByRole("button", { name: "Retry loading training" }).click();
+  await expect(
+    page.getByRole("heading", {
+      name: "Fictional Solo App’s next session",
+      exact: true,
+    }),
+  ).toBeVisible();
+  await nav.getByRole("link", { name: "Workouts", exact: true }).click();
+  for (const width of [320, 390, 768]) {
+    await page.setViewportSize({ width, height: 800 });
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+  }
+  const axe = await new AxeBuilder({ page })
+    .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+    .analyze();
+  expect(axe.violations).toEqual([]);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.evaluate(
+    () =>
+      new Promise((resolve) =>
+        requestAnimationFrame(() => requestAnimationFrame(resolve)),
+      ),
+  );
+  await page.screenshot({
+    path: `artifacts/focused-app-workouts-${info.project.name}.png`,
+    fullPage: true,
+  });
+  await nav.getByRole("link", { name: "Account", exact: true }).click();
+  await page.getByRole("button", { name: "Sign out", exact: true }).click();
+  await page.goto("./?source=app#app-progress");
+  await expect(
+    page.getByRole("button", { name: "Sign in securely" }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Fictional Solo App", { exact: true }),
+  ).toHaveCount(0);
+});
+
+test("a connected junior app sees one athlete and respects parent recording permission", async ({
+  page,
+  context,
+}) => {
+  const backend = fixture(true, false, "parent");
+  await backend.install(context);
+  backend.accounts.set(parentId, {
+    user_id: parentId,
+    account_type: "parent",
+    privacy_version: "prototype-2026-01",
+  });
+  const child = appProfile(parentId, "Fictional Junior", "8–12"),
+    sibling = appProfile(parentId, "Fictional Sibling", "13–17");
+  backend.players.set(child.id, child);
+  backend.players.set(sibling.id, sibling);
+  backend.links.set(child.id, otherId);
+  backend.levels.set(otherId, { role: "athlete", version: 1 });
+  backend.controls.set(child.id, { allowed: false, version: 0 });
+  await signIn(page, "fictional-adult@example.test");
+  await page.goto("./?source=app#workspace");
+  await expect(
+    page.getByRole("heading", {
+      name: "Fictional Junior’s next session",
+      exact: true,
+    }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Fictional Sibling", { exact: true }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByLabel("Training athlete", { exact: true }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole("button", { name: "Start sample workout", exact: true }),
+  ).toBeDisabled();
+  backend.controls.set(child.id, { allowed: true, version: 1 });
+  await page.evaluate(() => window.dispatchEvent(new Event("focus")));
+  await expect(
+    page.getByRole("button", { name: "Start sample workout", exact: true }),
+  ).toBeEnabled();
+  await completeAppWorkout(page, "Start sample workout");
+  await page
+    .getByRole("navigation", { name: "App navigation" })
+    .getByRole("link", { name: "Progress", exact: true })
+    .click();
+  await expect(
+    page.getByText("Awaiting parent review", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Approve workout" }),
+  ).toHaveCount(0);
+  backend.controls.set(child.id, { allowed: false, version: 2 });
+  await page
+    .getByRole("navigation", { name: "App navigation" })
+    .getByRole("link", { name: "Today", exact: true })
+    .click();
+  await expect(
+    page.getByRole("button", { name: "Start sample workout", exact: true }),
+  ).toBeDisabled();
+});
+
+test("staff app navigation stays on authorized content tools rather than member or public marketing screens", async ({
+  page,
+  context,
+}) => {
+  const backend = fixture(false, false, "coach");
+  await backend.install(context);
+  await signIn(page);
+  await page.goto("./?source=app#workspace");
+  const nav = page.getByRole("navigation", { name: "App navigation" });
+  await expect(nav.getByRole("link")).toHaveText([
+    "Overview",
+    "Content",
+    "Account",
+    "Help",
+  ]);
+  await expect(
+    page.getByRole("heading", { name: "Build the next great practice." }),
+  ).toBeVisible();
+  await page.goto("./?source=app#app-progress");
+  await expect(
+    page.getByRole("heading", { name: "Your staff workspace." }),
+  ).toBeVisible();
+  await expect(page.locator(".app-athlete-picker")).toHaveCount(0);
+  await page.goto("./#home");
+  await expect(page.getByRole("heading", { name: /Your game/ })).toBeVisible();
+  await expect(
+    page.getByRole("navigation", { name: "App navigation" }),
+  ).toHaveCount(0);
+});

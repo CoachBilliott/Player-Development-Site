@@ -74,6 +74,10 @@
   color: #fff;
   background: #30302d;
 }
+.app-tabs a.active:hover {
+  color: #ff966f;
+  background: #ff78460e;
+}
 .mobile-layout:has(dialog[open]) .app-tabs {
   visibility: hidden;
 }
@@ -303,4 +307,203 @@
     padding-left: 16px;
     padding-right: 16px;
   }
+}
+
+/* Member training is separate from marketing and profile administration. */
+.mobile-layout .app-training {
+  max-width: 800px;
+}
+.app-training-intro {
+  margin-bottom: 26px;
+}
+.app-athlete-picker {
+  padding: 22px;
+  margin-bottom: 22px;
+}
+.app-athlete-picker label {
+  display: grid;
+  gap: 10px;
+  font-size: 13px;
+  color: #d4d4cb;
+}
+.app-athlete-picker select {
+  width: 100%;
+}
+.app-athlete-picker strong {
+  display: block;
+  font: 700 32px/1.1 var(--font-display);
+  margin-top: 8px;
+}
+.app-athlete-label {
+  color: #ff966f;
+  font-size: 10px;
+  letter-spacing: 1px;
+}
+.app-athlete-picker p {
+  font-size: 13px;
+  line-height: 1.9;
+  color: #c5c5b9;
+  margin: 14px 0;
+}
+.app-athlete-picker .text-button {
+  min-height: 44px;
+  text-align: left;
+}
+.app-training .family-training {
+  margin: 0 0 24px;
+  padding: 22px;
+}
+.app-training .family-training-heading {
+  gap: 16px;
+}
+.app-training .family-training-heading h2 {
+  font-size: 30px;
+}
+.app-training .family-training-heading p {
+  font-size: 13px;
+  line-height: 1.7;
+}
+.app-training .family-training-heading .button {
+  font-size: 12px;
+  padding: 12px 16px;
+}
+.app-training .family-plan {
+  margin-top: 20px;
+}
+.app-training .family-plan h3 {
+  font-size: 22px;
+}
+.app-training .family-plan > p {
+  line-height: 1.9;
+  font-size: 13px;
+}
+.app-training .family-plan > .button {
+  width: 100%;
+  margin-top: 12px;
+}
+.app-training .family-history {
+  margin-top: 22px;
+}
+.app-training .family-workout {
+  padding: 20px 0;
+}
+.app-training .family-workout h4 {
+  line-height: 1.6;
+}
+.app-training .family-workout p {
+  line-height: 1.8;
+  font-size: 13px;
+}
+.app-package-status {
+  display: flex;
+  align-items: start;
+  gap: 14px;
+  padding: 22px;
+  margin-bottom: 22px;
+}
+.app-package-status > svg {
+  flex-shrink: 0;
+  color: #ff966f;
+}
+.app-package-status h2 {
+  font-size: 25px;
+  margin-bottom: 10px;
+}
+.app-package-status p {
+  color: #c5c5b9;
+  font-size: 13px;
+  line-height: 1.9;
+}
+.app-session-drills {
+  padding-left: 20px;
+  margin: 24px 0;
+}
+.app-session-drills li {
+  padding: 12px 0 18px 4px;
+  border-top: 1px solid #54544b;
+}
+.app-session-drills strong,
+.app-session-drills span {
+  display: block;
+}
+.app-session-drills span,
+.app-session-drills p {
+  color: #c5c5b9;
+  font-size: 12px;
+  line-height: 1.9;
+  margin-top: 8px;
+}
+.app-training-empty {
+  padding: 26px;
+  display: grid;
+  gap: 18px;
+  margin-bottom: 24px;
+}
+.app-training-empty h2 {
+  font-size: 30px;
+}
+.app-training-empty p {
+  line-height: 1.9;
+  color: #c5c5b9;
+}
+.app-training-links {
+  display: grid;
+  gap: 14px;
+  justify-items: stretch;
+}
+.app-training-links .text-button {
+  justify-content: center;
+}
+.app-training-help {
+  margin-top: 24px;
+  min-height: 44px;
+}
+@media (max-width: 500px) {
+  .app-training .family-training-heading {
+    flex-direction: column;
+    align-items: start;
+  }
+  .app-training .family-counts {
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+}
+.mobile-layout .app-training-today .page-intro h1 {
+  font-size: 36px;
+  margin: 12px 0;
+}
+.mobile-layout .app-training-today .page-intro > p {
+  font-size: 13px;
+  line-height: 1.65;
+}
+.app-training-today .app-training-intro {
+  margin-bottom: 18px;
+}
+.app-training-today .app-athlete-picker {
+  padding: 16px;
+  margin-bottom: 18px;
+}
+.app-training-today .app-athlete-picker label {
+  margin-bottom: 8px;
+}
+.app-training-today .family-training {
+  padding: 18px;
+}
+.app-training-today .family-training-heading {
+  flex-direction: row;
+  align-items: center;
+}
+.app-training-today .family-training-heading h2 {
+  font-size: 25px;
+  line-height: 1.15;
+}
+.app-training-today .family-training-heading .button {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 10px;
+  flex-shrink: 0;
+}
+.app-training-today .family-plan {
+  padding: 18px;
+  margin-top: 16px;
 }

@@ -55,6 +55,12 @@ describe("native credential storage", () => {
   });
 });
 it("offers staff content tabs only for authenticated staff roles", () => {
+  expect(mobileNavigation(true, "parent").map(([, label]) => label)).toEqual([
+    "Today",
+    "Workouts",
+    "Progress",
+    "Account",
+  ]);
   for (const role of ["parent", "athlete", null] as const)
     expect(mobileNavigation(true, role).map(([page]) => page)).not.toContain(
       "coach",

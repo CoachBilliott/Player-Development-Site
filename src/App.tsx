@@ -64,6 +64,8 @@ import {
   MobileWelcome,
 } from "./MobileApp";
 import { useNativeApp } from "./useNativeApp";
+import { MobileTraining } from "./MobileTraining";
+import { isStaff } from "./roles";
 import {
   Workspace,
   AccessWorkspace,
@@ -95,6 +97,8 @@ const safeHash = () => {
     "home",
     "app",
     "app-help",
+    "app-workouts",
+    "app-progress",
     "onboarding",
     "today",
     "library",
@@ -124,6 +128,10 @@ export default function App() {
   const shared = useSharedContent();
   useNativeApp(shared.service?.client);
   const [mobile] = useState(appSurface);
+  const [trainingSelection, setTrainingSelection] = useState({
+    userId: "",
+    playerId: "",
+  });
   const wasSignedIn = useRef(false);
   const [initial] = useState(loadState);
   const [state, setState] = useState<State>(initial.state);
@@ -460,6 +468,21 @@ export default function App() {
             <MobileWelcome signedIn={shared.signedIn} />
           ) : page === "app-help" || (nativeApp() && page === "install") ? (
             <MobileHelp app={app} />
+          ) : (mobile && page === "workspace" && !isStaff(shared.role)) ||
+            ["app-workouts", "app-progress"].includes(page) ||
+            (mobile && page === "member-library" && !isStaff(shared.role)) ? (
+            <MobileTraining
+              shared={shared}
+              screen={
+                page === "app-progress"
+                  ? "progress"
+                  : page === "app-workouts" || page === "member-library"
+                    ? "workouts"
+                    : "today"
+              }
+              selection={trainingSelection}
+              onSelect={setTrainingSelection}
+            />
           ) : page === "workspace" ? (
             <Workspace shared={shared} />
           ) : page === "access" ? (

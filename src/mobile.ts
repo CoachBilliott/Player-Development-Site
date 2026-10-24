@@ -28,10 +28,10 @@ export function mobileNavigation(signedIn: boolean, role: AccountRole | null) {
       ["app-help", "Help"],
     ] as const;
   return [
-    ["workspace", "Train"],
-    ["member-library", "Library"],
+    ["workspace", "Today"],
+    ["app-workouts", "Workouts"],
+    ["app-progress", "Progress"],
     ["account", "Account"],
-    ["app-help", "Help"],
   ] as const;
 }
 export async function openWebsite(path = "#home") {

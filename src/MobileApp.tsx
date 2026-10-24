@@ -6,6 +6,7 @@ import {
   Dumbbell,
   House,
   LogIn,
+  TrendingUp,
   ShieldCheck,
   UserRound,
 } from "lucide-react";
@@ -69,6 +70,8 @@ export function MobileTabs({
     workspace: Dumbbell,
     coach: BookOpen,
     "member-library": BookOpen,
+    "app-workouts": BookOpen,
+    "app-progress": TrendingUp,
     account: shared.signedIn ? UserRound : LogIn,
     "app-help": CircleHelp,
   };
@@ -76,7 +79,10 @@ export function MobileTabs({
     <nav className="app-tabs" aria-label="App navigation">
       {mobileNavigation(shared.signedIn, shared.role).map(([route, label]) => {
         const Icon = icons[route];
-        const active = page === route || (route === "app" && page === "home");
+        const active =
+          page === route ||
+          (route === "app" && page === "home") ||
+          (route === "app-workouts" && page === "member-library");
         return (
           <a
             key={route}
@@ -113,7 +119,7 @@ export function MobileWelcome({ signedIn }: { signedIn: boolean }) {
         </div>
       </div>
       <section className="app-start-content" aria-label="Get started">
-        <p>A clear plan. Guided practice. Your own training space.</p>
+        <p>Your next workout. Guided practice. Progress you can follow.</p>
         <a href={signedIn ? "#workspace" : "#account"} className="button full">
           {signedIn ? "Open my training" : "Log in to your account"}
           <ArrowRight size={19} />
@@ -148,6 +154,22 @@ export function MobileHelp({ app }: { app: PwaState }) {
             : "The mobile app experience, ready to add to your home screen."}
         </p>
       </div>
+      <section className="panel">
+        <h2>Train here. Explore on the website.</h2>
+        <p>
+          Today brings up your next session. Workouts holds your available
+          training. Progress shows reported practice and parent reviews. Account
+          holds profiles, family permissions and sign-out. Coaches and staff see
+          their authorized content tools.
+        </p>
+        <p>
+          The website explains programs, future packages and how to join. Both
+          use the same private account service; demo records stay separate.
+        </p>
+        <WebsiteLink path="#membership">
+          View website membership information
+        </WebsiteLink>
+      </section>
       <section className="panel">
         <h2>Accounts & privacy</h2>
         <p>
@@ -197,8 +219,8 @@ export function MobileHelp({ app }: { app: PwaState }) {
         {nativeApp() ? (
           <p>
             This is a native pilot build. App Store and TestFlight distribution
-            are not active yet. Apple enrollment and signing are still required
-            for physical-device distribution.
+            are not active yet. Apple membership activation, signing and upload
+            must be confirmed before physical-device distribution.
           </p>
         ) : (
           <>

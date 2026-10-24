@@ -7,12 +7,18 @@ jobs:
   ios:
     runs-on: macos-15
     timeout-minutes: 35
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.3.app/Contents/Developer
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
           cache: npm
+      - name: Verify the selected Apple toolchain
+        run: |
+          xcodebuild -version
+          xcodebuild -showsdks
       - name: Install and bundle the mobile app
         run: |
           npm ci
@@ -27,7 +33,7 @@ jobs:
           mkdir -p mobile-builds
           xcodebuild -version
           xcrun simctl list devices available --json > mobile-builds/simulators.json
-          PD_SIMULATOR_UDID=$(python3 -c 'import json;d=json.load(open("mobile-builds/simulators.json"));print(next(x["udid"] for v in d["devices"].values() for x in v if x["name"].startswith("iPhone")))')
+          PD_SIMULATOR_UDID=$(python3 -c 'import json;d=json.load(open("mobile-builds/simulators.json"));choices=[(tuple(map(int,k.split("iOS-")[1].split("-"))),x["name"]=="iPhone 17 Pro",x["udid"]) for k,v in d["devices"].items() if "iOS-" in k for x in v if x["name"].startswith("iPhone") and x.get("isAvailable")];print(max(choices)[2])')
           echo "$PD_SIMULATOR_UDID" > mobile-builds/simulator-udid.txt
           xcrun simctl boot "$PD_SIMULATOR_UDID" || true
           xcrun simctl bootstatus "$PD_SIMULATOR_UDID" -b

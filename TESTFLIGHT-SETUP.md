@@ -1,8 +1,10 @@
 # Player Development: native iPhone testing through TestFlight
 
-The selected distribution route is TestFlight for the owner and partner. The native iOS client is built and simulator-tested. There is not yet a signed iPhone download or a TestFlight invitation. Apple membership, signing and App Store Connect setup remain required. No membership has been purchased and no Apple account security settings have been changed.
+The selected distribution route is TestFlight for the owner and partner. The native iOS client is built and simulator-tested. There is not yet a signed iPhone download or a TestFlight invitation. Apple membership, signing and App Store Connect setup remain required. The owner reports paying for Apple membership; activation and the owning Team ID have not yet been verified. No Apple account security settings have been changed.
 
-## Complete enrollment on your iPhone
+## Confirm enrollment on your iPhone
+
+Payment has already been reported. Do not repeat the purchase: check the Account tab for Apple’s membership activation first. The enrollment steps below remain as a reference.
 
 1. Install the official [Apple Developer app](https://apps.apple.com/app/apple-developer/id640199958).
 2. Open its Account tab and sign in to the Apple Account that will own Player Development. Follow Apple's enrollment flow. [Apple's instructions](https://developer.apple.com/help/account/membership/enrolling-in-the-app/) also explain eligibility and identity verification; [web enrollment](https://developer.apple.com/programs/enroll/) is another supported route.
@@ -19,9 +21,9 @@ After activation, the useful next details are the Apple Team ID and whether enro
 - Provisional bundle identifier: `com.coachbilliott.playerdevelopment`.
 - Temporary app name: Player Development; version 0.1.0.
 - Original app icon, launch screen, mobile navigation, bundled sample training, Keychain session storage and lifecycle handling.
-- Passed native checks: Keychain round-trip, bundled photo/font, guided workout completion and saved report, family roster after relaunch, and sign-in/help navigation. These ran on an iPhone 16 Pro simulator with iOS 18.5, not physical iPhones.
-- Passed web/client checks: lint, type checking, production build, 100 unit tests, 102 browser tests and 8 installed-web-app tests.
-- [Native build/test evidence](https://github.com/CoachBilliott/Player-Development-Site/actions/runs/40114462235).
+- Passed native checks: Keychain round-trip, bundled photo/font, guided workout completion and saved report, family roster after relaunch, and sign-in/help navigation. These checks run in an iPhone simulator, not physical iPhones. The build workflow selects Xcode 26.3 and the newest available iPhone simulator runtime.
+- Passed web/client checks: lint, type checking, production build, 100 unit tests, 110 browser tests and 8 installed-web-app tests.
+- [Native build/test evidence](https://github.com/CoachBilliott/Player-Development-Site/actions/workflows/ios-build.yml).
 
 The existing simulator app runs on compatible Macs. The unsigned device archive is compilation evidence and cannot install on an iPhone or be uploaded as a TestFlight release. Distribution needs a fresh signed archive built with Apple's currently accepted Xcode/iOS SDK and a unique build number.
 

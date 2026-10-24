@@ -70,6 +70,8 @@ Playback automatically stops while offscreen or in a hidden tab and resumes when
 
 ## Installable phone app
 
+The member app now centers on **Today, Workouts, Progress and Account**. Parents can switch athletes, follow the selected plan, review reports and manage recording permissions under Account. Athlete accounts see only their authorized individual profile. Staff keep their authorized content tools. The website remains the public explanation, programs/packages and joining experience; both clients share the private account service. Practice history records participation, never a verified ability score.
+
 The native iOS project is in `ios/` with a repeatable Mac simulator build/test workflow. `npm run build:ios` bundles the shared client and synchronizes native plugins; `npm run open:ios` opens Xcode on a Mac. Native sessions use the iOS Keychain. Physical-device/TestFlight distribution awaits owner Apple enrollment and signing; the unsigned archive and simulator build are not installable TestFlight releases. See [phone app testing](APP-TESTING.md).
 
 The mobile welcome and persistent navigation are also available at https://coachbilliott.github.io/Player-Development-Site/?source=app#app for immediate Safari/home-screen testing. The website continues to use its public homepage. Both clients use the same real account permissions and the same single fictional customer demo; demo history never becomes a real profile.
