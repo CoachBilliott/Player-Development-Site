@@ -2,7 +2,7 @@
 
 The main website is https://coachbilliott.github.io/Player-Development-Site/. It explains Player Development, family and individual training, membership plans and sign-in. Every public **Try the demo** button leads to the same customer experience at `#demo`.
 
-The photographic theme uses black, warm white and orange, with an edge-to-edge training film, large type and photo-led family/solo sections. It uses licensed adult-training footage and an empty-football-field still; credits are linked on the page. The silent hero footage loops without Replay, Pause or motion controls; a real still appears automatically for device reduced-motion preferences or unavailable playback. These are promotional stock images, not coaching lessons or actual members. Visual changes do not enable public signup, child access, paid content or checkout.
+The photographic theme uses black, warm white and orange, with an edge-to-edge training film, large type and photo-led family/solo sections. It uses licensed adult-training footage, separate family/solo football photographs and an empty-football-field still; credits are linked on the page. The silent hero footage loops without Replay, Pause or motion controls; a real still appears automatically for device reduced-motion preferences or unavailable playback. These are promotional stock images, not coaching lessons or actual members. Visual changes do not enable public signup, child access, paid content or checkout.
 
 ## One guided demo
 

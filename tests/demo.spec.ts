@@ -95,6 +95,13 @@ test("homepage is responsive and sample demo is obvious", async ({
       .poll(() => image.evaluate((img: HTMLImageElement) => img.naturalWidth))
       .toBeGreaterThan(0);
   }
+  const photoSources = await images.evaluateAll((images) =>
+    images.map((image) => (image as HTMLImageElement).currentSrc),
+  );
+  expect(new Set(photoSources).size).toBe(3);
+  expect(
+    photoSources.every((src) => !/training-poster|practice-detail/.test(src)),
+  ).toBe(true);
   for (const link of await page.locator('.home a[href="#demo"]').all())
     await expect(link).toHaveAttribute("href", "#demo");
   const accessibility = await new AxeBuilder({ page })

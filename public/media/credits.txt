@@ -1,4 +1,4 @@
-PLAYER DEVELOPMENT — HOMEPAGE TRAINING FILM
+PLAYER DEVELOPMENT — HOMEPAGE FOOTAGE AND PHOTOGRAPHY
 
 This is licensed stock footage, used for atmosphere. It is not a coaching
 lesson, a testimonial, or footage of Player Development members or coaches.
@@ -19,6 +19,23 @@ The public Pexels search catalog identifies this asset as published under the
 Pexels License. Catalog and media checked October 24, 2026. An extracted frame
 is used as the football-program background. No venue affiliation is implied.
 
+SOURCE 4 — FAMILY-SECTION PHOTOGRAPH
+Men Playing American Football — Bruno Felix / Pexels
+https://www.pexels.com/photo/men-playing-american-football-17812945/
+Locally served as family-football.jpg. Two adults practicing together illustrate
+shared effort and support, not an actual family, members or coaching staff.
+
+SOURCE 5 — INDIVIDUAL-ATHLETE PHOTOGRAPH
+An Athlete Holding a Football — Thomas Ronveaux / Pexels
+https://www.pexels.com/photo/an-athlete-holding-a-football-13141532/
+Locally served as solo-football.jpg. The pictured athlete is a stock model,
+not a Player Development member or a coaching demonstration.
+
+The public Pexels photo catalog identifies sources 4 and 5 as published under
+the Pexels License. Catalog and photo assets checked October 24, 2026. The
+photographs are independent of the hero video. Website crops and dark overlays
+keep the section text readable; no affiliation or endorsement is implied.
+
 LICENSE
 Pexels License: https://www.pexels.com/license/
 Source and license pages checked October 24, 2026.
@@ -34,8 +51,6 @@ Short excerpts, portrait crops, audio removal and
 concatenation into an eight-second silent loop. MP4 and WebM versions are
 provided for browser compatibility. The still poster is a frame from this edit. The promotional loop is encoded at
 1080 × 1350 for the large homepage treatment.
-The lower-page practice-detail.jpg is a landscape frame from source 2,
-used as editorial imagery, not as practice instruction.
 football-field.jpg is a landscape frame from source 3. The source recordings
 are not redistributed; only the edited promotional loop and website stills are included.
 

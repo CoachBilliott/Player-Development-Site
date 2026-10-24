@@ -84,11 +84,11 @@ export function Home() {
           <div className="path-grid">
             <article className="path-card path-family">
               <img
-                src={`${media}practice-detail.jpg`}
+                src={`${media}family-football.jpg`}
                 alt=""
                 loading="lazy"
                 width={1440}
-                height={810}
+                height={960}
               />
               <div className="path-shade" aria-hidden="true" />
               <span className="path-tag">01 / PARENT & FAMILY</span>
@@ -110,11 +110,11 @@ export function Home() {
             </article>
             <article className="path-card path-solo">
               <img
-                src={`${media}training-poster.jpg`}
+                src={`${media}solo-football.jpg`}
                 alt=""
                 loading="lazy"
-                width={720}
-                height={900}
+                width={1440}
+                height={2160}
               />
               <div className="path-shade" aria-hidden="true" />
               <span className="path-tag">02 / INDIVIDUAL ATHLETE</span>

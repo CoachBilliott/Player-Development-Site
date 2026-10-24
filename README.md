@@ -64,6 +64,8 @@ The public website uses an original high-contrast sports identity: an edge-to-ed
 
 The homepage uses a locally hosted, licensed eight-second montage of real adult training: sprint preparation by Airam Dato-on and agility footwork by KoolShooters, via Pexels. The video is silent, autoplaying, inline and continuously looped, with MP4/WebM formats and a real still poster. There are no Replay, Pause, reduced-motion or theme-selection widgets. Device reduced-motion preferences are respected automatically with the still poster. Footage is decorative stock material, not coaching instruction, testimonials or actual members. Source/license details and edits are recorded in [media credits](public/media/credits.txt).
 
+The family and solo sections use distinct licensed football photographs by Bruno Felix and Thomas Ronveaux, independent of the hero footage. The football-program section uses an empty-field still by Creative Ruckus. These images are promotional stock material with source/license credits, not actual members, families or coaching instruction.
+
 Playback automatically stops while offscreen or in a hidden tab and resumes when visible. If autoplay or a codec/network fails, the real poster remains visible and the website/demo still work. The still poster, editorial images and credits are part of the offline app shell; the promotional videos are not precached. These media states never record a workout. Football remains the only current program, future sports stay inactive, and the single Parent & family / Solo athlete demo is unchanged.
 
 ## Installable phone app
