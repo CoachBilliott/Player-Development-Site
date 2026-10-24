@@ -1318,7 +1318,7 @@ function StaffAccount({
         <h1 tabIndex={-1}>Your {ROLE_LABELS[role]} account.</h1>
         <p>Manage Player Development with your assigned staff permissions.</p>
       </div>
-      <section className="panel">
+      <section className="panel member-panel">
         <h2>Signed in</h2>
         <p className="staff-account-email">{shared.session?.user.email}</p>
         <div className="actions">
@@ -1339,7 +1339,7 @@ function StaffAccount({
         </div>
       </section>
       <AccountAccess shared={shared} />
-      <section className="panel">
+      <section className="panel member-panel">
         <h2>Sign-in settings</h2>
         <div className="actions">
           <button
