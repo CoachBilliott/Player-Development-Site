@@ -1,0 +1,33 @@
+name: Check Apple TestFlight status
+on:
+  workflow_dispatch:
+    inputs:
+      build_number:
+        description: 'Uploaded App Store build number to check (read only)'
+        required: true
+        default: '3'
+        type: string
+permissions:
+  contents: read
+jobs:
+  status:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - name: Read processing and beta availability without exposing credentials
+        env:
+          PD_BUILD_NUMBER: ${{ inputs.build_number }}
+          PD_ASC_KEY_ID: ${{ secrets.PD_ASC_KEY_ID }}
+          PD_ASC_ISSUER_ID: ${{ secrets.PD_ASC_ISSUER_ID }}
+          PD_ASC_PRIVATE_KEY: ${{ secrets.PD_ASC_PRIVATE_KEY_P8 }}
+        run: node scripts/testflight-status.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: testflight-status
+          path: testflight-status.json
+          retention-days: 7
