@@ -20,6 +20,10 @@ For real private pilot profiles, open **My account → Workouts & permissions**.
 
 The live child gates remain closed. Child self-access additionally requires a trusted consent-review record; parents cannot self-certify it or bypass it by editing age bands. A known guardian-managed account cannot reset itself into an adult/parent account after revocation. Adult family connections require the adult athlete to accept; existing independent profiles are never silently merged or discarded. Account invitations, reviewed curriculum and the full verified-consent/age-transition/support process remain launch requirements.
 
+## Easy workout uploads
+
+Open [Coach studio](https://coachbilliott.github.io/Player-Development-Site/#coach). Connected sites start on **Shared website**; staff use their existing account. Choose a file to reveal workout details, use a sample-audience shortcut or customize it, then preview and publish. **How uploads work** explains phone selection, sharing, formats and draft limits. The separate **This browser** editor remains a clearly local practice mode. See the [phone upload guide](UPLOAD-GUIDE.md) for exact steps and editing.
+
 ## Run locally
 
 Use Node.js 24 (see `.nvmrc`) and npm. No account, API key, database, or application environment variables are needed to run the fictional demo. Real member profiles and shared publishing require backend activation.

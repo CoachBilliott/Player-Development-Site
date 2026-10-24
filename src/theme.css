@@ -1786,6 +1786,79 @@ body {
   padding-top: 30px;
   padding-bottom: 0;
 }
+.upload-destination,
+.upload-hint {
+  color: #b3c6d3;
+  font-size: 14px;
+  line-height: 1.7;
+  margin: 14px 0;
+}
+.upload-help {
+  padding: 18px 22px;
+  margin: 22px 0;
+  color: #c9d9e3;
+  line-height: 1.7;
+}
+.upload-help summary {
+  cursor: pointer;
+  min-height: 44px;
+  align-content: center;
+  color: #eef5fa;
+  font-weight: 600;
+}
+.upload-help li {
+  padding: 7px 0 7px 4px;
+}
+.upload-help p,
+.audience-shortcuts p {
+  font-size: 14px;
+  line-height: 1.7;
+}
+.audience-shortcuts {
+  padding: 20px;
+  background: #122b36;
+  border: 1px solid #36545f;
+  border-radius: 12px;
+}
+.audience-shortcuts .actions {
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.audience-shortcuts .button {
+  min-height: 44px;
+}
+.practice-upload {
+  margin-top: 22px;
+}
+.upload-steps {
+  gap: 16px;
+}
+.upload-steps > span {
+  flex: 1;
+  min-width: 0;
+}
+@media (max-width: 600px) {
+  .experience .upload-steps {
+    gap: 10px;
+  }
+  .experience .upload-steps > span {
+    align-items: flex-start;
+    flex-direction: column;
+    font-size: 12px;
+  }
+  .audience-shortcuts {
+    padding: 16px;
+  }
+  .audience-shortcuts .actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .audience-shortcuts .button {
+    width: 100%;
+    padding: 12px 8px;
+    font-size: 13px;
+  }
+}
 .publishing-mode .scene-tabs {
   width: fit-content;
   max-width: 100%;

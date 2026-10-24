@@ -7,12 +7,20 @@ import { ROLE_LABELS } from "./roles";
 
 type Props = ComponentProps<typeof Admin> & { shared: SharedState };
 export function ContentStudio({ shared, ...local }: Props) {
-  const [scope, setScope] = useState<"local" | "shared">("local");
+  const [selectedScope, setScope] = useState<"local" | "shared" | null>(null);
+  const scope = selectedScope ?? (shared.configured ? "shared" : "local");
   const [nextScope, setNextScope] = useState<"local" | "shared" | null>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  if (shared.loading && selectedScope === null)
+    return (
+      <main className="page narrow">
+        <h1 tabIndex={-1}>Coach content studio</h1>
+        <p role="status">Opening your upload space…</p>
+      </main>
+    );
   return (
     <>
       <div className="page narrow publishing-mode">
@@ -22,14 +30,6 @@ export function ContentStudio({ shared, ...local }: Props) {
           aria-label="Publishing destination"
         >
           <button
-            aria-pressed={scope === "local"}
-            onClick={() => {
-              if (scope !== "local") setNextScope("local");
-            }}
-          >
-            This browser
-          </button>
-          <button
             aria-pressed={scope === "shared"}
             onClick={() => {
               if (scope !== "shared") setNextScope("shared");
@@ -37,7 +37,20 @@ export function ContentStudio({ shared, ...local }: Props) {
           >
             Shared website
           </button>
+          <button
+            aria-pressed={scope === "local"}
+            onClick={() => {
+              if (scope !== "local") setNextScope("local");
+            }}
+          >
+            This browser
+          </button>
         </div>
+        <p className="upload-destination" role="status">
+          {scope === "shared"
+            ? "Publish here to share a resource with website visitors. Staff sign-in required."
+            : "Practice mode: uploads stay in this browser. Your partner will not see them."}
+        </p>
         {nextScope && (
           <div
             className="discard-box"
@@ -97,8 +110,9 @@ export function ContentStudio({ shared, ...local }: Props) {
             <LockKeyhole size={26} />
             <h1 tabIndex={-1}>Coach sign-in</h1>
             <p>
-              Approved adult coaches can upload and edit shared sample
-              resources. Visitors do not need to sign in to try the demo.
+              Owners, Managers and Coaches can upload shared sample resources.
+              Use the same account as Member access; no second login is needed
+              if you are already signed in with staff access.
             </p>
           </div>
           <form
@@ -148,6 +162,12 @@ export function ContentStudio({ shared, ...local }: Props) {
               registration.
             </p>
           </form>
+          <button
+            className="button secondary practice-upload"
+            onClick={() => setScope("local")}
+          >
+            Try a practice upload without signing in
+          </button>
           {shared.signedIn && (
             <button
               className="text-button"

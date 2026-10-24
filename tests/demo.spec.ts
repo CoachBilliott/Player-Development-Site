@@ -1,5 +1,6 @@
 import { disableBackend } from "./backendFixture";
 import { test, expect, type Page } from "@playwright/test";
+import AxeBuilder from "@axe-core/playwright";
 async function onboard(page: Page, name = "Jordan") {
   await page.goto("./#onboarding");
   await page.getByRole("button", { name: new RegExp(name) }).click();
@@ -246,6 +247,77 @@ async function fillResource(page: Page) {
       "Draw two shapes on paper.\nPoint to a shape with a parent.\nSwap roles and pause.",
     );
 }
+test("phone upload reveals details, keeps a valid file after a canceled or rejected replacement, and previews the chosen audience", async ({
+  page,
+}, info) => {
+  if (info.project.name === "phone")
+    await page.setViewportSize({ width: 320, height: 760 });
+  await page.goto("./#coach");
+  await expect(page.getByLabel("Resource title")).toHaveCount(0);
+  await page.getByText("How uploads work", { exact: true }).click();
+  await expect(page.getByText(/Maximum 12 MB per file/)).toBeVisible();
+  const picker = page.getByLabel("Choose a video or file", { exact: true });
+  await picker.setInputFiles({
+    name: "original_ball-skills.txt",
+    mimeType: "text/plain",
+    buffer: Buffer.from("Original illustrative practice instructions."),
+  });
+  await expect(page.getByLabel("Resource title")).toHaveValue(
+    "original ball skills",
+  );
+  await page.getByLabel("Resource title").fill("Our reviewed sample practice");
+  await picker.setInputFiles([]);
+  await expect(
+    page.getByText("original_ball-skills.txt", { exact: true }),
+  ).toBeVisible();
+  await picker.setInputFiles({
+    name: "unsupported.mov",
+    mimeType: "video/quicktime",
+    buffer: Buffer.from("Unsupported fictional media fixture"),
+  });
+  await expect(
+    page.getByText("original_ball-skills.txt", { exact: true }),
+  ).toBeVisible();
+  await expect(page.getByLabel("Resource title")).toHaveValue(
+    "Our reviewed sample practice",
+  );
+  await page
+    .getByRole("button", { name: "Jordan · 8–12", exact: true })
+    .click();
+  await expect(
+    page.getByRole("combobox", { name: "Position", exact: true }),
+  ).toHaveValue("Wide receiver");
+  await page
+    .getByLabel("Step-by-step instructions")
+    .fill(
+      "Place a soft ball on the ground.\nPoint to the ball with an adult.\nPause together.",
+    );
+  await page.getByLabel("I have the rights").check();
+  await page.getByRole("button", { name: "Preview matches" }).click();
+  await expect(page.locator(".match-list").getByText("Jordan")).toBeVisible();
+  await expect(
+    page.getByText("Destination: this browser only · practice upload"),
+  ).toBeVisible();
+  const checks = await new AxeBuilder({ page })
+    .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
+    .analyze();
+  expect(checks.violations).toEqual([]);
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+  await page.getByRole("button", { name: "Back to editing" }).click();
+  await expect(page.getByLabel("Resource title")).toHaveValue(
+    "Our reviewed sample practice",
+  );
+  await page.getByText("How uploads work", { exact: true }).click();
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.screenshot({
+    path: `artifacts/easy-upload-${info.project.name}.png`,
+    fullPage: true,
+  });
+});
 test("coach previews matches, cancels edits, publishes once, and persists attachment", async ({
   page,
 }, info) => {
@@ -334,7 +406,10 @@ test("invalid file, canceled file picker, discard and browser storage failure ar
   ).toBeVisible();
   await page.getByRole("button", { name: "Discard draft" }).click();
   await page.getByRole("button", { name: "Yes, discard draft" }).click();
-  await expect(page.getByLabel("Resource title")).toHaveValue("");
+  await expect(page.getByLabel("Resource title")).toHaveCount(0);
+  await expect(
+    page.getByRole("heading", { name: "Start with your video or file" }),
+  ).toBeVisible();
   await page.goto("./#onboarding");
   await page.evaluate(() => {
     Storage.prototype.setItem = () => {

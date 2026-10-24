@@ -145,10 +145,9 @@ async function mockProject(
 }
 async function sharedSignIn(page: import("@playwright/test").Page) {
   await page.goto("./#coach");
-  await page
-    .getByRole("button", { name: "Shared website", exact: true })
-    .click();
-  await page.getByRole("button", { name: "Switch destination" }).click();
+  await expect(
+    page.getByRole("button", { name: "Shared website", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
   await page.getByLabel("Coach email").fill("coach@example.test");
   await page
     .getByLabel("Password", { exact: true })
@@ -184,6 +183,7 @@ test("configured shared publishing saves, edits across visitors, and removes a s
     .fill("Draw a shape.\nPoint to it.\nPause with an adult.");
   await page.getByLabel("I have the rights").check();
   await page.getByRole("button", { name: "Preview matches" }).click();
+  expect(rows.size).toBe(0);
   await page
     .getByRole("button", { name: "Publish to shared library" })
     .dblclick();
@@ -247,4 +247,50 @@ test("signed-in accounts without coach membership never receive publishing contr
   await expect(
     page.getByLabel("Choose a video or file", { exact: true }),
   ).toHaveCount(0);
+});
+
+test("connected upload space opens on shared publishing and offers a clearly local practice mode", async ({
+  page,
+  context,
+}) => {
+  const rows = new Map<string, Row>();
+  await mockProject(context, rows);
+  await page.goto("./#coach");
+  await expect(
+    page.getByRole("heading", { name: "Coach sign-in", exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByLabel("Choose a video or file", { exact: true }),
+  ).toHaveCount(0);
+  await page
+    .getByRole("button", { name: "Try a practice upload without signing in" })
+    .click();
+  await expect(
+    page.getByRole("button", { name: "This browser", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await expect(
+    page.getByText(
+      "Practice mode: uploads stay in this browser. Your partner will not see them.",
+    ),
+  ).toBeVisible();
+  await page
+    .getByLabel("Choose a video or file", { exact: true })
+    .setInputFiles({
+      name: "practice.txt",
+      mimeType: "text/plain",
+      buffer: Buffer.from("Original fictional sample."),
+    });
+  await page
+    .getByRole("button", { name: "Shared website", exact: true })
+    .click();
+  await page.getByRole("button", { name: "Keep editing", exact: true }).click();
+  await expect(page.getByLabel("Resource title")).toHaveValue("practice");
+  await page
+    .getByRole("button", { name: "Shared website", exact: true })
+    .click();
+  await page.getByRole("button", { name: "Switch destination" }).click();
+  await expect(
+    page.getByRole("heading", { name: "Coach sign-in", exact: true }),
+  ).toBeVisible();
+  expect(rows.size).toBe(0);
 });
