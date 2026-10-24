@@ -35,6 +35,7 @@ beforeAll(async () => {
     "004-family-athletes.sql",
     "005-content-audiences.sql",
     "006-assigned-training-and-video-review.sql",
+    "007-training-assignment-cleanup.sql",
   ])
     await db.exec(
       readFileSync(new URL("../backend/" + name, import.meta.url), "utf8"),
@@ -402,4 +403,73 @@ it("does not expose submitted videos to anonymous visitors", async () => {
       )
     ).rows,
   ).toEqual([]);
+});
+
+it("removes deleted workout assignments so Owner access changes remain editable", async () => {
+  await grant();
+  await as(coach);
+  await db.query("delete from public.training_resources where id=$1", [
+    resource,
+  ]);
+  await as(owner);
+  const access = (
+    await db.query<{ resource_ids: string[]; version: number }>(
+      "select resource_ids,version from public.member_training_access where account_id=$1",
+      [parent],
+    )
+  ).rows[0];
+  expect(access.resource_ids).toEqual([wrongAge]);
+  expect(access.version).toBe(2);
+  await db.query(
+    "select public.set_member_training_access($1,$2,false,null,2)",
+    [parent, []],
+  );
+});
+it("removes a protected assignment when its workout becomes a public sample", async () => {
+  await grant();
+  await as(coach);
+  await db.query(
+    "update public.training_resources set visibility='public_sample' where id=$1",
+    [resource],
+  );
+  await as(parent);
+  expect(
+    (
+      await db.query("select id from public.athlete_training_plan($1)", [
+        profile,
+      ])
+    ).rows,
+  ).toEqual([]);
+  expect(
+    (
+      await db.query<{ resource_ids: string[] }>(
+        "select resource_ids from public.member_training_access",
+      )
+    ).rows[0].resource_ids,
+  ).toEqual([wrongAge]);
+});
+
+it("backfills obsolete assignments without removing still-published protected workouts", async () => {
+  await db.query(
+    "insert into public.member_training_access(account_id,resource_ids) values($1,$2)",
+    [parent, [resource, uid(99)]],
+  );
+  const migration = readFileSync(
+    new URL("../backend/007-training-assignment-cleanup.sql", import.meta.url),
+    "utf8",
+  );
+  const start = migration.indexOf(
+    "update public.member_training_access a set resource_ids=array(",
+  );
+  await db.exec(
+    migration.slice(start, migration.indexOf("notify pgrst", start)),
+  );
+  expect(
+    (
+      await db.query<{ resource_ids: string[] }>(
+        "select resource_ids from public.member_training_access where account_id=$1",
+        [parent],
+      )
+    ).rows[0].resource_ids,
+  ).toEqual([resource]);
 });

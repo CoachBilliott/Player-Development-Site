@@ -38,4 +38,6 @@ Clips remain stored until the authorized family/uploader deletes them; there is 
 
 Real under-18 video submissions remain closed, including parent submissions, until a qualified guardian-consent, child-media privacy and retention process is implemented. Changing a minor profile's age label does not bypass the restriction. Payments, monthly billing, package prices and public signup remain inactive. External beta review needs a real approved adult review account and accurate privacy/contact disclosures.
 
-Migration `006-assigned-training-and-video-review.sql` was applied once to the dedicated Player Development project. Do not rerun it. Existing enrollment gates remain false; no access grants, customer clips, payment records or emails were created by installation. Automated fixtures are fictional, and the black-frame test clip is an original test asset, not a coaching demonstration.
+Migrations `006-assigned-training-and-video-review.sql` and `007-training-assignment-cleanup.sql` were applied once to the dedicated Player Development project. Do not rerun them. Existing enrollment gates remain false; no access grants, customer clips, payment records or emails were created by installation. Automated fixtures are fictional, and the black-frame test clip is an original test asset, not a coaching demonstration.
+
+When protected content is withdrawn, made public or deleted, its old assignments are removed automatically. Existing submitted video feedback remains available according to its private review permissions.

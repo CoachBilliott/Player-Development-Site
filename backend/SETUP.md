@@ -89,3 +89,5 @@ Migration 005 is applied. Existing and new shared resources default to protected
 ## Assigned workouts and private video review
 
 See [VIDEO-REVIEW-GUIDE.md](../VIDEO-REVIEW-GUIDE.md) for the Owner assignment workflow, adult pilot recording/upload, parent approval, coach feedback, quotas and explicit deletion. Migration 006 adds RLS-protected entitlements/reviews and a private 40 MB video bucket. No browser can self-grant access; Owner/Manager status alone does not reveal clips. Real accounts use only assigned matching uploads. The public illustrative catalog remains for the separate website demo. Do not rerun migration 006 on the installed schema.
+
+Migration `007-training-assignment-cleanup.sql` is also installed. Withdrawing/deleting protected content prunes its member assignments and increments their access version; existing submitted video feedback remains. No client permissions or child/payment gates are expanded by this cleanup.
