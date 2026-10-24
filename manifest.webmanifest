@@ -3,7 +3,7 @@
   "name": "Player Development",
   "short_name": "PD Training",
   "description": "Athlete development for individuals and families. Football sample training available now; other sports are future offerings.",
-  "start_url": "./?source=app#home",
+  "start_url": "./?source=app#app",
   "scope": "./",
   "display": "standalone",
   "background_color": "#101010",
