@@ -26,6 +26,8 @@ EDITS
 Short excerpts, portrait crops, light color adjustment, audio removal and
 concatenation into an eight-second silent loop. MP4 and WebM versions are
 provided for browser compatibility. The still poster is a frame from this edit.
+The lower-page practice-detail.jpg is a landscape frame from source 2,
+used as editorial imagery, not as practice instruction.
 
 The application's original diagrams and fictional demo profiles are separate
 from this licensed marketing footage. Training content still requires qualified
