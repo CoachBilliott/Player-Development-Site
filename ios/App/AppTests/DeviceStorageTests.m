@@ -6,6 +6,20 @@
 @end
 
 @implementation DeviceStorageTests
+- (void)waitForApp:(WKWebView *)webView deadline:(NSDate *)deadline completion:(void (^)(BOOL))completion {
+    [webView evaluateJavaScript:@"Boolean(document.querySelector('.app-start-photo img') && window.Capacitor?.Plugins?.SecureStoragePlugin)"
+        completionHandler:^(id ready, NSError *error) {
+            if (!error && [ready isEqual:@YES] && !webView.loading) {
+                completion(YES);
+            } else if (deadline.timeIntervalSinceNow <= 0) {
+                completion(NO);
+            } else {
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 100 * NSEC_PER_MSEC), dispatch_get_main_queue(), ^{
+                    [self waitForApp:webView deadline:deadline completion:completion];
+                });
+            }
+        }];
+}
 - (WKWebView *)findWebView:(UIView *)view {
     if ([view isKindOfClass:WKWebView.class]) return (WKWebView *)view;
     for (UIView *child in view.subviews) {
@@ -31,11 +45,13 @@
         }
         XCTAssertNotNil(webView);
         if (!webView) { [completed fulfill]; return; }
+        // Hosted tests start while WKWebView is still navigating. Wait outside
+        // JavaScript so that initial navigation cannot destroy a pending call.
+        [self waitForApp:webView deadline:[NSDate dateWithTimeIntervalSinceNow:20] completion:^(BOOL ready) {
+        XCTAssertTrue(ready, @"The bundled app did not finish loading");
+        if (!ready) { [completed fulfill]; return; }
         NSString *script =
-          @"for (let i = 0; i < 150; i++) {"
-           " if (window.Capacitor?.Plugins?.SecureStoragePlugin) break;"
-           " await new Promise(resolve => setTimeout(resolve, 100));"
-           "}"
+          @""
            "const store = window.Capacitor.Plugins.SecureStoragePlugin;"
            "if (!store || !window.Capacitor.isNativePlatform()) throw new Error('Native bridge is unavailable');"
            "const image = document.querySelector('.app-start-photo img');"
@@ -57,7 +73,8 @@
                 XCTAssertEqualObjects(result, @YES);
                 [completed fulfill];
             }];
+        }];
     });
-    [self waitForExpectationsWithTimeout:30 handler:nil];
+    [self waitForExpectationsWithTimeout:40 handler:nil];
 }
 @end
