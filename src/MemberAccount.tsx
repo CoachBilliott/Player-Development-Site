@@ -17,6 +17,7 @@ import {
 } from "./accounts";
 import { Modal, Notice, Tag } from "./components";
 import type { SharedState } from "./useSharedContent";
+import { isStaff, ROLE_LABELS } from "./roles";
 import { AccountAccess } from "./AccountAccess";
 import { FamilyTraining } from "./family";
 import { AthleteTraining } from "./FamilyTraining";
@@ -169,7 +170,13 @@ function ConnectedAccount({
   // The parent keys this component by identity. Requests from a signed-out
   // account cannot populate the next account's view, including cross-tab logout.
   useEffect(() => {
-    if (!userId) return;
+    if (
+      !userId ||
+      !shared.accessReady ||
+      shared.accessError ||
+      isStaff(shared.role)
+    )
+      return;
     let stopped = false;
     void new Accounts(client)
       .load()
@@ -191,7 +198,7 @@ function ConnectedAccount({
     return () => {
       stopped = true;
     };
-  }, [client, userId]);
+  }, [client, userId, shared.accessReady, shared.accessError, shared.role]);
   async function act(action: () => Promise<void>) {
     if (lock.current) return;
     lock.current = true;
@@ -297,6 +304,51 @@ function ConnectedAccount({
       }
     });
   }
+  if (userId && !recovery && !shared.accessReady)
+    return (
+      <main className="page narrow">
+        <h1 tabIndex={-1}>Opening your account…</h1>
+        <p role="status">Checking your account permissions.</p>
+      </main>
+    );
+  if (userId && !recovery && shared.accessError)
+    return (
+      <main className="page narrow">
+        <h1 tabIndex={-1}>Account access could not be verified.</h1>
+        <p role="alert">{shared.accessError}</p>
+        <div className="actions">
+          <button
+            className="button"
+            disabled={busy}
+            onClick={() => void act(shared.refreshAccess)}
+          >
+            Retry account access
+          </button>
+          <button
+            className="button secondary"
+            disabled={busy}
+            onClick={() => void act(shared.signOut)}
+          >
+            {appSurface() ? "Sign out" : "Sign out of this browser"}
+          </button>
+        </div>
+      </main>
+    );
+  if (userId && !recovery && isStaff(shared.role))
+    return (
+      <StaffAccount
+        shared={shared}
+        busy={busy}
+        error={error}
+        onSignOut={() => void act(shared.signOut)}
+        onChangePassword={() => {
+          const url = new URL(window.location.href);
+          url.searchParams.set("flow", "recovery");
+          window.history.replaceState(null, "", url);
+          setRecovery(true);
+        }}
+      />
+    );
   return (
     <main
       className={`page member-page ${workspace ? "workspace-page" : ""} ${workspace && linkedPlayer?.age_group !== "18+" && linkedPlayer ? "junior-workspace" : ""}`}
@@ -1242,5 +1294,75 @@ function PlayerEditor({
         </fieldset>
       </form>
     </section>
+  );
+}
+
+function StaffAccount({
+  shared,
+  busy,
+  error,
+  onSignOut,
+  onChangePassword,
+}: {
+  shared: SharedState;
+  busy: boolean;
+  error: string;
+  onSignOut: () => void;
+  onChangePassword: () => void;
+}) {
+  const role = shared.role!;
+  return (
+    <main className="page narrow staff-account">
+      <div className="page-intro">
+        <Tag>PRIVATE · STAFF ACCOUNT</Tag>
+        <h1 tabIndex={-1}>Your {ROLE_LABELS[role]} account.</h1>
+        <p>Manage Player Development with your assigned staff permissions.</p>
+      </div>
+      <section className="panel">
+        <h2>Signed in</h2>
+        <p className="staff-account-email">{shared.session?.user.email}</p>
+        <div className="actions">
+          <a className="button" href="#workspace">
+            Open my workspace <ArrowRight size={18} />
+          </a>
+          <a className="button secondary" href="#coach">
+            Upload & manage content
+          </a>
+          <a className="button secondary" href="#video-reviews">
+            Video reviews
+          </a>
+          {role === "owner" && (
+            <a className="button secondary" href="#access">
+              Workouts & account access
+            </a>
+          )}
+        </div>
+      </section>
+      <AccountAccess shared={shared} />
+      <section className="panel">
+        <h2>Sign-in settings</h2>
+        <div className="actions">
+          <button
+            className="button secondary"
+            disabled={busy}
+            onClick={onChangePassword}
+          >
+            Change password
+          </button>
+          <button
+            className="button secondary"
+            disabled={busy}
+            onClick={onSignOut}
+          >
+            {appSurface() ? "Sign out" : "Sign out of this browser"}
+          </button>
+        </div>
+        {error && (
+          <p role="alert" className="form-error">
+            {error}
+          </p>
+        )}
+      </section>
+    </main>
   );
 }

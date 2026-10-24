@@ -15,7 +15,8 @@ export function useSharedContent() {
   const [access, setAccess] = useState<{
     userId: string;
     role: AccountRole | null;
-  }>({ userId: "", role: null });
+    error: string;
+  }>({ userId: "", role: null, error: "" });
   const [checking, setChecking] = useState(false);
   const [resources, setResources] = useState<Drill[]>([]);
   const [libraryOwner, setLibraryOwner] = useState("");
@@ -85,7 +86,11 @@ export function useSharedContent() {
         .getAccess()
         .then((result) => {
           if (!stopped) {
-            setAccess({ userId: session.user.id, role: result?.role || null });
+            setAccess({
+              userId: session.user.id,
+              role: result?.role || null,
+              error: "",
+            });
             if (!isStaff(result?.role || null))
               setError(
                 "This account is not approved to publish. Ask the project owner to grant coach access.",
@@ -94,7 +99,11 @@ export function useSharedContent() {
         })
         .catch((e: Error) => {
           if (!stopped) {
-            setAccess({ userId: session.user.id, role: null });
+            setAccess({
+              userId: session.user.id,
+              role: null,
+              error: e.message,
+            });
             setError(e.message);
           }
         });
@@ -132,8 +141,21 @@ export function useSharedContent() {
   }, [service, libraryKey]);
   async function refreshAccess() {
     if (!service || !session) return;
-    const result = await service.getAccess();
-    setAccess({ userId: session.user.id, role: result?.role || null });
+    try {
+      const result = await service.getAccess();
+      setAccess({
+        userId: session.user.id,
+        role: result?.role || null,
+        error: "",
+      });
+    } catch (e) {
+      const message =
+        e instanceof Error
+          ? e.message
+          : "Account access could not be verified.";
+      setAccess({ userId: session.user.id, role: null, error: message });
+      throw new Error(message);
+    }
   }
   async function refresh() {
     if (!service) return;
@@ -161,6 +183,9 @@ export function useSharedContent() {
     configured: Boolean(service),
     signedIn: Boolean(session),
     role,
+    accessReady: !session || session.user.id === access.userId,
+    accessError:
+      session && session.user.id === access.userId ? access.error : "",
     refreshAccess,
     coach: isStaff(role),
     canEditResource: (id: string) =>
@@ -176,7 +201,7 @@ export function useSharedContent() {
     refresh,
     async signIn(email: string, password: string) {
       if (!service) throw new Error("Shared publishing is not connected.");
-      setAccess({ userId: "", role: null });
+      setAccess({ userId: "", role: null, error: "" });
       setError("");
       const { error } = await service.client.auth.signInWithPassword({
         email,
@@ -192,7 +217,7 @@ export function useSharedContent() {
       const { error } = await service.client.auth.signOut({ scope: "local" });
       if (error)
         throw new Error("Could not sign out. Reconnect and try again.");
-      setAccess({ userId: "", role: null });
+      setAccess({ userId: "", role: null, error: "" });
       setSession(null);
       setResources([]);
       setLibraryOwner("");

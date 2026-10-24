@@ -27,7 +27,7 @@ The deployed website HTML and JavaScript/CSS hashes match the tested build. Anot
 
 Use fictional profiles or approved adult pilot accounts only.
 
-1. Update to build 4, launch from the icon, confirm there is no app demo entry, sign in/out, relaunch and check account isolation. Complete the personal profile setup if prompted; staff permissions remain assigned separately.
+1. Update to build 4, launch from the icon, confirm there is no app demo entry, sign in/out, relaunch and check account isolation. Staff should see their staff account directly, with no Parent/Athlete choice. Parent/Athlete setup applies to customer training accounts.
 2. Upload an original adult/noncontact drill, publish protected, and assign it to the test account. Start a workout, play its demonstration, read instructions, complete practice and check history after relaunch. Cancel an unfinished workout and confirm no practice report appears.
 3. Enable review access and select a coach. Test camera/microphone/photo prompts, recording a short adult/fictional clip, saved MOV/MP4 selection, canceling the camera/picker, preview playback and explicit Send. Test a clip over 60 seconds/40 MB, unsupported/corrupt media and selecting the same file again.
 4. Test a failed connection/retry, repeated Send taps, background/resume and app termination during upload. An unfinished upload must remain labeled unfinished; it is not a successful review submission. Clean it up from video history if necessary.

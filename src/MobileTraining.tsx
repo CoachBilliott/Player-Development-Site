@@ -40,6 +40,8 @@ export function MobileTraining(props: Props) {
   const { shared } = props;
   if (!shared.signedIn || !shared.service || !shared.membersEnabled)
     return <MemberAccountPage shared={shared} />;
+  if (!shared.accessReady || shared.accessError)
+    return <MemberAccountPage shared={shared} />;
   if (isStaff(shared.role))
     return (
       <main className="page narrow">

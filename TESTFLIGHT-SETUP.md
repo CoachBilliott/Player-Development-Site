@@ -14,7 +14,7 @@ The signed app contains the same JavaScript verified on the deployed website. It
 
 ## Accounts and training
 
-The app opens private account login. The public sample demo remains on the website; app demo routes are blocked. Existing owner email verification and Owner access are confirmed. The user chooses their own password. First-time Parent/adult Athlete setup describes the account's personal training profile and preserves existing staff permissions.
+The app opens private account login. The public sample demo remains on the website; app demo routes are blocked. Existing owner email verification and Owner access are confirmed. The user chooses their own password. Owners, Managers and Coaches open their staff account tools directly; customer Parent/Athlete setup is not shown to staff.
 
 Upload an original or licensed drill through Content. An Owner then assigns protected workouts to a verified account and can separately enable video review with an assigned coach. Real plans do not contain built-in demo drills. See [the workout/video guide](VIDEO-REVIEW-GUIDE.md) for recording, previewing, private submissions, parent approval, coach feedback, quotas and deletion.
 

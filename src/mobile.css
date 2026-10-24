@@ -634,3 +634,7 @@
   padding: 12px 10px;
   font-size: 0.9rem;
 }
+
+.staff-account-email {
+  overflow-wrap: anywhere;
+}

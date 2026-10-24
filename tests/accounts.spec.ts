@@ -1572,3 +1572,177 @@ test("staff app navigation stays on authorized content tools rather than member 
     page.getByRole("navigation", { name: "App navigation" }),
   ).toHaveCount(0);
 });
+
+for (const role of ["owner", "manager", "coach"] as const) {
+  test(`${role} account opens staff tools without household setup, including delayed access checks and app refresh`, async ({
+    page,
+    context,
+  }, info) => {
+    const backend = fixture(false, false, role);
+    await backend.install(context);
+    let householdReads = 0;
+    await context.route("**/rest/v1/member_accounts**", (route) => {
+      householdReads++;
+      return route.fulfill({
+        status: 503,
+        json: { message: "Household service intentionally unavailable" },
+      });
+    });
+    await context.route("**/rest/v1/account_roles**", async (route) => {
+      await new Promise((resolve) => setTimeout(resolve, 250));
+      return route.fulfill({ json: [{ role, version: 1 }] });
+    });
+    await page.addInitScript(() => {
+      (window as Window & { sawCustomerSetup?: boolean }).sawCustomerSetup =
+        false;
+      new MutationObserver(() => {
+        if (document.body?.textContent?.includes("Who will you manage?"))
+          (window as Window & { sawCustomerSetup?: boolean }).sawCustomerSetup =
+            true;
+      }).observe(document, { childList: true, subtree: true });
+    });
+    await signIn(page);
+    await expect(
+      page.getByRole("heading", {
+        name: `Your ${role[0].toUpperCase() + role.slice(1)} account.`,
+        exact: true,
+      }),
+    ).toBeVisible();
+    await expect(page.getByLabel("Account type", { exact: true })).toHaveCount(
+      0,
+    );
+    await expect(
+      page.getByRole("button", { name: "Finish account setup", exact: true }),
+    ).toHaveCount(0);
+    await expect(
+      page.getByRole("link", { name: "Upload & manage content", exact: true }),
+    ).toBeVisible();
+    await page.goto("./?source=app#workspace");
+    const nav = page.getByRole("navigation", { name: "App navigation" });
+    await expect(
+      nav.getByRole("link", { name: "Overview", exact: true }),
+    ).toBeVisible();
+    await nav.getByRole("link", { name: "Account", exact: true }).click();
+    await expect(
+      page.getByRole("heading", {
+        name: `Your ${role[0].toUpperCase() + role.slice(1)} account.`,
+        exact: true,
+      }),
+    ).toBeVisible();
+    await page.reload();
+    await expect(
+      nav.getByRole("link", { name: "Overview", exact: true }),
+    ).toBeVisible();
+    await nav.getByRole("link", { name: "Account", exact: true }).click();
+    await expect(page.getByLabel("Account type", { exact: true })).toHaveCount(
+      0,
+    );
+    expect(
+      await page.evaluate(
+        () =>
+          (window as Window & { sawCustomerSetup?: boolean }).sawCustomerSetup,
+      ),
+    ).toBe(false);
+    expect(householdReads).toBe(0);
+    expect(backend.counts.writes).toBe(0);
+    expect(backend.accounts.size).toBe(0);
+    if (role === "owner") {
+      await page.setViewportSize({ width: 390, height: 844 });
+      expect(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth <= innerWidth,
+        ),
+      ).toBe(true);
+      expect(
+        (
+          await new AxeBuilder({ page })
+            .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+            .analyze()
+        ).violations,
+      ).toEqual([]);
+      await page.screenshot({
+        path: `artifacts/staff-account-${info.project.name}.png`,
+        fullPage: true,
+      });
+    }
+    await page
+      .getByRole("button", { name: "Sign out", exact: true })
+      .dblclick();
+    await expect(
+      page.getByRole("button", { name: "Sign in securely", exact: true }),
+    ).toBeVisible();
+  });
+}
+
+test("Owner password setup finishes on the staff account without creating a Parent or Athlete account", async ({
+  page,
+  context,
+}) => {
+  const backend = fixture(false, false, "owner");
+  await backend.install(context);
+  const fragment = new URLSearchParams({
+    access_token: jwt(parentId),
+    refresh_token: "fictional-refresh",
+    type: "magiclink",
+    token_type: "bearer",
+  });
+  await page.goto("./?flow=recovery#" + fragment.toString());
+  await page
+    .getByLabel("New password", { exact: true })
+    .fill("fictional-staff-password-only");
+  await page
+    .getByRole("button", { name: "Save new password", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "Your Owner account.", exact: true }),
+  ).toBeVisible();
+  await expect(page.getByLabel("Account type", { exact: true })).toHaveCount(0);
+  expect(backend.accounts.size).toBe(0);
+  await page
+    .getByRole("button", { name: "Change password", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "Choose a new password.", exact: true }),
+  ).toBeVisible();
+  await page
+    .getByRole("button", { name: "Cancel password change", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "Your Owner account.", exact: true }),
+  ).toBeVisible();
+});
+
+test("failed role checks never fall back to customer setup and can be retried", async ({
+  page,
+  context,
+}) => {
+  const backend = fixture(false, false, "owner");
+  await backend.install(context);
+  let fail = true;
+  await context.route("**/rest/v1/account_roles**", (route) =>
+    route.fulfill(
+      fail
+        ? {
+            status: 403,
+            json: { message: "Fictional permission lookup unavailable" },
+          }
+        : { json: [{ role: "owner", version: 1 }] },
+    ),
+  );
+  await signIn(page);
+  await expect(
+    page.getByRole("heading", {
+      name: "Account access could not be verified.",
+      exact: true,
+    }),
+  ).toBeVisible();
+  await expect(page.getByLabel("Account type", { exact: true })).toHaveCount(0);
+  fail = false;
+  await page
+    .getByRole("button", { name: "Retry account access", exact: true })
+    .dblclick();
+  await expect(
+    page.getByRole("heading", { name: "Your Owner account.", exact: true }),
+  ).toBeVisible();
+  expect(backend.accounts.size).toBe(0);
+});
