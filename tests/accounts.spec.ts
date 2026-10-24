@@ -1,3 +1,4 @@
+import { DRILLS } from "../src/data";
 import { disableBackend } from "./backendFixture";
 import { test, expect, type BrowserContext } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
@@ -19,6 +20,12 @@ function fixture(
   const accounts = new Map<string, Row>();
   const players = new Map<string, Row>();
   const levels = new Map<string, { role: string; version: number }>();
+  const links = new Map<string, string>();
+  const guardianAccounts = new Set<string>();
+  const controls = new Map<string, { allowed: boolean; version: number }>();
+  const workouts = new Map<string, Row>();
+  const invitations = new Map<string, string>();
+
   let rejectRoleChange = false;
   const levelFor = (id: string) =>
     levels.get(id) ||
@@ -40,6 +47,8 @@ function fixture(
     password: 0,
     resend: 0,
     roleWrites: 0,
+    workoutWrites: 0,
+    parentReviews: 0,
   };
   let failNextSave = false;
   let ambiguousSave = false;
@@ -119,6 +128,169 @@ function fixture(
           url.pathname.includes("/training_resources")
         )
           return route.fulfill({ json: [] });
+        if (url.pathname.endsWith("/rpc/athlete_account_context"))
+          return route.fulfill({
+            json: {
+              guardian_managed: guardianAccounts.has(id),
+              linked_profile_id:
+                [...links.entries()].find(([, user]) => user === id)?.[0] ||
+                null,
+            },
+          });
+        if (url.pathname.endsWith("/rpc/family_profile_state")) {
+          const p = players.get(body.target_profile);
+          if (!p || (p.owner_id !== id && links.get(p.id as string) !== id))
+            return route.fulfill({
+              status: 403,
+              json: { message: "Athlete unavailable" },
+            });
+          const permission = controls.get(p.id as string) || {
+            allowed: false,
+            version: 0,
+          };
+          return route.fulfill({
+            json: {
+              is_family: true,
+              is_parent: p.owner_id === id,
+              can_record: p.owner_id === id || permission.allowed,
+              self_recording_allowed: permission.allowed,
+              permission_version: permission.version,
+              has_link: links.has(p.id as string),
+              child_access_ready: true,
+              workouts: [...workouts.values()].filter(
+                (w) => w.profile_id === p.id,
+              ),
+            },
+          });
+        }
+        if (url.pathname.endsWith("/rpc/set_athlete_permission")) {
+          const p = players.get(body.target_profile),
+            old = controls.get(body.target_profile) || {
+              allowed: false,
+              version: 0,
+            };
+          if (p?.owner_id !== id || old.version !== body.expected_version)
+            return route.fulfill({
+              status: 409,
+              json: {
+                message:
+                  "Permission changed on another device. Refresh before retrying.",
+              },
+            });
+          controls.set(body.target_profile, {
+            allowed: body.allowed,
+            version: old.version + 1,
+          });
+          return route.fulfill({ json: {} });
+        }
+        if (url.pathname.endsWith("/rpc/create_athlete_invite")) {
+          if (
+            players.get(body.target_profile)?.owner_id !== id ||
+            !controls.get(body.target_profile)?.allowed
+          )
+            return route.fulfill({
+              status: 403,
+              json: { message: "Parent permission required" },
+            });
+          const code = "ab".repeat(32);
+          invitations.set(code, body.target_profile);
+          return route.fulfill({ json: code });
+        }
+        if (url.pathname.endsWith("/rpc/accept_athlete_invite")) {
+          const profile = invitations.get(body.access_code);
+          if (!profile)
+            return route.fulfill({
+              status: 400,
+              json: { message: "This access code is unavailable or expired." },
+            });
+          links.set(profile, id);
+          levels.set(id, { role: "athlete", version: 1 });
+          if (players.get(profile)?.age_group !== "18+")
+            guardianAccounts.add(id);
+          invitations.delete(body.access_code);
+          return route.fulfill({ json: profile });
+        }
+        if (url.pathname.endsWith("/rpc/remove_athlete_access")) {
+          if (players.get(body.target_profile)?.owner_id !== id)
+            return route.fulfill({
+              status: 403,
+              json: { message: "Parent required" },
+            });
+          links.delete(body.target_profile);
+          return route.fulfill({ status: 204, body: "" });
+        }
+        if (url.pathname.endsWith("/rpc/report_athlete_workout")) {
+          const p = players.get(body.target_profile);
+          if (
+            !p ||
+            (p.owner_id !== id &&
+              (links.get(body.target_profile) !== id ||
+                !controls.get(body.target_profile)?.allowed))
+          )
+            return route.fulfill({
+              status: 403,
+              json: {
+                message: "The parent has paused independent workout recording.",
+              },
+            });
+          if (workouts.has(body.workout_id))
+            return route.fulfill({ json: workouts.get(body.workout_id) });
+          const drills = body.requested_drills.map((d: string) =>
+            DRILLS.find((x) => x.id === d)!,
+          );
+          counts.workoutWrites++;
+          const row = {
+            id: body.workout_id,
+            profile_id: body.target_profile,
+            reported_by: id,
+            drill_ids: body.requested_drills,
+            titles: drills.map((d: (typeof DRILLS)[number]) => d.title),
+            minutes: drills.reduce(
+              (sum: number, d: (typeof DRILLS)[number]) => sum + d.minutes,
+              0,
+            ),
+            status: p.owner_id === id ? "approved" : "pending_parent",
+            created_at: new Date().toISOString(),
+            reviewed_by: p.owner_id === id ? id : null,
+            reviewed_at: p.owner_id === id ? new Date().toISOString() : null,
+            version: 1,
+          };
+          workouts.set(row.id, row);
+          return route.fulfill({ json: row });
+        }
+        if (url.pathname.endsWith("/rpc/review_athlete_workout")) {
+          const w = workouts.get(body.workout_id);
+          if (
+            !w ||
+            players.get(w.profile_id as string)?.owner_id !== id ||
+            w.version !== body.expected_version
+          )
+            return route.fulfill({
+              status: 409,
+              json: {
+                message: "Only this athlete’s parent can review the workout.",
+              },
+            });
+          counts.parentReviews++;
+          const next = {
+            ...w,
+            status: body.decision,
+            version: body.expected_version + 1,
+            reviewed_by: id,
+            reviewed_at: new Date().toISOString(),
+          };
+          workouts.set(body.workout_id, next);
+          return route.fulfill({ json: next });
+        }
+        if (url.pathname.includes("/athlete_workouts")) {
+          const requested = url.searchParams.get("id")?.replace(/^eq\./, "");
+          return route.fulfill({
+            json:
+              requested && workouts.has(requested)
+                ? [workouts.get(requested)]
+                : [],
+          });
+        }
         if (url.pathname.endsWith("/rpc/complete_member_account")) {
           const account = {
             user_id: id,
@@ -194,7 +366,9 @@ function fixture(
           if (method === "GET")
             return route.fulfill({
               json: [...players.values()].filter(
-                (p) => p.owner_id === id && (!playerId || p.id === playerId),
+                (p) =>
+                  (p.owner_id === id || links.get(p.id as string) === id) &&
+                  (!playerId || p.id === playerId),
               ),
             });
           if (failNextSave) {
@@ -243,6 +417,9 @@ function fixture(
     players,
     accounts,
     levels,
+    links,
+    controls,
+    workouts,
     rejectRole: () => {
       rejectRoleChange = true;
     },
@@ -260,7 +437,7 @@ async function signIn(
 ) {
   await page.goto("./#account");
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
-  await page.getByLabel("Adult email", { exact: true }).fill(email);
+  await page.getByLabel(/^(Adult|Account) email$/).fill(email);
   await page
     .getByLabel("Password", { exact: true })
     .fill("fictional-password-only");
@@ -403,7 +580,7 @@ test("signup verifies email, recovery updates a password and adult accounts cann
     .getByRole("button", { name: "Create account", exact: true })
     .click();
   await page
-    .getByLabel("Adult email", { exact: true })
+    .getByLabel(/^(Adult|Account) email$/)
     .fill("fictional-parent@example.test");
   await page
     .getByLabel("Password", { exact: true })
@@ -426,7 +603,7 @@ test("signup verifies email, recovery updates a password and adult accounts cann
   await page.getByRole("button", { name: "Sign out of this browser" }).click();
   await page.getByRole("button", { name: "Forgot password?" }).click();
   await page
-    .getByLabel("Adult email", { exact: true })
+    .getByLabel(/^(Adult|Account) email$/)
     .fill("fictional-parent@example.test");
   await page.getByRole("button", { name: "Send reset link" }).click();
   await expect(page.getByRole("status")).toContainText("If an account exists");
@@ -561,7 +738,7 @@ test("expired email callbacks recover safely and the closed under-18 gate is ref
   await expect(page).not.toHaveURL(/error=/);
   await page.getByRole("button", { name: "Resend verification email" }).click();
   await page
-    .getByLabel("Adult email", { exact: true })
+    .getByLabel(/^(Adult|Account) email$/)
     .fill("fictional-parent@example.test");
   await page
     .getByRole("button", { name: "Resend verification link", exact: true })
@@ -709,3 +886,124 @@ for (const role of ["manager", "coach", "parent", "athlete"] as const) {
     ).toHaveCount(0);
   });
 }
+
+test("a private family athlete joins with a parent code, reports practice without adult setup, and remains under parent review and revocation", async ({
+  page,
+  context,
+}) => {
+  const backend = fixture(true, false);
+  await backend.install(context);
+  await signIn(page);
+  await setup(page);
+  const profile = "90000000-0000-4000-8000-000000000001";
+  const sibling = "90000000-0000-4000-8000-000000000002";
+  for (const [id, nickname] of [
+    [profile, "Fictional Pat"],
+    [sibling, "Fictional Sibling"],
+  ])
+    backend.players.set(id, {
+      id,
+      owner_id: parentId,
+      nickname,
+      age_group: "13–17",
+      sport: "football",
+      position: "Quarterback",
+      experience: "New to the game",
+      goal: "Footwork",
+      guardian_confirmed: true,
+      version: 1,
+    });
+  await page
+    .getByRole("button", { name: "Refresh profiles", exact: true })
+    .click();
+  const openParentWorkspace = async () => {
+    await page
+      .locator("article.private-player")
+      .filter({
+        has: page.getByRole("heading", { name: "Fictional Pat", exact: true }),
+      })
+      .getByRole("button", { name: "Workouts & permissions", exact: true })
+      .click();
+  };
+  await openParentWorkspace();
+  await page
+    .getByRole("button", { name: "Allow athlete self-recording" })
+    .click();
+  await page.getByRole("button", { name: "Save athlete permission" }).click();
+  await page
+    .getByRole("button", { name: "Create private athlete access code" })
+    .click();
+  const code = await page.getByLabel("One-time access code").inputValue();
+  await page.getByRole("button", { name: "Close access code" }).click();
+  await page.getByRole("button", { name: "Sign out of this browser" }).click();
+  await signIn(page, "fictional-adult@example.test");
+  await page.getByLabel("Parent’s private athlete access code").fill(code);
+  await page
+    .getByRole("button", { name: "Connect my athlete profile" })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "Fictional Pat’s workouts" }),
+  ).toBeVisible();
+  await expect(page.getByLabel("Account type")).toHaveCount(0);
+  await expect(
+    page.getByRole("heading", { name: "Fictional Sibling", exact: true }),
+  ).toHaveCount(0);
+  await page
+    .getByRole("button", { name: "Start sample workout", exact: true })
+    .click();
+  const dialog = page.getByRole("dialog");
+  await dialog.getByRole("checkbox").check();
+  await dialog.getByRole("button", { name: "Begin sample practice" }).click();
+  for (;;) {
+    await dialog.getByRole("button", { name: "Show workout steps" }).click();
+    await dialog.getByRole("checkbox").check();
+    const last = dialog.getByRole("button", {
+      name: "Submit reported workout",
+    });
+    if (await last.isVisible()) {
+      await last.dblclick();
+      break;
+    }
+    await dialog.getByRole("button", { name: "Next workout drill" }).click();
+  }
+  await expect(
+    page.getByText("Awaiting parent review", { exact: true }),
+  ).toBeVisible();
+  expect(backend.counts.workoutWrites).toBe(1);
+  await expect(
+    page.getByRole("button", { name: "Approve workout", exact: true }),
+  ).toHaveCount(0);
+  expect(
+    await page.evaluate(() => JSON.stringify({ ...localStorage })),
+  ).not.toContain("Fictional Pat");
+  await page.getByRole("button", { name: "Sign out of this browser" }).click();
+  await signIn(page);
+  await openParentWorkspace();
+  await page
+    .getByRole("button", { name: "Approve workout", exact: true })
+    .click();
+  await page.getByRole("button", { name: "Confirm parent review" }).dblclick();
+  await expect(
+    page.getByText("Parent approved", { exact: true }),
+  ).toBeVisible();
+  expect(backend.counts.parentReviews).toBe(1);
+  await page.reload();
+  await openParentWorkspace();
+  await expect(
+    page.getByText("Parent approved", { exact: true }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Turn self-recording off" }).click();
+  await page.getByRole("button", { name: "Save athlete permission" }).click();
+  await page
+    .getByRole("button", { name: "Remove athlete account access" })
+    .click();
+  await page
+    .getByRole("button", { name: "Remove athlete connection", exact: true })
+    .click();
+  await page.getByRole("button", { name: "Sign out of this browser" }).click();
+  await signIn(page, "fictional-adult@example.test");
+  await expect(
+    page.getByRole("heading", { name: "Your parent manages athlete access." }),
+  ).toBeVisible();
+  await expect(page.getByLabel("Account type")).toHaveCount(0);
+});

@@ -44,3 +44,9 @@ Neither proves a live Supabase project, SMTP delivery or physical-device email/b
 ## Account-level checks
 
 `src/rolePolicies.test.ts` applies all three migrations and verifies the five-level permission matrix, Owner-only grants/directory, self/last-Owner protection, stale writes, immutable audit records, staff profile isolation, coach content/file ownership, Athlete personal-profile limits and safe role preservation during repeated setup/deletion. Browser tests cover every level, Owner role changes, cancelled/failed/repeated submissions, refresh persistence, search and mobile accessibility. All browser backend responses remain fictional; live RLS checks use isolated transaction fixtures that roll back.
+
+## Family athletes and review
+
+`src/familyPolicies.test.ts` executes migration 004 and tests one-athlete family links, sibling isolation, parent-only permission/review, idempotent reports, revocation, hashed/expired/single-use codes, standalone adult reports, server-derived session metadata, guardian gates/markers, age-band bypass prevention and private wrapper permissions. `tests/family.spec.ts` exercises the public fictional demo, cancellations, browser storage failure, individual mode, per-athlete histories, approvals and phone accessibility. `tests/accounts.spec.ts` also runs the real SDK against intercepted family RPCs through parent/athlete account switching, private code acceptance without an adult declaration, reports, approval persistence and revocation. These are simulated identities, not real children.
+
+Verify the actual public `#family-demo` URL separately from the signed-in pilot. Live child access must stay closed until qualified consent/age-transition review and real-device guardian workflows are complete. All live QA identities are fictional adults and are rolled back; recording/review is participation reporting, not athletic measurement.

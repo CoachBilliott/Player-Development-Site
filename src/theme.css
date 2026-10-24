@@ -2165,3 +2165,127 @@ body {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+.experience .family-training {
+  margin: 1.5rem 0;
+}
+.experience .family-training-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.experience .family-permission {
+  display: flex;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: #10271e;
+  border: 1px solid #426442;
+  border-radius: 14px;
+  margin: 1.5rem 0;
+}
+.experience .family-permission > svg {
+  color: var(--lime);
+}
+.experience .family-permission > div {
+  min-width: 0;
+}
+.experience .family-permission .button {
+  margin-top: 1rem;
+}
+.experience .family-link-actions {
+  margin: 1rem 0;
+}
+.experience .family-plan {
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #0a1721;
+}
+.experience .family-plan > p {
+  margin: 0.75rem 0;
+}
+.experience .family-plan .button {
+  margin-top: 1rem;
+}
+.experience .family-history {
+  margin: 2rem 0;
+}
+.experience .family-counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 1rem 0;
+  color: var(--muted);
+}
+.experience .family-counts strong {
+  display: block;
+  color: var(--ink);
+  font:
+    700 2rem "Barlow Condensed",
+    sans-serif;
+}
+.experience .family-workout {
+  border-top: 1px solid var(--line);
+  padding: 1.25rem 0;
+}
+.experience .family-workout h4 {
+  margin: 0.75rem 0 0.25rem;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+.experience .family-workout .actions {
+  margin-top: 1rem;
+}
+.experience .family-view-tabs {
+  margin: 1.5rem 0;
+  display: flex;
+  flex-wrap: wrap;
+}
+.experience .family-athlete-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 1.5rem 0;
+}
+.experience .family-athlete-choice {
+  display: grid;
+  gap: 0.4rem;
+  text-align: left;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  padding: 1rem;
+  border-radius: 12px;
+  flex: 1;
+  min-width: min(100%, 180px);
+}
+.experience .family-athlete-choice.selected {
+  border-color: var(--lime);
+  background: #c4fa5d0c;
+}
+.experience .family-athlete-choice span {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.experience .family-join {
+  max-width: 700px;
+  margin: 1.5rem 0;
+}
+@media (max-width: 520px) {
+  .experience .family-permission {
+    padding: 1rem;
+    display: block;
+  }
+  .experience .family-permission > svg {
+    margin-bottom: 0.75rem;
+  }
+  .experience .family-view-tabs > button {
+    flex: 1;
+  }
+  .experience .family-plan {
+    padding: 1rem;
+  }
+}

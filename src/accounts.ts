@@ -54,8 +54,18 @@ export class Accounts {
     const under18Enabled = z
       .object({ under18_enabled: z.boolean() })
       .parse(settings.data).under18_enabled;
-    if (!account.data) return { account: null, players: [], under18Enabled };
-    const parsed = accountSchema.parse(account.data);
+    const parsed = account.data ? accountSchema.parse(account.data) : null;
+    const context = await this.client.rpc("athlete_account_context");
+    if (context.error)
+      throw new Error(
+        "Athlete account access could not be verified. Reconnect and retry.",
+      );
+    const familyContext = z
+      .object({
+        guardian_managed: z.boolean(),
+        linked_profile_id: z.string().uuid().nullable(),
+      })
+      .parse(context.data);
     const profiles = await this.client
       .from("player_profiles")
       .select(columns)
@@ -68,6 +78,7 @@ export class Accounts {
       account: parsed,
       players: z.array(playerSchema).parse(profiles.data),
       under18Enabled,
+      guardianManaged: familyContext.guardian_managed,
     };
   }
   async setup(kind: "parent" | "adult") {

@@ -18,6 +18,8 @@ import {
 import { Modal, Notice, Tag } from "./components";
 import type { SharedState } from "./useSharedContent";
 import { AccountAccess } from "./AccountAccess";
+import { FamilyTraining } from "./family";
+import { AthleteTraining } from "./FamilyTraining";
 
 export function MemberAccountPage({ shared }: { shared: SharedState }) {
   if (shared.loading)
@@ -79,7 +81,8 @@ function AccountPrinciples() {
       <h2>Built around your household.</h2>
       <ul>
         <li>
-          Adult-owned accounts. Under-18 players have no independent login.
+          Parents manage family athletes and decide whether each one may record
+          practice independently.
         </li>
         <li>Private profiles. No public roster or direct messages.</li>
         <li>
@@ -105,6 +108,12 @@ function ConnectedAccount({
   service: Accounts;
 }) {
   const client = service.client;
+  const [familyService] = useState(() => new FamilyTraining(client));
+  const [trainingPlayer, setTrainingPlayer] = useState<PrivatePlayer | null>(
+    null,
+  );
+  const [guardianManaged, setGuardianManaged] = useState(false);
+  const [joinCode, setJoinCode] = useState("");
   const [mode, setMode] = useState<"signin" | "signup" | "recover" | "verify">(
     "signin",
   );
@@ -150,6 +159,7 @@ function ConnectedAccount({
         if (!stopped) {
           setAccount(result.account);
           setPlayers(result.players);
+          setGuardianManaged(result.guardianManaged);
           setUnder18Enabled(result.under18Enabled);
           setLoaded(true);
         }
@@ -188,9 +198,13 @@ function ConnectedAccount({
     const result = await service.load();
     setAccount(result.account);
     setPlayers(result.players);
+    setGuardianManaged(result.guardianManaged);
+    setTrainingPlayer(null);
     setUnder18Enabled(result.under18Enabled);
     setLoaded(true);
   }
+  const linkedPlayer = players.find((p) => p.owner_id !== userId);
+  const ownedPlayers = players.filter((p) => p.owner_id === userId);
   function switchMode(next: typeof mode) {
     setMode(next);
     setPassword("");
@@ -298,6 +312,50 @@ function ConnectedAccount({
         </p>
       )}
       {userId && !recovery && <AccountAccess shared={shared} />}
+      {userId &&
+        !recovery &&
+        !linkedPlayer &&
+        (shared.role === null || shared.role === "athlete") &&
+        !ownedPlayers.length && (
+          <section className="panel member-panel family-join">
+            <h2>Have a parent’s athlete access code?</h2>
+            <p>
+              Connect to your individual athlete profile in the family. This
+              does not give access to siblings or parent controls. Real child
+              access remains closed until verified consent setup is complete.
+            </p>
+            <form
+              className="member-form"
+              onSubmit={(e) => {
+                e.preventDefault();
+                void act(async () => {
+                  await familyService.accept(joinCode);
+                  setJoinCode("");
+                  await shared.refreshAccess();
+                  await refresh();
+                });
+              }}
+            >
+              <label>
+                Parent’s private athlete access code
+                <input
+                  autoComplete="off"
+                  required
+                  maxLength={64}
+                  value={joinCode}
+                  onChange={(e) => setJoinCode(e.target.value)}
+                  disabled={busy}
+                />
+              </label>
+              <button
+                className="button"
+                disabled={busy || joinCode.trim().length !== 64}
+              >
+                Connect my athlete profile
+              </button>
+            </form>
+          </section>
+        )}
       {!userId ? (
         <div className="member-layout">
           <section className="panel member-panel">
@@ -346,7 +404,7 @@ function ConnectedAccount({
             >
               <fieldset disabled={busy}>
                 <label>
-                  Adult email
+                  {mode === "signup" ? "Adult email" : "Account email"}
                   <input
                     type="email"
                     autoComplete="username"
@@ -513,6 +571,42 @@ function ConnectedAccount({
             </button>
           )}
         </section>
+      ) : trainingPlayer ? (
+        <>
+          <button
+            className="button secondary"
+            onClick={() => setTrainingPlayer(null)}
+          >
+            Back to athlete profiles
+          </button>
+          <AthleteTraining
+            key={trainingPlayer.id}
+            player={trainingPlayer}
+            service={familyService}
+          />
+        </>
+      ) : linkedPlayer ? (
+        <>
+          <Notice>
+            You are connected as one individual athlete in a family. Only your
+            own athlete profile and practice history are shown.
+          </Notice>
+          <AthleteTraining
+            key={linkedPlayer.id}
+            player={linkedPlayer}
+            service={familyService}
+            onConnectionChange={refresh}
+          />
+        </>
+      ) : guardianManaged ? (
+        <section className="panel member-panel">
+          <h2>Your parent manages athlete access.</h2>
+          <p>
+            Your connection is paused or unavailable. Ask your parent to review
+            your access. You cannot switch this account to an adult or parent
+            account yourself.
+          </p>
+        </section>
       ) : !account ? (
         <div className="member-layout">
           <section className="panel member-panel">
@@ -655,7 +749,7 @@ function ConnectedAccount({
             />
           ) : players.length ? (
             <div className="member-player-grid">
-              {players.map((player) => (
+              {ownedPlayers.map((player) => (
                 <article
                   className="panel member-panel private-player"
                   key={player.id}
@@ -683,6 +777,13 @@ function ConnectedAccount({
                     </div>
                   </dl>
                   <div className="actions">
+                    <button
+                      className="button"
+                      disabled={busy}
+                      onClick={() => setTrainingPlayer(player)}
+                    >
+                      Workouts &amp; permissions
+                    </button>
                     <button
                       className="button secondary"
                       disabled={busy}
@@ -763,6 +864,7 @@ function ConnectedAccount({
           <p>Sign out before handing a shared device to someone else.</p>
         </div>
       )}
+
       {remove && (
         <Modal
           title={`Delete ${remove.nickname}’s profile?`}
@@ -771,8 +873,9 @@ function ConnectedAccount({
           }}
         >
           <p>
-            This permanently deletes this private player profile. The fictional
-            demo is unaffected.
+            This permanently deletes this private player profile and its
+            recorded workouts and family connection. The fictional demo is
+            unaffected.
           </p>
           {error && (
             <p className="form-error" role="alert">
@@ -812,10 +915,11 @@ function ConnectedAccount({
           }}
         >
           <p>
-            This permanently removes all your player profiles and member setup.
-            Your email login remains with the authentication provider. Full
-            login erasure requires the project owner through Supabase Auth;
-            there is no automatic billing or subscription to cancel.
+            This permanently removes your player profiles, their workout
+            records, family connections and member setup. Your email login
+            remains with the authentication provider. Full login erasure
+            requires the project owner through Supabase Auth; there is no
+            automatic billing or subscription to cancel.
           </p>
           {error && (
             <p className="form-error" role="alert">

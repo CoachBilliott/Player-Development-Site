@@ -1,6 +1,6 @@
 # Player Development backend — private adult pilot
 
-The dedicated project `iilbulpqbuknhdpmtrvm` is connected. Migrations `001-shared-content.sql`, `002-private-profiles.sql` and `003-account-levels.sql` were applied once and verified against the live project. Do not rerun the initial migrations against this installed schema.
+The dedicated project `iilbulpqbuknhdpmtrvm` is connected. Migrations `001-shared-content.sql`, `002-private-profiles.sql`, `003-account-levels.sql` and `004-family-athletes.sql` were applied once and verified against the live project. Do not rerun the initial migrations against this installed schema.
 
 The site URL and exact verification/recovery redirect URLs point to `https://coachbilliott.github.io/Player-Development-Site/`. Email confirmation is required and passwords require at least 12 characters. Management access is supplied securely by the owner; no administrative credential belongs in the repository, browser configuration, test fixtures or chat.
 
@@ -15,7 +15,7 @@ Supabase's built-in email sender is restricted and rate limited. The owner appro
 ## Verification performed
 
 - Live project identity and public Auth endpoint checked using the owner's supplied connection.
-- All seven public tables have row-level security enabled. Anonymous REST reads can access published training but receive permission-denied responses for member accounts and profiles.
+- All fifteen public tables have row-level security enabled. Anonymous REST reads can access published training but receive permission-denied responses for member accounts and profiles.
 - Live transaction tests create only fictional temporary adult Auth/profile fixtures, exercise owner create/read/edit/version checks and cross-household read/write/delete rejection, reject account-type escalation and under-18 creation, and roll back every fixture. The cleanup check confirms zero remaining test users.
 - Browser tests intercept fictional backend responses and never use the owner's live project. They cover the actual SDK, email callbacks, private-profile CRUD and account switching. Local/hosted checks and actual public deployment must still be confirmed for each release.
 - Provider-issued activation/invitation/recovery links may use an implicit email callback. The app removes tokens from the URL and validates the session through Supabase Auth before showing account controls. Browser-initiated signup/recovery continues to use PKCE and requires the same browser for the callback.
@@ -35,21 +35,33 @@ Supabase's built-in email sender is restricted and rate limited. The owner appro
 | Owner   | Assign levels to existing verified adult accounts; manage all shared training resources. Own access cannot be changed through the website.             |
 | Manager | Manage shared training content across coaches. Cannot assign levels or read the account directory.                                                     |
 | Coach   | Publish and manage resources they created. Can read published content from other coaches but cannot edit their drafts/resources or remove their files. |
-| Parent  | Manage their own household's private profiles. Under-18 creation remains closed until consent setup is completed.                                      |
-| Athlete | Manage one private adult profile of their own. Cannot publish content or manage other accounts.                                                        |
+| Parent  | Add private family athletes, control self-recording and review practice. Real under-18 enrollment remains closed.                                      |
+| Athlete | Use one individual profile, standalone or family-connected. Cannot approve their own family reports.                                                   |
 
-These are primary access levels, independent of subscription packages. Staff may also choose a personal Parent/Athlete profile purpose without losing their staff level. No staff level, including Owner, automatically grants access to someone else's private player details. Coach-to-player assignments, consent-based sharing, messaging, account invitations from the website and paid entitlements are not part of this release.
+These are primary access levels, independent of subscription packages. Staff may also choose a personal Parent/Athlete profile purpose without losing their staff level. No staff level, including Owner, automatically grants access to someone else's private player details. Family sharing is a specific, consent-controlled connection to one individual. Coach-to-player assignments, staff sharing, messaging, email account invitations from the website and paid entitlements are not part of this release.
 
-The existing approved owner was bootstrapped as Owner through privileged administration. Other legacy coaches retain Coach access. Existing personal parent/adult purposes migrate to Parent/Athlete respectively. No profiles are removed. A person cannot be switched to Athlete while multiple personal or under-18 profiles exist. Only Owners can call `assign_account_role`; the RPC checks verification, adult setup and the expected server version, protects self/last-owner access and records one audit event per change. Direct browser writes to levels/audit are forbidden. Access is read from the database, never user metadata or a browser selector.
+The existing approved owner was bootstrapped as Owner through privileged administration. Other legacy coaches retain Coach access. Existing personal parent/adult purposes migrate to Parent/Athlete respectively. Guardian-managed family athletes can connect without making an adult declaration. No profiles are removed. A person cannot be switched to standalone Athlete while multiple personal or under-18 profiles exist. Family-linked athletes keep Athlete access and cannot be promoted to staff. Only Owners can call `assign_account_role`; the RPC checks verification, adult setup and the expected server version, protects self/last-owner access and records one audit event per change. Direct browser writes to levels/audit are forbidden. Access is read from the database, never user metadata or a browser selector.
 
 Role changes affect backend permissions immediately. Open screens recheck levels on focus; users can refresh their page to update controls. Creating/resetting personal profile data cannot promote staff or change an assigned Parent/Athlete level. Under-18 independent athlete logins remain unavailable. If a manager replaces a coach's attachment, later cleanup of a file owned by that manager can require Manager/Owner access; cleanup failures are reported and never expand coach file permissions.
+
+## Family connections and reviewed practice
+
+Migration 004 adds per-profile controls, one active family profile per athlete identity, one-time invites stored only as SHA-256 hashes, private practice reports and parent-only reviews. Codes expire after one hour, are single-use and are revoked by new codes or permission removal. Parent-managed recording is the default. Pausing recording immediately prevents submissions while preserving history; removing a connection also removes profile/history access. An adult can accept or leave their own family connection. Existing personal profiles are not auto-merged; a profile already connected to an athlete cannot be silently reassigned.
+
+Both `under18_enabled` and `child_self_access_enabled` remain false. Real child access requires those gates plus a trusted `guardian_access_reviews` entry for that profile. These records and gates have no browser write policy. No such review is created for a real child by this release. Guardian-managed identity markers survive link/profile deletion; a persistent minor-profile marker prevents an age-band edit from bypassing child-access gates. A qualified, verified age-transition process is required before clearing these restrictions. The old adult-setup/role RPCs were moved behind private wrappers so they cannot bypass guardian restrictions.
+
+Reports are created only through `report_athlete_workout`; the server derives age/position/experience-eligible titles and planned minutes from `practice_catalog`. Repeated submission IDs do not create duplicate practice. Family athlete reports become `pending_parent`; the parent may approve or request another practice with version checks. Parent-recorded family practice is parent-confirmed. Independent adult practice is `self_reported`. No status proves actual elapsed time, athletic improvement or video completion. Direct browser inserts/updates of records, controls or consent reviews are denied.
+
+Real private history is fetched online and never copied to demo storage or the service-worker cache. Unfinished sessions stay in memory; refreshing discards them without reporting completion. Parent profile-data deletion also removes owned workout history/invites/links. Separate athlete Auth identities may remain, with guardian restrictions retained; full Auth erasure and retention require owner support. The family demo uses fixed fictional profiles and browser-local state only.
+
+The live acceptance check uses only fictional adult family identities inside a rolled-back transaction. Real children are never enrolled or used as live fixtures. Offline PostgreSQL/browser fixtures exercise child paths with explicitly simulated review/gates. Public signup remains closed and no new invitation emails are sent by this feature.
 
 ## What is implemented
 
 - Adult email/password signup, email-verification callback, sign-in, password recovery/change and browser sign-out, using one shared Supabase Auth client with PKCE.
 - Empty, private member accounts with a parent/legal-guardian or adult-player type. The server requires verified email and explicit adult/privacy acknowledgements; browser users cannot alter account types or consent timestamps.
 - Private player create/edit/delete, parent-managed under-18 profiles after server enrollment opens, age-band/position/experience/goal preferences, stable creation IDs, server version checks and lost-response confirmation.
-- Adult-player accounts can only create adult profiles. There are no child logins, public profiles, messaging or implicit coach access to player data.
+- Adult-player accounts can only create adult profiles. Real child logins remain gated; there are no public profiles, messaging or implicit coach access to player data.
 - Profiles are fetched online into memory. Only the authentication session persists locally; member profiles are not placed in demo localStorage, IndexedDB, the service worker cache or offline pages. Identity changes clear the member view, including cross-tab sign-out.
 - Member profile-data deletion cascades through that household's players. **The Auth email login remains**; full login erasure and provider backup retention require the project owner. The interface explicitly explains this difference. No hidden payment relationship is created.
 - Shared coach media publish/edit/replace/delete, explicit coach allowlist, public published sample reads, private media bucket with one-hour signed links, 12 MB/type limits and optimistic versions.
@@ -68,4 +80,4 @@ Use fictional adult test identities only. Do not enter real children's informati
 
 ## Still outside this activation
 
-Payments, package definitions, recurring billing, unpaid-access suspension, entitlement enforcement, real member practice-history sync, native App Store/Play Store apps, verified guardian identity and reviewed real training prescriptions are not implemented. The current training remains illustrative and pending qualified review. No pricing, player allowance, scholarship or recruiting outcome is promised.
+Payments, package definitions, recurring billing, unpaid-access suspension, entitlement enforcement, advanced real-member training integrations, native App Store/Play Store apps, verified guardian identity and reviewed real training prescriptions are not implemented. The current training remains illustrative and pending qualified review. No pricing, player allowance, scholarship or recruiting outcome is promised.

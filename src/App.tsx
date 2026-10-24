@@ -57,6 +57,7 @@ import { useMotion } from "./motion";
 import { usePwa } from "./pwa";
 import { InstallApp } from "./InstallApp";
 import { MemberAccountPage } from "./MemberAccount";
+import { FamilyDemo } from "./FamilyDemo";
 const NAV = [
   ["today", "Today"],
   ["library", "Drill library"],
@@ -76,6 +77,7 @@ const safeHash = () => {
     "membership",
     "install",
     "account",
+    "family-demo",
   ].includes(value)
     ? value
     : "home";
@@ -383,6 +385,8 @@ export default function App() {
             onChoose={chooseProfile}
             onCancel={() => go(profile ? "today" : "home")}
           />
+        ) : page === "family-demo" ? (
+          <FamilyDemo />
         ) : page === "account" ? (
           <MemberAccountPage shared={shared} />
         ) : page === "home" ? (
@@ -446,6 +450,7 @@ export default function App() {
             </a>
             <a href="#home">About the demo</a>
             <a href="#account">Member access</a>
+            <a href="#family-demo">Try the family demo</a>
             <a href="#install">
               Get the app <ArrowUpRight size={14} />
             </a>
@@ -646,7 +651,8 @@ function Home() {
             </button>
           </div>
           <p className="member-home-link">
-            Ready for your own account?{" "}
+            Parents and athletes: <a href="#family-demo">Try the family demo</a>
+            . Ready for your own account?{" "}
             <a href="#account">
               Member access <ArrowUpRight size={14} />
             </a>

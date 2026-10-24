@@ -19,8 +19,10 @@ export const ROLE_DETAILS: Record<AccountRole, string> = {
   owner: "Manage account levels and all shared training content.",
   manager: "Manage shared training content across the team.",
   coach: "Publish and manage your own training resources.",
-  parent: "Manage your household’s private player profiles.",
-  athlete: "Manage one private adult profile of your own.",
+  parent:
+    "Add family athletes, control self-recording and review their workouts.",
+  athlete:
+    "Your individual athlete profile, on its own or connected to a family.",
 };
 export const accessSchema = z.object({
   role: z.enum(ROLES),
@@ -59,6 +61,6 @@ export async function assignRole(
   });
   if (error)
     throw new Error(
-      "Access change was not confirmed. Verify this person completed adult setup; Athlete access allows one adult profile only. Refresh if another owner changed the account. Your own Owner access is protected.",
+      "Access change was not confirmed. Verify this person completed adult setup; Athlete access is for one individual profile; family-linked athletes must stay Athlete. Refresh if another owner changed the account. Your own Owner access is protected.",
     );
 }
