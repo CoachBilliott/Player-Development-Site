@@ -17,6 +17,12 @@ The Team ID has been received; it is an identifier, not a signing credential. Pa
 
 ## Prepared signing/upload workflow — not yet run
 
+The owner has authorized the dedicated Apple signing credential setup. An encrypted RSA private key and matching public certificate request have been prepared. The private key/passphrase remain in the ignored `ios-signing/private` workspace directory; they are not in source, build artifacts or the public download. The idempotent helper `scripts/create_apple_csr.py` verifies the request and key before reusing them and refuses to overwrite incomplete signing material.
+
+The next owner-only step is [Apple Developer → Certificates → Add](https://developer.apple.com/account/resources/certificates/add): select team `4T6V3S3CZL`, choose **Apple Distribution**, upload `public/apple-signing/PlayerDevelopment-6a44424434a1.certSigningRequest`, and download the issued `.cer` certificate. The `.cer` contains the public certificate and may be supplied for matching/conversion. Do not send a private `.p8` key or a `.p12` export through chat. Apple-issued certificates, provisioning profiles and App Store Connect access have not yet been obtained.
+
+Public request download: https://coachbilliott.github.io/Player-Development-Site/apple-signing/PlayerDevelopment-6a44424434a1.certSigningRequest
+
 `.github/workflows/testflight.yml` is a manual workflow for a signed iPhone build and an optional App Store Connect upload. It accepts only `main` after both the normal checks and iPhone simulator tests pass for the exact commit. Upload is off by default. Signing uses the dedicated team's manually supplied App Store profile and Apple Distribution certificate; it does not automatically create/revoke credentials, register devices, create an app record, invite testers or publish an App Store release.
 
 The profile validator rejects a different team, different/wildcard app identifier, expired profile, non-iOS profile and development/ad-hoc/enterprise signing. Temporary keys are removed from the runner at job end. Only the signed app is retained as an artifact; it contains normal embedded public signing metadata, not the private certificate key or Apple API key. That artifact is not a TestFlight invitation or a directly installable App Store release.
