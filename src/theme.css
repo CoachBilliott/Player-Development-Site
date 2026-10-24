@@ -2688,110 +2688,6 @@ body {
   }
 }
 
-/* Athlete-first brand: an original kinetic sculpture, with sport availability below. */
-.athlete-scene {
-  --athlete-accent: #c8fa50;
-  margin: 0;
-  min-width: 0;
-  position: relative;
-  isolation: isolate;
-}
-.athlete-scene[data-theme="focus"] {
-  --athlete-accent: #89e3ef;
-}
-.athlete-scene[data-theme="build"] {
-  --athlete-accent: #c4b5fd;
-}
-.athlete-stage {
-  position: relative;
-  height: 440px;
-  perspective: 1000px;
-  --athlete-tilt-x: 0deg;
-  --athlete-tilt-y: 0deg;
-}
-.athlete-glow {
-  position: absolute;
-  inset: 12% 5% 0;
-  pointer-events: none;
-  border-radius: 50%;
-  background: radial-gradient(ellipse, #81d7c31c, transparent 67%);
-  filter: blur(20px);
-  animation: athlete-aura 8s ease-in-out infinite alternate;
-}
-.athlete-sculpture {
-  position: relative;
-  height: 100%;
-  width: 100%;
-  display: block;
-  transform: rotateX(var(--athlete-tilt-x)) rotateY(var(--athlete-tilt-y));
-  transition: transform 250ms ease-out;
-  filter: drop-shadow(0 25px 20px #0005);
-}
-.athlete-figure {
-  animation: athlete-float 6s ease-in-out infinite alternate;
-  transform-origin: center;
-}
-.athlete-lane {
-  stroke: var(--athlete-accent);
-  filter: drop-shadow(0 0 5px var(--athlete-accent));
-}
-.athlete-marker {
-  filter: drop-shadow(0 0 7px var(--athlete-accent));
-}
-.athlete-caption {
-  position: absolute;
-  bottom: 0;
-  left: 12px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 18px;
-  border: 1px solid #385c6c;
-  border-left: 2px solid var(--athlete-accent);
-  border-radius: 10px;
-  background: #0b1b28ed;
-  box-shadow: 0 15px 30px #0003;
-}
-.athlete-caption strong {
-  display: block;
-  font-size: 14px;
-  color: #e2eff4;
-}
-.athlete-caption small {
-  display: block;
-  margin-top: 5px;
-  font-size: 12px;
-  color: #aac3d2;
-}
-.athlete-controls {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  margin-top: 20px;
-}
-.athlete-controls .scene-tabs button,
-.athlete-controls > button {
-  min-height: 44px;
-}
-.athlete-controls .scene-tabs button[aria-pressed="true"] {
-  color: var(--athlete-accent);
-}
-.athlete-controls > button {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 12px;
-  padding: 10px;
-  color: #b5cbd7;
-}
-.athlete-art-note {
-  margin: 12px 0 0;
-  color: #97afc0;
-  font-size: 10px;
-  line-height: 1.7;
-}
 .sport-programs {
   padding-top: 28px;
   padding-bottom: 36px;
@@ -2852,41 +2748,7 @@ body {
   font-size: 12px;
   line-height: 1.7;
 }
-@keyframes athlete-float {
-  from {
-    transform: translateY(-4px);
-  }
-  to {
-    transform: translateY(5px);
-  }
-}
-@keyframes athlete-aura {
-  from {
-    opacity: 0.55;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1.05);
-  }
-}
-.experience[data-motion="paused"] .athlete-sculpture {
-  transform: none;
-}
 @media (max-width: 1000px) {
-  .athlete-stage {
-    height: 370px;
-  }
-  .athlete-caption {
-    left: 0;
-    padding: 12px;
-  }
-  .athlete-caption strong {
-    font-size: 12px;
-  }
-  .athlete-caption small {
-    font-size: 11px;
-  }
   .sport-program {
     padding: 24px;
   }
@@ -2896,37 +2758,127 @@ body {
     grid-template-columns: 1fr;
     gap: 16px;
   }
-  .athlete-stage {
-    height: 350px;
-  }
-  .athlete-scene .scene-index {
-    font-size: 8px;
-    letter-spacing: 1px;
-  }
-  .athlete-controls .scene-tabs button {
-    font-size: 12px;
-    padding: 10px 14px;
-  }
-  .athlete-caption {
-    bottom: 3px;
-    max-width: 100%;
-  }
   .sport-programs {
     padding-top: 20px;
   }
 }
+
+/* Genuine licensed training footage, automatically looped with no playback widgets. */
+.real-athlete-scene {
+  margin: 0;
+  min-width: 0;
+}
+.training-film {
+  position: relative;
+  height: clamp(430px, 46vw, 580px);
+  overflow: hidden;
+  border: 1px solid #39515d;
+  border-radius: 18px 18px 18px 4px;
+  background: #10232c;
+  box-shadow: 0 28px 70px #0005;
+}
+.training-poster,
+.hero-training-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 28%;
+}
+.hero-training-video {
+  opacity: 0;
+}
+.hero-training-video.is-playing {
+  opacity: 1;
+}
+.training-film-shade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    #06111b33,
+    transparent 25%,
+    #08131d11 45%,
+    #07111cee 100%
+  );
+}
+.training-film-eyebrow {
+  position: absolute;
+  left: 26px;
+  top: 28px;
+  font-size: 10px;
+  letter-spacing: 2.4px;
+  color: #f1f6f4;
+  text-shadow: 0 1px 5px #000;
+}
+.training-film-eyebrow:before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: 10px;
+  border-radius: 50%;
+  background: #c8fa50;
+}
+.training-film-title {
+  position: absolute;
+  bottom: 58px;
+  left: 28px;
+  color: #f0f6f5;
+  font-family: var(--font-display);
+  font-size: clamp(48px, 5.6vw, 76px);
+  font-weight: 800;
+  font-style: italic;
+  line-height: 0.9;
+  text-transform: uppercase;
+  letter-spacing: -0.025em;
+}
+.training-film-title span {
+  color: #c8fa50;
+}
+.training-film-label {
+  position: absolute;
+  bottom: 27px;
+  left: 28px;
+  color: #c4d3d9;
+  font-size: 9px;
+  letter-spacing: 2.1px;
+}
+.training-film-credit {
+  color: #b0c4d1;
+  font-size: 11px;
+  line-height: 1.8;
+  margin-top: 13px;
+}
+.training-film-credit a {
+  display: inline-block;
+  padding: 4px 0;
+}
+@media (max-width: 700px) {
+  .training-film {
+    height: 430px;
+    margin-top: 8px;
+  }
+  .training-film-title {
+    font-size: 60px;
+  }
+}
 @media (max-width: 380px) {
-  .athlete-stage {
-    height: 300px;
+  .training-film {
+    height: 360px;
   }
-  .athlete-scene .scene-head {
-    flex-wrap: wrap;
-    gap: 9px;
+  .training-film-title {
+    left: 22px;
+    font-size: 52px;
   }
-  .athlete-controls {
-    gap: 4px;
+  .training-film-label {
+    left: 22px;
+    font-size: 8px;
   }
-  .athlete-controls .scene-tabs button {
-    padding: 10px 12px;
+  .training-film-eyebrow {
+    left: 22px;
+    font-size: 9px;
   }
 }

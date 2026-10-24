@@ -12,6 +12,8 @@ export function appShell(): Plugin {
       const publicFiles = [
         "manifest.webmanifest",
         "favicon.svg",
+        "media/training-poster.jpg",
+        "media/credits.txt",
         "icons/app-192.png",
         "icons/app-512.png",
         "icons/maskable-512.png",

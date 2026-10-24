@@ -1,77 +1,49 @@
 import { disableBackend } from "./backendFixture";
 import { test, expect } from "@playwright/test";
-
-test.beforeEach(async ({ context }) => {
-  await disableBackend(context);
-});
-
-test("athlete illustration responds to themes, replay, and pause without recording practice", async ({
+test.beforeEach(async ({ context }) => disableBackend(context));
+test("real training footage automatically loops silently without any playback or motion buttons", async ({
   page,
 }) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("./");
-  const shell = page.locator(".experience");
-  await expect(shell).toHaveAttribute("data-motion", "running");
-  await expect(page.locator(".athlete-sculpture animateMotion")).toHaveCount(1);
-  const route = await page.locator(".athlete-lane").getAttribute("d");
-  await page.getByRole("button", { name: "Focus", exact: true }).click();
+  const film = page.locator(".hero-training-video");
+  await film.scrollIntoViewIfNeeded();
+  await expect(film).toHaveClass(/is-playing/);
+  await expect(film).toHaveJSProperty("muted", true);
+  await expect(film).toHaveJSProperty("loop", true);
+  await expect(film).toHaveJSProperty("controls", false);
+  await expect(film).toHaveAttribute("playsinline", "");
   await expect(
-    page.getByRole("button", { name: "Focus", exact: true }),
-  ).toHaveAttribute("aria-pressed", "true");
-  await expect(
-    page.getByRole("img", {
-      name: /Original decorative athlete-development illustration: focus/,
+    page.getByRole("button", {
+      name: /replay|pause animations|motion off|motion on|reduce motion/i,
     }),
-  ).toBeVisible();
-  expect(await page.locator(".athlete-lane").getAttribute("d")).not.toBe(route);
-  await page.evaluate(() => document.fonts.ready);
-  // A replay must restart even late in the SVG document timeline.
-  await page.locator(".athlete-sculpture").evaluate((svg) => {
-    (svg as SVGSVGElement).setCurrentTime(20);
-  });
-  await page.getByRole("button", { name: "Replay athlete animation" }).click();
-  await expect(page.locator(".athlete-sculpture animateMotion")).toHaveCount(1);
-  const marker = page.locator(".athlete-marker circle");
-  const firstPosition = await marker.boundingBox();
-  if (!firstPosition)
-    throw new Error("The decorative animated marker is missing.");
+  ).toHaveCount(0);
+  await expect(page.locator(".athlete-sculpture")).toHaveCount(0);
   await expect
-    .poll(async () => {
-      const current = await marker.boundingBox();
-      return current
-        ? Math.hypot(current.x - firstPosition.x, current.y - firstPosition.y)
-        : 0;
-    })
-    .toBeGreaterThan(16);
-  await page
-    .getByRole("button", { name: "Motion on: pause animations", exact: true })
-    .click();
-  await expect(shell).toHaveAttribute("data-motion", "paused");
-  await expect(page.locator(".athlete-sculpture animateMotion")).toHaveCount(0);
-  await expect(
-    page.getByRole("button", { name: "Replay athlete animation" }),
-  ).toBeDisabled();
+    .poll(() =>
+      film.evaluate((el: HTMLVideoElement) => !el.paused && el.readyState >= 2),
+    )
+    .toBe(true);
+  await film.evaluate((el: HTMLVideoElement) => {
+    el.currentTime = el.duration - 0.2;
+  });
+  await expect
+    .poll(() => film.evaluate((el: HTMLVideoElement) => el.currentTime))
+    .toBeLessThan(1.5);
+  await expect
+    .poll(() => film.evaluate((el: HTMLVideoElement) => !el.paused))
+    .toBe(true);
   expect(
-    await page
-      .locator(".athlete-figure")
-      .evaluate((el) => getComputedStyle(el).animationName),
-  ).toBe("none");
-  await page.reload();
-  await expect(shell).toHaveAttribute("data-motion", "paused");
+    await page.evaluate(() => localStorage.getItem("pd-family-demo-v1")),
+  ).toBeNull();
   expect(
     await page.evaluate(() => localStorage.getItem("pd-demo-v1")),
   ).toBeNull();
-  await page
-    .getByRole("button", { name: "Motion off: play animations", exact: true })
-    .click();
-  await expect(shell).toHaveAttribute("data-motion", "running");
-  await expect(page.locator(".athlete-sculpture animateMotion")).toHaveCount(1);
-  const reveal = page.locator(".reveal").last();
-  await reveal.scrollIntoViewIfNeeded();
-  await expect(reveal).toHaveAttribute("data-visible", "true");
+  await page.reload();
+  await page.locator(".hero-training-video").scrollIntoViewIfNeeded();
+  await expect(page.locator(".hero-training-video")).toHaveClass(/is-playing/);
 });
-
-test("device reduced motion gives a static, usable training experience", async ({
+test("device reduced motion automatically shows a real still with no motion buttons and usable training", async ({
   page,
 }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
@@ -80,17 +52,13 @@ test("device reduced motion gives a static, usable training experience", async (
     "data-motion",
     "paused",
   );
+  await expect(page.locator(".hero-training-video")).toHaveCount(0);
+  await expect(page.locator(".training-poster")).toBeVisible();
   await expect(
     page.getByRole("button", {
-      name: "Motion off: reduced-motion preference",
+      name: /replay|pause animations|motion off|motion on|reduce motion/i,
     }),
-  ).toBeDisabled();
-  await expect(page.locator(".athlete-sculpture animateMotion")).toHaveCount(0);
-  expect(
-    await page
-      .locator(".athlete-figure")
-      .evaluate((el) => getComputedStyle(el).animationName),
-  ).toBe("none");
+  ).toHaveCount(0);
   for (const reveal of await page.locator(".reveal").all())
     expect(await reveal.evaluate((el) => getComputedStyle(el).opacity)).toBe(
       "1",
@@ -100,9 +68,6 @@ test("device reduced motion gives a static, usable training experience", async (
     .getByRole("link", { name: "Try the demo", exact: true })
     .click();
   await page.getByRole("button", { name: "Solo athlete", exact: true }).click();
-  await expect(
-    page.getByRole("heading", { name: "Morgan’s workouts", exact: true }),
-  ).toBeVisible();
   await page
     .getByRole("button", { name: "Start sample workout", exact: true })
     .click();
@@ -122,8 +87,58 @@ test("device reduced motion gives a static, usable training experience", async (
   await expect(
     page.getByText("No workouts recorded for this athlete yet."),
   ).toBeVisible();
-  await expect(page.locator(".experience")).toHaveAttribute(
-    "data-motion",
-    "paused",
+});
+test("unavailable hero videos retain a real poster and never block the website or demo", async ({
+  page,
+  context,
+}) => {
+  await context.route("**/media/training-loop.*", (route) =>
+    route.abort("failed"),
   );
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("./");
+  await expect(page.locator(".training-poster")).toBeVisible();
+  await expect
+    .poll(() =>
+      page
+        .locator(".training-poster")
+        .evaluate(
+          (img: HTMLImageElement) => img.complete && img.naturalWidth > 0,
+        ),
+    )
+    .toBe(true);
+  await expect(
+    page.getByRole("button", {
+      name: /replay|pause animations|motion off|motion on|reduce motion/i,
+    }),
+  ).toHaveCount(0);
+  await page
+    .getByRole("main")
+    .getByRole("link", { name: "Try the demo", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "See how your training works." }),
+  ).toBeVisible();
+});
+
+test("WebM footage plays if the MP4 request is unavailable", async ({
+  page,
+  context,
+}) => {
+  await context.route("**/media/training-loop.mp4", (route) =>
+    route.abort("failed"),
+  );
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("./");
+  const film = page.locator(".hero-training-video");
+  await film.scrollIntoViewIfNeeded();
+  await expect(film).toHaveClass(/is-playing/);
+  await expect
+    .poll(() => film.evaluate((el: HTMLVideoElement) => el.currentSrc))
+    .toMatch(/training-loop\.webm$/);
+  await expect
+    .poll(() =>
+      film.evaluate((el: HTMLVideoElement) => !el.paused && el.readyState >= 2),
+    )
+    .toBe(true);
 });

@@ -2,7 +2,6 @@
 
 This prototype uses original illustrations and locally hosted open-source fonts. The following open-source packages are included in the client build. Their copyright and license notices are reproduced below. Development tools have additional licenses in their installed package directories.
 
-
 ## react 19.3.1
 
 ```text
@@ -28,7 +27,6 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
-
 
 ## react-dom 19.3.1
 
@@ -56,7 +54,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-
 ## scheduler 0.28.0
 
 ```text
@@ -83,7 +80,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-
 ## lucide-react 0.468.0
 
 ```text
@@ -103,7 +99,6 @@ WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ```
-
 
 ## zod 4.6.7
 
@@ -130,7 +125,6 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
-
 
 ## vite 7.3.7
 
@@ -357,7 +351,6 @@ FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
 OTHER DEALINGS IN THE FONT SOFTWARE.
 ```
 
-
 ## @supabase/supabase-js 2.118.0
 
 ```text
@@ -384,7 +377,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ```
-
 
 ## @supabase/auth-js 2.118.0
 
@@ -413,7 +405,6 @@ SOFTWARE.
 
 ```
 
-
 ## @supabase/functions-js 2.118.0
 
 ```text
@@ -440,7 +431,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ```
-
 
 ## @supabase/postgrest-js 2.118.0
 
@@ -469,7 +459,6 @@ SOFTWARE.
 
 ```
 
-
 ## @supabase/realtime-js 2.118.0
 
 ```text
@@ -496,7 +485,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ```
-
 
 ## @supabase/storage-js 2.118.0
 
@@ -525,7 +513,6 @@ SOFTWARE.
 
 ```
 
-
 ## iceberg-js 0.8.1
 
 ```text
@@ -552,7 +539,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ```
-
 
 ## @supabase/phoenix 0.4.5
 
@@ -581,3 +567,7 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ```
+
+HOMEPAGE TRAINING FOOTAGE
+
+Edited stock video by Airam Dato-on and KoolShooters, via Pexels. Used under the Pexels License (https://www.pexels.com/license/). Source links, permitted use, edits and credit details are included in public/media/credits.txt (served as media/credits.txt on the website). No endorsement or real member relationship is implied.
