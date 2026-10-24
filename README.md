@@ -1,6 +1,6 @@
 # Player Development — sample-data prototype
 
-A standalone, responsive virtual player-practice demo, beginning with American football. This project is independent of Coach Workroom and Spawnative; it uses neither their code, brands, accounts, nor hosting.
+A standalone, responsive player-development platform with a sport-neutral brand and American football as its only current training program. Basketball and soccer remain future offerings. This project is independent of Coach Workroom and Spawnative; it uses neither their code, brands, accounts, nor hosting.
 
 ## Private member accounts — connected for an adult pilot
 
@@ -58,11 +58,11 @@ The `dist/` folder is a static website with relative asset paths and hash naviga
 - Staff content studio: select a file, write instructions, set audience and primary goal, preview matching fictional profiles, and publish once to the local library; edit instructions/audience, keep or replace media, and remove resources with confirmation. Supports MP4/WebM video, PNG/JPEG/WebP, PDF, and plain text, up to 12 MB. Video and images preview; PDFs/text download. No embedded executable HTML/SVG uploads.
 - Future package concepts without prices, payments, signup, or promised scholarships/recruiting results. Other sports are future offerings only.
 
-## Stadium theme and motion
+## Athlete-first design and motion
 
-The field illustration uses SVG and CSS perspective with layered edges, with a route trace, a moving marker, and ambient lighting. Visitors can switch between Footwork and Field Vision, replay the route, or pause visual animation. These are decorative illustrations, not coaching demonstrations or measured player movements. They never create practice records.
+The homepage features an original SVG athlete sculpture with layered training rings, depth, gentle ambient motion and mouse parallax. Move, Focus and Build change a decorative theme; Replay restarts the moving marker. These visuals are not coaching demonstrations, measured performance or AI assessments, and never create practice records. The dark palette, electric accents and typography work across sports. Public program cards clearly label football available now and basketball/soccer coming later, without enrollment or purchase controls for future sports.
 
-The motion control pauses ambient effects, route playback, reveals, and page transitions; its preference lasts for the current browser session. Device `prefers-reduced-motion` is respected automatically, with static visible content and no animated route. Section reveals also show immediately for keyboard focus. The training workflow remains usable when motion is off. Motion-off also disables smooth section scrolling. No automatic movement runs in reduced-motion mode.
+The global motion control pauses ambient effects, marker movement, reveals and page transitions, with a session-only browser preference. Device reduced-motion settings produce a static visible illustration and usable training. Keyboard focus reveals content immediately. Football-specific drill diagrams and content remain in the single parent/solo customer demo; no additional sports are activated by this branding update.
 
 ## Installable phone app
 

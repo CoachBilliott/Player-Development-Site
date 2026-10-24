@@ -52,12 +52,13 @@ import {
 } from "./components";
 import { ContentStudio } from "./ContentStudio";
 import { useSharedContent } from "./useSharedContent";
-import { CinematicField, MotionShell, Reveal } from "./Experience";
+import { MotionShell, Reveal } from "./Experience";
 import { useMotion } from "./motion";
 import { usePwa } from "./pwa";
 import { InstallApp } from "./InstallApp";
 import { MemberAccountPage } from "./MemberAccount";
 import { FamilyDemo } from "./FamilyDemo";
+import { AthleteScene } from "./AthleteScene";
 import {
   Workspace,
   AccessWorkspace,
@@ -329,7 +330,7 @@ export default function App() {
             ? "Private adult & parent-managed profiles"
             : demoPage
               ? "Fictional profiles · No account required"
-              : "American football · More sports in the future"}
+              : "Athlete development · Football available now"}
         </span>
         <span className="strip-note">
           {privatePage
@@ -677,7 +678,7 @@ function Home() {
       <section className="hero page">
         <div className="hero-copy">
           <div className="sport-tag">
-            <span /> AMERICAN FOOTBALL · AGES 5 TO ADULT
+            <span /> ATHLETE DEVELOPMENT · AGES 5 TO ADULT
           </div>
           <div className="hero-kicker">
             <span /> BUILT FOR YOUR NEXT CHAPTER
@@ -688,9 +689,9 @@ function Home() {
             <span className="electric-text">Your next rep.</span>
           </h1>
           <p className="hero-description">
-            Turn “what should I work on?” into a clear next step. Guided
-            football practice matched to your age, position, experience, and
-            goals.
+            Turn “what should I work on?” into a clear next step. Purposeful
+            practice, a plan that fits, and support for the athlete you’re
+            becoming.
           </p>
           <div className="actions">
             <a className="button" href="#demo">
@@ -709,7 +710,7 @@ function Home() {
           </div>
           <p className="member-home-link">
             Training for families and individual athletes. Already have an
-            account?
+            account?{" "}
             <a href="#account">
               Member access <ArrowUpRight size={14} />
             </a>
@@ -722,7 +723,48 @@ function Home() {
             </p>
           </div>
         </div>
-        <CinematicField />
+        <AthleteScene />
+      </section>
+      <section className="page sport-programs" aria-labelledby="sports-title">
+        <div className="section-heading">
+          <div>
+            <span className="eyebrow">YOUR SPORT. YOUR STARTING POINT.</span>
+            <h2 id="sports-title">Development comes first.</h2>
+          </div>
+          <p>
+            Football is our first program. More sports are part of the future,
+            with training built for each one.
+          </p>
+        </div>
+        <div className="sport-program-grid">
+          {SPORTS.map((sport, i) => (
+            <article
+              key={sport.id}
+              className={`sport-program ${sport.available ? "available" : "future"}`}
+              aria-label={`${sport.name} program`}
+            >
+              <div className="sport-program-top">
+                <span className="sport-program-index">0{i + 1}</span>
+                <Tag>{sport.available ? "AVAILABLE NOW" : "COMING LATER"}</Tag>
+              </div>
+              <h3>{sport.name}</h3>
+              <p>
+                {sport.available
+                  ? "Guided football sample practice matched to age, position, experience and goals."
+                  : "A future sport-specific program. Training and enrollment are not available yet."}
+              </p>
+              {sport.available ? (
+                <a className="button secondary" href="#demo">
+                  Try the football demo <ArrowRight size={17} />
+                </a>
+              ) : (
+                <span className="sport-future-note">
+                  Future offering · No signup or purchase
+                </span>
+              )}
+            </article>
+          ))}
+        </div>
       </section>
       <Reveal>
         <section id="how-it-works" className="page how-section">
@@ -819,8 +861,8 @@ function Home() {
         <section className="page home-scope">
           <div className="scope-strip">
             <div>
-              <span className="eyebrow">FOOTBALL FIRST</span>
-              <h3>Built for today. Room for what’s next.</h3>
+              <span className="eyebrow">A MULTI-SPORT FUTURE</span>
+              <h3>Football now. More possibilities ahead.</h3>
               <p>
                 {SPORTS.filter((s) => !s.available)
                   .map((s) => s.name)

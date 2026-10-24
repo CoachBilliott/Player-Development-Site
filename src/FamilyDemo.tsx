@@ -201,11 +201,11 @@ export function FamilyDemo() {
         ← Exit demo · Back to website
       </a>
       <div className="member-heading">
-        <Tag>GUIDED DEMO · SAMPLE DATA</Tag>
+        <Tag>FOOTBALL DEMO · SAMPLE DATA</Tag>
         <h1 tabIndex={-1}>See how your training works.</h1>
         <p>
-          Try a training day as a parent or a solo athlete. Follow a sample
-          workout and see how practice is recorded. No account needed.
+          Try a football training day as a parent or a solo athlete. Follow a
+          sample workout and see how practice is recorded. No account needed.
         </p>
       </div>
       <div

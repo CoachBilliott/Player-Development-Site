@@ -53,7 +53,30 @@ test("homepage is responsive and sample demo is obvious", async ({
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto("./");
-  await expect(page.getByRole("heading", { name: /Your game/i })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: /Your game/i, level: 1 }),
+  ).toBeVisible();
+  await expect(page.locator(".hero .sport-tag")).toHaveText(
+    "ATHLETE DEVELOPMENT · AGES 5 TO ADULT",
+  );
+  await expect(page.locator(".hero .stadium-surface")).toHaveCount(0);
+  const football = page.getByRole("article", {
+    name: "American football program",
+  });
+  await expect(
+    football.getByText("AVAILABLE NOW", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    football.getByRole("link", { name: "Try the football demo", exact: true }),
+  ).toHaveAttribute("href", "#demo");
+  for (const sport of ["Basketball", "Soccer"]) {
+    const upcoming = page.getByRole("article", { name: `${sport} program` });
+    await expect(
+      upcoming.getByText("COMING LATER", { exact: true }),
+    ).toBeVisible();
+    await expect(upcoming.getByRole("link")).toHaveCount(0);
+    await expect(upcoming.getByRole("button")).toHaveCount(0);
+  }
   await page.getByRole("button", { name: "See how it works" }).click();
   await expect(
     page.getByRole("heading", { name: /A clear path from plan/ }),

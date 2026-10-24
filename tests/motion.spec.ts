@@ -5,35 +5,36 @@ test.beforeEach(async ({ context }) => {
   await disableBackend(context);
 });
 
-test("field illustration responds to focus, replay, and pause without recording practice", async ({
+test("athlete illustration responds to themes, replay, and pause without recording practice", async ({
   page,
 }) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("./");
   const shell = page.locator(".experience");
   await expect(shell).toHaveAttribute("data-motion", "running");
-  await expect(page.locator(".stadium-surface animateMotion")).toHaveCount(1);
-  const route = await page.locator(".route-trace").getAttribute("d");
-  await page.getByRole("button", { name: "Field vision", exact: true }).click();
+  await expect(page.locator(".athlete-sculpture animateMotion")).toHaveCount(1);
+  const route = await page.locator(".athlete-lane").getAttribute("d");
+  await page.getByRole("button", { name: "Focus", exact: true }).click();
   await expect(
-    page.getByRole("button", { name: "Field vision", exact: true }),
+    page.getByRole("button", { name: "Focus", exact: true }),
   ).toHaveAttribute("aria-pressed", "true");
   await expect(
     page.getByRole("img", {
-      name: /Original illustrative football field showing a path toward open space/,
+      name: /Original decorative athlete-development illustration: focus/,
     }),
   ).toBeVisible();
-  expect(await page.locator(".route-trace").getAttribute("d")).not.toBe(route);
+  expect(await page.locator(".athlete-lane").getAttribute("d")).not.toBe(route);
   await page.evaluate(() => document.fonts.ready);
-  // A replay must restart even after the SVG document timeline has finished a route.
-  await page.locator(".stadium-surface svg").evaluate((svg) => {
+  // A replay must restart even late in the SVG document timeline.
+  await page.locator(".athlete-sculpture").evaluate((svg) => {
     (svg as SVGSVGElement).setCurrentTime(20);
   });
-  await page.getByRole("button", { name: "Replay field animation" }).click();
-  await expect(page.locator(".stadium-surface animateMotion")).toHaveCount(1);
-  const marker = page.locator(".field-activity circle");
+  await page.getByRole("button", { name: "Replay athlete animation" }).click();
+  await expect(page.locator(".athlete-sculpture animateMotion")).toHaveCount(1);
+  const marker = page.locator(".athlete-marker circle");
   const firstPosition = await marker.boundingBox();
-  if (!firstPosition) throw new Error("The animated field marker is missing.");
+  if (!firstPosition)
+    throw new Error("The decorative animated marker is missing.");
   await expect
     .poll(async () => {
       const current = await marker.boundingBox();
@@ -46,13 +47,13 @@ test("field illustration responds to focus, replay, and pause without recording 
     .getByRole("button", { name: "Motion on: pause animations", exact: true })
     .click();
   await expect(shell).toHaveAttribute("data-motion", "paused");
-  await expect(page.locator(".stadium-surface animateMotion")).toHaveCount(0);
+  await expect(page.locator(".athlete-sculpture animateMotion")).toHaveCount(0);
   await expect(
-    page.getByRole("button", { name: "Replay field animation" }),
+    page.getByRole("button", { name: "Replay athlete animation" }),
   ).toBeDisabled();
   expect(
     await page
-      .locator(".stadium-surface")
+      .locator(".athlete-figure")
       .evaluate((el) => getComputedStyle(el).animationName),
   ).toBe("none");
   await page.reload();
@@ -64,7 +65,7 @@ test("field illustration responds to focus, replay, and pause without recording 
     .getByRole("button", { name: "Motion off: play animations", exact: true })
     .click();
   await expect(shell).toHaveAttribute("data-motion", "running");
-  await expect(page.locator(".stadium-surface animateMotion")).toHaveCount(1);
+  await expect(page.locator(".athlete-sculpture animateMotion")).toHaveCount(1);
   const reveal = page.locator(".reveal").last();
   await reveal.scrollIntoViewIfNeeded();
   await expect(reveal).toHaveAttribute("data-visible", "true");
@@ -84,10 +85,10 @@ test("device reduced motion gives a static, usable training experience", async (
       name: "Motion off: reduced-motion preference",
     }),
   ).toBeDisabled();
-  await expect(page.locator(".stadium-surface animateMotion")).toHaveCount(0);
+  await expect(page.locator(".athlete-sculpture animateMotion")).toHaveCount(0);
   expect(
     await page
-      .locator(".stadium-surface")
+      .locator(".athlete-figure")
       .evaluate((el) => getComputedStyle(el).animationName),
   ).toBe("none");
   for (const reveal of await page.locator(".reveal").all())
