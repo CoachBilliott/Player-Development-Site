@@ -3,7 +3,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { Camera, Upload, Play, Video, RefreshCw } from "lucide-react";
 import type { PrivatePlayer } from "./accounts";
 import type { Drill } from "./model";
-import { Modal, Notice, Tag } from "./components";
+import { Modal, Tag } from "./components";
 import {
   VideoReviews,
   inspectVideo,
@@ -325,10 +325,7 @@ export function AthleteVideoReview({
               });
           }}
         >
-          <p>
-            Up to 60 seconds · 40 MB · MP4, MOV or WebM. Keep other people and
-            private information out of the shot.
-          </p>
+          <p>Up to 60 seconds · 40 MB · MP4, MOV or WebM.</p>
           <label>
             Which drill?
             <select
@@ -366,7 +363,7 @@ export function AthleteVideoReview({
               e.target.value = "";
             }}
           />
-          <div className="actions">
+          <div className="actions video-picker-actions">
             <button
               className="button secondary"
               disabled={busy || checking || started}
@@ -403,12 +400,10 @@ export function AthleteVideoReview({
               {error}
             </p>
           )}
-          <Notice>
-            Only this athlete’s authorized family account and assigned review
-            coach can view a submitted clip. It stays private and is never
-            posted publicly. A submission does not prove improved athletic
-            ability.
-          </Notice>
+          <p className="member-fineprint">
+            Private to your authorized family and assigned coach. Keep other
+            people and private information out of the shot.
+          </p>
           <div className="actions">
             <button
               className="button"

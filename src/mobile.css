@@ -619,3 +619,18 @@
     grid-template-columns: repeat(5, 1fr);
   }
 }
+
+.review-player video[aria-label="Your video preview"] {
+  max-height: 28vh;
+}
+.video-picker-actions {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+.video-picker-actions .button {
+  flex: 1;
+  min-width: 0;
+  padding: 12px 10px;
+  font-size: 0.9rem;
+}

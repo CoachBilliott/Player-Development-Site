@@ -277,19 +277,6 @@ export function AthleteTraining({
                 {plan.reduce((sum, d) => sum + d.minutes, 0)} planned minutes ·{" "}
                 {plan[0]?.equipment}
               </p>
-              {view === "workouts" && (
-                <ol className="app-session-drills">
-                  {plan.map((drill) => (
-                    <li key={drill.id}>
-                      <strong>{drill.title}</strong>
-                      <span>
-                        {drill.minutes} planned minutes · {drill.equipment}
-                      </span>
-                      <p>{drill.lesson}</p>
-                    </li>
-                  ))}
-                </ol>
-              )}
               <button
                 className="button"
                 disabled={
@@ -310,6 +297,20 @@ export function AthleteTraining({
                     : "Start workout"}
                 <ArrowRight size={18} />
               </button>
+              {view === "workouts" && (
+                <ol className="app-session-drills">
+                  {plan.map((drill) => (
+                    <li key={drill.id}>
+                      <strong>{drill.title}</strong>
+                      <span>
+                        {drill.minutes} planned minutes · {drill.equipment}
+                      </span>
+                      <p>{drill.lesson}</p>
+                    </li>
+                  ))}
+                </ol>
+              )}
+
               <p>
                 Matched to age {player.age_group},{" "}
                 {player.experience.toLowerCase()},{" "}
