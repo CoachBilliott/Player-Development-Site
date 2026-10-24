@@ -43,7 +43,7 @@ function read(): DemoState {
     return empty;
   }
 }
-export function FamilyDemo() {
+export function FamilyDemo({ app = false }: { app?: boolean }) {
   const [revision, setRevision] = useState(0),
     [view, setView] = useState<"parent" | "athlete" | "individual">("parent"),
     [selected, setSelected] = useState(samples[0].id),
@@ -197,8 +197,8 @@ export function FamilyDemo() {
     <main
       className={`page member-page family-demo customer-demo ${view === "athlete" ? "junior-workspace" : ""}`}
     >
-      <a href="#home" className="text-button demo-exit">
-        ← Exit demo · Back to website
+      <a href={app ? "#app" : "#home"} className="text-button demo-exit">
+        {app ? "← Exit demo · Back to app" : "← Exit demo · Back to website"}
       </a>
       <div className="member-heading">
         <Tag>FOOTBALL DEMO · SAMPLE DATA</Tag>

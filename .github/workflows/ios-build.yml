@@ -1,0 +1,56 @@
+name: iPhone app build and simulator tests
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  ios:
+    runs-on: macos-15
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Install and bundle the mobile app
+        run: |
+          npm ci
+          npm run build:ios
+      - name: Generate Xcode test targets
+        run: |
+          brew install xcodegen
+          cd ios/App
+          xcodegen generate
+      - name: Build and test on an iPhone simulator
+        run: |
+          mkdir -p mobile-builds
+          xcodebuild -version
+          xcrun simctl list devices available --json > mobile-builds/simulators.json
+          PD_SIMULATOR_UDID=$(python3 -c 'import json;d=json.load(open("mobile-builds/simulators.json"));print(next(x["udid"] for v in d["devices"].values() for x in v if x["name"].startswith("iPhone")))')
+          echo "$PD_SIMULATOR_UDID" > mobile-builds/simulator-udid.txt
+          xcrun simctl boot "$PD_SIMULATOR_UDID" || true
+          xcrun simctl bootstatus "$PD_SIMULATOR_UDID" -b
+          set -o pipefail
+          xcodebuild test -project ios/App/App.xcodeproj -scheme App -configuration Debug -destination "platform=iOS Simulator,id=$PD_SIMULATOR_UDID" -derivedDataPath mobile-builds/DerivedData -resultBundlePath mobile-builds/iPhone-tests.xcresult -parallel-testing-enabled NO CODE_SIGNING_ALLOWED=NO | tee mobile-builds/simulator-build.log
+          xcrun simctl launch "$PD_SIMULATOR_UDID" com.coachbilliott.playerdevelopment
+          xcrun simctl io "$PD_SIMULATOR_UDID" screenshot mobile-builds/iPhone-app.png
+          ditto -c -k --sequesterRsrc --keepParent mobile-builds/DerivedData/Build/Products/Debug-iphonesimulator/App.app mobile-builds/PlayerDevelopment-iOS-Simulator.app.zip
+      - name: Archive an unsigned iPhone device build
+        run: |
+          set -o pipefail
+          xcodebuild archive -project ios/App/App.xcodeproj -scheme App -configuration Release -destination 'generic/platform=iOS' -archivePath mobile-builds/PlayerDevelopment.xcarchive -derivedDataPath mobile-builds/DeviceDerivedData CODE_SIGNING_ALLOWED=NO | tee mobile-builds/device-build.log
+          ditto -c -k --sequesterRsrc --keepParent mobile-builds/PlayerDevelopment.xcarchive mobile-builds/PlayerDevelopment-unsigned.xcarchive.zip
+      - name: Save native builds, screenshots and test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: player-development-ios-test-build
+          path: |
+            mobile-builds/*.zip
+            mobile-builds/*.png
+            mobile-builds/*.log
+            mobile-builds/*.json
+            mobile-builds/*.txt
+            mobile-builds/*.xcresult/
+          retention-days: 14

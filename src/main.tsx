@@ -8,6 +8,7 @@ import "@fontsource/barlow-condensed/latin-800-italic.css";
 import "./styles.css";
 import "./theme.css";
 import "./editorial.css";
+import "./mobile.css";
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <App />

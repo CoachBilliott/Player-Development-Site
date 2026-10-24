@@ -18,9 +18,12 @@ export function InstallApp({ app }: { app: PwaState }) {
         <Tag>YOUR PRACTICE, WITH YOU</Tag>
         <h1 tabIndex={-1}>Add it to your phone.</h1>
         <p>
-          Open Player Development from your home screen. Keep testing the same
-          sample-data demo on phone and desktop.
+          Open the mobile training experience from your home screen. Use your
+          approved account or explore the fictional sample demo.
         </p>
+        <a className="button" href="?source=app#app">
+          Open the app preview <ArrowRight size={18} />
+        </a>
       </div>
       <section className="panel install-status">
         <Smartphone size={34} />

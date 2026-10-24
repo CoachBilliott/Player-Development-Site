@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { nativeApp } from "./mobile";
 
 type InstallPrompt = Event & {
   prompt: () => Promise<void>;
@@ -9,13 +10,15 @@ export function usePwa() {
   const [installed, setInstalled] = useState(
     () =>
       window.matchMedia("(display-mode: standalone)").matches ||
+      nativeApp() ||
       Boolean((navigator as Navigator & { standalone?: boolean }).standalone),
   );
   const [prompt, setPrompt] = useState<InstallPrompt | null>(null);
   const [offlineReady, setOfflineReady] = useState(
     () =>
-      "serviceWorker" in navigator &&
-      Boolean(navigator.serviceWorker.controller),
+      nativeApp() ||
+      ("serviceWorker" in navigator &&
+        Boolean(navigator.serviceWorker.controller)),
   );
   const [waiting, setWaiting] = useState(false);
   const [message, setMessage] = useState("");
@@ -55,7 +58,7 @@ export function usePwa() {
       if (requestedReload.current) window.location.reload();
       else setOfflineReady(true);
     };
-    if (import.meta.env.PROD && "serviceWorker" in navigator) {
+    if (!nativeApp() && import.meta.env.PROD && "serviceWorker" in navigator) {
       navigator.serviceWorker.addEventListener(
         "controllerchange",
         controllerChange,

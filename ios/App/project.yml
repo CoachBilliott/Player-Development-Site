@@ -1,0 +1,69 @@
+name: App
+options:
+  bundleIdPrefix: com.coachbilliott.playerdevelopment
+  deploymentTarget:
+    iOS: "15.0"
+packages:
+  CapApp-SPM:
+    path: CapApp-SPM
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    TARGETED_DEVICE_FAMILY: "1,2"
+targets:
+  App:
+    type: application
+    platform: iOS
+    sources:
+      - path: App
+        excludes:
+          - public
+          - capacitor.config.json
+          - Info.plist
+      - path: App/public
+        type: folder
+        buildPhase: resources
+      - path: App/capacitor.config.json
+        buildPhase: resources
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.coachbilliott.playerdevelopment
+        INFOPLIST_FILE: App/Info.plist
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+    dependencies:
+      - package: CapApp-SPM
+        product: CapApp-SPM
+  AppTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources: AppTests
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: com.coachbilliott.playerdevelopment.tests
+    dependencies:
+      - target: App
+      - package: CapApp-SPM
+        product: CapApp-SPM
+  AppUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources: AppUITests
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: com.coachbilliott.playerdevelopment.uitests
+    dependencies:
+      - target: App
+schemes:
+  App:
+    build:
+      targets:
+        App: all
+    test:
+      targets:
+        - AppTests
+        - AppUITests
+      gatherCoverageData: false

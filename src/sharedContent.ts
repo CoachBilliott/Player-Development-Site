@@ -3,6 +3,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { drillSchema, type Drill } from "./model";
 import { validateFile } from "./storage";
 import { accessSchema, isStaff } from "./roles";
+import { nativeAuthStorage } from "./nativeStorage";
 
 const configSchema = z.object({
   enabled: z.boolean(),
@@ -73,11 +74,13 @@ export async function connectSharedContent(config: SharedConfig) {
 }
 async function createConnection(config: SharedConfig) {
   const { createClient } = await import("@supabase/supabase-js");
+  const storage = await nativeAuthStorage();
   const client = createClient(config.url, config.publishableKey, {
     global: {
       fetch: (input, init) => fetch(input, { ...init, cache: "no-store" }),
     },
     auth: {
+      ...(storage ? { storage } : {}),
       persistSession: true,
       autoRefreshToken: true,
       detectSessionInUrl: false,

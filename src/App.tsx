@@ -56,6 +56,14 @@ import { InstallApp } from "./InstallApp";
 import { MemberAccountPage } from "./MemberAccount";
 import { FamilyDemo } from "./FamilyDemo";
 import { Home } from "./Home";
+import { appSurface, nativeApp } from "./mobile";
+import {
+  MobileHeader,
+  MobileHelp,
+  MobileTabs,
+  MobileWelcome,
+} from "./MobileApp";
+import { useNativeApp } from "./useNativeApp";
 import {
   Workspace,
   AccessWorkspace,
@@ -85,6 +93,8 @@ const safeHash = () => {
   }
   return [
     "home",
+    "app",
+    "app-help",
     "onboarding",
     "today",
     "library",
@@ -102,7 +112,9 @@ const safeHash = () => {
     "launch",
   ].includes(value)
     ? value
-    : "home";
+    : appSurface()
+      ? "app"
+      : "home";
 };
 function go(page: string) {
   window.location.hash = page;
@@ -110,6 +122,9 @@ function go(page: string) {
 export default function App() {
   const app = usePwa();
   const shared = useSharedContent();
+  useNativeApp(shared.service?.client);
+  const [mobile] = useState(appSurface);
+  const wasSignedIn = useRef(false);
   const [initial] = useState(loadState);
   const [state, setState] = useState<State>(initial.state);
   const stateSnapshot = useRef<State>(initial.state);
@@ -124,6 +139,17 @@ export default function App() {
   const [toast, setToast] = useState("");
   const sessionLock = useRef(false);
   const mainRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (
+      mobile &&
+      shared.signedIn &&
+      !wasSignedIn.current &&
+      (page === "app" || page === "account") &&
+      new URLSearchParams(window.location.search).get("flow") !== "recovery"
+    )
+      go("workspace");
+    wasSignedIn.current = shared.signedIn;
+  }, [mobile, shared.signedIn, page]);
   useEffect(() => {
     const fn = () => {
       setPage(safeHash());
@@ -314,211 +340,230 @@ export default function App() {
   const demoPage = isDemoPage(page);
   return (
     <MotionShell>
-      <div className="demo-strip">
-        <span className="live-dot" />{" "}
-        {privatePage
-          ? "PRIVATE WORKSPACE"
-          : demoPage
-            ? "SAMPLE-DATA DEMO"
-            : "PLAYER DEVELOPMENT"}{" "}
-        <span className="strip-divider">/</span>
-        <span>
-          {privatePage
-            ? "Private adult & parent-managed profiles"
-            : demoPage
-              ? "Fictional profiles · No account required"
-              : "Athlete development · Football available now"}
-        </span>
-        <span className="strip-note">
-          {privatePage
-            ? "Your private workspace"
-            : demoPage
-              ? "No account needed"
-              : "Invite-only pilot"}{" "}
-          <ArrowUpRight size={13} />
-        </span>
-      </div>
-      <header className="header">
-        <div className="header-inner">
-          <Logo />
-          <nav className="desktop-nav" aria-label="Main navigation">
-            {nav.map(([id, label]) => (
-              <a
-                key={id}
-                className={page === id ? "active" : ""}
-                href={`#${id}`}
-                aria-current={page === id ? "page" : undefined}
-              >
-                {label}
-              </a>
-            ))}
-          </nav>
-          <div className="header-actions">
-            <a
-              className="header-account"
-              href={shared.signedIn ? "#workspace" : "#account"}
-            >
-              {shared.signedIn ? "My workspace" : "Log in"}{" "}
-              <ArrowUpRight size={17} />
-            </a>
-            <button
-              className="icon-button mobile-menu"
-              onClick={() => setMenu(!menu)}
-              aria-label={menu ? "Close navigation" : "Open navigation"}
-              aria-expanded={menu}
-            >
-              {menu ? <X /> : <Menu />}
-            </button>
-          </div>
-        </div>
-        {menu && (
-          <nav className="mobile-nav" aria-label="Mobile navigation">
-            {nav.map(([id, label]) => (
-              <a key={id} href={`#${id}`}>
-                {label}
-                <ArrowUpRight size={18} />
-              </a>
-            ))}
-            <a href="#account">
-              {shared.signedIn ? "Account settings" : "Log in"}{" "}
-              <ArrowUpRight size={18} />
-            </a>
-            <a href="#membership">
-              Future memberships
-              <ArrowUpRight size={18} />
-            </a>
-            <a href="#install">
-              Get the app <ArrowUpRight size={18} />
-            </a>
-            {!privatePage && (
-              <a href="#coach">
-                Staff sign-in <ArrowUpRight size={18} />
-              </a>
-            )}
-          </nav>
-        )}
-      </header>
-      {!app.online && (
-        <div className="connection-banner" role="status">
-          You’re offline. Built-in demo practice can continue after setup.
-          Member profiles, shared content and uploads need a connection.
-        </div>
-      )}
-      {warning && (
-        <div className="storage-warning" role="alert">
-          {warning}
-        </div>
-      )}
-      {toast && (
-        <div className="toast" role="status">
-          {toast}
-        </div>
-      )}
-      <div ref={mainRef} className="page-transition" key={page}>
-        {onboarding ? (
-          <Onboarding
-            current={profile}
-            onChoose={chooseProfile}
-            onCancel={() => go(profile ? "today" : "home")}
-          />
-        ) : page === "demo" ? (
-          <FamilyDemo />
-        ) : page === "workspace" ? (
-          <Workspace shared={shared} />
-        ) : page === "access" ? (
-          <AccessWorkspace shared={shared} />
-        ) : page === "member-library" ? (
-          <WorkspaceLibrary
-            key={`${shared.session?.user.id}-${shared.role}`}
-            shared={shared}
-          />
-        ) : page === "launch" ? (
-          <LaunchReadiness shared={shared} />
-        ) : page === "account" ? (
-          <MemberAccountPage shared={shared} />
-        ) : page === "home" ? (
-          <Home />
-        ) : page === "today" && profile ? (
-          <Dashboard
-            profile={profile}
-            drills={drills}
-            state={state}
-            onStart={requestStart}
-            onOpen={setDetail}
-          />
-        ) : page === "library" ? (
-          <Library
-            drills={drills.filter(
-              (d) => d.source !== "shared" || d.visibility === "public_sample",
-            )}
-            onOpen={setDetail}
-          />
-        ) : page === "progress" && profile ? (
-          <Progress
-            profile={profile}
-            history={state.history.filter((h) => h.profileId === profile.id)}
-            onReset={() => setReset(true)}
-          />
-        ) : page === "session" && profile ? (
-          <Session
-            run={state.run}
-            drills={drills}
-            profile={profile}
-            onUpdate={(run) => commit({ ...state, run })}
-            onExit={() => setExit(true)}
-            onComplete={(reflection) => {
-              if (!state.run) return;
-              const next = completeRun(state, state.run, drills, reflection);
-              commit(next);
-              // Update the view in the same render that clears the run so a
-              // second tap cannot activate the empty-session fallback.
-              setPage("progress");
-              go("progress");
-              setToast("Practice recorded. Showing your session history.");
-            }}
-          />
-        ) : page === "install" ? (
-          <InstallApp app={app} />
-        ) : page === "coach" ? (
-          <ContentStudio
-            shared={shared}
-            onPublish={publish}
-            onUpdate={updateResource}
-            onRemove={removeResource}
-            resources={state.custom}
-            lockedIds={state.run?.drillIds}
-          />
+      <div className={mobile ? "mobile-layout" : "website-layout"}>
+        {mobile ? (
+          <MobileHeader demo={demoPage} />
         ) : (
-          <Membership />
+          <>
+            <div className="demo-strip">
+              <span className="live-dot" />{" "}
+              {privatePage
+                ? "PRIVATE WORKSPACE"
+                : demoPage
+                  ? "SAMPLE-DATA DEMO"
+                  : "PLAYER DEVELOPMENT"}{" "}
+              <span className="strip-divider">/</span>
+              <span>
+                {privatePage
+                  ? "Private adult & parent-managed profiles"
+                  : demoPage
+                    ? "Fictional profiles · No account required"
+                    : "Athlete development · Football available now"}
+              </span>
+              <span className="strip-note">
+                {privatePage
+                  ? "Your private workspace"
+                  : demoPage
+                    ? "No account needed"
+                    : "Invite-only pilot"}{" "}
+                <ArrowUpRight size={13} />
+              </span>
+            </div>
+            <header className="header">
+              <div className="header-inner">
+                <Logo />
+                <nav className="desktop-nav" aria-label="Main navigation">
+                  {nav.map(([id, label]) => (
+                    <a
+                      key={id}
+                      className={page === id ? "active" : ""}
+                      href={`#${id}`}
+                      aria-current={page === id ? "page" : undefined}
+                    >
+                      {label}
+                    </a>
+                  ))}
+                </nav>
+                <div className="header-actions">
+                  <a
+                    className="header-account"
+                    href={shared.signedIn ? "#workspace" : "#account"}
+                  >
+                    {shared.signedIn ? "My workspace" : "Log in"}{" "}
+                    <ArrowUpRight size={17} />
+                  </a>
+                  <button
+                    className="icon-button mobile-menu"
+                    onClick={() => setMenu(!menu)}
+                    aria-label={menu ? "Close navigation" : "Open navigation"}
+                    aria-expanded={menu}
+                  >
+                    {menu ? <X /> : <Menu />}
+                  </button>
+                </div>
+              </div>
+              {menu && (
+                <nav className="mobile-nav" aria-label="Mobile navigation">
+                  {nav.map(([id, label]) => (
+                    <a key={id} href={`#${id}`}>
+                      {label}
+                      <ArrowUpRight size={18} />
+                    </a>
+                  ))}
+                  <a href="#account">
+                    {shared.signedIn ? "Account settings" : "Log in"}{" "}
+                    <ArrowUpRight size={18} />
+                  </a>
+                  <a href="#membership">
+                    Future memberships
+                    <ArrowUpRight size={18} />
+                  </a>
+                  <a href="#install">
+                    Get the app <ArrowUpRight size={18} />
+                  </a>
+                  {!privatePage && (
+                    <a href="#coach">
+                      Staff sign-in <ArrowUpRight size={18} />
+                    </a>
+                  )}
+                </nav>
+              )}
+            </header>
+          </>
+        )}
+        {!app.online && (
+          <div className="connection-banner" role="status">
+            You’re offline. Built-in demo practice can continue after setup.
+            Member profiles, shared content and uploads need a connection.
+          </div>
+        )}
+        {warning && (
+          <div className="storage-warning" role="alert">
+            {warning}
+          </div>
+        )}
+        {toast && (
+          <div className="toast" role="status">
+            {toast}
+          </div>
+        )}
+        <div ref={mainRef} className="page-transition" key={page}>
+          {onboarding ? (
+            <Onboarding
+              current={profile}
+              onChoose={chooseProfile}
+              onCancel={() => go(profile ? "today" : "home")}
+            />
+          ) : page === "demo" ? (
+            <FamilyDemo app={mobile} />
+          ) : page === "app" || (mobile && page === "home") ? (
+            <MobileWelcome signedIn={shared.signedIn} />
+          ) : page === "app-help" || (nativeApp() && page === "install") ? (
+            <MobileHelp app={app} />
+          ) : page === "workspace" ? (
+            <Workspace shared={shared} />
+          ) : page === "access" ? (
+            <AccessWorkspace shared={shared} />
+          ) : page === "member-library" ? (
+            <WorkspaceLibrary
+              key={`${shared.session?.user.id}-${shared.role}`}
+              shared={shared}
+            />
+          ) : page === "launch" ? (
+            <LaunchReadiness shared={shared} />
+          ) : page === "account" ? (
+            <MemberAccountPage shared={shared} />
+          ) : page === "home" ? (
+            <Home />
+          ) : page === "today" && profile ? (
+            <Dashboard
+              profile={profile}
+              drills={drills}
+              state={state}
+              onStart={requestStart}
+              onOpen={setDetail}
+            />
+          ) : page === "library" ? (
+            <Library
+              drills={drills.filter(
+                (d) =>
+                  d.source !== "shared" || d.visibility === "public_sample",
+              )}
+              onOpen={setDetail}
+            />
+          ) : page === "progress" && profile ? (
+            <Progress
+              profile={profile}
+              history={state.history.filter((h) => h.profileId === profile.id)}
+              onReset={() => setReset(true)}
+            />
+          ) : page === "session" && profile ? (
+            <Session
+              run={state.run}
+              drills={drills}
+              profile={profile}
+              onUpdate={(run) => commit({ ...state, run })}
+              onExit={() => setExit(true)}
+              onComplete={(reflection) => {
+                if (!state.run) return;
+                const next = completeRun(state, state.run, drills, reflection);
+                commit(next);
+                // Update the view in the same render that clears the run so a
+                // second tap cannot activate the empty-session fallback.
+                setPage("progress");
+                go("progress");
+                setToast("Practice recorded. Showing your session history.");
+              }}
+            />
+          ) : page === "install" ? (
+            <InstallApp app={app} />
+          ) : page === "coach" ? (
+            <ContentStudio
+              shared={shared}
+              onPublish={publish}
+              onUpdate={updateResource}
+              onRemove={removeResource}
+              resources={state.custom}
+              lockedIds={state.run?.drillIds}
+            />
+          ) : (
+            <Membership />
+          )}
+        </div>
+        {mobile ? (
+          <MobileTabs shared={shared} page={page} />
+        ) : (
+          <footer>
+            <div className="footer-inner">
+              <Logo />
+              <p>A clear plan. A purposeful practice.</p>
+              <div>
+                <a href="#membership">
+                  Future memberships <ArrowUpRight size={14} />
+                </a>
+                <a href="#home">About Player Development</a>
+                <a href="#account">Member access</a>
+                <a href="#demo">Try the demo</a>
+                <a href="#coach">Staff sign-in</a>
+                <a href="#install">
+                  Get the app <ArrowUpRight size={14} />
+                </a>
+              </div>
+            </div>
+            <div className="footer-bottom">
+              <span>
+                © {new Date().getFullYear()} Player Development · Temporary name
+              </span>
+              <span>
+                Illustrative content · pending qualified coaching review
+              </span>
+              <span>
+                No athletic, scholarship, or recruiting outcomes guaranteed.
+              </span>
+            </div>
+          </footer>
         )}
       </div>
-      <footer>
-        <div className="footer-inner">
-          <Logo />
-          <p>A clear plan. A purposeful practice.</p>
-          <div>
-            <a href="#membership">
-              Future memberships <ArrowUpRight size={14} />
-            </a>
-            <a href="#home">About Player Development</a>
-            <a href="#account">Member access</a>
-            <a href="#demo">Try the demo</a>
-            <a href="#coach">Staff sign-in</a>
-            <a href="#install">
-              Get the app <ArrowUpRight size={14} />
-            </a>
-          </div>
-        </div>
-        <div className="footer-bottom">
-          <span>
-            © {new Date().getFullYear()} Player Development · Temporary name
-          </span>
-          <span>Illustrative content · pending qualified coaching review</span>
-          <span>
-            No athletic, scholarship, or recruiting outcomes guaranteed.
-          </span>
-        </div>
-      </footer>
       {detail && (
         <Modal title={detail.title} onClose={() => setDetail(null)}>
           <Tag>

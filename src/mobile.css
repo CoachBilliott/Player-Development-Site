@@ -1,0 +1,303 @@
+/* Shared iPhone/native and installed-web-app presentation. */
+.mobile-layout {
+  min-height: 100dvh;
+  padding-bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+  background: #101010;
+}
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  padding: calc(14px + env(safe-area-inset-top, 0px))
+    max(20px, env(safe-area-inset-right, 0px)) 14px
+    max(20px, env(safe-area-inset-left, 0px));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  background: #101010f5;
+  border-bottom: 1px solid #353532;
+  backdrop-filter: blur(20px);
+}
+.app-header .brand-mark {
+  width: 36px;
+  height: 38px;
+}
+.app-header .brand-name {
+  font-size: 14px;
+}
+.app-header .brand-name > span {
+  font-size: 11px;
+}
+.app-build-label {
+  color: #d1c9bc;
+  font-size: 9px;
+  letter-spacing: 1.3px;
+  text-align: right;
+}
+.app-tabs {
+  position: fixed;
+  z-index: 25;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  padding: 9px max(12px, env(safe-area-inset-right, 0px))
+    calc(9px + env(safe-area-inset-bottom, 0px))
+    max(12px, env(safe-area-inset-left, 0px));
+  background: #191918fa;
+  border-top: 1px solid #3e3e38;
+  backdrop-filter: blur(20px);
+}
+.app-tabs a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 54px;
+  color: #bdbdb4;
+  text-decoration: none;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.app-tabs a.active {
+  color: #ff966f;
+  background: #ff78460e;
+}
+.app-tabs a:hover {
+  color: #fff;
+  background: #30302d;
+}
+.mobile-layout:has(dialog[open]) .app-tabs {
+  visibility: hidden;
+}
+.app-start {
+  width: 100%;
+  max-width: 620px;
+  margin: 0 auto;
+  padding: 20px 20px 8px;
+}
+.app-start-photo {
+  position: relative;
+  height: clamp(240px, 34dvh, 360px);
+  border-radius: 22px;
+  overflow: hidden;
+  background: #262922;
+}
+.app-start-photo > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 65%;
+}
+.app-start-shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, #10101008, #10101040 35%, #101010f0 100%);
+}
+.app-start-title {
+  position: absolute;
+  bottom: 24px;
+  left: 24px;
+  right: 24px;
+}
+.app-start-title .tag {
+  color: #fff;
+  background: #161616a8;
+  border-color: #ffffff66;
+  font-size: 8px;
+  letter-spacing: 0.8px;
+  padding: 6px 8px;
+}
+.experience .app-start h1 {
+  color: #fff;
+  font: 700 clamp(48px, 12.7vw, 72px)/0.93 var(--font-display);
+  text-transform: uppercase;
+  margin-top: 18px;
+  letter-spacing: -0.02em;
+}
+.app-start h1 span {
+  color: #ff966f;
+}
+.app-start-content {
+  padding: 24px 0 12px;
+}
+.app-start-content > p {
+  color: #d4d4cb;
+  font-size: 15px;
+  line-height: 1.8;
+  margin-bottom: 22px;
+}
+.experience .app-start .button {
+  min-height: 54px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  font-size: 15px;
+}
+.app-start-note {
+  display: flex;
+  gap: 12px;
+  margin: 20px 0;
+}
+.app-start-note svg {
+  color: #ff966f;
+  margin-top: 3px;
+}
+.app-start-note p {
+  color: #bdbdb2;
+  font-size: 12px;
+  line-height: 1.8;
+}
+.app-start-content > .app-pilot-note {
+  border-top: 1px solid #393933;
+  padding-top: 18px;
+  margin-bottom: 0;
+  font-size: 11px;
+  line-height: 1.8;
+  color: #aead9f;
+}
+.mobile-layout > .page-transition > .page {
+  max-width: 900px;
+  padding: 28px 20px 24px;
+}
+.mobile-layout .member-heading {
+  margin-bottom: 26px;
+}
+.mobile-layout .member-heading h1,
+.mobile-layout .page-intro h1,
+.mobile-layout .workspace-hero h1 {
+  font-size: clamp(36px, 8.5vw, 48px);
+  line-height: 1.06;
+}
+.mobile-layout .member-heading > p,
+.mobile-layout .page-intro > p {
+  font-size: 14px;
+  line-height: 1.85;
+}
+.mobile-layout .demo-exit {
+  margin-bottom: 20px;
+}
+.mobile-layout .demo-walkthrough {
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+.mobile-layout .demo-walkthrough li {
+  padding: 14px;
+  font-size: 12px;
+}
+.mobile-layout .family-view-tabs {
+  margin: 20px 0;
+}
+.mobile-layout .family-view-tabs > button {
+  min-height: 46px;
+  font-size: 13px;
+  flex: 1;
+}
+.mobile-layout
+  :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea) {
+  font-size: 16px;
+  min-height: 48px;
+}
+.mobile-layout .button {
+  min-height: 48px;
+  border-radius: 9px;
+}
+.mobile-layout .panel {
+  border-radius: 14px;
+}
+.mobile-layout .family-athlete-choice {
+  border-radius: 10px;
+  min-height: 72px;
+}
+.mobile-layout .family-permission,
+.mobile-layout .family-plan {
+  padding: 20px;
+  border-radius: 12px;
+}
+.mobile-layout .family-training .actions {
+  gap: 12px;
+}
+.mobile-layout .notice {
+  line-height: 1.85;
+}
+.mobile-layout .app-help {
+  display: grid;
+  gap: 20px;
+}
+.mobile-layout .app-help .page-intro {
+  margin-bottom: 4px;
+}
+.app-help > .panel {
+  padding: 24px;
+}
+.app-help .panel h2 {
+  font-size: 27px;
+  margin-bottom: 14px;
+}
+.app-help .panel > p {
+  color: #c5c5b9;
+  font-size: 14px;
+  line-height: 1.85;
+  margin-bottom: 16px;
+}
+.app-help-links {
+  display: grid;
+  justify-items: start;
+  gap: 12px;
+  padding: 4px;
+}
+.mobile-layout .member-principles {
+  align-self: start;
+}
+.mobile-layout .modal {
+  max-height: calc(
+    100dvh - 32px - env(safe-area-inset-top, 0px) -
+      env(safe-area-inset-bottom, 0px)
+  );
+  border-radius: 18px;
+}
+@media (max-width: 700px) {
+  .mobile-layout .member-layout {
+    grid-template-columns: 1fr;
+  }
+  .mobile-layout .member-principles {
+    margin-top: 4px;
+  }
+  .mobile-layout .member-panel {
+    padding: 22px;
+  }
+}
+@media (max-width: 360px) {
+  .app-header {
+    padding-left: 16px;
+    padding-right: 16px;
+    gap: 8px;
+  }
+  .app-build-label {
+    font-size: 8px;
+    letter-spacing: 0.6px;
+  }
+  .app-start {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .app-start-title {
+    left: 20px;
+    right: 20px;
+  }
+  .experience .app-start h1 {
+    font-size: 44px;
+  }
+  .app-tabs a {
+    font-size: 10px;
+  }
+  .mobile-layout > .page-transition > .page {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}

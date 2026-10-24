@@ -1,0 +1,230 @@
+import { useState, type ReactNode } from "react";
+import {
+  ArrowRight,
+  BookOpen,
+  CircleHelp,
+  Dumbbell,
+  House,
+  LogIn,
+  ShieldCheck,
+  UserRound,
+} from "lucide-react";
+import { Logo, Notice, Tag } from "./components";
+import { mobileNavigation, nativeApp, openWebsite, WEBSITE } from "./mobile";
+import type { SharedState } from "./useSharedContent";
+import type { PwaState } from "./pwa";
+
+export function WebsiteLink({
+  children,
+  path = "#home",
+  className = "text-button",
+}: {
+  children: ReactNode;
+  path?: string;
+  className?: string;
+}) {
+  const [error, setError] = useState("");
+  return (
+    <>
+      <a
+        className={className}
+        href={`${WEBSITE}${path}`}
+        target="_blank"
+        rel="noreferrer"
+        onClick={(event) => {
+          if (!nativeApp()) return;
+          event.preventDefault();
+          void openWebsite(path).catch(() =>
+            setError("Open Player Development in Safari to continue."),
+          );
+        }}
+      >
+        {children}
+      </a>
+      {error && <p role="alert">{error}</p>}
+    </>
+  );
+}
+
+export function MobileHeader({ demo }: { demo: boolean }) {
+  return (
+    <header className="app-header">
+      <Logo href="#app" />
+      <span className="app-build-label">
+        {demo ? "SAMPLE DEMO" : "PRIVATE PILOT"}
+      </span>
+    </header>
+  );
+}
+export function MobileTabs({
+  shared,
+  page,
+}: {
+  shared: SharedState;
+  page: string;
+}) {
+  const icons: Record<string, typeof House> = {
+    app: House,
+    demo: Dumbbell,
+    workspace: Dumbbell,
+    coach: BookOpen,
+    "member-library": BookOpen,
+    account: shared.signedIn ? UserRound : LogIn,
+    "app-help": CircleHelp,
+  };
+  return (
+    <nav className="app-tabs" aria-label="App navigation">
+      {mobileNavigation(shared.signedIn, shared.role).map(([route, label]) => {
+        const Icon = icons[route];
+        const active = page === route || (route === "app" && page === "home");
+        return (
+          <a
+            key={route}
+            href={`#${route}`}
+            aria-current={active ? "page" : undefined}
+            className={active ? "active" : ""}
+          >
+            <Icon size={22} />
+            <span>{label}</span>
+          </a>
+        );
+      })}
+    </nav>
+  );
+}
+export function MobileWelcome({ signedIn }: { signedIn: boolean }) {
+  return (
+    <main className="app-start">
+      <div className="app-start-photo">
+        <img
+          src={`${import.meta.env.BASE_URL}media/solo-football.jpg`}
+          alt="Licensed stock image of an adult football athlete on a field."
+          width={1440}
+          height={2160}
+        />
+        <div className="app-start-shade" />
+        <div className="app-start-title">
+          <Tag>FOOTBALL · PLAYER DEVELOPMENT</Tag>
+          <h1 tabIndex={-1}>
+            Your training
+            <br />
+            <span>starts here.</span>
+          </h1>
+        </div>
+      </div>
+      <section className="app-start-content" aria-label="Get started">
+        <p>A clear plan. Guided practice. Your own training space.</p>
+        <a href={signedIn ? "#workspace" : "#account"} className="button full">
+          {signedIn ? "Open my training" : "Log in to your account"}
+          <ArrowRight size={19} />
+        </a>
+        <a href="#demo" className="button secondary full">
+          Try the sample demo <ArrowRight size={19} />
+        </a>
+        <div className="app-start-note">
+          <ShieldCheck size={19} />
+          <p>
+            Private accounts for individuals and families. The demo uses
+            fictional players and stays separate from real profiles.
+          </p>
+        </div>
+        <p className="app-pilot-note">
+          Invite-only adult pilot. Real junior enrollment and payments are not
+          open. Sample activities await qualified review.
+        </p>
+      </section>
+    </main>
+  );
+}
+export function MobileHelp({ app }: { app: PwaState }) {
+  return (
+    <main className="page app-help">
+      <div className="page-intro">
+        <Tag>PLAYER DEVELOPMENT · TEST BUILD 0.1.0</Tag>
+        <h1 tabIndex={-1}>Your app, explained.</h1>
+        <p>
+          {nativeApp()
+            ? "The iOS training app, with screens bundled on your device."
+            : "The mobile app experience, ready to add to your home screen."}
+        </p>
+      </div>
+      <section className="panel">
+        <h2>Accounts & privacy</h2>
+        <p>
+          Log in with your approved Player Development account. Real profiles
+          use the same private account service as the website. Account access
+          determines which workspace you see.
+        </p>
+        <p>
+          {nativeApp()
+            ? "Sign-in sessions use the iOS Keychain. Private player profiles and media are not saved in the demo cache."
+            : "Private profiles stay separate from fictional demo data. Installing does not create an account or start a subscription."}
+        </p>
+        <a href="#account" className="button secondary">
+          Account settings <ArrowRight size={17} />
+        </a>
+      </section>
+      <section className="panel">
+        <h2>Reset your password</h2>
+        <p>
+          Open account access on the website in Safari to reset a password or
+          resend verification. Complete the email steps there, then return here
+          and log in.
+        </p>
+        <WebsiteLink path="#account">
+          Open website account access <ArrowRight size={17} />
+        </WebsiteLink>
+      </section>
+      <section className="panel">
+        <h2>Practice without a connection</h2>
+        <p>
+          {nativeApp()
+            ? "The built-in sample demo is bundled in this app and can run offline. Its records stay on this device."
+            : app.offlineReady
+              ? "The sample demo is ready for offline use on this device."
+              : "Keep the app online once to prepare the sample demo for offline use."}
+        </p>
+        <p>
+          Real account access, shared resources, uploads and remote media need
+          internet access. Demo records do not sync to real accounts or another
+          device.
+        </p>
+      </section>
+      <section className="panel">
+        <h2>
+          {nativeApp() ? "About this iOS test build" : "Installation & updates"}
+        </h2>
+        {nativeApp() ? (
+          <p>
+            This is a native pilot build. App Store and TestFlight distribution
+            are not active yet. Apple enrollment and signing are still required
+            for physical-device distribution.
+          </p>
+        ) : (
+          <>
+            <p>
+              Add this app from Safari’s Share menu → Add to Home Screen. Check
+              app updates after saving any work.
+            </p>
+            <a className="button secondary" href="#install">
+              Install or update the web app <ArrowRight size={17} />
+            </a>
+          </>
+        )}
+        <Notice>
+          Football is the current program. Future sports have not been
+          announced. Memberships, payments and real junior enrollment remain
+          closed. Practice records show participation, not proven ability.
+        </Notice>
+      </section>
+      <div className="app-help-links">
+        <WebsiteLink>
+          Visit the website <ArrowRight size={17} />
+        </WebsiteLink>
+        <WebsiteLink path="media/credits.txt">
+          Licensed media credits <ArrowRight size={17} />
+        </WebsiteLink>
+      </div>
+    </main>
+  );
+}

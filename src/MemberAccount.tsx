@@ -20,6 +20,8 @@ import type { SharedState } from "./useSharedContent";
 import { AccountAccess } from "./AccountAccess";
 import { FamilyTraining } from "./family";
 import { AthleteTraining } from "./FamilyTraining";
+import { appSurface } from "./mobile";
+import { WebsiteLink } from "./MobileApp";
 
 export function MemberAccountPage({
   shared,
@@ -407,15 +409,20 @@ function ConnectedAccount({
               >
                 Sign in
               </button>
-              {shared.signupEnabled && (
-                <button
-                  disabled={busy}
-                  aria-pressed={mode === "signup"}
-                  onClick={() => switchMode("signup")}
-                >
-                  Create account
-                </button>
-              )}
+              {shared.signupEnabled &&
+                (appSurface() ? (
+                  <WebsiteLink path="#account">
+                    Set up account on website
+                  </WebsiteLink>
+                ) : (
+                  <button
+                    disabled={busy}
+                    aria-pressed={mode === "signup"}
+                    onClick={() => switchMode("signup")}
+                  >
+                    Create account
+                  </button>
+                ))}
             </div>
             <h2>
               {mode === "signup"
@@ -505,24 +512,34 @@ function ConnectedAccount({
                           : "Sign in securely"}
                   <ArrowRight size={18} />
                 </button>
-                {mode === "signin" && (
-                  <button
-                    className="text-button"
-                    type="button"
-                    onClick={() => switchMode("recover")}
-                  >
-                    Forgot password?
-                  </button>
-                )}
-                {mode === "signin" && (
-                  <button
-                    className="text-button"
-                    type="button"
-                    onClick={() => switchMode("verify")}
-                  >
-                    Resend verification email
-                  </button>
-                )}
+                {mode === "signin" &&
+                  (appSurface() ? (
+                    <WebsiteLink path="#account">
+                      Reset password on website
+                    </WebsiteLink>
+                  ) : (
+                    <button
+                      className="text-button"
+                      type="button"
+                      onClick={() => switchMode("recover")}
+                    >
+                      Forgot password?
+                    </button>
+                  ))}
+                {mode === "signin" &&
+                  (appSurface() ? (
+                    <WebsiteLink path="#account">
+                      Verify email on website
+                    </WebsiteLink>
+                  ) : (
+                    <button
+                      className="text-button"
+                      type="button"
+                      onClick={() => switchMode("verify")}
+                    >
+                      Resend verification email
+                    </button>
+                  ))}
                 {(mode === "recover" || mode === "verify") && (
                   <button
                     className="text-button"

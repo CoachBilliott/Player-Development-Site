@@ -2,9 +2,9 @@ import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { ArrowUpRight, Check, Flag, Play, X } from "lucide-react";
 import type { Drill } from "./model";
 import { getAsset } from "./storage";
-export function Logo() {
+export function Logo({ href = "#home" }: { href?: string }) {
   return (
-    <a className="brand" href="#home" title="Player Development home">
+    <a className="brand" href={href} title="Player Development home">
       <span className="brand-mark" aria-hidden="true">
         PD
       </span>
