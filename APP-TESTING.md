@@ -55,6 +55,8 @@ Password resets, verification and adult account setup open the existing HTTPS we
 
 ## Physical iPhone distribution remains an owner step
 
+The owner selected TestFlight distribution. Follow [TestFlight enrollment and setup](TESTFLIGHT-SETUP.md); [beta review notes](TESTFLIGHT-BETA-NOTES.md) are prepared as an unsubmitted draft. Enrollment and a signed downloadable build remain pending.
+
 The owner does not currently have an Apple Developer Program membership. TestFlight distribution requires that membership, an App Store Connect app, an approved bundle ID/team, signing/provisioning, privacy/age-rating/export-compliance answers and the applicable beta review. Nothing has been purchased and no Apple credentials or security settings have been changed. After enrollment, sign the prepared native project in Xcode and upload a signed archive to App Store Connect; add the owner/partner as testers through the supported Apple workflow. A Mac/Apple ID can also support limited personal development-device testing under Apple's rules. Neither route guarantees store approval.
 
 Before public release: perform physical-device account/email handoff, role isolation, file picking, session persistence, keyboard/safe-area, background/resume and accessibility tests; review native privacy disclosures and training content; finish verified guardian consent before enabling juniors; define membership entitlements and compliant billing before activating purchases. No checkout, push messaging, biometric gate or real junior account activation is added by this build.
