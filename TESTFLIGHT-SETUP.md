@@ -1,75 +1,42 @@
 # Player Development: native iPhone testing through TestFlight
 
-The selected distribution route is TestFlight for the owner and partner. The native iOS client is built and simulator-tested. There is not yet a signed iPhone download or a TestFlight invitation. The owner reports paying for Apple membership and has supplied Team ID **4T6V3S3CZL**, now recorded in both Xcode project configurations and `ios/testflight.json`. Apple account access and membership activation have not been independently verified. No Apple account security settings have been changed.
+## Verified distribution status
 
-## Confirm enrollment on your iPhone
+Version **0.1.0 (3)** was signed, validated and uploaded successfully on October 24, 2026. Apple subsequently reported **VALID** processing for **Player Development Test**, App Store Connect app **6826677846**, bundle **com.coachbilliott.playerdevelopment**, team **4T6V3S3CZL**. [Successful upload](https://github.com/CoachBilliott/Player-Development-Site/actions/runs/40133012967).
 
-Payment has already been reported. Do not repeat the purchase: check the Account tab for Apple’s membership activation first. The enrollment steps below remain as a reference.
+The build is not yet installable through an invitation. Apple reports **MISSING_EXPORT_COMPLIANCE** for internal and external testing, no beta groups exist, and beta review contact fields are empty. An API attempt to record the encryption answer returned **HTTP 403**. Keep the current upload key permissions; the owner can complete the answer in App Store Connect. No tester invitations or beta review submissions have been sent.
 
-1. Install the official [Apple Developer app](https://apps.apple.com/app/apple-developer/id640199958).
-2. Open its Account tab and sign in to the Apple Account that will own Player Development. Follow Apple's enrollment flow. [Apple's instructions](https://developer.apple.com/help/account/membership/enrolling-in-the-app/) also explain eligibility and identity verification; [web enrollment](https://developer.apple.com/programs/enroll/) is another supported route.
-3. Choose the correct ownership type. Individual/sole-proprietor enrollment lists your personal legal name as the App Store seller. Eligible Organization enrollment lists the legal entity's name and requires Apple's business verification, including a D-U-N-S number. A brand name alone is not a legal entity. [Compare the requirements](https://developer.apple.com/support/enrollment/).
-4. Complete Apple's identity verification, agreement and membership purchase yourself. Apple lists US$99 per membership year; local pricing varies. Apple requires two-factor authentication for the account. Any account security changes must be completed by the owner through Apple.
-5. Wait until Apple confirms the membership is active. Creating an Apple Account or starting enrollment does not activate TestFlight distribution.
-6. Both testers can install the free [TestFlight app](https://apps.apple.com/app/testflight/id899247664) now. Player Development will appear after a valid invitation and an available build; installing TestFlight alone does not install this app.
+## Next owner steps
 
-The Team ID has been received; it is an identifier, not a signing credential. Passwords, verification codes, certificates/private keys and App Store Connect API keys must not be posted in chat or committed to this public repository.
+1. Open [Player Development Test → TestFlight](https://appstoreconnect.apple.com/apps/6826677846/testflight).
+2. Open **0.1.0 (3)** and **Manage** beside **Missing Compliance**. This reviewed binary uses HTTPS, iOS Keychain and standard Web Crypto authentication, with no proprietary encryption. It does not use non-exempt encryption. Answer Apple's questions for that behavior; signing/build tools and private keys are not embedded in the app.
+3. For immediate owner testing, create an **Internal Testing** group, add the owning App Store Connect user and select build 3. Install the free [TestFlight app](https://apps.apple.com/app/testflight/id899247664), accept the invitation and install the build. Internal testers must already be eligible App Store Connect users; an external email address alone does not grant internal access.
+4. For a partner who does not need App Store Connect access, use an **External Testing** group. Complete genuine beta feedback/review contact fields and use [the beta review draft](TESTFLIGHT-BETA-NOTES.md). Submit the first external build for Apple's beta review, then invite the partner. Do not grant administrative access just to test.
+5. Confirm the invitation opens and the installed build launches on both physical iPhones. Upload success and valid processing do not prove installation or external beta approval.
 
-## Prepared signing/upload workflow — not yet run
+No new purchase, API key or broader account permission is required to answer export compliance in the owner's existing account. Do not post passwords, private keys, signing bundles or review credentials in chat or this public repository.
 
-The owner has authorized the dedicated Apple signing credential setup. An encrypted RSA private key and matching public certificate request have been prepared. The private key/passphrase remain in the ignored `ios-signing/private` workspace directory; they are not in source, build artifacts or the public download. The idempotent helper `scripts/create_apple_csr.py` verifies the request and key before reusing them and refuses to overwrite incomplete signing material.
+## Repeatable build and status workflows
 
-The next owner-only step is [Apple Developer → Certificates → Add](https://developer.apple.com/account/resources/certificates/add): select team `4T6V3S3CZL`, choose **Apple Distribution**, upload `public/apple-signing/PlayerDevelopment-6a44424434a1.certSigningRequest`, and download the issued `.cer` certificate. The `.cer` contains the public certificate and may be supplied for matching/conversion. Do not send a private `.p8` key or a `.p12` export through chat. The certificate and provisioning profile have subsequently been received and verified; App Store Connect API access remains pending.
+- **Signed iPhone build and optional TestFlight upload** (`.github/workflows/testflight.yml`) runs on macOS with Xcode 26.3. It requires `main`, successful Prototype checks and iPhone simulator tests for the exact commit, and a unique positive build number. Upload is off by default. Build 3 has already reached Apple; use a new number for the next uploaded binary.
+- **Check Apple TestFlight status** (`.github/workflows/testflight-status.yml`) reads Apple processing state, internal/external beta state, group names and review-field presence. Its default mode is read-only. Its optional encryption update is restricted to reviewed version 0.1.0 build 3; Apple denied that update with the current key. Credentials and bearer tokens are never included in its status artifact.
+- `scripts/prepare_signing_bundle.py` and `scripts/prepare_ios_signing.py` validate the dedicated team/app, original profile UUID, App Store distribution type, expiry and signing-certificate match. Temporary signing material is removed after each build. Retained IPA files contain normal public signing metadata, not private signing keys.
 
-Public request download: https://coachbilliott.github.io/Player-Development-Site/apple-signing/PlayerDevelopment-6a44424434a1.certSigningRequest
+The owner configured these GitHub Actions secrets in [secure repository settings](https://github.com/CoachBilliott/Player-Development-Site/settings/secrets/actions):
 
-`.github/workflows/testflight.yml` is a manual workflow for a signed iPhone build and an optional App Store Connect upload. It accepts only `main` after both the normal checks and iPhone simulator tests pass for the exact commit. Upload is off by default. Signing uses the dedicated team's manually supplied App Store profile and Apple Distribution certificate; it does not automatically create/revoke credentials, register devices, create an app record, invite testers or publish an App Store release.
-
-The profile validator rejects a different team, different/wildcard app identifier, expired profile, non-iOS profile and development/ad-hoc/enterprise signing. Temporary keys are removed from the runner at job end. Only the signed app is retained as an artifact; it contains normal embedded public signing metadata, not the private certificate key or Apple API key. That artifact is not a TestFlight invitation or a directly installable App Store release.
-
-The Apple Distribution certificate and App Store Connect provisioning profile have now been received and verified for team `4T6V3S3CZL` and bundle `com.coachbilliott.playerdevelopment`. The certificate matches the encrypted private key. The profile's Apple CMS signature/trust, distribution type, validity and included signing certificate passed checks. The original profile UUID is preserved exactly for Xcode; profile/certificate mismatches are rejected before signing.
-
-The signing inputs are packaged as **one private GitHub Actions secret**, reducing manual entry on the owner's phone. Through [GitHub's secure settings](https://github.com/CoachBilliott/Player-Development-Site/settings/secrets/actions), create:
-
-| Secret | Required value |
+| Secret | Purpose |
 | --- | --- |
-| `PD_IOS_SIGNING_BUNDLE_JSON` | Full contents of the private generated signing bundle. It contains the encrypted certificate export, its password and provisioning profile, and must be treated as a private key. |
-| `PD_ASC_KEY_ID` | App Store Connect team API Key ID, for uploads. |
-| `PD_ASC_ISSUER_ID` | The corresponding App Store Connect API Issuer ID. |
-| `PD_ASC_PRIVATE_KEY_P8` | The API private key's original PEM text, for uploads. |
+| `PD_IOS_SIGNING_BUNDLE_JSON` | Dedicated encrypted certificate export, password and provisioning profile |
+| `PD_ASC_KEY_ID` | App Store Connect team API Key ID |
+| `PD_ASC_ISSUER_ID` | App Store Connect API Issuer ID |
+| `PD_ASC_PRIVATE_KEY_P8` | Complete original API private-key PEM text, including BEGIN/END lines |
 
-Only the signing bundle is needed for the first signed-build verification. The three API fields are needed only when upload is explicitly selected. The private bundle is kept at `ios-signing/private/PD_IOS_SIGNING_BUNDLE_JSON.txt` in the workspace, outside source, project ZIPs, public downloads and Pages hosting. Copy it only into the repository secret value; do not paste it into chat, issues, workflow inputs or source. GitHub encrypts repository secrets. The decoder validates the dedicated team/app and bundle shape, writes only fixed private temporary files and masks the decoded password on the runner. The workflow verifies the certificate extracted from the signing export is one of the profile's allowed certificates.
+These credentials have now worked for signing and upload. The repository integration cannot manage Actions secrets (HTTP 403); owner updates stay in GitHub's authenticated settings. No broader GitHub token is needed. Private workspace signing files are ignored and excluded from public downloads, Pages and source archives.
 
-Use a role Apple permits for uploading this app, with the least necessary access; the upload workflow does not need permission to manage certificates or profiles. App Store Connect app-record setup and upload API access remain owner steps. Do not use credentials belonging to unrelated projects. A signed app export alone does not create a TestFlight invitation.
+## Validation and first physical-device test
 
-The current repository integration can push code and run builds, but its requests to list Actions secrets/variables returned **403 Resource not accessible by integration**. Existing secret names/values could not be verified. Secret setup therefore requires the owner's authenticated GitHub settings; no new personal access token or expanded integration permission has been requested. No secret values are present in these files.
+The uploaded binary's source passed lint, type checking, production build, 100 unit tests, 110 browser tests, 8 installed-web-app tests, 10 Python signing tests, and 3 iPhone simulator tests. Signed IPA integrity, bundle/version/build, embedded profile and absence of private credential files were verified. The status helper additionally passed lint, workflow validation and a local fake-API exercise verifying its ES256 JWT, exact reviewed-build update and response handling. Physical-iPhone tests remain pending installation.
 
-When those prerequisites are ready, run **Signed iPhone build and optional TestFlight upload**, choose a unique positive build number (1–9999), and leave upload off for the first signed-build verification. For an authorized upload, select the upload option with a new build number. After an accepted upload, check Apple's processing status, beta requirements/review and invitations. Avoid re-running an already uploaded build number. An upload success message alone does not mean the app can be installed by testers.
+Use fictional sample profiles to test installation/update, launching from the icon, the single Parent & family / Solo athlete demo, workout completion, saved history after relaunch, offline samples, keyboard/safe areas, text scaling, background/resume and cancellation. With approved adult pilot accounts, separately test real sign-in/logout, website email/password handoff, role isolation and staff file picking/uploads. Do not capture credentials in recordings or issue reports.
 
-## What is already prepared
-
-- Native source: `ios/`, with the shared React/TypeScript training client and Capacitor integration.
-- Provisional bundle identifier: `com.coachbilliott.playerdevelopment`.
-- Temporary app name: Player Development; version 0.1.0.
-- Original app icon, launch screen, mobile navigation, bundled sample training, Keychain session storage and lifecycle handling.
-- Passed native checks: Keychain round-trip, bundled photo/font, guided workout completion and saved report, family roster after relaunch, and sign-in/help navigation. These checks run in an iPhone simulator, not physical iPhones. The build workflow selects Xcode 26.3 and the newest available iPhone simulator runtime.
-- Passed web/client checks: lint, type checking, production build, 100 unit tests, 110 browser tests and 8 installed-web-app tests.
-- [Native build/test evidence](https://github.com/CoachBilliott/Player-Development-Site/actions/workflows/ios-build.yml).
-
-The existing simulator app runs on compatible Macs. The unsigned device archive is compilation evidence and cannot install on an iPhone or be uploaded as a TestFlight release. Distribution needs a fresh signed archive built with Apple's currently accepted Xcode/iOS SDK and a unique build number.
-
-## Remaining distribution work after enrollment
-
-1. Confirm the owning Apple team, temporary app name and bundle identifier before registering the app. The bundle identifier connects the signing configuration to the App Store Connect record.
-2. Register the identifier and create the iOS app record in App Store Connect under that team. This does not publish the app to the App Store.
-3. Choose and authorize the signing/upload method. Configure required credentials in secure storage, never this public source tree. Any new credentials or account security changes require owner authorization before setup.
-4. Build, test and sign a distribution archive with the current accepted Apple toolchain; validate and upload it to App Store Connect. The current workflow builds/test archives but does not sign or upload a TestFlight release.
-5. Complete accurate beta details, review contact information and encryption/export-compliance answers. Use [the beta review draft](TESTFLIGHT-BETA-NOTES.md) as a starting point; owner-only fields remain unfilled.
-6. Add the owner as an eligible internal tester. Invite the partner as an external tester unless they independently need App Store Connect access. External testing may require Apple's beta review, especially the first build. Do not grant administrative access just to test the app.
-7. Verify the invitations open in TestFlight on both physical iPhones and the installed build launches. An upload or successful build alone is not a working invitation. TestFlight builds expire; subsequent test builds require a new upload/build number.
-
-## First physical-device test
-
-Use fictional sample profiles. Test installing/updating, launching from the icon, the single Parent & family / Solo athlete demo, workout completion, saved history after relaunch, offline samples, keyboard and safe areas, text scaling, background/resume and cancellation. With approved adult pilot accounts, separately test real sign-in/logout, password/email handoff through the website, role isolation and staff file picking/uploads. Do not put actual credentials into a screen recording or issue report.
-
-The beta is invite-only and illustrative. Public signup, payments and real junior enrollment remain closed. Public launch additionally requires privacy and authentication-account deletion work, verified guardian consent before opening juniors, qualified training review, physical-device acceptance and package/billing implementation. Store or beta approval is Apple's decision.
+The beta is invite-only and illustrative. Public signup, payments and real junior enrollment remain closed. Public launch additionally needs privacy and account-deletion work, verified guardian consent before opening juniors, qualified training review, physical-device acceptance and package/billing implementation. Beta and store approval are Apple's decisions; TestFlight builds expire after 90 days.

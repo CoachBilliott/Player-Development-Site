@@ -1,6 +1,6 @@
 # TestFlight beta submission draft
 
-This is a reviewable draft, not a completed App Store Connect submission. No app record, signing credential, invitation or Apple review submission has been created.
+The app record and signing/upload credentials are configured. Version 0.1.0 (3) was uploaded and Apple processing is VALID. This remains a draft for beta metadata: export compliance, tester setup and any required external beta review are unfinished. No invitation or beta review submission has been sent.
 
 ## Beta app description
 
@@ -24,10 +24,9 @@ The sample demo does not establish a real account and its records stay on the de
 
 ## Owner fields still required
 
-- Confirmed Apple team, bundle identifier and App Store Connect app record.
 - Beta feedback email, review contact name/email/phone and any approved review-account credentials needed for private features. No personal contact information or review passwords have been invented or made public in this draft.
 - Accurate privacy disclosures/policy URL, age-rating responses and encryption/export-compliance answers for the final binary and service behavior.
 - Tester invitation addresses supplied directly to the supported Apple workflow.
-- A fresh signed build, its version/build number, processing status and any required beta review approval.
+- Export-compliance completion, tester groups/invitations and any required external beta review approval. The current signed build is 0.1.0 (3), with VALID Apple processing.
 
 Account/signing secrets and private review credentials belong in Apple's supported private fields or approved secure storage, not this document or repository.
