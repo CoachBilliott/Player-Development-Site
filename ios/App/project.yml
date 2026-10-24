@@ -38,7 +38,11 @@ targets:
   AppTests:
     type: bundle.unit-test
     platform: iOS
-    sources: AppTests
+    sources:
+      - path: AppTests
+        excludes: [native-smoke.js]
+      - path: AppTests/native-smoke.js
+        buildPhase: resources
     settings:
       base:
         GENERATE_INFOPLIST_FILE: YES

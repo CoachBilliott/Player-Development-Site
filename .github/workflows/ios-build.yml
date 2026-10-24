@@ -32,7 +32,7 @@ jobs:
           xcrun simctl boot "$PD_SIMULATOR_UDID" || true
           xcrun simctl bootstatus "$PD_SIMULATOR_UDID" -b
           set -o pipefail
-          xcodebuild test -project ios/App/App.xcodeproj -scheme App -configuration Debug -destination "platform=iOS Simulator,id=$PD_SIMULATOR_UDID" -derivedDataPath mobile-builds/DerivedData -resultBundlePath mobile-builds/iPhone-tests.xcresult -parallel-testing-enabled NO CODE_SIGNING_ALLOWED=NO | tee mobile-builds/simulator-build.log
+          xcodebuild test -project ios/App/App.xcodeproj -scheme App -configuration Debug -destination "platform=iOS Simulator,id=$PD_SIMULATOR_UDID" -derivedDataPath mobile-builds/DerivedData -resultBundlePath mobile-builds/iPhone-tests.xcresult -parallel-testing-enabled NO CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=- | tee mobile-builds/simulator-build.log
           xcrun simctl launch "$PD_SIMULATOR_UDID" com.coachbilliott.playerdevelopment
           xcrun simctl io "$PD_SIMULATOR_UDID" screenshot mobile-builds/iPhone-app.png
           ditto -c -k --sequesterRsrc --keepParent mobile-builds/DerivedData/Build/Products/Debug-iphonesimulator/App.app mobile-builds/PlayerDevelopment-iOS-Simulator.app.zip

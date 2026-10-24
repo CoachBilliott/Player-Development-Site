@@ -28,7 +28,7 @@
     }
     return nil;
 }
-- (void)testNativeKeychainRoundTripWithoutCloudAccount {
+- (void)testNativeKeychainAssetsAndGuidedTrainingWithoutCloudAccount {
     XCTestExpectation *completed = [self expectationWithDescription:@"Native Keychain round trip"];
     NSString *key = [@"pd-native:simulator-test-" stringByAppendingString:NSUUID.UUID.UUIDString];
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -50,20 +50,10 @@
         [self waitForApp:webView deadline:[NSDate dateWithTimeIntervalSinceNow:20] completion:^(BOOL ready) {
         XCTAssertTrue(ready, @"The bundled app did not finish loading");
         if (!ready) { [completed fulfill]; return; }
-        NSString *script =
-          @""
-           "const store = window.Capacitor.Plugins.SecureStoragePlugin;"
-           "if (!store || !window.Capacitor.isNativePlatform()) throw new Error('Native bridge is unavailable');"
-           "const image = document.querySelector('.app-start-photo img');"
-           "if (!image) throw new Error('The app welcome image is missing');"
-           "await image.decode();"
-           "await document.fonts.ready;"
-           "if (image.naturalWidth !== 1440) throw new Error('Bundled welcome image did not load: ' + image.src);"
-           "if (!document.fonts.check('700 16px \"Barlow Condensed\"')) throw new Error('Bundled display font did not load');"
-           "try {"
-           " await store.set({ key, value: 'fictional-native-fixture' });"
-           " return (await store.get({ key })).value === 'fictional-native-fixture';"
-           "} finally { await store.remove({ key }); }";
+        NSURL *scriptURL = [[NSBundle bundleForClass:self.class] URLForResource:@"native-smoke" withExtension:@"js"];
+        NSString *script = [NSString stringWithContentsOfURL:scriptURL encoding:NSUTF8StringEncoding error:nil];
+        XCTAssertNotNil(script);
+        if (!script) { [completed fulfill]; return; }
         [webView callAsyncJavaScript:script
             arguments:@{@"key": key}
             inFrame:nil
