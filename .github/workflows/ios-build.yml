@@ -41,6 +41,13 @@ jobs:
           set -o pipefail
           xcodebuild archive -project ios/App/App.xcodeproj -scheme App -configuration Release -destination 'generic/platform=iOS' -archivePath mobile-builds/PlayerDevelopment.xcarchive -derivedDataPath mobile-builds/DeviceDerivedData CODE_SIGNING_ALLOWED=NO | tee mobile-builds/device-build.log
           ditto -c -k --sequesterRsrc --keepParent mobile-builds/PlayerDevelopment.xcarchive mobile-builds/PlayerDevelopment-unsigned.xcarchive.zip
+      - name: Export simulator test reports and screenshots
+        if: always()
+        run: |
+          if [ -d mobile-builds/iPhone-tests.xcresult ]; then
+            xcrun xcresulttool export attachments --path mobile-builds/iPhone-tests.xcresult --output-path mobile-builds/test-screenshots || true
+            xcrun xcresulttool get test-results summary --path mobile-builds/iPhone-tests.xcresult > mobile-builds/native-test-summary.json || true
+          fi
       - name: Save native builds, screenshots and test evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -53,4 +60,5 @@ jobs:
             mobile-builds/*.json
             mobile-builds/*.txt
             mobile-builds/*.xcresult/
+            mobile-builds/test-screenshots/
           retention-days: 14

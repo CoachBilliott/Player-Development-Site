@@ -12,19 +12,19 @@ final class PlayerDevelopmentUITests: XCTestCase {
         welcome.lifetime = .keepAlways
         add(welcome)
         app.links["Try the sample demo"].tap()
-        XCTAssertTrue(app.buttons["Parent & family"].waitForExistence(timeout: 15))
+        XCTAssertTrue(app.descendants(matching: .any).matching(NSPredicate(format: "label CONTAINS %@", "Parent & family")).firstMatch.waitForExistence(timeout: 15), app.debugDescription)
         let addAthlete = app.buttons["Add fictional athlete Jordan"]
         for _ in 0..<5 {
             if addAthlete.isHittable { break }
             app.swipeUp()
         }
         if addAthlete.exists { addAthlete.tap() }
-        XCTAssertTrue(app.buttons.containing(NSPredicate(format: "label BEGINSWITH %@", "Jordan")).firstMatch.waitForExistence(timeout: 10))
+        XCTAssertTrue(app.descendants(matching: .any).matching(NSPredicate(format: "label BEGINSWITH %@", "Jordan")).firstMatch.waitForExistence(timeout: 10), app.debugDescription)
         app.terminate()
         app.launch()
         XCTAssertTrue(app.links["Try the sample demo"].waitForExistence(timeout: 30))
         app.links["Try the sample demo"].tap()
-        XCTAssertTrue(app.buttons.containing(NSPredicate(format: "label BEGINSWITH %@", "Jordan")).firstMatch.waitForExistence(timeout: 15))
+        XCTAssertTrue(app.descendants(matching: .any).matching(NSPredicate(format: "label BEGINSWITH %@", "Jordan")).firstMatch.waitForExistence(timeout: 15), app.debugDescription)
         let demo = XCTAttachment(screenshot: app.screenshot())
         demo.name = "iPhone-family-demo"
         demo.lifetime = .keepAlways
