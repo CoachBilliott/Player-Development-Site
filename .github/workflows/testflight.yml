@@ -29,9 +29,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           PD_REQUESTED_BUILD_NUMBER: ${{ inputs.build_number }}
-          PD_HAS_CERTIFICATE: ${{ secrets.PD_IOS_DISTRIBUTION_P12_BASE64 != '' }}
-          PD_HAS_CERTIFICATE_PASSWORD: ${{ secrets.PD_IOS_P12_PASSWORD != '' }}
-          PD_HAS_PROFILE: ${{ secrets.PD_IOS_APPSTORE_PROFILE_BASE64 != '' }}
+          PD_HAS_SIGNING_BUNDLE: ${{ secrets.PD_IOS_SIGNING_BUNDLE_JSON != '' }}
           PD_HAS_API_KEY: ${{ secrets.PD_ASC_PRIVATE_KEY_P8 != '' }}
           PD_HAS_KEY_ID: ${{ secrets.PD_ASC_KEY_ID != '' }}
           PD_HAS_ISSUER: ${{ secrets.PD_ASC_ISSUER_ID != '' }}
@@ -45,12 +43,10 @@ jobs:
             echo 'Choose a unique positive build number from 1 to 9999.' >&2
             exit 1
           fi
-          for PD_SETTING in PD_HAS_CERTIFICATE PD_HAS_CERTIFICATE_PASSWORD PD_HAS_PROFILE; do
-            if [ "${!PD_SETTING}" != true ]; then
-              echo 'Signing material is missing. Follow TESTFLIGHT-SETUP.md; do not put private keys in source or logs.' >&2
-              exit 1
-            fi
-          done
+          if [ "$PD_HAS_SIGNING_BUNDLE" != true ]; then
+            echo 'The private signing bundle is missing. Follow TESTFLIGHT-SETUP.md; do not put private keys in source or logs.' >&2
+            exit 1
+          fi
           if [ "$PD_UPLOAD_REQUESTED" = true ]; then
             for PD_SETTING in PD_HAS_API_KEY PD_HAS_KEY_ID PD_HAS_ISSUER; do
               if [ "${!PD_SETTING}" != true ]; then
@@ -81,21 +77,14 @@ jobs:
       - name: Import dedicated distribution signing material
         id: signing
         env:
-          PD_CERTIFICATE_BASE64: ${{ secrets.PD_IOS_DISTRIBUTION_P12_BASE64 }}
-          PD_CERTIFICATE_PASSWORD: ${{ secrets.PD_IOS_P12_PASSWORD }}
-          PD_PROFILE_BASE64: ${{ secrets.PD_IOS_APPSTORE_PROFILE_BASE64 }}
+          PD_IOS_SIGNING_BUNDLE_JSON: ${{ secrets.PD_IOS_SIGNING_BUNDLE_JSON }}
         run: |
           umask 077
-          mkdir -p "$RUNNER_TEMP/player-development-signing"
-          python3 - <<'PY'
-          import base64, os, pathlib
-          folder = pathlib.Path(os.environ['RUNNER_TEMP']) / 'player-development-signing'
-          for variable, name in [('PD_CERTIFICATE_BASE64', 'distribution.p12'), ('PD_PROFILE_BASE64', 'distribution.mobileprovision')]:
-              value = ''.join(os.environ[variable].split())
-              (folder / name).write_bytes(base64.b64decode(value, validate=True))
-          PY
+          python3 scripts/prepare_signing_bundle.py "$RUNNER_TEMP/player-development-signing"
           security cms -D -i "$RUNNER_TEMP/player-development-signing/distribution.mobileprovision" > "$RUNNER_TEMP/player-development-signing/profile.plist"
-          python3 scripts/prepare_ios_signing.py "$RUNNER_TEMP/player-development-signing/profile.plist" "$RUNNER_TEMP/player-development-signing/ExportOptions.plist" >> "$GITHUB_OUTPUT"
+          openssl pkcs12 -in "$RUNNER_TEMP/player-development-signing/distribution.p12" -passin "file:$RUNNER_TEMP/player-development-signing/certificate-password.txt" -clcerts -nokeys -out "$RUNNER_TEMP/player-development-signing/certificate.pem"
+          openssl x509 -in "$RUNNER_TEMP/player-development-signing/certificate.pem" -outform DER -out "$RUNNER_TEMP/player-development-signing/certificate.cer"
+          python3 scripts/prepare_ios_signing.py "$RUNNER_TEMP/player-development-signing/profile.plist" "$RUNNER_TEMP/player-development-signing/ExportOptions.plist" "$RUNNER_TEMP/player-development-signing/certificate.cer" >> "$GITHUB_OUTPUT"
           PD_PROFILE_UUID=$(python3 -c 'import plistlib,os;print(plistlib.load(open(os.environ["RUNNER_TEMP"]+"/player-development-signing/profile.plist","rb"))["UUID"])')
           mkdir -p "$HOME/Library/Developer/Xcode/UserData/Provisioning Profiles"
           cp "$RUNNER_TEMP/player-development-signing/distribution.mobileprovision" "$HOME/Library/Developer/Xcode/UserData/Provisioning Profiles/$PD_PROFILE_UUID.mobileprovision"
@@ -103,7 +92,8 @@ jobs:
           security create-keychain -p "$PD_KEYCHAIN_PASSWORD" "$RUNNER_TEMP/player-development-signing/distribution.keychain-db"
           security set-keychain-settings -lut 21600 "$RUNNER_TEMP/player-development-signing/distribution.keychain-db"
           security unlock-keychain -p "$PD_KEYCHAIN_PASSWORD" "$RUNNER_TEMP/player-development-signing/distribution.keychain-db"
-          security import "$RUNNER_TEMP/player-development-signing/distribution.p12" -P "$PD_CERTIFICATE_PASSWORD" -k "$RUNNER_TEMP/player-development-signing/distribution.keychain-db" -T /usr/bin/codesign -T /usr/bin/security
+          PD_CERTIFICATE_PASSWORD=$(cat "$RUNNER_TEMP/player-development-signing/certificate-password.txt")
+          security import "$RUNNER_TEMP/player-development-signing/distribution.p12" -P "$PD_CERTIFICATE_PASSWORD" -k "$RUNNER_TEMP/player-development-signing/distribution.keychain-db" -T /usr/bin/codesign -T /usr/bin/security > /dev/null
           security set-key-partition-list -S apple-tool:,apple:,codesign: -k "$PD_KEYCHAIN_PASSWORD" "$RUNNER_TEMP/player-development-signing/distribution.keychain-db" > /dev/null
           security list-keychains -d user -s "$RUNNER_TEMP/player-development-signing/distribution.keychain-db"
       - name: Archive and export the signed iPhone app

@@ -33,6 +33,15 @@ class SigningProfileTests(unittest.TestCase):
             with self.subTest(team=team, identifier=identifier), self.assertRaises(ValueError):
                 MODULE.export_options(profile, CONFIG)
 
+    def test_uuid_case_is_preserved_and_certificate_must_match(self):
+        profile = copy.deepcopy(PROFILE)
+        profile["UUID"] = "5dc8879d-32a2-4ec2-bbc4-a7b698ae4e11"
+        profile["DeveloperCertificates"] = [b"fictional-certificate"]
+        options = MODULE.export_options(profile, CONFIG, certificate=b"fictional-certificate")
+        self.assertEqual(options["provisioningProfiles"][CONFIG["bundleId"]], profile["UUID"])
+        with self.assertRaises(ValueError):
+            MODULE.export_options(profile, CONFIG, certificate=b"other-certificate")
+
     def test_expired_or_non_store_profiles_are_rejected(self):
         for change in [{"ExpirationDate": datetime.datetime(2000, 1, 1)}, {"ProvisionedDevices": ["fictional-device"]}, {"ProvisionsAllDevices": True}, {"Platform": ["tvOS"]}, {"UUID": "invalid"}]:
             with self.subTest(change=change), self.assertRaises(ValueError):

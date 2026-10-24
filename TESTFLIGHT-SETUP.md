@@ -19,7 +19,7 @@ The Team ID has been received; it is an identifier, not a signing credential. Pa
 
 The owner has authorized the dedicated Apple signing credential setup. An encrypted RSA private key and matching public certificate request have been prepared. The private key/passphrase remain in the ignored `ios-signing/private` workspace directory; they are not in source, build artifacts or the public download. The idempotent helper `scripts/create_apple_csr.py` verifies the request and key before reusing them and refuses to overwrite incomplete signing material.
 
-The next owner-only step is [Apple Developer → Certificates → Add](https://developer.apple.com/account/resources/certificates/add): select team `4T6V3S3CZL`, choose **Apple Distribution**, upload `public/apple-signing/PlayerDevelopment-6a44424434a1.certSigningRequest`, and download the issued `.cer` certificate. The `.cer` contains the public certificate and may be supplied for matching/conversion. Do not send a private `.p8` key or a `.p12` export through chat. Apple-issued certificates, provisioning profiles and App Store Connect access have not yet been obtained.
+The next owner-only step is [Apple Developer → Certificates → Add](https://developer.apple.com/account/resources/certificates/add): select team `4T6V3S3CZL`, choose **Apple Distribution**, upload `public/apple-signing/PlayerDevelopment-6a44424434a1.certSigningRequest`, and download the issued `.cer` certificate. The `.cer` contains the public certificate and may be supplied for matching/conversion. Do not send a private `.p8` key or a `.p12` export through chat. The certificate and provisioning profile have subsequently been received and verified; App Store Connect API access remains pending.
 
 Public request download: https://coachbilliott.github.io/Player-Development-Site/apple-signing/PlayerDevelopment-6a44424434a1.certSigningRequest
 
@@ -27,18 +27,20 @@ Public request download: https://coachbilliott.github.io/Player-Development-Site
 
 The profile validator rejects a different team, different/wildcard app identifier, expired profile, non-iOS profile and development/ad-hoc/enterprise signing. Temporary keys are removed from the runner at job end. Only the signed app is retained as an artifact; it contains normal embedded public signing metadata, not the private certificate key or Apple API key. That artifact is not a TestFlight invitation or a directly installable App Store release.
 
-After owner authorization, provision these **repository Actions secrets** through [GitHub's secure settings](https://github.com/CoachBilliott/Player-Development-Site/settings/secrets/actions):
+The Apple Distribution certificate and App Store Connect provisioning profile have now been received and verified for team `4T6V3S3CZL` and bundle `com.coachbilliott.playerdevelopment`. The certificate matches the encrypted private key. The profile's Apple CMS signature/trust, distribution type, validity and included signing certificate passed checks. The original profile UUID is preserved exactly for Xcode; profile/certificate mismatches are rejected before signing.
+
+The signing inputs are packaged as **one private GitHub Actions secret**, reducing manual entry on the owner's phone. Through [GitHub's secure settings](https://github.com/CoachBilliott/Player-Development-Site/settings/secrets/actions), create:
 
 | Secret | Required value |
 | --- | --- |
-| `PD_IOS_DISTRIBUTION_P12_BASE64` | Base64 of the dedicated Apple Distribution certificate export, including its private key. |
-| `PD_IOS_P12_PASSWORD` | Password protecting that encrypted certificate export. |
-| `PD_IOS_APPSTORE_PROFILE_BASE64` | Base64 of the valid App Store distribution profile for this team and bundle ID. |
+| `PD_IOS_SIGNING_BUNDLE_JSON` | Full contents of the private generated signing bundle. It contains the encrypted certificate export, its password and provisioning profile, and must be treated as a private key. |
 | `PD_ASC_KEY_ID` | App Store Connect team API Key ID, for uploads. |
 | `PD_ASC_ISSUER_ID` | The corresponding App Store Connect API Issuer ID. |
 | `PD_ASC_PRIVATE_KEY_P8` | The API private key's original PEM text, for uploads. |
 
-The first three are needed for a signed build; the API fields are needed only when upload is explicitly selected. Use a role Apple permits for uploading this app, with the least necessary access; this upload workflow does not need permission to manage certificates or profiles. Registering the bundle/app record and creating the signing assets are separate owner-authorized steps. Do not use credentials belonging to unrelated projects.
+Only the signing bundle is needed for the first signed-build verification. The three API fields are needed only when upload is explicitly selected. The private bundle is kept at `ios-signing/private/PD_IOS_SIGNING_BUNDLE_JSON.txt` in the workspace, outside source, project ZIPs, public downloads and Pages hosting. Copy it only into the repository secret value; do not paste it into chat, issues, workflow inputs or source. GitHub encrypts repository secrets. The decoder validates the dedicated team/app and bundle shape, writes only fixed private temporary files and masks the decoded password on the runner. The workflow verifies the certificate extracted from the signing export is one of the profile's allowed certificates.
+
+Use a role Apple permits for uploading this app, with the least necessary access; the upload workflow does not need permission to manage certificates or profiles. App Store Connect app-record setup and upload API access remain owner steps. Do not use credentials belonging to unrelated projects. A signed app export alone does not create a TestFlight invitation.
 
 The current repository integration can push code and run builds, but its requests to list Actions secrets/variables returned **403 Resource not accessible by integration**. Existing secret names/values could not be verified. Secret setup therefore requires the owner's authenticated GitHub settings; no new personal access token or expanded integration permission has been requested. No secret values are present in these files.
 
