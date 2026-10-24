@@ -1,28 +1,36 @@
 @import XCTest;
-@import Capacitor;
+@import UIKit;
 @import WebKit;
 
 @interface DeviceStorageTests : XCTestCase
 @end
 
 @implementation DeviceStorageTests
+- (WKWebView *)findWebView:(UIView *)view {
+    if ([view isKindOfClass:WKWebView.class]) return (WKWebView *)view;
+    for (UIView *child in view.subviews) {
+        WKWebView *found = [self findWebView:child];
+        if (found) return found;
+    }
+    return nil;
+}
 - (void)testNativeKeychainRoundTripWithoutCloudAccount {
     XCTestExpectation *completed = [self expectationWithDescription:@"Native Keychain round trip"];
     NSString *key = [@"pd-native:simulator-test-" stringByAppendingString:NSUUID.UUID.UUIDString];
     dispatch_async(dispatch_get_main_queue(), ^{
-        CAPBridgeViewController *bridge = nil;
+        WKWebView *webView = nil;
         for (UIScene *scene in UIApplication.sharedApplication.connectedScenes) {
             if ([scene isKindOfClass:UIWindowScene.class]) {
                 for (UIWindow *window in ((UIWindowScene *)scene).windows) {
-                    if ([window.rootViewController isKindOfClass:CAPBridgeViewController.class]) {
-                        bridge = (CAPBridgeViewController *)window.rootViewController;
+                    webView = [self findWebView:window.rootViewController.view];
+                    if (webView) {
                         break;
                     }
                 }
             }
         }
-        XCTAssertNotNil(bridge.webView);
-        if (!bridge.webView) { [completed fulfill]; return; }
+        XCTAssertNotNil(webView);
+        if (!webView) { [completed fulfill]; return; }
         NSString *script =
           @"for (let i = 0; i < 150; i++) {"
            " if (window.Capacitor?.Plugins?.SecureStoragePlugin) break;"
@@ -34,7 +42,7 @@
            " await store.set({ key, value: 'fictional-native-fixture' });"
            " return (await store.get({ key })).value === 'fictional-native-fixture';"
            "} finally { await store.remove({ key }); }";
-        [bridge.webView callAsyncJavaScript:script
+        [webView callAsyncJavaScript:script
             arguments:@{@"key": key}
             inFrame:nil
             inContentWorld:WKContentWorld.pageWorld
@@ -44,6 +52,6 @@
                 [completed fulfill];
             }];
     });
-    [self waitForExpectations:@[completed] timeout:30];
+    [self waitForExpectationsWithTimeout:30 handler:nil];
 }
 @end

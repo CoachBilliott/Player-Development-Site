@@ -45,8 +45,6 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.coachbilliott.playerdevelopment.tests
     dependencies:
       - target: App
-      - package: CapApp-SPM
-        product: CapApp-SPM
   AppUITests:
     type: bundle.ui-testing
     platform: iOS
