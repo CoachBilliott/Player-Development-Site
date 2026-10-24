@@ -1,8 +1,8 @@
 /* Player Development: app-shell caching only. No API, authentication or uploaded-media caching. */
 const SCOPE = new URL(self.registration.scope);
 const PREFIX = `pd-shell-${SCOPE.pathname}-`;
-const CACHE = `${PREFIX}f0d88fa22f7e7fae`;
-const ASSETS = ["assets/dm-sans-latin-400-normal-CW0RaeGs.woff2","assets/dm-sans-latin-600-normal-Aqo67rzb.woff2","assets/barlow-condensed-latin-700-normal-v1xN8_Wq.woff2","assets/barlow-condensed-latin-800-italic-Cnej2eWp.woff2","assets/dm-sans-latin-400-normal-BwCSEQnW.woff","assets/dm-sans-latin-600-normal-BmdmIIQ2.woff","assets/barlow-condensed-latin-700-normal-Dmwat-ge.woff","assets/barlow-condensed-latin-800-italic-B5BpsPSY.woff","assets/index-DA-8aZ3_.css","assets/index-CtSFHive.js","assets/index-CcCxm0Mt.js","index.html","manifest.webmanifest","favicon.svg","media/training-poster.jpg","media/practice-detail.jpg","media/football-field.jpg","media/credits.txt","icons/app-192.png","icons/app-512.png","icons/maskable-512.png","icons/apple-touch-180.png"].map((name) => new URL(name, SCOPE).href);
+const CACHE = `${PREFIX}424b107e4b36ff2d`;
+const ASSETS = ["assets/dm-sans-latin-400-normal-CW0RaeGs.woff2","assets/dm-sans-latin-600-normal-Aqo67rzb.woff2","assets/barlow-condensed-latin-700-normal-v1xN8_Wq.woff2","assets/barlow-condensed-latin-800-italic-Cnej2eWp.woff2","assets/dm-sans-latin-400-normal-BwCSEQnW.woff","assets/dm-sans-latin-600-normal-BmdmIIQ2.woff","assets/barlow-condensed-latin-700-normal-Dmwat-ge.woff","assets/barlow-condensed-latin-800-italic-B5BpsPSY.woff","assets/index-wQEDzKlM.css","assets/index-BarhtzxC.js","assets/index-CcCxm0Mt.js","index.html","manifest.webmanifest","favicon.svg","media/training-poster.jpg","media/family-football.jpg","media/solo-football.jpg","media/football-field.jpg","media/credits.txt","icons/app-192.png","icons/app-512.png","icons/maskable-512.png","icons/apple-touch-180.png"].map((name) => new URL(name, SCOPE).href);
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(ASSETS)));
 });
