@@ -70,6 +70,10 @@ Playback automatically stops while offscreen or in a hidden tab and resumes when
 
 ## Installable phone app
 
+The native iOS project is in `ios/` with a repeatable Mac simulator build/test workflow. `npm run build:ios` bundles the shared client and synchronizes native plugins; `npm run open:ios` opens Xcode on a Mac. Native sessions use the iOS Keychain. Physical-device/TestFlight distribution awaits owner Apple enrollment and signing; the unsigned archive and simulator build are not installable TestFlight releases. See [phone app testing](APP-TESTING.md).
+
+The mobile welcome and persistent navigation are also available at https://coachbilliott.github.io/Player-Development-Site/?source=app#app for immediate Safari/home-screen testing. The website continues to use its public homepage. Both clients use the same real account permissions and the same single fictional customer demo; demo history never becomes a real profile.
+
 The `#install` screen explains iPhone/Android home-screen installation. The production build includes an app manifest, original local icons and a scoped service worker. After initial online setup, built-in fictional sessions and local progress can reopen offline. Shared resources, sign-in, uploads and updates require a connection; media may not work offline. Updates require a confirmed reload rather than interrupting training. Installing does not sync browser data. This is an installable web app, not an App Store or Google Play release. See [APP-TESTING.md](APP-TESTING.md) for device steps, update behavior and tests.
 
 ## Storage and prototype limits

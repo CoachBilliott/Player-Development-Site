@@ -4,6 +4,9 @@
   padding-bottom: calc(84px + env(safe-area-inset-bottom, 0px));
   background: #101010;
 }
+.mobile-layout .page-transition {
+  animation: none;
+}
 .app-header {
   position: sticky;
   top: 0;

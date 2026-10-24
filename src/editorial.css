@@ -744,10 +744,9 @@
   padding-bottom: 32px;
 }
 .reveal {
+  opacity: 1;
   transform: translateY(12px);
-  transition:
-    opacity 500ms ease,
-    transform 500ms ease;
+  transition: transform 500ms ease;
 }
 
 @media (min-width: 1800px) {

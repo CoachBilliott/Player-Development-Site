@@ -1,10 +1,10 @@
 # Phone app testing
 
-Player Development uses one React/TypeScript project for the website and an installable web app. It has not been submitted to the Apple App Store or Google Play.
+Player Development now includes a native iOS project in `ios/`, built with Capacitor 8 around the shared React/TypeScript training client. The mobile client has its own welcome screen, persistent bottom navigation, role-aware workspace links, account access, guided sample sessions and help. The same mobile experience is available as an installable web app at https://coachbilliott.github.io/Player-Development-Site/?source=app#app. The normal public website remains at the root URL. App Store and TestFlight distribution are not active.
 
 ## Try the published app
 
-Open the current website's `#install` screen. On iPhone/iPad, open in Safari, choose Share → Add to Home Screen, turn on Open as Web App if offered, and tap Add. On Android Chrome, use Install app when offered or the browser menu's Install app/Add to Home screen option. Browser menu names differ. The app can still be used as a website if installation is unavailable. No store account or purchase is required for this route.
+For immediate iPhone testing, open https://coachbilliott.github.io/Player-Development-Site/?source=app#app in Safari, choose Share → Add to Home Screen, turn on Open as Web App if offered, and tap Add. This installs the web-app experience, not a TestFlight binary. The manifest starts the mobile welcome screen. On Android Chrome, the same web-app route supports Install app/Add to Home screen. Browser menu names differ. No developer membership or purchase is required for this route. Use the `#install` screen for updates and detailed installation instructions.
 
 Open online first and wait for “Demo screens are ready for offline use.” Built-in fictional sessions and local progress can then reopen offline. Shared-library loading, sign-in, new uploads, updates and remote media require a connection. Browser and home-screen app storage may differ on some devices; installation is not account creation or cross-device sync.
 
@@ -31,9 +31,33 @@ Use fictional profiles and original sample media. On physical iPhone Safari and 
 
 Report each issue with screen/link, device/browser, steps, expected result, actual result and whether it blocks use. Do not include real children’s information. Fix blockers before appearance refinements.
 
-## Native stores later
+## Build and test the native iOS app
 
-If store distribution is required, choose a native wrapper or dedicated native client after validating the web workflows. Then prepare Apple/Google developer accounts, signing, bundle identifiers, privacy disclosures and the applicable TestFlight/Google Play testing tracks. Developer account fees and store review rules may apply; the current web app neither needs nor creates those accounts. Never promise store approval or purchase accounts without owner authorization.
+The provisional bundle identifier is `com.coachbilliott.playerdevelopment`, display name Player Development and version 0.1.0. The iOS project bundles the app shell and illustrative sample sessions, uses local app assets (no remotely loaded application URL), follows safe-area insets and uses the original PD launch icon. Native Auth sessions use the iOS Keychain through a scoped storage adapter; there is no fallback to unencrypted browser storage for native sessions. Private profile/media API responses remain uncached. Native app foreground/background events start/stop Auth refresh and recheck account access on resume.
+
+```sh
+npm ci
+npm run build:ios
+npm run open:ios
+```
+
+Native compilation needs a Mac with Xcode and an iOS Simulator runtime. This workspace is Linux; the repository's **iPhone app build and simulator tests** workflow runs Xcode on a standard GitHub-hosted Mac. The repository is public, so the standard runner route does not require purchasing a service. It generates test targets with XcodeGen, runs a real Keychain round-trip against the app's WKWebView bridge, exercises welcome/demo/relaunch persistence and the sign-in form in an iPhone simulator without entering real credentials, and prepares an unsigned iPhone device archive. Build logs, test results and screenshots are saved as workflow artifacts. Simulator `.app` files run on compatible Macs; unsigned device archives cannot be installed on an iPhone or submitted as a TestFlight build.
+
+To regenerate the additional test targets locally on a Mac:
+
+```sh
+brew install xcodegen
+cd ios/App
+xcodegen generate
+```
+
+Password resets, verification and adult account setup open the existing HTTPS website in the system browser. Finish those email steps there, then log in to the app. The app does not change the Supabase redirect allowlist, add custom email callback schemes or weaken the existing child/role gates. iOS file-picker purpose strings cover camera/microphone/photo access only if a staff user explicitly chooses that upload option; no permission is requested automatically.
+
+## Physical iPhone distribution remains an owner step
+
+The owner does not currently have an Apple Developer Program membership. TestFlight distribution requires that membership, an App Store Connect app, an approved bundle ID/team, signing/provisioning, privacy/age-rating/export-compliance answers and the applicable beta review. Nothing has been purchased and no Apple credentials or security settings have been changed. After enrollment, sign the prepared native project in Xcode and upload a signed archive to App Store Connect; add the owner/partner as testers through the supported Apple workflow. A Mac/Apple ID can also support limited personal development-device testing under Apple's rules. Neither route guarantees store approval.
+
+Before public release: perform physical-device account/email handoff, role isolation, file picking, session persistence, keyboard/safe-area, background/resume and accessibility tests; review native privacy disclosures and training content; finish verified guardian consent before enabling juniors; define membership entitlements and compliant billing before activating purchases. No checkout, push messaging, biometric gate or real junior account activation is added by this build.
 
 ## Private account checks
 

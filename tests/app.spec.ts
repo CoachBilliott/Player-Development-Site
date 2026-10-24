@@ -124,6 +124,59 @@ test("canceling an offered installation keeps the website usable", async ({
   ).toBeVisible();
 });
 
+test("the installed mobile app reopens its own welcome offline and preserves guided demo history", async ({
+  page,
+  context,
+}) => {
+  await page.goto("./?source=app#install");
+  await expect(page.locator(".app-cache-status")).toContainText(
+    "ready for offline use",
+    { timeout: 20000 },
+  );
+  await context.setOffline(true);
+  await page.goto("./?source=app#app");
+  await expect(
+    page.getByRole("heading", { name: "Your training starts here." }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("navigation", { name: "App navigation" }),
+  ).toBeVisible();
+  await page
+    .getByRole("link", { name: "Try the sample demo", exact: true })
+    .click();
+  await page.getByRole("button", { name: "Solo athlete", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Start sample workout", exact: true })
+    .click();
+  const dialog = page.getByRole("dialog");
+  await dialog.getByRole("checkbox").check();
+  await dialog.getByRole("button", { name: "Begin sample practice" }).click();
+  for (;;) {
+    await dialog.getByRole("button", { name: "Show workout steps" }).click();
+    await dialog.getByRole("checkbox").check();
+    const submit = dialog.getByRole("button", {
+      name: "Submit reported workout",
+    });
+    if (await submit.isVisible()) {
+      await submit.click();
+      break;
+    }
+    await dialog.getByRole("button", { name: "Next workout drill" }).click();
+  }
+  await expect(
+    page.getByText("Self-reported practice", { exact: true }),
+  ).toBeVisible();
+  await page.reload();
+  await page.getByRole("button", { name: "Solo athlete", exact: true }).click();
+  await expect(
+    page.getByText("Self-reported practice", { exact: true }),
+  ).toBeVisible();
+  expect(
+    await page.evaluate(() => localStorage.getItem("pd-demo-v1")),
+  ).toBeNull();
+  await context.setOffline(false);
+});
+
 test("a real waiting service-worker update waits for confirmation and preserves saved data", async ({
   page,
 }) => {
