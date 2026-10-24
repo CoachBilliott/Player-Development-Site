@@ -1,8 +1,8 @@
 /* Player Development: app-shell caching only. No API, authentication or uploaded-media caching. */
 const SCOPE = new URL(self.registration.scope);
 const PREFIX = `pd-shell-${SCOPE.pathname}-`;
-const CACHE = `${PREFIX}96c4960adf2be1da`;
-const ASSETS = ["assets/dm-sans-latin-400-normal-CW0RaeGs.woff2","assets/dm-sans-latin-600-normal-Aqo67rzb.woff2","assets/barlow-condensed-latin-700-normal-v1xN8_Wq.woff2","assets/barlow-condensed-latin-800-italic-Cnej2eWp.woff2","assets/dm-sans-latin-400-normal-BwCSEQnW.woff","assets/dm-sans-latin-600-normal-BmdmIIQ2.woff","assets/barlow-condensed-latin-700-normal-Dmwat-ge.woff","assets/barlow-condensed-latin-800-italic-B5BpsPSY.woff","assets/index-CuLtewUF.css","assets/index-BEbGrHC5.js","assets/index-CcCxm0Mt.js","index.html","manifest.webmanifest","favicon.svg","icons/app-192.png","icons/app-512.png","icons/maskable-512.png","icons/apple-touch-180.png"].map((name) => new URL(name, SCOPE).href);
+const CACHE = `${PREFIX}53d321465a99cbe6`;
+const ASSETS = ["assets/barlow-condensed-latin-800-italic-Cnej2eWp.woff2","assets/dm-sans-latin-400-normal-CW0RaeGs.woff2","assets/dm-sans-latin-600-normal-Aqo67rzb.woff2","assets/barlow-condensed-latin-700-normal-v1xN8_Wq.woff2","assets/barlow-condensed-latin-800-italic-B5BpsPSY.woff","assets/dm-sans-latin-400-normal-BwCSEQnW.woff","assets/dm-sans-latin-600-normal-BmdmIIQ2.woff","assets/barlow-condensed-latin-700-normal-Dmwat-ge.woff","assets/index-C4_CJLve.css","assets/index-DcZB_dDo.js","assets/index-CcCxm0Mt.js","index.html","manifest.webmanifest","favicon.svg","icons/app-192.png","icons/app-512.png","icons/maskable-512.png","icons/apple-touch-180.png"].map((name) => new URL(name, SCOPE).href);
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(ASSETS)));
 });
