@@ -6,7 +6,11 @@ A standalone, responsive virtual player-practice demo, beginning with American f
 
 Open [Member access](https://coachbilliott.github.io/Player-Development-Site/#account). The dedicated backend is connected for an invite-only adult pilot. Public registration remains closed; existing pilot accounts can sign in and reset their password. The repository now includes adult signup, email verification/recovery, private parent/adult account setup, private player create/edit/delete, identity isolation and server row-level security. Under-18 enrollment is closed at the database until consent/privacy setup is complete. No demo records are imported. No payment package or price is needed for profile setup.
 
-See [backend setup and current pilot status](backend/SETUP.md). Both initial migrations have been applied to the dedicated owner-controlled project; do not rerun them. Live database privacy checks pass, while inbox delivery and owner activation require confirmation. Do not add real child information in the pilot. Full Auth-login erasure requires the owner; the self-service delete action removes member/profile data only. Real member practice-history syncing and subscriptions remain future work.
+See [backend setup and current pilot status](backend/SETUP.md). All three migrations have been applied to the dedicated owner-controlled project; do not rerun them. Live database privacy checks pass, while inbox delivery and owner activation require confirmation. Do not add real child information in the pilot. Full Auth-login erasure requires the owner; the self-service delete action removes member/profile data only. Real member practice-history syncing and subscriptions remain future work.
+
+## Account levels
+
+The five access levels are **Owner, Manager, Coach, Parent and Athlete**. Owners manage levels for existing verified adult accounts; Managers manage all shared training content; Coaches manage their own resources; Parents manage their private family profiles; Athletes manage one adult profile of their own. Your own Owner access is protected. Staff do not automatically receive private player access. Level changes are enforced and audited in PostgreSQL, with version checks and protection against signup-metadata escalation. Use **My account → Manage account access** as an Owner. These levels do not activate payments or open children's enrollment.
 
 ## Run locally
 

@@ -2074,3 +2074,94 @@ body {
     font-size: clamp(2.4rem, 10vw, 3.8rem);
   }
 }
+
+.experience .account-access {
+  margin: 1.5rem 0 2rem;
+}
+.experience .access-heading {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+.experience .access-heading > svg {
+  color: var(--lime);
+}
+.experience .access-heading h2 {
+  margin: 0.4rem 0;
+}
+.experience .access-level-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 165px), 1fr));
+  gap: 0.75rem;
+  margin: 1.5rem 0;
+}
+.experience .access-level {
+  border: 1px solid var(--line);
+  padding: 1rem;
+  border-radius: 12px;
+  background: #0b1822;
+}
+.experience .access-level.selected {
+  border-color: var(--lime);
+  background: #c4fa5d0d;
+}
+.experience .access-level p {
+  font-size: 0.8rem;
+  line-height: 1.6;
+  margin-top: 0.5rem;
+}
+.experience .account-access > .button {
+  margin-top: 1rem;
+}
+.experience .access-manager {
+  padding-top: 2rem;
+  margin-top: 1.5rem;
+  border-top: 1px solid var(--line);
+}
+.experience .access-search {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: end;
+  margin: 1.5rem 0;
+}
+.experience .access-search label {
+  flex: 1;
+  min-width: min(100%, 240px);
+  display: grid;
+  gap: 0.5rem;
+}
+.experience .access-directory {
+  display: grid;
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+.experience .access-person {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(180px, 0.7fr) auto;
+  align-items: end;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: #0b1822;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.experience .access-person strong {
+  overflow-wrap: anywhere;
+}
+.experience .access-person label {
+  display: grid;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  overflow-wrap: anywhere;
+}
+.experience .access-person select {
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+}
+@media (max-width: 900px) {
+  .experience .access-person {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

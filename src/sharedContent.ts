@@ -2,6 +2,7 @@ import { z } from "zod";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { drillSchema, type Drill } from "./model";
 import { validateFile } from "./storage";
+import { accessSchema, isStaff } from "./roles";
 
 const configSchema = z.object({
   enabled: z.boolean(),
@@ -42,6 +43,7 @@ export function parseSharedConfig(value: unknown): SharedConfig | null {
 }
 const rowSchema = z.object({
   id: z.string().uuid(),
+  created_by: z.string().uuid().optional(),
   content: drillSchema.omit({
     id: true,
     source: true,
@@ -56,7 +58,8 @@ const rowSchema = z.object({
   asset_name: z.string(),
   version: z.number().int().positive(),
 });
-const columns = "id,content,asset_path,asset_type,asset_name,version";
+const columns =
+  "id,created_by,content,asset_path,asset_type,asset_name,version";
 const bucket = "training-media";
 const connections = new Map<string, Promise<SharedContent>>();
 export async function connectSharedContent(config: SharedConfig) {
@@ -148,19 +151,23 @@ export function finishAuthRedirect(connection: SharedContent) {
 }
 export class SharedContent {
   constructor(readonly client: SupabaseClient) {}
-  async isCoach() {
+  readonly resourceAuthors = new Map<string, string>();
+  async getAccess() {
     const { data: session } = await this.client.auth.getSession();
-    if (!session.session) return false;
+    if (!session.session) return null;
     const { data, error } = await this.client
-      .from("coach_members")
-      .select("user_id")
+      .from("account_roles")
+      .select("role,version")
       .eq("user_id", session.session.user.id)
       .maybeSingle();
     if (error)
       throw new Error(
-        "Coach access could not be verified. Check the shared-publishing setup or try again online.",
+        "Account permissions could not be verified. Reconnect and refresh access.",
       );
-    return Boolean(data);
+    return data ? accessSchema.parse(data) : null;
+  }
+  async isCoach() {
+    return isStaff((await this.getAccess())?.role || null);
   }
   private async requireCoach() {
     if (!(await this.isCoach()))
@@ -179,6 +186,7 @@ export class SharedContent {
         "A shared resource could not be read. Ask its coach to review the content and reconnect before refreshing.",
       );
     const row = parsed.data;
+    if (row.created_by) this.resourceAuthors.set(row.id, row.created_by);
     const { data } = await this.client.storage
       .from(bucket)
       .createSignedUrl(row.asset_path, 3600, {

@@ -61,6 +61,12 @@ async function mockProject(
     if (url.pathname.endsWith("/user")) return route.fulfill({ json: user });
     if (url.pathname.endsWith("/logout"))
       return route.fulfill({ status: 204, body: "" });
+    if (url.pathname.includes("/rest/v1/account_roles"))
+      return route.fulfill({
+        json: approved
+          ? [{ role: "coach", version: 1 }]
+          : [{ role: "parent", version: 1 }],
+      });
     if (url.pathname.includes("/rest/v1/coach_members"))
       return route.fulfill({ json: approved ? [{ user_id: userId }] : [] });
     if (url.pathname.includes("/rest/v1/training_resources")) {
@@ -80,7 +86,7 @@ async function mockProject(
         });
       if (method === "POST") {
         const body = request.postDataJSON();
-        const row = { ...body, version: 1 };
+        const row = { ...body, version: 1, created_by: userId };
         rows.set(row.id, row);
         if (ambiguousWrites)
           return route.fulfill({

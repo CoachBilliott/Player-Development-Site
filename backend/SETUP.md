@@ -1,6 +1,6 @@
 # Player Development backend — private adult pilot
 
-The dedicated project `iilbulpqbuknhdpmtrvm` is connected. Migrations `001-shared-content.sql` and `002-private-profiles.sql` were applied once and verified against the live project. Do not rerun the initial migrations against this installed schema.
+The dedicated project `iilbulpqbuknhdpmtrvm` is connected. Migrations `001-shared-content.sql`, `002-private-profiles.sql` and `003-account-levels.sql` were applied once and verified against the live project. Do not rerun the initial migrations against this installed schema.
 
 The site URL and exact verification/recovery redirect URLs point to `https://coachbilliott.github.io/Player-Development-Site/`. Email confirmation is required and passwords require at least 12 characters. Management access is supplied securely by the owner; no administrative credential belongs in the repository, browser configuration, test fixtures or chat.
 
@@ -15,7 +15,7 @@ Supabase's built-in email sender is restricted and rate limited. The owner appro
 ## Verification performed
 
 - Live project identity and public Auth endpoint checked using the owner's supplied connection.
-- All five public tables have row-level security enabled. Anonymous REST reads can access published training but receive permission-denied responses for member accounts and profiles.
+- All seven public tables have row-level security enabled. Anonymous REST reads can access published training but receive permission-denied responses for member accounts and profiles.
 - Live transaction tests create only fictional temporary adult Auth/profile fixtures, exercise owner create/read/edit/version checks and cross-household read/write/delete rejection, reject account-type escalation and under-18 creation, and roll back every fixture. The cleanup check confirms zero remaining test users.
 - Browser tests intercept fictional backend responses and never use the owner's live project. They cover the actual SDK, email callbacks, private-profile CRUD and account switching. Local/hosted checks and actual public deployment must still be confirmed for each release.
 - Provider-issued activation/invitation/recovery links may use an implicit email callback. The app removes tokens from the URL and validates the session through Supabase Auth before showing account controls. Browser-initiated signup/recovery continues to use PKCE and requires the same browser for the callback.
@@ -26,7 +26,23 @@ Supabase's built-in email sender is restricted and rate limited. The owner appro
 2. Configure a permitted SMTP sender and provider abuse/rate controls. Review current free-plan limits, inactivity behavior and terms without enabling paid billing automatically.
 3. Set Supabase Auth `disable_signup` to false and website `membersSignupEnabled` to true only when adult public enrollment is approved. This interface flag is not a security boundary; server Auth and database policies remain authoritative.
 4. Review and deploy the configuration through this repository's existing Pages route. Confirm the actual live URL and a real verification/recovery journey before describing signup as launched.
-5. Grant coach access only through privileged owner administration by inserting the approved adult's Auth UUID into `public.coach_members`. It does not grant access to other households' player data. Do not grant roles from signup metadata.
+5. Assign account levels through the Owner's **My account → Manage account access** screen after the target person verifies their email and finishes adult setup. The `coach_members` table is now a compatibility mirror maintained by role triggers; do not grant access by editing it directly. Never grant staff levels from signup metadata.
+
+## Five account levels
+
+| Level   | Implemented permissions                                                                                                                                |
+| ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Owner   | Assign levels to existing verified adult accounts; manage all shared training resources. Own access cannot be changed through the website.             |
+| Manager | Manage shared training content across coaches. Cannot assign levels or read the account directory.                                                     |
+| Coach   | Publish and manage resources they created. Can read published content from other coaches but cannot edit their drafts/resources or remove their files. |
+| Parent  | Manage their own household's private profiles. Under-18 creation remains closed until consent setup is completed.                                      |
+| Athlete | Manage one private adult profile of their own. Cannot publish content or manage other accounts.                                                        |
+
+These are primary access levels, independent of subscription packages. Staff may also choose a personal Parent/Athlete profile purpose without losing their staff level. No staff level, including Owner, automatically grants access to someone else's private player details. Coach-to-player assignments, consent-based sharing, messaging, account invitations from the website and paid entitlements are not part of this release.
+
+The existing approved owner was bootstrapped as Owner through privileged administration. Other legacy coaches retain Coach access. Existing personal parent/adult purposes migrate to Parent/Athlete respectively. No profiles are removed. A person cannot be switched to Athlete while multiple personal or under-18 profiles exist. Only Owners can call `assign_account_role`; the RPC checks verification, adult setup and the expected server version, protects self/last-owner access and records one audit event per change. Direct browser writes to levels/audit are forbidden. Access is read from the database, never user metadata or a browser selector.
+
+Role changes affect backend permissions immediately. Open screens recheck levels on focus; users can refresh their page to update controls. Creating/resetting personal profile data cannot promote staff or change an assigned Parent/Athlete level. Under-18 independent athlete logins remain unavailable. If a manager replaces a coach's attachment, later cleanup of a file owned by that manager can require Manager/Owner access; cleanup failures are reported and never expand coach file permissions.
 
 ## What is implemented
 

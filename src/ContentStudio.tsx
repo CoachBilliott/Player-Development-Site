@@ -3,6 +3,7 @@ import { LockKeyhole, RefreshCw } from "lucide-react";
 import { Admin } from "./Admin";
 import { Notice } from "./components";
 import type { SharedState } from "./useSharedContent";
+import { ROLE_LABELS } from "./roles";
 
 type Props = ComponentProps<typeof Admin> & { shared: SharedState };
 export function ContentStudio({ shared, ...local }: Props) {
@@ -162,7 +163,9 @@ export function ContentStudio({ shared, ...local }: Props) {
         <>
           <div className="page narrow shared-toolbar">
             <span>
-              <LockKeyhole size={16} /> Approved coach · shared website
+              <LockKeyhole size={16} />{" "}
+              {shared.role ? ROLE_LABELS[shared.role] : "Staff"} · shared
+              website
             </span>
             <div className="actions">
               <button
@@ -200,7 +203,9 @@ export function ContentStudio({ shared, ...local }: Props) {
             onPublish={shared.publish}
             onUpdate={shared.update}
             onRemove={shared.remove}
-            resources={shared.resources}
+            resources={shared.resources.filter((drill) =>
+              shared.canEditResource(drill.id),
+            )}
             lockedIds={local.lockedIds}
           />
         </>

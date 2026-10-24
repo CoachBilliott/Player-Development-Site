@@ -17,6 +17,7 @@ import {
 } from "./accounts";
 import { Modal, Notice, Tag } from "./components";
 import type { SharedState } from "./useSharedContent";
+import { AccountAccess } from "./AccountAccess";
 
 export function MemberAccountPage({ shared }: { shared: SharedState }) {
   if (shared.loading)
@@ -112,6 +113,12 @@ function ConnectedAccount({
   const [adult, setAdult] = useState(false);
   const [privacy, setPrivacy] = useState(false);
   const [kind, setKind] = useState<"parent" | "adult">("parent");
+  const profileKind =
+    shared.role === "athlete"
+      ? "adult"
+      : shared.role === "parent"
+        ? "parent"
+        : kind;
   const [account, setAccount] = useState<MemberAccount | null>(null);
   const [players, setPlayers] = useState<PrivatePlayer[]>([]);
   const [under18Enabled, setUnder18Enabled] = useState(false);
@@ -290,6 +297,7 @@ function ConnectedAccount({
           {message}
         </p>
       )}
+      {userId && !recovery && <AccountAccess shared={shared} />}
       {!userId ? (
         <div className="member-layout">
           <section className="panel member-panel">
@@ -519,8 +527,9 @@ function ConnectedAccount({
                 e.preventDefault();
                 if (!adult || !privacy) return;
                 void act(async () => {
-                  const saved = await service.setup(kind);
+                  const saved = await service.setup(profileKind);
                   setAccount(saved);
+                  await shared.refreshAccess();
                   setPlayers([]);
                   setMessage(
                     "Account ready. Add a private player profile when you’re ready.",
@@ -532,11 +541,14 @@ function ConnectedAccount({
                 <label>
                   Account type
                   <select
-                    value={kind}
+                    value={profileKind}
+                    disabled={
+                      shared.role === "parent" || shared.role === "athlete"
+                    }
                     onChange={(e) => setKind(e.target.value as typeof kind)}
                   >
                     <option value="parent">Parent / legal guardian</option>
-                    <option value="adult">Adult player (18+ only)</option>
+                    <option value="adult">Athlete (18+ only)</option>
                   </select>
                 </label>
                 <label className="checkbox-label">
@@ -547,7 +559,7 @@ function ConnectedAccount({
                     onChange={(e) => setAdult(e.target.checked)}
                   />
                   I am 18 or older
-                  {kind === "parent"
+                  {profileKind === "parent"
                     ? " and I am the parent or legal guardian of any under-18 player I add"
                     : " and will only add adult players"}
                   .
@@ -588,7 +600,7 @@ function ConnectedAccount({
               <Tag>
                 {account.account_type === "parent"
                   ? "PARENT / GUARDIAN"
-                  : "ADULT PLAYER"}
+                  : "PERSONAL ATHLETE PROFILE"}
               </Tag>
               <p>{shared.session?.user.email}</p>
             </div>
@@ -602,7 +614,11 @@ function ConnectedAccount({
               </button>
               <button
                 className="button"
-                disabled={busy || !!draft}
+                disabled={
+                  busy ||
+                  !!draft ||
+                  (shared.role === "athlete" && players.length >= 1)
+                }
                 onClick={() => setDraft({ id: crypto.randomUUID() })}
               >
                 <Plus size={18} />

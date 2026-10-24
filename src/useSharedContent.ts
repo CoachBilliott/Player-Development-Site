@@ -7,11 +7,15 @@ import {
   type SharedContent,
 } from "./sharedContent";
 import type { Drill } from "./model";
+import { isStaff, type AccountRole } from "./roles";
 
 export function useSharedContent() {
   const [service, setService] = useState<SharedContent | null>(null);
   const [session, setSession] = useState<Session | null>(null);
-  const [coachId, setCoachId] = useState<string | null>(null);
+  const [access, setAccess] = useState<{
+    userId: string;
+    role: AccountRole | null;
+  }>({ userId: "", role: null });
   const [checking, setChecking] = useState(false);
   const [resources, setResources] = useState<Drill[]>([]);
   const [error, setError] = useState("");
@@ -77,29 +81,38 @@ export function useSharedContent() {
   useEffect(() => {
     let stopped = false;
     if (!service || !session) return;
-    void service
-      .isCoach()
-      .then((allowed) => {
-        if (!stopped) {
-          setCoachId(allowed ? session.user.id : null);
-          if (!allowed)
-            setError(
-              "This account is not approved to publish. Ask the project owner to grant coach access.",
-            );
-        }
-      })
-      .catch((e) => {
-        if (!stopped)
-          setError(
-            e instanceof Error
-              ? e.message
-              : "Coach access could not be verified.",
-          );
-      });
+    const refresh = () =>
+      void service
+        .getAccess()
+        .then((result) => {
+          if (!stopped) {
+            setAccess({ userId: session.user.id, role: result?.role || null });
+            if (!isStaff(result?.role || null))
+              setError(
+                "This account is not approved to publish. Ask the project owner to grant coach access.",
+              );
+          }
+        })
+        .catch((e: Error) => {
+          if (!stopped) {
+            setAccess({ userId: session.user.id, role: null });
+            setError(e.message);
+          }
+        });
+    refresh();
+    window.addEventListener("focus", refresh);
     return () => {
       stopped = true;
+      window.removeEventListener("focus", refresh);
     };
   }, [service, session]);
+  const role =
+    session && session.user.id === access.userId ? access.role : null;
+  async function refreshAccess() {
+    if (!service || !session) return;
+    const result = await service.getAccess();
+    setAccess({ userId: session.user.id, role: result?.role || null });
+  }
   async function refresh() {
     if (!service) return;
     setChecking(true);
@@ -124,7 +137,14 @@ export function useSharedContent() {
     clearConnectionError: () => setConnectionError(""),
     configured: Boolean(service),
     signedIn: Boolean(session),
-    coach: Boolean(session && session.user.id === coachId),
+    role,
+    refreshAccess,
+    coach: isStaff(role),
+    canEditResource: (id: string) =>
+      role === "owner" ||
+      role === "manager" ||
+      (role === "coach" &&
+        service?.resourceAuthors.get(id) === session?.user.id),
     checking,
     resources,
     error,
@@ -132,7 +152,7 @@ export function useSharedContent() {
     refresh,
     async signIn(email: string, password: string) {
       if (!service) throw new Error("Shared publishing is not connected.");
-      setCoachId(null);
+      setAccess({ userId: "", role: null });
       setError("");
       const { error } = await service.client.auth.signInWithPassword({
         email,
@@ -148,7 +168,7 @@ export function useSharedContent() {
       const { error } = await service.client.auth.signOut({ scope: "local" });
       if (error)
         throw new Error("Could not sign out. Reconnect and try again.");
-      setCoachId(null);
+      setAccess({ userId: "", role: null });
       setSession(null);
       setError("");
     },

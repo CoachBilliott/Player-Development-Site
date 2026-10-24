@@ -10,10 +10,37 @@ function jwt(id: string) {
     Buffer.from(JSON.stringify(value)).toString("base64url");
   return `${b64({ alg: "HS256", typ: "JWT" })}.${b64({ sub: id, role: "authenticated", aud: "authenticated", exp: Math.floor(Date.now() / 1000) + 3600 })}.fictional-signature`;
 }
-function fixture(under18Enabled = true, signupEnabled = true) {
+function fixture(
+  under18Enabled = true,
+  signupEnabled = true,
+  primaryRole:
+    "owner" | "manager" | "coach" | "parent" | "athlete" | null = null,
+) {
   const accounts = new Map<string, Row>();
   const players = new Map<string, Row>();
-  const counts = { writes: 0, signup: 0, recover: 0, password: 0, resend: 0 };
+  const levels = new Map<string, { role: string; version: number }>();
+  let rejectRoleChange = false;
+  const levelFor = (id: string) =>
+    levels.get(id) ||
+    (id === parentId && primaryRole
+      ? { role: primaryRole, version: 1 }
+      : accounts.has(id)
+        ? {
+            role:
+              accounts.get(id)!.account_type === "parent"
+                ? "parent"
+                : "athlete",
+            version: 1,
+          }
+        : null);
+  const counts = {
+    writes: 0,
+    signup: 0,
+    recover: 0,
+    password: 0,
+    resend: 0,
+    roleWrites: 0,
+  };
   let failNextSave = false;
   let ambiguousSave = false;
   const user = (id: string) => ({
@@ -107,6 +134,52 @@ function fixture(under18Enabled = true, signupEnabled = true) {
             if (player.owner_id === id) players.delete(key);
           return route.fulfill({ status: 204, body: "" });
         }
+        if (url.pathname.endsWith("/rpc/list_account_access")) {
+          if (levelFor(id)?.role !== "owner")
+            return route.fulfill({
+              status: 403,
+              json: { message: "Owner access required" },
+            });
+          return route.fulfill({
+            json: [parentId, otherId]
+              .map((target) => ({
+                user_id: target,
+                email: user(target).email,
+                role: levelFor(target)?.role || null,
+                version: levelFor(target)?.version || 0,
+                email_verified: true,
+                adult_setup: accounts.has(target),
+              }))
+              .filter((row) => row.email.includes(body.search_text || "")),
+          });
+        }
+        if (url.pathname.endsWith("/rpc/assign_account_role")) {
+          if (
+            levelFor(id)?.role !== "owner" ||
+            body.target_user === id ||
+            rejectRoleChange ||
+            levelFor(body.target_user)?.version !== body.expected_version
+          ) {
+            rejectRoleChange = false;
+            return route.fulfill({
+              status: 409,
+              json: { message: "Access change rejected" },
+            });
+          }
+          counts.roleWrites++;
+          levels.set(body.target_user, {
+            role: body.new_role,
+            version: body.expected_version + 1,
+          });
+          return route.fulfill({
+            json: {
+              user_id: body.target_user,
+              ...levels.get(body.target_user),
+            },
+          });
+        }
+        if (url.pathname.includes("/account_roles"))
+          return route.fulfill({ json: levelFor(id) ? [levelFor(id)] : [] });
         if (url.pathname.includes("/profile_settings"))
           return route.fulfill({ json: { under18_enabled: under18Enabled } });
         if (url.pathname.includes("/member_accounts"))
@@ -169,6 +242,10 @@ function fixture(under18Enabled = true, signupEnabled = true) {
     counts,
     players,
     accounts,
+    levels,
+    rejectRole: () => {
+      rejectRoleChange = true;
+    },
     rejectSave: () => {
       failNextSave = true;
     },
@@ -540,3 +617,95 @@ test("private pilot accepts a verified email session, removes URL credentials an
     page.getByRole("button", { name: "Sign in securely" }),
   ).toBeVisible();
 });
+
+test("Owner manages five levels with protected self access, confirmation, cancellation, failure and refresh persistence", async ({
+  page,
+  context,
+}, testInfo) => {
+  const backend = fixture(false, false, "owner");
+  await backend.install(context);
+  backend.accounts.set(otherId, {
+    user_id: otherId,
+    account_type: "adult",
+    privacy_version: "profile-pilot-2026-10",
+  });
+  await signIn(page);
+  await expect(
+    page.getByRole("heading", { name: "Owner", exact: true }),
+  ).toBeVisible();
+  await page
+    .getByRole("button", { name: "Manage account access", exact: true })
+    .click();
+  await expect(
+    page.getByLabel("Account level for fictional-parent@example.test", {
+      exact: true,
+    }),
+  ).toBeDisabled();
+  const target = page.getByLabel(
+    "Account level for fictional-adult@example.test",
+    { exact: true },
+  );
+  await target.selectOption("coach");
+  await page
+    .getByRole("button", { name: "Review access change" })
+    .nth(1)
+    .click();
+  await page.getByRole("button", { name: "Keep current level" }).click();
+  expect(backend.counts.roleWrites).toBe(0);
+  await target.selectOption("manager");
+  await page
+    .getByRole("button", { name: "Review access change" })
+    .nth(1)
+    .click();
+  backend.rejectRole();
+  await page.getByRole("button", { name: "Confirm account level" }).click();
+  await expect(page.getByRole("dialog").getByRole("alert")).toContainText(
+    "not confirmed",
+  );
+  expect(backend.counts.roleWrites).toBe(0);
+  await page.getByRole("button", { name: "Confirm account level" }).dblclick();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  expect(backend.counts.roleWrites).toBe(1);
+  await expect(target).toHaveValue("manager");
+  await page.reload();
+  await page
+    .getByRole("button", { name: "Manage account access", exact: true })
+    .click();
+  await expect(target).toHaveValue("manager");
+  await page.getByLabel("Find an account by email").fill("fictional-adult");
+  await page.getByRole("button", { name: "Search accounts" }).click();
+  await expect(page.locator(".access-person")).toHaveCount(1);
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+  const checks = await new AxeBuilder({ page })
+    .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+    .analyze();
+  expect(checks.violations).toEqual([]);
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.screenshot({
+    path: `artifacts/account-levels-${testInfo.project.name}.png`,
+    fullPage: true,
+  });
+});
+for (const role of ["manager", "coach", "parent", "athlete"] as const) {
+  test(`${role} sees the correct level without Owner access controls`, async ({
+    page,
+    context,
+  }) => {
+    const backend = fixture(false, false, role);
+    await backend.install(context);
+    await signIn(page);
+    await expect(
+      page.getByRole("heading", {
+        name: role[0].toUpperCase() + role.slice(1),
+        exact: true,
+      }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "Manage account access", exact: true }),
+    ).toHaveCount(0);
+  });
+}
