@@ -1034,7 +1034,7 @@ for (const [role, heading] of [
   ["manager", "Keep the team moving."],
   ["coach", "Build the next great practice."],
 ] as const) {
-  test(`${role} receives the matching authenticated workspace and cannot use demo selection to elevate permissions`, async ({
+  test(`${role} receives the matching authenticated workspace and old preview links do not elevate permissions`, async ({
     page,
     context,
   }) => {
@@ -1051,7 +1051,7 @@ for (const [role, heading] of [
     await page.goto("./#demo-owner");
     await expect(
       page.getByRole("heading", {
-        name: "Your platform. Your playbook.",
+        name: heading,
         exact: true,
       }),
     ).toBeVisible();

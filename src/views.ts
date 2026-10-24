@@ -1,22 +1,4 @@
 import type { AccountRole } from "./roles";
-export type PreviewView =
-  "owner" | "manager" | "coach" | "parent" | "athlete" | "junior";
-export const PREVIEW_VIEWS: PreviewView[] = [
-  "owner",
-  "manager",
-  "coach",
-  "parent",
-  "athlete",
-  "junior",
-];
-export const VIEW_LABELS: Record<PreviewView, string> = {
-  owner: "Owner",
-  manager: "Manager",
-  coach: "Coach",
-  parent: "Parent",
-  athlete: "Adult athlete",
-  junior: "Junior athlete",
-};
 export const isDemoPage = (page: string) =>
   [
     "demo",
@@ -26,17 +8,15 @@ export const isDemoPage = (page: string) =>
     "library",
     "progress",
     "family-demo",
-  ].includes(page) || page.startsWith("demo-");
+  ].includes(page);
 export function navigationFor(
   page: string,
   role: AccountRole | null,
 ): [string, string][] {
   if (isDemoPage(page))
     return [
-      ["demo", "Demo views"],
-      ["today", "Demo training"],
-      ["library", "Sample drills"],
-      ["progress", "Demo history"],
+      ["demo", "Guided demo"],
+      ["home", "Back to website"],
     ];
   if (
     [
@@ -69,7 +49,6 @@ export function navigationFor(
   }
   return [
     ["home", "The platform"],
-    ["demo", "Try the demo"],
     ["membership", "Memberships"],
   ];
 }

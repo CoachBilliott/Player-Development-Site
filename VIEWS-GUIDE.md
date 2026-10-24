@@ -1,32 +1,36 @@
-# Public, demo and private views
+# The website, one customer demo, private workspaces
 
-Open https://coachbilliott.github.io/Player-Development-Site/#demo to explore every fictional view. No login is required. The public homepage links to the demo and memberships; it does not advertise a free full drill library. Existing demo training/library/progress routes remain explicitly sample-data experiences.
+The main website is https://coachbilliott.github.io/Player-Development-Site/. It explains Player Development, family and individual training, membership plans and sign-in. Every public **Try the demo** button leads to the same customer experience at `#demo`.
 
-| View           | Route        | Working experience                                                                                                                                          |
-| -------------- | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Public         | `#home`      | Platform overview, demo entry, membership information and member sign-in.                                                                                   |
-| Demo hub       | `#demo`      | Six clearly fictional role previews and guided sample training.                                                                                             |
-| Owner          | `#workspace` | Account-level management, all accessible staff content, upload entry and launch readiness.                                                                  |
-| Manager        | `#workspace` | Content overview and editing across coaches; no account directory or level grants.                                                                          |
-| Coach          | `#workspace` | Own-content overview, publishing and editing; no private household access.                                                                                  |
-| Parent         | `#workspace` | Private family roster, add/edit profiles, per-athlete training and permission/review controls.                                                              |
-| Adult Athlete  | `#workspace` | One individual profile, its next illustrative practice and history; standalone or family-linked.                                                            |
-| Junior Athlete | `#workspace` | A simpler individual training view when an eligible junior connection exists; parent approval remains required. Real junior enrollment/access stays closed. |
+## One guided demo
 
-Real workspace selection uses the authenticated server-assigned level, never a browser switch. The junior presentation also uses the loaded private athlete age/context. `#access` is Owner-only. Staff do not automatically gain private family/player access. `#account` keeps account setup, recovery, privacy and sign-out controls. Demo routes never change these real grants.
+Visitors choose **Parent & family** or **Solo athlete** within the same demo. There is no public staff-role gallery or separate Owner/Manager/Coach demonstration.
 
-## Fictional previews
+- Parent & family: choose or add a fixed fictional athlete, decide who records practice, try that athlete's screen within the same journey, and return to approve the report or ask for another practice.
+- Solo athlete: meet fictional Morgan, follow a guided sample workout, and see self-reported practice history without parent approval.
+- Exit demo returns to the public website. Sample data stays in this browser under `pd-family-demo-v1` and is never imported into real accounts. No real child accounts, real users or payments are created.
 
-Use `#demo-owner`, `#demo-manager`, `#demo-coach`, `#demo-parent`, `#demo-athlete` or `#demo-junior`. Owner preview role changes are a local screen simulation that resets on refresh. The Coach preview uses browser-only sample uploads. Parent/Adult/Junior previews reuse the fictional family engine and its separate local storage. In Parent preview, select Casey and allow self-recording; Junior preview can then report practice and the parent can review it. Each athlete sees only their own sample history. All people are fictional; no preview grants staff permissions or creates child accounts.
+The older guided-training, sample-drill and demo-history routes remain internal sample activities. They are not a paid training library. Old family/consumer preview links resolve to the single `#demo` entry. Old staff preview links resolve to `#workspace`, which requires real sign-in.
+
+## Real signed-in workspaces
+
+| Account        | Route        | Working experience                                                                                                                                     |
+| -------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Owner          | `#workspace` | Account-level management, all accessible staff content, upload entry and launch readiness.                                                             |
+| Manager        | `#workspace` | Content overview and editing across coaches; no account directory or level grants.                                                                     |
+| Coach          | `#workspace` | Own-content overview, publishing and editing; no private household access.                                                                             |
+| Parent         | `#workspace` | Private family roster, profiles, per-athlete training, permission and review controls.                                                                 |
+| Adult Athlete  | `#workspace` | One profile and its private illustrative practice/history, standalone or family-linked.                                                                |
+| Junior Athlete | `#workspace` | Simpler individual training when an eligible junior connection exists. Real junior enrollment/access remains closed pending verified guardian consent. |
+
+Workspace selection uses the authenticated, server-assigned level. Junior presentation uses the private athlete age/context. `#access` requires Owner access. `#account` keeps setup, recovery, privacy and sign-out. Staff do not automatically gain private family data. Staff publishing requires a real authorized login; the optional browser-local practice editor is available only within the authenticated staff studio.
 
 ## Protected content
 
-Migration 005 has been applied once after migrations 001–004 to the dedicated project. Do not rerun it. Existing and new shared uploads default to `member_only`. Owners/Managers can review protected content across coaches; Coaches can review their own. Anonymous users and unpaid Parent/Athlete accounts cannot read protected metadata or request signed media URLs. The storage bucket remains private. Staff must explicitly choose **Public demo sample** to make a shared resource free. Only public samples enter fictional demo training/library pages, including when staff are signed in.
+Migrations 001–005 are already applied to the dedicated project; do not rerun them. Shared uploads default to `member_only`. Owners/Managers review across coaches; Coaches review their own protected resources. Anonymous/unpaid Parent/Athlete accounts cannot read protected metadata or request signed media. The bucket stays private. Explicit **Public demo sample** is the only free shared-content choice.
 
-There is no paid entitlement yet. Protected means staff review only until packages, billing and entitlement enforcement are implemented and tested. The member training-library view explains this state and does not pretend a subscription exists. The fixed illustrative private pilot practice catalog remains separate from paid content.
+Protected currently means staff review only. Paid subscriptions, package entitlements and checkout are not active. The member library explains that state; private pilot sample practice is separate from paid content. Signed media URLs expire after five minutes; previously issued bearer links last until expiry. Resource state is isolated by authenticated identity and role and cleared on sign-out, and private data does not enter demo storage or service-worker cache.
 
-Signed media URLs expire after five minutes. Existing bearer URLs remain usable until expiry; access restrictions prevent future issuance rather than implementing DRM. Refresh the library to renew expired previews. The client isolates fetched resources by authenticated identity and role, clears signed-in data on sign-out, and never stores private library data in demo storage or the service worker cache.
+## Before general launch
 
-## Remaining launch work
-
-Define packages, recurring billing and failed-payment/cancellation entitlements; complete reviewed real training and media rights; verify email/recovery and actual staff accounts on physical phones; finish verified guardian consent, age transition, retention and support processes. Public registration and real child enrollment remain closed. Nothing here activates payments or guarantees athletic, scholarship or recruiting outcomes.
+Define packages and recurring billing, failed-payment and cancellation entitlements; complete reviewed real training and media rights; verify live email/recovery, physical-phone video playback and actual staff access; finish verified parental consent, age transition, retention and support. Public registration and real child enrollment remain closed. No athletic, scholarship or recruiting outcome is guaranteed.

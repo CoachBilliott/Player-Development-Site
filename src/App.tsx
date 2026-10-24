@@ -59,22 +59,32 @@ import { InstallApp } from "./InstallApp";
 import { MemberAccountPage } from "./MemberAccount";
 import { FamilyDemo } from "./FamilyDemo";
 import {
-  DemoHub,
   Workspace,
   AccessWorkspace,
   WorkspaceLibrary,
   LaunchReadiness,
-  ViewPreview,
-  OwnerAccessPreview,
 } from "./Workspaces";
-import {
-  navigationFor,
-  isDemoPage,
-  PREVIEW_VIEWS,
-  type PreviewView,
-} from "./views";
+import { navigationFor, isDemoPage } from "./views";
 const safeHash = () => {
   const value = window.location.hash.slice(1);
+  const staffPreviews = [
+    "demo-owner",
+    "demo-manager",
+    "demo-coach",
+    "demo-owner-access",
+    "demo-launch",
+  ];
+  const consumerPreviews = [
+    "family-demo",
+    "demo-parent",
+    "demo-athlete",
+    "demo-junior",
+  ];
+  if (staffPreviews.includes(value) || consumerPreviews.includes(value)) {
+    const target = staffPreviews.includes(value) ? "workspace" : "demo";
+    window.history.replaceState(null, "", `#${target}`);
+    return target;
+  }
   return [
     "home",
     "onboarding",
@@ -92,9 +102,6 @@ const safeHash = () => {
     "access",
     "member-library",
     "launch",
-    "demo-owner-access",
-    "demo-launch",
-    ...PREVIEW_VIEWS.map((view) => `demo-${view}`),
   ].includes(value)
     ? value
     : "home";
@@ -315,7 +322,7 @@ export default function App() {
           ? "PRIVATE WORKSPACE"
           : demoPage
             ? "SAMPLE-DATA DEMO"
-            : "PLAYER DEVELOPMENT · PREVIEW"}{" "}
+            : "PLAYER DEVELOPMENT"}{" "}
         <span className="strip-divider">/</span>
         <span>
           {privatePage
@@ -325,7 +332,11 @@ export default function App() {
               : "American football · More sports in the future"}
         </span>
         <span className="strip-note">
-          {privatePage ? "Public demo stays separate" : "No account needed"}{" "}
+          {privatePage
+            ? "Your private workspace"
+            : demoPage
+              ? "No account needed"
+              : "Invite-only pilot"}{" "}
           <ArrowUpRight size={13} />
         </span>
       </div>
@@ -351,20 +362,8 @@ export default function App() {
             >
               {shared.signedIn ? "My workspace" : "Member access"}
             </a>
-            <a
-              className="header-demo"
-              href={profile ? "#today" : "#onboarding"}
-            >
-              {profile ? (
-                <>
-                  <span className="avatar mini">{profile.name[0]}</span>
-                  {profile.name}’s demo
-                </>
-              ) : (
-                <>
-                  Try the demo <ArrowUpRight size={17} />
-                </>
-              )}
+            <a className="header-demo" href="#demo">
+              Try the demo <ArrowUpRight size={17} />
             </a>
             <button
               className="icon-button mobile-menu"
@@ -427,7 +426,7 @@ export default function App() {
             onCancel={() => go(profile ? "today" : "home")}
           />
         ) : page === "demo" ? (
-          <DemoHub />
+          <FamilyDemo />
         ) : page === "workspace" ? (
           <Workspace shared={shared} />
         ) : page === "access" ? (
@@ -439,23 +438,6 @@ export default function App() {
           />
         ) : page === "launch" ? (
           <LaunchReadiness shared={shared} />
-        ) : page === "demo-owner-access" ? (
-          <OwnerAccessPreview />
-        ) : page === "demo-launch" ? (
-          <LaunchReadiness demo />
-        ) : page.startsWith("demo-") ? (
-          <ViewPreview
-            view={page.slice(5) as PreviewView}
-            editor={{
-              onPublish: publish,
-              onUpdate: updateResource,
-              onRemove: removeResource,
-              resources: state.custom,
-              lockedIds: state.run?.drillIds,
-            }}
-          />
-        ) : page === "family-demo" ? (
-          <FamilyDemo />
         ) : page === "account" ? (
           <MemberAccountPage shared={shared} />
         ) : page === "home" ? (
@@ -522,10 +504,9 @@ export default function App() {
             <a href="#membership">
               Future memberships <ArrowUpRight size={14} />
             </a>
-            <a href="#home">About the demo</a>
+            <a href="#home">About Player Development</a>
             <a href="#account">Member access</a>
-            <a href="#family-demo">Try the family demo</a>
-            <a href="#demo">Explore every demo view</a>
+            <a href="#demo">Try the demo</a>
             <a href="#coach">Staff sign-in</a>
             <a href="#install">
               Get the app <ArrowUpRight size={14} />
@@ -712,7 +693,7 @@ function Home() {
             goals.
           </p>
           <div className="actions">
-            <a className="button" href="#onboarding">
+            <a className="button" href="#demo">
               Try the demo <ArrowRight size={19} />
             </a>
             <button
@@ -727,9 +708,8 @@ function Home() {
             </button>
           </div>
           <p className="member-home-link">
-            One platform, different spaces:{" "}
-            <a href="#demo">Explore all demo views</a>. Ready for your own
-            account?{" "}
+            Training for families and individual athletes. Already have an
+            account?
             <a href="#account">
               Member access <ArrowUpRight size={14} />
             </a>
@@ -737,7 +717,7 @@ function Home() {
           <div className="hero-proof">
             <ShieldCheck size={19} />
             <p>
-              Fictional players. No account needed.
+              Individual training. Family support.
               <span>Parent-managed for all players under 18.</span>
             </p>
           </div>
@@ -758,7 +738,7 @@ function Home() {
               {
                 n: "01",
                 title: "Choose your player",
-                text: "Start with a fictional profile. Adjust age, position, experience, and a primary goal.",
+                text: "Set up an individual athlete or manage your family’s players. Match training to age, position, experience and goals.",
                 icon: Users,
               },
               {
@@ -800,8 +780,8 @@ function Home() {
               alongside them. Older players get a structured starting point for
               their experience and goals.
             </p>
-            <a className="text-button" href="#onboarding">
-              Meet the sample players <ArrowRight size={17} />
+            <a className="text-button" href="#demo">
+              Try parent-managed training <ArrowRight size={17} />
             </a>
           </div>
           <div className="safeguard-list">
@@ -818,8 +798,8 @@ function Home() {
               },
               {
                 icon: Users,
-                title: "Private by design in this demo",
-                text: "Fictional profiles. No public profiles or direct messages.",
+                title: "Private by design",
+                text: "Separate athlete profiles. No public rosters or direct messages.",
               },
             ].map((item) => (
               <div key={item.title}>
@@ -853,9 +833,9 @@ function Home() {
             </a>
           </div>
           <p className="home-disclaimer">
-            Sample-data prototype. All training content is illustrative and
-            pending qualified review. Practice records show participation, not
-            proven improvement. Scholarship and recruiting outcomes are never
+            Invite-only pilot. Training content is illustrative and pending
+            qualified review. Practice records show participation, not proven
+            improvement. Scholarship and recruiting outcomes are never
             guaranteed.
           </p>
         </section>
@@ -1851,7 +1831,7 @@ function Membership() {
         offerings.
       </Notice>
       <div className="centered">
-        <a href="#onboarding" className="button">
+        <a href="#demo" className="button">
           Explore the free sample demo <ArrowRight size={18} />
         </a>
       </div>

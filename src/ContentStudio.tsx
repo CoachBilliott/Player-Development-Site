@@ -8,7 +8,7 @@ import { ROLE_LABELS } from "./roles";
 type Props = ComponentProps<typeof Admin> & { shared: SharedState };
 export function ContentStudio({ shared, ...local }: Props) {
   const [selectedScope, setScope] = useState<"local" | "shared" | null>(null);
-  const scope = selectedScope ?? (shared.configured ? "shared" : "local");
+  const scope = selectedScope ?? "shared";
   const [nextScope, setNextScope] = useState<"local" | "shared" | null>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,65 +23,67 @@ export function ContentStudio({ shared, ...local }: Props) {
     );
   return (
     <>
-      <div className="page narrow publishing-mode">
-        <div
-          className="scene-tabs"
-          role="group"
-          aria-label="Publishing destination"
-        >
-          <button
-            aria-pressed={scope === "shared"}
-            onClick={() => {
-              if (scope !== "shared") setNextScope("shared");
-            }}
-          >
-            Shared website
-          </button>
-          <button
-            aria-pressed={scope === "local"}
-            onClick={() => {
-              if (scope !== "local") setNextScope("local");
-            }}
-          >
-            This browser
-          </button>
-        </div>
-        <p className="upload-destination" role="status">
-          {scope === "shared"
-            ? "Staff publishing: protected training by default. Free demo samples are a separate choice."
-            : "Practice mode: uploads stay in this browser. Your partner will not see them."}
-        </p>
-        {nextScope && (
+      {shared.coach && (
+        <div className="page narrow publishing-mode">
           <div
-            className="discard-box"
+            className="scene-tabs"
             role="group"
-            aria-label="Confirm publishing destination"
+            aria-label="Publishing destination"
           >
-            <p>
-              Switch publishing destination? Unsaved resource drafts will be
-              discarded. Published resources stay saved.
-            </p>
-            <div className="actions">
-              <button
-                className="button"
-                onClick={() => {
-                  setScope(nextScope);
-                  setNextScope(null);
-                }}
-              >
-                Switch destination
-              </button>
-              <button
-                className="button secondary"
-                onClick={() => setNextScope(null)}
-              >
-                Keep editing
-              </button>
-            </div>
+            <button
+              aria-pressed={scope === "shared"}
+              onClick={() => {
+                if (scope !== "shared") setNextScope("shared");
+              }}
+            >
+              Shared website
+            </button>
+            <button
+              aria-pressed={scope === "local"}
+              onClick={() => {
+                if (scope !== "local") setNextScope("local");
+              }}
+            >
+              This browser
+            </button>
           </div>
-        )}
-      </div>
-      {scope === "local" ? (
+          <p className="upload-destination" role="status">
+            {scope === "shared"
+              ? "Staff publishing: protected training by default. Free demo samples are a separate choice."
+              : "Practice mode: uploads stay in this browser. Your partner will not see them."}
+          </p>
+          {nextScope && (
+            <div
+              className="discard-box"
+              role="group"
+              aria-label="Confirm publishing destination"
+            >
+              <p>
+                Switch publishing destination? Unsaved resource drafts will be
+                discarded. Published resources stay saved.
+              </p>
+              <div className="actions">
+                <button
+                  className="button"
+                  onClick={() => {
+                    setScope(nextScope);
+                    setNextScope(null);
+                  }}
+                >
+                  Switch destination
+                </button>
+                <button
+                  className="button secondary"
+                  onClick={() => setNextScope(null)}
+                >
+                  Keep editing
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+      {scope === "local" && shared.coach ? (
         <Admin key="local" {...local} />
       ) : !shared.configured ? (
         <main className="page narrow">
@@ -93,10 +95,9 @@ export function ContentStudio({ shared, ...local }: Props) {
             </p>
           </div>
           <Notice>
-            No shared service is connected yet. The “This browser” editor works
-            now, but its files and edits stay on this device. The project owner
-            must finish the separate shared-publishing setup before this
-            destination can accept uploads.
+            The staff content service could not be connected. Upload tools
+            require an authorized staff account. Reconnect the service before
+            publishing; the customer training demo stays available separately.
           </Notice>
           {shared.error && (
             <p className="form-error" role="alert">
@@ -162,12 +163,6 @@ export function ContentStudio({ shared, ...local }: Props) {
               registration.
             </p>
           </form>
-          <button
-            className="button secondary practice-upload"
-            onClick={() => setScope("local")}
-          >
-            Try a practice upload without signing in
-          </button>
           {shared.signedIn && (
             <button
               className="text-button"

@@ -244,21 +244,29 @@ export function AthleteTraining({
               <span>
                 <strong>{state.workouts.length}</strong> reported
               </span>
-              <span>
-                <strong>
-                  {
-                    state.workouts.filter((w) => w.status === "pending_parent")
-                      .length
-                  }
-                </strong>{" "}
-                awaiting review
-              </span>
-              <span>
-                <strong>
-                  {state.workouts.filter((w) => w.status === "approved").length}
-                </strong>{" "}
-                parent approved
-              </span>
+              {state.is_family && (
+                <>
+                  <span>
+                    <strong>
+                      {
+                        state.workouts.filter(
+                          (w) => w.status === "pending_parent",
+                        ).length
+                      }
+                    </strong>{" "}
+                    awaiting review
+                  </span>
+                  <span>
+                    <strong>
+                      {
+                        state.workouts.filter((w) => w.status === "approved")
+                          .length
+                      }
+                    </strong>{" "}
+                    parent approved
+                  </span>
+                </>
+              )}
             </div>
             {!state.workouts.length ? (
               <p>No workouts recorded for this athlete yet.</p>
@@ -313,9 +321,11 @@ export function AthleteTraining({
         </>
       )}
       <Notice>
-        Practice is self-reported; a parent approval records their review, not
-        proof of improved athletic ability. Sample activities are illustrative,
-        noncontact and pending qualified coaching review.
+        {state?.is_family
+          ? "Practice is self-reported; a parent approval records their review, not proof of improved athletic ability."
+          : "Practice is self-reported, not proof of improved athletic ability."}{" "}
+        Sample activities are illustrative, noncontact and pending qualified
+        coaching review.
       </Notice>
       {permission !== null && state && (
         <Modal

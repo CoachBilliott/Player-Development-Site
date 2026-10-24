@@ -31,14 +31,18 @@ test("family athletes have separate permissions, reports and parent approvals th
   await page
     .getByRole("button", { name: "Add fictional athlete Jordan" })
     .click();
-  await page.getByRole("button", { name: "Athlete view", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Try athlete's screen", exact: true })
+    .click();
   await expect(
     page.getByRole("button", { name: "Start sample workout", exact: true }),
   ).toBeDisabled();
   await expect(
     page.getByRole("group", { name: "Fictional athletes" }).getByRole("button"),
   ).toHaveCount(1);
-  await page.getByRole("button", { name: "Parent view", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Parent & family", exact: true })
+    .click();
   await page
     .getByRole("button", { name: "Allow athlete self-recording" })
     .click();
@@ -52,7 +56,9 @@ test("family athletes have separate permissions, reports and parent approvals th
   await page
     .getByRole("button", { name: "Save athlete permission" })
     .dblclick();
-  await page.getByRole("button", { name: "Athlete view", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Try athlete's screen", exact: true })
+    .click();
   await expect(
     page.getByRole("heading", { name: "Jordan’s workouts" }),
   ).toBeVisible();
@@ -63,7 +69,9 @@ test("family athletes have separate permissions, reports and parent approvals th
   await expect(
     page.getByRole("button", { name: "Approve workout", exact: true }),
   ).toHaveCount(0);
-  await page.getByRole("button", { name: "Parent view", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Parent & family", exact: true })
+    .click();
   await page
     .getByRole("button", { name: "Approve workout", exact: true })
     .click();
@@ -90,7 +98,9 @@ test("family athletes have separate permissions, reports and parent approvals th
   await page.getByRole("button", { name: /^Jordan/ }).click();
   await page.getByRole("button", { name: "Turn self-recording off" }).click();
   await page.getByRole("button", { name: "Save athlete permission" }).click();
-  await page.getByRole("button", { name: "Athlete view", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Try athlete's screen", exact: true })
+    .click();
   await expect(
     page.getByRole("button", { name: "Start sample workout", exact: true }),
   ).toBeDisabled();
@@ -99,9 +109,7 @@ test("individual athletes self-report without parent approval; unfinished workou
   page,
 }) => {
   await page.goto("./#family-demo");
-  await page
-    .getByRole("button", { name: "Individual athlete", exact: true })
-    .click();
+  await page.getByRole("button", { name: "Solo athlete", exact: true }).click();
   await page
     .getByRole("button", { name: "Start sample workout", exact: true })
     .click();
@@ -127,15 +135,21 @@ test("individual athletes self-report without parent approval; unfinished workou
   await expect(
     page.getByRole("button", { name: "Approve workout", exact: true }),
   ).toHaveCount(0);
-  await page.getByRole("button", { name: "Parent view", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Parent & family", exact: true })
+    .click();
   await page.getByRole("button", { name: /^Casey/ }).click();
   await page
     .getByRole("button", { name: "Allow athlete self-recording" })
     .click();
   await page.getByRole("button", { name: "Save athlete permission" }).click();
-  await page.getByRole("button", { name: "Athlete view", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Try athlete's screen", exact: true })
+    .click();
   await finishFamilyWorkout(page);
-  await page.getByRole("button", { name: "Parent view", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Parent & family", exact: true })
+    .click();
   await page
     .getByRole("button", { name: "Ask to practice again", exact: true })
     .click();

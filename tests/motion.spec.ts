@@ -98,16 +98,17 @@ test("device reduced motion gives a static, usable training experience", async (
     .getByRole("main")
     .getByRole("link", { name: "Try the demo", exact: true })
     .click();
-  await page.getByRole("button", { name: /Morgan/ }).click();
-  await page.getByRole("button", { name: "See my training" }).click();
+  await page.getByRole("button", { name: "Solo athlete", exact: true }).click();
   await expect(
-    page.getByRole("heading", { name: "Today’s training", level: 1 }),
+    page.getByRole("heading", { name: "Morgan’s workouts", exact: true }),
   ).toBeVisible();
-  await page.getByRole("button", { name: "Start today’s session" }).click();
+  await page
+    .getByRole("button", { name: "Start sample workout", exact: true })
+    .click();
   await page.getByRole("dialog").getByRole("checkbox").check();
-  await page.getByRole("button", { name: "Begin guided session" }).click();
+  await page.getByRole("button", { name: "Begin sample practice" }).click();
   await expect(
-    page.getByRole("button", { name: "Show practice steps" }),
+    page.getByRole("button", { name: "Show workout steps" }),
   ).toBeVisible();
   expect(
     await page
@@ -115,8 +116,10 @@ test("device reduced motion gives a static, usable training experience", async (
       .evaluate((el) => getComputedStyle(el).animationName),
   ).toBe("none");
   await page.reload();
+  await page.getByRole("button", { name: "Solo athlete", exact: true }).click();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
   await expect(
-    page.getByRole("button", { name: "Show practice steps" }),
+    page.getByText("No workouts recorded for this athlete yet."),
   ).toBeVisible();
   await expect(page.locator(".experience")).toHaveAttribute(
     "data-motion",

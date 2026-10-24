@@ -1,6 +1,7 @@
 import { disableBackend } from "./backendFixture";
 import { test, expect, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import { openLocalStudio } from "./contentFixture";
 async function onboard(page: Page, name = "Jordan") {
   await page.goto("./#onboarding");
   await page.getByRole("button", { name: new RegExp(name) }).click();
@@ -230,7 +231,7 @@ test("library combines filters, clears empty results, and previews age restricti
   await expect(page.locator(".drill-card")).toHaveCount(10);
 });
 async function fillResource(page: Page) {
-  await page.goto("./#coach");
+  await openLocalStudio(page);
   await page
     .getByLabel("Choose a video or file", { exact: true })
     .setInputFiles({
@@ -252,7 +253,7 @@ test("phone upload reveals details, keeps a valid file after a canceled or rejec
 }, info) => {
   if (info.project.name === "phone")
     await page.setViewportSize({ width: 320, height: 760 });
-  await page.goto("./#coach");
+  await openLocalStudio(page);
   await expect(page.getByLabel("Resource title")).toHaveCount(0);
   await page.getByText("How uploads work", { exact: true }).click();
   await expect(page.getByText(/Maximum 12 MB per file/)).toBeVisible();
@@ -475,7 +476,7 @@ test("all screens fit mobile and navigation is keyboard accessible", async ({
       .getByRole("link", { name: "Staff sign-in" })
       .click();
     await expect(
-      page.getByRole("heading", { name: "Coach content studio" }),
+      page.getByRole("heading", { name: "Shared publishing needs setup." }),
     ).toBeVisible();
     await expect(
       page.getByRole("button", { name: "Open navigation" }),
@@ -654,6 +655,10 @@ test("uploaded resource edits preserve its file, support cancellation, and persi
     page.getByText("Resource changes saved.", { exact: true }),
   ).toBeVisible();
   await page.reload();
+  await page.getByRole("button", { name: "This browser", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Switch destination", exact: true })
+    .click();
   await page
     .getByRole("button", { name: "Edit Updated original paper practice" })
     .click();
@@ -742,7 +747,7 @@ test("replacement-file failure preserves the published attachment and removal re
   ).toBe(0);
 });
 
-test("shared publishing is explicitly unavailable until connected, and switching destinations can be canceled", async ({
+test("staff publishing destinations can be switched or canceled without publishing a draft", async ({
   page,
 }) => {
   await fillResource(page);
@@ -760,7 +765,8 @@ test("shared publishing is explicitly unavailable until connected, and switching
     .getByRole("button", { name: "Switch destination", exact: true })
     .click();
   await expect(
-    page.getByRole("heading", { name: "Shared publishing needs setup." }),
-  ).toBeVisible();
+    page.getByRole("button", { name: "Shared website", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByLabel("Resource title")).toHaveCount(0);
   await expect(page.getByRole("button", { name: /Publish to/ })).toHaveCount(0);
 });

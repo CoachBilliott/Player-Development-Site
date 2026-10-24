@@ -12,9 +12,9 @@ Open [Coach studio](https://coachbilliott.github.io/Player-Development-Site/#coa
 
 New shared content defaults to protected staff review. Only an explicit Public demo sample is visible to website visitors. Paid member access is not active. Do not upload private player information or real children's information. Content remains illustrative pending qualified review.
 
-## Practice first without signing in
+## Optional local practice for signed-in staff
 
-Choose **Try a practice upload without signing in**, or switch to **This browser** and confirm. This is a local-only demo: the attachment and published resource stay in that browser. Your partner cannot see this version. Clearing browser data can remove it. Switching destinations discards an unsaved draft only after confirmation; it does not move files between destinations.
+After signing in with staff access, switch to **This browser** and confirm. This is a local-only staff practice editor: the attachment and published resource stay in that browser. Your partner cannot see this version. Clearing browser data can remove it. Switching destinations discards an unsaved draft only after confirmation; it does not move files between destinations.
 
 ## Edit or remove something
 

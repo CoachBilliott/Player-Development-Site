@@ -1,4 +1,4 @@
-import { useState, type ComponentProps } from "react";
+import { useState } from "react";
 import {
   ArrowRight,
   BookOpen,
@@ -6,94 +6,23 @@ import {
   ClipboardCheck,
   FileUp,
   LockKeyhole,
-  ShieldCheck,
   Users,
 } from "lucide-react";
 import { Tag, Notice, Modal, AssetPreview } from "./components";
-import { ROLE_LABELS, type AccountRole, isStaff } from "./roles";
-import { PREVIEW_VIEWS, VIEW_LABELS, type PreviewView } from "./views";
+import { ROLE_LABELS, isStaff } from "./roles";
 import type { SharedState } from "./useSharedContent";
 import { MemberAccountPage } from "./MemberAccount";
 import { AccountAccess } from "./AccountAccess";
-import { FamilyDemo } from "./FamilyDemo";
-import { Admin } from "./Admin";
 import type { Drill } from "./model";
 
-const descriptions: Record<PreviewView, string> = {
+const descriptions = {
   owner:
     "Run the platform. Manage staff access and review content, with launch settings in one place.",
   manager:
     "Keep training content organized and ready. Manage resources across the coaching team.",
   coach:
     "Build clear practices. Upload, preview and maintain your own resources.",
-  parent:
-    "One family roster. Separate training, permissions and parent review for every athlete.",
-  athlete:
-    "Your own training space. Follow your session and keep an honest practice history.",
-  junior:
-    "A simpler screen for younger athletes. One next practice, with their parent in control.",
 };
-export function DemoHub() {
-  return (
-    <main className="page view-hub">
-      <div className="workspace-hero">
-        <Tag>FICTIONAL DEMO · NO SIGN-IN</Tag>
-        <h1 tabIndex={-1}>
-          One platform.
-          <br />
-          <span className="electric-text">A space for everyone.</span>
-        </h1>
-        <p>
-          Take a look from each side. These are working sample views, with
-          fictional people and browser-only demo changes.
-        </p>
-        <div className="actions">
-          <a className="button" href="#onboarding">
-            Try a guided workout <ArrowRight size={18} />
-          </a>
-          <a className="button secondary" href="#home">
-            See the public website
-          </a>
-        </div>
-      </div>
-      <div className="view-grid">
-        {PREVIEW_VIEWS.map((view, i) => (
-          <a
-            className={`view-card view-${view}`}
-            href={`#demo-${view}`}
-            key={view}
-          >
-            <span className="view-number">0{i + 1}</span>
-            <h2>{VIEW_LABELS[view]}</h2>
-            <p>{descriptions[view]}</p>
-            <span className="view-open">
-              Open sample view <ArrowRight size={18} />
-            </span>
-          </a>
-        ))}
-      </div>
-      <Notice>
-        Previewing Owner or Manager here does not grant real permissions. Sign
-        in to open your actual workspace. Real junior enrollment, subscriptions
-        and payments remain closed.
-      </Notice>
-    </main>
-  );
-}
-function PreviewBar({ view }: { view: PreviewView }) {
-  return (
-    <div className="page preview-bar">
-      <a href="#demo">← All demo views</a>
-      <span>
-        <ShieldCheck size={16} />
-        Fictional {VIEW_LABELS[view]} preview · local changes only
-      </span>
-      <a href="#workspace">
-        Open my real workspace <ArrowRight size={15} />
-      </a>
-    </div>
-  );
-}
 function WorkspaceLink({
   href,
   title,
@@ -121,22 +50,17 @@ function WorkspaceLink({
 function StaffDashboard({
   role,
   resources,
-  demo = false,
   pending = false,
 }: {
   role: "owner" | "manager" | "coach";
   resources: Drill[];
-  demo?: boolean;
   pending?: boolean;
 }) {
-  const root = demo ? "#demo-coach" : "#coach";
+  const root = "#coach";
   return (
     <main className={`page workspace-page workspace-${role}`}>
       <div className="workspace-hero">
-        <Tag>
-          {demo ? "FICTIONAL PREVIEW" : "PRIVATE WORKSPACE"} ·{" "}
-          {ROLE_LABELS[role]}
-        </Tag>
+        <Tag>PRIVATE WORKSPACE · {ROLE_LABELS[role]}</Tag>
         <h1 tabIndex={-1}>
           {role === "owner"
             ? "Your platform. Your playbook."
@@ -149,22 +73,20 @@ function StaffDashboard({
           <a className="button" href={root}>
             Upload a workout <FileUp size={18} />
           </a>
-          {!demo && (
+          {
             <a className="button secondary" href="#account">
               Account settings & sign-out
             </a>
-          )}
+          }
         </div>
       </div>
       <div className="workspace-metrics">
         <div>
           <strong>{pending ? "…" : resources.length}</strong>
           <span>
-            {demo
-              ? "Local demo resources"
-              : role === "coach"
-                ? "Your training resources"
-                : "Accessible training resources"}
+            {role === "coach"
+              ? "Your training resources"
+              : "Accessible training resources"}
           </span>
         </div>
         <div>
@@ -192,7 +114,7 @@ function StaffDashboard({
         </WorkspaceLink>
         {role === "owner" ? (
           <WorkspaceLink
-            href={demo ? "#demo-owner-access" : "#access"}
+            href="#access"
             title="Staff & account access"
             icon="access"
           >
@@ -201,7 +123,7 @@ function StaffDashboard({
           </WorkspaceLink>
         ) : (
           <WorkspaceLink
-            href={demo ? "#demo-coach" : "#member-library"}
+            href="#member-library"
             title={
               role === "manager"
                 ? "Team content library"
@@ -214,11 +136,7 @@ function StaffDashboard({
               : "Edit your own resources and keep instructions up to date."}
           </WorkspaceLink>
         )}
-        <WorkspaceLink
-          href={demo ? "#demo-launch" : "#launch"}
-          title="Launch readiness"
-          icon="library"
-        >
+        <WorkspaceLink href="#launch" title="Launch readiness" icon="library">
           See what is still needed for packages, payments, reviewed training and
           junior enrollment.
         </WorkspaceLink>
@@ -247,13 +165,6 @@ function StaffDashboard({
           Counts above come from the resources this view can access.
         </p>
       </section>
-      {demo && (
-        <Notice>
-          This is a fictional role preview, not a staff login. It uses the same
-          local practice editor as the public upload demo. Real permissions are
-          enforced by the backend.
-        </Notice>
-      )}
     </main>
   );
 }
@@ -268,15 +179,15 @@ function Gate({
         <LockKeyhole size={30} />
         <h1 tabIndex={-1}>{title}</h1>
         <p>
-          Your account level controls your workspace. A demo role selector
-          cannot grant real access.
+          Sign in with your account to open your private workspace. Your account
+          level determines which tools are available.
         </p>
         <div className="actions">
           <a className="button" href="#account">
             Member sign-in <ArrowRight size={18} />
           </a>
           <a className="button secondary" href="#demo">
-            Explore the demo views
+            Try the demo
           </a>
         </div>
       </div>
@@ -423,22 +334,13 @@ export function WorkspaceLibrary({ shared }: { shared: SharedState }) {
     </main>
   );
 }
-export function LaunchReadiness({
-  shared,
-  demo = false,
-}: {
-  shared?: SharedState;
-  demo?: boolean;
-}) {
-  if (!demo && !isStaff(shared?.role || null))
+export function LaunchReadiness({ shared }: { shared?: SharedState }) {
+  if (!isStaff(shared?.role || null))
     return <Gate title="Staff access is required." />;
   return (
     <main className="page workspace-page">
       <div className="workspace-hero">
-        <Tag>
-          {demo ? "FICTIONAL PREVIEW" : "PRIVATE STAFF SPACE"} · LAUNCH
-          READINESS
-        </Tag>
+        <Tag>PRIVATE STAFF SPACE · LAUNCH READINESS</Tag>
         <h1 tabIndex={-1}>A clear path to opening day.</h1>
         <p>
           The views are connected. These launch requirements remain open; no
@@ -476,123 +378,9 @@ export function LaunchReadiness({
           </section>
         ))}
       </div>
-      <a href={demo ? "#demo" : "#workspace"} className="button secondary">
+      <a href="#workspace" className="button secondary">
         Back to overview
       </a>
     </main>
-  );
-}
-function DemoAccess() {
-  const [roles, setRoles] = useState(["owner", "manager", "coach"]);
-  const [pending, setPending] = useState<{ i: number; role: string } | null>(
-    null,
-  );
-  return (
-    <main className="page workspace-page">
-      <div className="workspace-hero">
-        <Tag>FICTIONAL OWNER PREVIEW</Tag>
-        <h1 tabIndex={-1}>Staff access, without the guesswork.</h1>
-        <p>
-          Try a role change using fictional adults. Changes stay in this screen
-          and reset on refresh. This never changes real accounts.
-        </p>
-      </div>
-      <section className="panel workspace-section">
-        <h2>Sample team</h2>
-        {["Taylor · Owner", "Riley · Manager", "Drew · Coach"].map(
-          (name, i) => (
-            <div className="demo-access-row" key={name}>
-              <strong>{name.split(" · ")[0]}</strong>
-              <label>
-                Account level for {name.split(" · ")[0]}
-                <select
-                  value={roles[i]}
-                  disabled={i === 0}
-                  onChange={(e) => setPending({ i, role: e.target.value })}
-                >
-                  {["owner", "manager", "coach", "parent", "athlete"].map(
-                    (role) => (
-                      <option value={role} key={role}>
-                        {ROLE_LABELS[role as AccountRole]}
-                      </option>
-                    ),
-                  )}
-                </select>
-              </label>
-              {i === 0 && <small>Your own Owner access is protected.</small>}
-            </div>
-          ),
-        )}
-      </section>
-      {pending && (
-        <Modal
-          title="Confirm fictional role change"
-          onClose={() => setPending(null)}
-        >
-          <p>
-            This demonstrates an Owner confirmation. No real account will
-            change.
-          </p>
-          <div className="actions">
-            <button
-              className="button"
-              onClick={() => {
-                setRoles((old) =>
-                  old.map((r, i) => (i === pending.i ? pending.role : r)),
-                );
-                setPending(null);
-              }}
-            >
-              Confirm demo change
-            </button>
-            <button
-              className="button secondary"
-              onClick={() => setPending(null)}
-            >
-              Keep current role
-            </button>
-          </div>
-        </Modal>
-      )}
-    </main>
-  );
-}
-type AdminProps = ComponentProps<typeof Admin>;
-export function ViewPreview({
-  view,
-  editor,
-}: {
-  view: PreviewView;
-  editor: AdminProps;
-}) {
-  return (
-    <>
-      <PreviewBar view={view} />
-      {view === "parent" || view === "athlete" || view === "junior" ? (
-        <FamilyDemo
-          key={view}
-          focused
-          initialView={
-            view === "parent"
-              ? "parent"
-              : view === "athlete"
-                ? "individual"
-                : "athlete"
-          }
-        />
-      ) : view === "coach" ? (
-        <Admin {...editor} />
-      ) : (
-        <StaffDashboard role={view} resources={editor.resources || []} demo />
-      )}
-    </>
-  );
-}
-export function OwnerAccessPreview() {
-  return (
-    <>
-      <PreviewBar view="owner" />
-      <DemoAccess />
-    </>
   );
 }

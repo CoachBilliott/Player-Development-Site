@@ -2635,3 +2635,55 @@ body {
 .experience.motion-paused .view-card:hover {
   transform: none;
 }
+
+/* One customer demo, reached from the main website. */
+.demo-exit {
+  margin-bottom: 24px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+.demo-walkthrough {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  list-style: none;
+  padding: 0;
+  margin: 24px 0;
+}
+.demo-walkthrough li {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid #345260;
+  border-radius: 12px;
+  color: #d6e8ef;
+  line-height: 1.6;
+  background: #112632;
+}
+.demo-walkthrough span {
+  color: #c8fa50;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+.demo-parent-step {
+  padding: 22px 0;
+  margin-bottom: 18px;
+  max-width: 780px;
+  color: #b8cdda;
+  line-height: 1.8;
+}
+.demo-parent-step .button {
+  margin-top: 10px;
+}
+@media (max-width: 700px) {
+  .demo-walkthrough {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .demo-walkthrough li {
+    padding: 16px;
+  }
+}
