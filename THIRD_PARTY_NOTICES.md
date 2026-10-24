@@ -570,4 +570,4 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 HOMEPAGE TRAINING FOOTAGE
 
-Edited stock video and extracted editorial stills by Airam Dato-on and KoolShooters, via Pexels. Used under the Pexels License (https://www.pexels.com/license/). Source links, permitted use, edits and credit details are included in public/media/credits.txt (served as media/credits.txt on the website). No endorsement or real member relationship is implied.
+Edited stock video and extracted editorial stills by Airam Dato-on, KoolShooters and Creative Ruckus, via Pexels. Used under the Pexels License (https://www.pexels.com/license/). Source links, permitted use, edits and credit details are included in public/media/credits.txt (served as media/credits.txt on the website). No endorsement or real member relationship is implied.

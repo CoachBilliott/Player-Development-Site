@@ -12,6 +12,13 @@ SOURCE 2
 A Person Using an Agility Ladder — KoolShooters / Pexels
 https://www.pexels.com/video/a-person-using-an-agility-ladder-9943213/
 
+SOURCE 3 — FOOTBALL FIELD STILL
+Aerial View of an Empty Football Field — Creative Ruckus / Pexels
+https://www.pexels.com/video/aerial-view-of-an-empty-football-field-32160059/
+The public Pexels search catalog identifies this asset as published under the
+Pexels License. Catalog and media checked October 24, 2026. An extracted frame
+is used as the football-program background. No venue affiliation is implied.
+
 LICENSE
 Pexels License: https://www.pexels.com/license/
 Source and license pages checked October 24, 2026.
@@ -23,11 +30,14 @@ trademark or business identity. The website uses an edited promotional clip;
 the raw source videos are not distributed as a stock collection.
 
 EDITS
-Short excerpts, portrait crops, light color adjustment, audio removal and
+Short excerpts, portrait crops, audio removal and
 concatenation into an eight-second silent loop. MP4 and WebM versions are
-provided for browser compatibility. The still poster is a frame from this edit.
+provided for browser compatibility. The still poster is a frame from this edit. The promotional loop is encoded at
+1080 × 1350 for the large homepage treatment.
 The lower-page practice-detail.jpg is a landscape frame from source 2,
 used as editorial imagery, not as practice instruction.
+football-field.jpg is a landscape frame from source 3. The source recordings
+are not redistributed; only the edited promotional loop and website stills are included.
 
 The application's original diagrams and fictional demo profiles are separate
 from this licensed marketing footage. Training content still requires qualified

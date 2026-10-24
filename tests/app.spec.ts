@@ -47,6 +47,9 @@ test("installed-app shell reopens offline and saves completed sample practice", 
   expect(cached.some((url) => url.endsWith("/media/practice-detail.jpg"))).toBe(
     true,
   );
+  expect(cached.some((url) => url.endsWith("/media/football-field.jpg"))).toBe(
+    true,
+  );
   expect(cached.some((url) => /training-loop\.(mp4|webm)$/.test(url))).toBe(
     false,
   );

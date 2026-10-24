@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import {
-  ArrowDown,
   ArrowLeft,
   ArrowRight,
   ArrowUpRight,
@@ -28,7 +27,6 @@ import {
   LEVELS,
   POSITIONS,
   PROFILES,
-  SPORTS,
   completeRun,
   filterDrills,
   planFor,
@@ -52,13 +50,12 @@ import {
 } from "./components";
 import { ContentStudio } from "./ContentStudio";
 import { useSharedContent } from "./useSharedContent";
-import { MotionShell, Reveal } from "./Experience";
-import { useMotion } from "./motion";
+import { MotionShell } from "./Experience";
 import { usePwa } from "./pwa";
 import { InstallApp } from "./InstallApp";
 import { MemberAccountPage } from "./MemberAccount";
 import { FamilyDemo } from "./FamilyDemo";
-import { AthleteScene } from "./AthleteScene";
+import { Home } from "./Home";
 import {
   Workspace,
   AccessWorkspace,
@@ -669,250 +666,6 @@ export default function App() {
         </Modal>
       )}
     </MotionShell>
-  );
-}
-function Home() {
-  const { enabled: motionEnabled } = useMotion();
-  return (
-    <main className="home">
-      <section className="hero page">
-        <div className="hero-copy">
-          <div className="sport-tag">
-            <span /> ATHLETE DEVELOPMENT · AGES 5 TO ADULT
-          </div>
-          <h1 tabIndex={-1}>
-            Your game.
-            <br />
-            <span className="electric-text">Your next rep.</span>
-          </h1>
-          <p className="hero-description">
-            Turn “what should I work on?” into a clear next step. Purposeful
-            practice, a plan that fits, and support for the athlete you’re
-            becoming.
-          </p>
-          <div className="actions">
-            <a className="button" href="#demo">
-              Try the demo <ArrowRight size={19} />
-            </a>
-            <button
-              className="text-button"
-              onClick={() =>
-                document.getElementById("how-it-works")?.scrollIntoView({
-                  behavior: motionEnabled ? "smooth" : "auto",
-                })
-              }
-            >
-              See how it works <ArrowDown size={16} />
-            </button>
-          </div>
-          <p className="member-home-link">
-            Training for families and individual athletes. Already have an
-            account?{" "}
-            <a href="#account">
-              Member access <ArrowUpRight size={14} />
-            </a>
-          </p>
-          <div className="hero-proof">
-            <ShieldCheck size={19} />
-            <p>
-              Individual training. Family support.
-              <span>Parent-managed for all players under 18.</span>
-            </p>
-          </div>
-        </div>
-        <AthleteScene />
-      </section>
-      <section className="page sport-programs" aria-labelledby="sports-title">
-        <div className="section-heading">
-          <div>
-            <span className="eyebrow">YOUR SPORT. YOUR STARTING POINT.</span>
-            <h2 id="sports-title">Development comes first.</h2>
-          </div>
-          <p>
-            Football is our first program. More sports are part of the future,
-            with training built for each one.
-          </p>
-        </div>
-        <div className="sport-program-grid">
-          {SPORTS.map((sport, i) => (
-            <article
-              key={sport.id}
-              className={`sport-program ${sport.available ? "available" : "future"}`}
-              aria-label={`${sport.name} program`}
-            >
-              <div className="sport-program-top">
-                <span className="sport-program-index">0{i + 1}</span>
-                <Tag>{sport.available ? "AVAILABLE NOW" : "COMING LATER"}</Tag>
-              </div>
-              <h3>{sport.name}</h3>
-              <p>
-                {sport.available
-                  ? "Guided football sample practice matched to age, position, experience and goals."
-                  : "A future sport-specific program. Training and enrollment are not available yet."}
-              </p>
-              {sport.available ? (
-                <a className="button secondary" href="#demo">
-                  Try the football demo <ArrowRight size={17} />
-                </a>
-              ) : (
-                <span className="sport-future-note">
-                  Future offering · No signup or purchase
-                </span>
-              )}
-            </article>
-          ))}
-        </div>
-      </section>
-      <Reveal className="practice-section">
-        <section id="how-it-works" className="page how-section">
-          <div className="section-heading">
-            <div>
-              <span className="eyebrow">A SIMPLE ROUTINE</span>
-              <h2>A clear path from plan to practice.</h2>
-            </div>
-            <p>Three steps. One focused session.</p>
-          </div>
-          <figure className="practice-editorial">
-            <div className="practice-editorial-image">
-              <img
-                src={`${import.meta.env.BASE_URL}media/practice-detail.jpg`}
-                alt="Licensed stock image of an adult athlete’s feet working through an agility ladder."
-                loading="lazy"
-                width={1440}
-                height={810}
-              />
-              <div className="practice-editorial-shade" aria-hidden="true" />
-              <span className="practice-editorial-label">
-                THE EVERYDAY WORK
-              </span>
-              <p className="practice-editorial-title">
-                Less guesswork.
-                <br />
-                More purpose.
-              </p>
-              <span className="practice-editorial-note">
-                A PLAN. A PRACTICE. A RECORD.
-              </span>
-            </div>
-            <figcaption>
-              Licensed stock image · Not a coaching lesson.{" "}
-              <a
-                href={`${import.meta.env.BASE_URL}media/credits.txt`}
-                target="_blank"
-                rel="noreferrer"
-              >
-                Image credits
-              </a>
-            </figcaption>
-          </figure>
-          <div className="three-grid">
-            {[
-              {
-                n: "01",
-                title: "Choose your player",
-                text: "Set up an individual athlete or manage your family’s players. Match training to age, position, experience and goals.",
-                icon: Users,
-              },
-              {
-                n: "02",
-                title: "Follow your session",
-                text: "Learn the idea, work through the practice steps, and use a clear cue for each drill.",
-                icon: Footprints,
-              },
-              {
-                n: "03",
-                title: "Record your practice",
-                text: "Log completed sessions and a simple reflection. Build a record of participation.",
-                icon: TrendingUp,
-              },
-            ].map((c) => (
-              <article className="how-card" key={c.n}>
-                <div>
-                  <span>{c.n}</span>
-                  <c.icon size={22} />
-                </div>
-                <h3>{c.title}</h3>
-                <p>{c.text}</p>
-              </article>
-            ))}
-          </div>
-        </section>
-      </Reveal>
-      <Reveal>
-        <section className="page parent-section">
-          <div>
-            <span className="eyebrow">DESIGNED AROUND THE PLAYER</span>
-            <h2>
-              The right starting point.
-              <br />
-              Support at every age.
-            </h2>
-            <p>
-              Young players need short, playful activities and an adult
-              alongside them. Older players get a structured starting point for
-              their experience and goals.
-            </p>
-            <a className="text-button" href="#demo">
-              Try parent-managed training <ArrowRight size={17} />
-            </a>
-          </div>
-          <div className="safeguard-list">
-            {[
-              {
-                icon: ShieldCheck,
-                title: "Parent-managed for minors",
-                text: "An adult manages preferences and supervises practice.",
-              },
-              {
-                icon: Footprints,
-                title: "Noncontact sample activities",
-                text: "Illustrative instruction, pending qualified coaching review.",
-              },
-              {
-                icon: Users,
-                title: "Private by design",
-                text: "Separate athlete profiles. No public rosters or direct messages.",
-              },
-            ].map((item) => (
-              <div key={item.title}>
-                <span>
-                  <item.icon size={22} />
-                </span>
-                <div>
-                  <h3>{item.title}</h3>
-                  <p>{item.text}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      </Reveal>
-      <Reveal>
-        <section className="page home-scope">
-          <div className="scope-strip">
-            <div>
-              <span className="eyebrow">A MULTI-SPORT FUTURE</span>
-              <h3>Football now. More possibilities ahead.</h3>
-              <p>
-                {SPORTS.filter((s) => !s.available)
-                  .map((s) => s.name)
-                  .join(" and ")}{" "}
-                remain future offerings.
-              </p>
-            </div>
-            <a className="button secondary" href="#membership">
-              Future packages <ArrowUpRight size={17} />
-            </a>
-          </div>
-          <p className="home-disclaimer">
-            Invite-only pilot. Training content is illustrative and pending
-            qualified review. Practice records show participation, not proven
-            improvement. Scholarship and recruiting outcomes are never
-            guaranteed.
-          </p>
-        </section>
-      </Reveal>
-    </main>
   );
 }
 function Onboarding({

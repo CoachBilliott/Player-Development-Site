@@ -14,6 +14,7 @@ export function appShell(): Plugin {
         "favicon.svg",
         "media/training-poster.jpg",
         "media/practice-detail.jpg",
+        "media/football-field.jpg",
         "media/credits.txt",
         "icons/app-192.png",
         "icons/app-512.png",

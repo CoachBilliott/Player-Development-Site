@@ -56,6 +56,7 @@ test("homepage is responsive and sample demo is obvious", async ({
   await expect(
     page.getByRole("heading", { name: /Your game/i, level: 1 }),
   ).toBeVisible();
+  await expect(page.locator(".hero .button")).toBeInViewport();
   await expect(page.locator(".hero .sport-tag")).toHaveText(
     "ATHLETE DEVELOPMENT · AGES 5 TO ADULT",
   );
@@ -81,11 +82,16 @@ test("homepage is responsive and sample demo is obvious", async ({
   await expect(
     page.getByRole("heading", { name: /A clear path from plan/ }),
   ).toBeInViewport();
-  const image = page.locator(".practice-editorial img");
-  await image.scrollIntoViewIfNeeded();
-  await expect
-    .poll(() => image.evaluate((img: HTMLImageElement) => img.naturalWidth))
-    .toBeGreaterThan(0);
+  const images = page.locator(".path-card > img, .football-program-image");
+  await expect(images).toHaveCount(3);
+  for (const image of await images.all()) {
+    await image.scrollIntoViewIfNeeded();
+    await expect
+      .poll(() => image.evaluate((img: HTMLImageElement) => img.naturalWidth))
+      .toBeGreaterThan(0);
+  }
+  for (const link of await page.locator('.home a[href="#demo"]').all())
+    await expect(link).toHaveAttribute("href", "#demo");
   const accessibility = await new AxeBuilder({ page })
     .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
     .analyze();

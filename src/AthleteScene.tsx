@@ -76,13 +76,6 @@ export function AthleteScene() {
           </video>
         )}
         <div className="training-film-shade" aria-hidden="true" />
-        <span className="training-film-eyebrow">THE WORK STARTS HERE</span>
-        <div className="training-film-title" aria-hidden="true">
-          Built in
-          <br />
-          <span>practice.</span>
-        </div>
-        <span className="training-film-label">PLAN / PRACTICE / REFLECT</span>
       </div>
       <figcaption className="training-film-credit">
         Licensed stock footage · Not a coaching lesson.{" "}
