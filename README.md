@@ -1,6 +1,6 @@
 # Player Development — sample-data prototype
 
-A standalone, responsive player-development platform with a sport-neutral brand and American football as its only current training program. Basketball and soccer remain future offerings. This project is independent of Coach Workroom and Spawnative; it uses neither their code, brands, accounts, nor hosting.
+A standalone, responsive player-development platform with a sport-neutral brand and American football as its only current training program. Future sports have not been chosen or announced. This project is independent of Coach Workroom and Spawnative; it uses neither their code, brands, accounts, nor hosting.
 
 ## Private member accounts — connected for an adult pilot
 
@@ -121,7 +121,7 @@ Check the **pages build and deployment** run in this repository's GitHub Actions
 
 `src/model.ts` contains typed profiles/resources, matching, filtering, session records, and persisted-state validation. `src/data.ts` holds original football sample content. `src/storage.ts` isolates persistence and media. `src/accounts.ts` and `src/MemberAccount.tsx` implement private member workflows; `backend/002-private-profiles.sql` enforces member privacy and enrollment rules. `src/Admin.tsx` implements content publishing; `src/components.tsx` contains shared UI/illustrations; `src/App.tsx` connects the user journeys.
 
-The sports registry separates available and future offerings, and resources carry a sport discriminator. Football is the only accepted content sport today. Adding a sport requires a new typed position/skill taxonomy, sport-aware profiles/matching, qualified age-appropriate content, and coverage; it is not falsely advertised as already usable.
+The sports registry lists football as the only current offering, and resources carry a sport discriminator. Future-sport marketing stays generic until the next offering is chosen. Football is the only accepted content sport today. Adding a sport requires a new typed position/skill taxonomy, sport-aware profiles/matching, qualified age-appropriate content, and coverage; it is not falsely advertised as already usable.
 
 ## Before a real launch
 

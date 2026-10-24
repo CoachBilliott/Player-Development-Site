@@ -23,8 +23,6 @@ export const GOALS = [
 ] as const;
 export const SPORTS = [
   { id: "football", name: "American football", available: true },
-  { id: "basketball", name: "Basketball", available: false },
-  { id: "soccer", name: "Soccer", available: false },
 ];
 export const profileSchema = z.object({
   id: z.string(),

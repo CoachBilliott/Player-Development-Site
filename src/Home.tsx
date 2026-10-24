@@ -201,52 +201,60 @@ export function Home() {
               </h2>
             </div>
             <p>
-              We’re starting with American football. More sports are on the
-              horizon, with training built for each one.
+              Football is our focus today. More sports are on the horizon. We’ll
+              announce what’s next when it’s ready.
             </p>
           </div>
           <div className="sport-program-grid">
-            {SPORTS.map((sport, i) => (
+            {SPORTS.filter((sport) => sport.available).map((sport, i) => (
               <article
                 key={sport.id}
-                className={`sport-program ${sport.available ? "available" : "future"}`}
+                className="sport-program available"
                 aria-label={`${sport.name} program`}
               >
-                {sport.available && (
-                  <img
-                    className="football-program-image"
-                    src={`${media}football-field.jpg`}
-                    alt=""
-                    loading="lazy"
-                    width={1280}
-                    height={720}
-                  />
-                )}
+                <img
+                  className="football-program-image"
+                  src={`${media}football-field.jpg`}
+                  alt=""
+                  loading="lazy"
+                  width={1280}
+                  height={720}
+                />
                 <div className="sport-program-top">
                   <span className="sport-program-index">0{i + 1}</span>
-                  <Tag>
-                    {sport.available ? "AVAILABLE NOW" : "COMING LATER"}
-                  </Tag>
+                  <Tag>AVAILABLE NOW</Tag>
                 </div>
                 <div className="sport-program-content">
                   <h3>{sport.name}</h3>
                   <p>
-                    {sport.available
-                      ? "Explore noncontact football sample practice matched to the player. Football is the first program in the demo."
-                      : "A future sport-specific program. Training and enrollment are not available yet."}
+                    Explore noncontact football sample practice matched to the
+                    player. Football is the first program in the demo.
                   </p>
-                  {sport.available ? (
-                    <a className="button" href="#demo">
-                      Try the football demo <ArrowUpRight size={19} />
-                    </a>
-                  ) : (
-                    <span className="sport-future-note">
-                      Future offering · No signup or purchase
-                    </span>
-                  )}
+                  <a className="button" href="#demo">
+                    Try the football demo <ArrowUpRight size={19} />
+                  </a>
                 </div>
               </article>
             ))}
+            <article
+              className="sport-program future"
+              aria-label="Future sports"
+            >
+              <div className="sport-program-top">
+                <span className="sport-program-index">THE NEXT CHAPTER</span>
+                <Tag>COMING LATER</Tag>
+              </div>
+              <div className="sport-program-content">
+                <h3>More sports ahead.</h3>
+                <p>
+                  The work doesn’t stop with one sport. We’re building toward
+                  more ways to train, with future sports to be announced.
+                </p>
+                <span className="sport-future-note">
+                  Future offerings · Details to be announced
+                </span>
+              </div>
+            </article>
           </div>
           <p className="program-media-note">
             Licensed stock field image · No venue affiliation.{" "}

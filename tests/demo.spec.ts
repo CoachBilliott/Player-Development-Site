@@ -70,14 +70,19 @@ test("homepage is responsive and sample demo is obvious", async ({
   await expect(
     football.getByRole("link", { name: "Try the football demo", exact: true }),
   ).toHaveAttribute("href", "#demo");
-  for (const sport of ["Basketball", "Soccer"]) {
-    const upcoming = page.getByRole("article", { name: `${sport} program` });
-    await expect(
-      upcoming.getByText("COMING LATER", { exact: true }),
-    ).toBeVisible();
-    await expect(upcoming.getByRole("link")).toHaveCount(0);
-    await expect(upcoming.getByRole("button")).toHaveCount(0);
-  }
+  const upcoming = page.getByRole("article", {
+    name: "Future sports",
+    exact: true,
+  });
+  await expect(
+    upcoming.getByText("COMING LATER", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    upcoming.getByRole("heading", { name: "More sports ahead." }),
+  ).toBeVisible();
+  await expect(upcoming.getByRole("link")).toHaveCount(0);
+  await expect(upcoming.getByRole("button")).toHaveCount(0);
+  await expect(page.getByText(/\bbasketball\b|\bsoccer\b/i)).toHaveCount(0);
   await page.getByRole("button", { name: "See how it works" }).click();
   await expect(
     page.getByRole("heading", { name: /A clear path from plan/ }),

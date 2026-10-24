@@ -590,7 +590,7 @@
   border-radius: 0;
 }
 .sport-program.available {
-  grid-row: span 2;
+  grid-row: auto;
   justify-content: space-between;
   min-height: 540px;
   padding: 32px;
