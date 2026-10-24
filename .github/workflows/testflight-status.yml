@@ -7,6 +7,10 @@ on:
         required: true
         default: '3'
         type: string
+      declare_build_3_exempt:
+        description: 'Record reviewed build 3 as using no non-exempt encryption (HTTPS/iOS security only)'
+        default: false
+        type: boolean
 permissions:
   contents: read
 jobs:
@@ -19,9 +23,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
-      - name: Read processing and beta availability without exposing credentials
+      - name: Verify build status and optional reviewed encryption declaration
         env:
           PD_BUILD_NUMBER: ${{ inputs.build_number }}
+          PD_DECLARE_BUILD_3_EXEMPT: ${{ inputs.declare_build_3_exempt }}
           PD_ASC_KEY_ID: ${{ secrets.PD_ASC_KEY_ID }}
           PD_ASC_ISSUER_ID: ${{ secrets.PD_ASC_ISSUER_ID }}
           PD_ASC_PRIVATE_KEY: ${{ secrets.PD_ASC_PRIVATE_KEY_P8 }}

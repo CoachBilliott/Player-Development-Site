@@ -6,7 +6,7 @@ import { writeFile } from 'node:fs/promises'
 import process from 'node:process'
 import { URLSearchParams } from 'node:url'
 
-// Read-only Apple status check. Credentials and bearer tokens never leave this process.
+// Credentials and bearer tokens never leave this process.
 const appId = '6826677846'
 const bundleId = 'com.coachbilliott.playerdevelopment'
 const buildNumber = process.env.PD_BUILD_NUMBER
@@ -27,9 +27,11 @@ const unsigned = `${encode({ alg: 'ES256', kid: keyId, typ: 'JWT' })}.${encode({
 const signature = sign('sha256', Buffer.from(unsigned), { key, dsaEncoding: 'ieee-p1363' })
 const token = `${unsigned}.${signature.toString('base64url')}`
 
-async function read(path, optional = false) {
+async function read(path, optional = false, data) {
   const response = await fetch(`https://api.appstoreconnect.apple.com/v1/${path}`, {
-    headers: { Authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(30000),
+    method: data ? 'PATCH' : 'GET',
+    body: data ? JSON.stringify({ data }) : undefined,
+    headers: { Authorization: `Bearer ${token}`, ...(data ? { 'Content-Type': 'application/json' } : {}) }, signal: AbortSignal.timeout(30000),
   })
   if (!response.ok) {
     if (optional && [403, 404].includes(response.status)) return { unavailable: response.status }
@@ -41,7 +43,20 @@ async function read(path, optional = false) {
 
 const app = (await read(`apps/${appId}`)).data
 if (app?.attributes?.bundleId !== bundleId) throw new Error('Apple app identity mismatch.')
-const results = await read(`builds?${new URLSearchParams({ 'filter[app]': appId, 'filter[version]': buildNumber, include: 'preReleaseVersion,buildBetaDetail', limit: '10' })}`)
+const buildPath = `builds?${new URLSearchParams({ 'filter[app]': appId, 'filter[version]': buildNumber, include: 'preReleaseVersion,buildBetaDetail', limit: '10' })}`
+let results = await read(buildPath)
+if (process.env.PD_DECLARE_BUILD_3_EXEMPT === 'true') {
+  // Engineering assessment applies only to this reviewed binary: HTTPS, iOS
+  // Keychain, and standard Web Crypto authentication; no proprietary encryption.
+  const build = results.data[0]
+  const release = results.included?.find((item) => item.type === 'preReleaseVersions' && item.id === build?.relationships?.preReleaseVersion?.data?.id)
+  if (buildNumber !== '3' || results.data.length !== 1 || release?.attributes.version !== '0.1.0' || build.attributes.processingState !== 'VALID') {
+    throw new Error('Encryption declaration is limited to verified version 0.1.0 build 3.')
+  }
+  const updated = await read(`builds/${build.id}`, false, { type: 'builds', id: build.id, attributes: { usesNonExemptEncryption: false } })
+  if (updated.data?.attributes.usesNonExemptEncryption !== false) throw new Error('Apple did not confirm the encryption declaration.')
+  results = await read(buildPath)
+}
 const builds = results.data.map((build) => {
   const related = (relation) => results.included?.find((item) => item.id === build.relationships?.[relation]?.data?.id && item.type === build.relationships?.[relation]?.data?.type)
   const beta = related('buildBetaDetail')?.attributes
