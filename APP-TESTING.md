@@ -1,6 +1,6 @@
 # Player Development app testing
 
-The native iPhone app **0.1.0 (4)** is available in the existing **Owner Testing** TestFlight group. Open TestFlight → Player Development Test → Update. The public website is [live here](https://coachbilliott.github.io/Player-Development-Site/); its one customer demo stays on the website. The browser app preview is `?source=app#app` and is separate from installing the native TestFlight binary.
+The native iPhone app **0.1.0 (5)** is available in the existing **Owner Testing** TestFlight group. Open TestFlight → Player Development Test → Update. The public website is [live here](https://coachbilliott.github.io/Player-Development-Site/); its one customer demo stays on the website. The browser app preview is `?source=app#app` and is separate from installing the native TestFlight binary.
 
 ## What works
 
@@ -15,13 +15,13 @@ Manual pilot permissions do not represent a subscription or payment. Real junior
 
 ## Automated and live verification
 
-The signed binary's source `c9ed444b906dc8018bb77b82ef4d48395ccb09ee` passed lint, type checking, production build, 120 unit/SQL policy tests, 122 desktop/phone browser tests, 8 installed-web-app tests, 10 Python signing tests and 3 native simulator tests. The later backend cleanup added 3 policy tests; the full current unit/security suite passes **123** tests. Native code and bundled JavaScript are unchanged by that cleanup.
+The signed binary's source `2cf24b62cc3bc0c21a6d255a66cf4e29d8361f57` passed lint, type checking, production build, **123 unit/SQL policy tests, 132 desktop/phone browser tests, 8 installed-web-app tests, 10 Python signing tests and 3 native simulator tests**. Staff regression cases cover Owner/Manager/Coach accounts with no household record, slow permission lookup, refresh, no customer-setup flash, zero household reads/writes, password setup/cancellation, sign-out, and permission failure/retry. The website's 10 deployed staff-flow checks also pass with fictional intercepted backend responses. No account roles or database policies were changed by the staff UI correction.
 
 The native tests ran on iPhone 17 Pro / iOS 26.2 with Xcode 26.3: assets/font/native bridge and Keychain round-trip, no native demo entry or legacy demo route access, private login/navigation and relaunch. They do not claim native camera/upload testing.
 
 Live database tests use fictional adult identities inside a rolled-back transaction: matched assignments, private video authorization, assigned-coach-only access, profile isolation, idempotent finalization, feedback, cleanup guards, withdrawal assignment cleanup and feedback retention. No real videos/children or persistent fixture accounts were created. Anonymous REST/Storage requests were denied. The real Storage API upload/deletion path remains a physical-device acceptance item; live SQL tests use metadata fixtures, not uploaded objects.
 
-The deployed website HTML and JavaScript/CSS hashes match the tested build. Another 16 deployed phone/desktop flow checks use intercepted fictional backend responses; media playback, recording-input setup, preview/cancel, retry/repeated send, coach feedback, deletion and package-access controls passed. No customer data was written by those browser tests. The signed IPA passed ZIP integrity, bundle/version/build, embedded verified profile, signature presence, no-private-keys and deployed-JavaScript-match checks. Apple reports VALID processing and IN_BETA_TESTING for build 4 in Owner Testing.
+The deployed website HTML and JavaScript/CSS hashes match the tested build. Another 16 deployed phone/desktop flow checks use intercepted fictional backend responses; media playback, recording-input setup, preview/cancel, retry/repeated send, coach feedback, deletion and package-access controls passed. No customer data was written by those browser tests. The signed IPA passed ZIP integrity, bundle/version/build, embedded verified profile, signature presence, no-private-keys and deployed-JavaScript-match checks. Apple reports VALID processing and IN_BETA_TESTING for build 5 in Owner Testing.
 
 ## First physical-iPhone acceptance
 

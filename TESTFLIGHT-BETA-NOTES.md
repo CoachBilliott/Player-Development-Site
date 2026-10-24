@@ -1,6 +1,6 @@
 # TestFlight beta submission draft
 
-Version **0.1.0 (4)** is uploaded, processed VALID and IN_BETA_TESTING in Owner Testing. The owner has installed a prior build and can update through TestFlight. The metadata below is an external-beta submission draft: review contact fields, feedback details, an approved adult review account and Apple's beta review still need completion. No external beta submission or public App Store release was made.
+Version **0.1.0 (5)** is uploaded, processed VALID and IN_BETA_TESTING in Owner Testing. The owner has installed a prior build and can update through TestFlight. The metadata below is an external-beta submission draft: review contact fields, feedback details, an approved adult review account and Apple's beta review still need completion. No external beta submission or public App Store release was made.
 
 ## Beta app description
 
@@ -14,7 +14,7 @@ Install and launch the app, try Parent & family and Solo athlete within the sing
 
 ## Reviewer instructions
 
-The native app now opens private account login; the public sample demo remains on the website. No sample accounts, demo records or built-in demo drills are inserted into real customer plans.
+Owners, Managers and Coaches open staff account settings directly without Parent/Athlete enrollment. The native app opens private account login; the public sample demo remains on the website. No sample accounts, demo records or built-in demo drills are inserted into real customer plans.
 
 1. Sign in using an approved, verified adult review account supplied privately in App Store Connect. These credentials must be prepared before requesting external beta review; none are invented in this document.
 2. Open Today, begin the assigned workout and confirm each drill shows its attached demonstration and all practice steps together. Complete practice before tapping Complete drill / Finish workout. Reports describe participation, not measured ability.
@@ -28,6 +28,6 @@ Review clips are stored privately until an authorized family/uploader deletes th
 - Beta feedback email, review contact name/email/phone and any approved review-account credentials needed for private features. No personal contact information or review passwords have been invented or made public in this draft.
 - Accurate privacy disclosures/policy URL, age-rating responses and encryption/export-compliance answers for the final binary and service behavior.
 - Tester invitation addresses supplied directly to the supported Apple workflow.
-- External tester invitations and any required external beta review approval. The current signed build is 0.1.0 (4), with VALID processing and active internal testing.
+- External tester invitations and any required external beta review approval. The current signed build is 0.1.0 (5), with VALID processing and active internal testing.
 
 Account/signing secrets and private review credentials belong in Apple's supported private fields or approved secure storage, not this document or repository.

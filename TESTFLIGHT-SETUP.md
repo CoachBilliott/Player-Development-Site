@@ -2,15 +2,15 @@
 
 ## Available now
 
-**Player Development Test — 0.1.0 (4)** is uploaded, processed **VALID**, and **IN_BETA_TESTING** in the existing **Owner Testing** internal group. Apple verified this state on October 24, 2026. The group includes builds 4 and 3 and has access to all builds. Open the existing TestFlight invitation/app and tap **Update**. No new code, certificate installation or purchase is needed.
+**Player Development Test — 0.1.0 (5)** is uploaded, processed **VALID**, and **IN_BETA_TESTING** in the existing **Owner Testing** internal group. Apple verified this state on October 24, 2026. The group includes build 5 and has access to all builds. Open the existing TestFlight invitation/app and tap **Update**. No new code, certificate installation or purchase is needed.
 
 - [App Store Connect → TestFlight](https://appstoreconnect.apple.com/apps/6826677846/testflight/ios)
-- [Signed upload evidence](https://github.com/CoachBilliott/Player-Development-Site/actions/runs/40137134573)
-- [Native simulator/device build](https://github.com/CoachBilliott/Player-Development-Site/actions/runs/40136275504)
-- [Web/client checks for the binary's source](https://github.com/CoachBilliott/Player-Development-Site/actions/runs/40136275540)
-- [Apple processing and group verification](https://github.com/CoachBilliott/Player-Development-Site/actions/runs/40137645286)
+- [Signed upload evidence](https://github.com/CoachBilliott/Player-Development-Site/actions/runs/40140169093)
+- [Native simulator/device build](https://github.com/CoachBilliott/Player-Development-Site/actions/runs/40139280121)
+- [Web/client checks for the binary's source](https://github.com/CoachBilliott/Player-Development-Site/actions/runs/40139276580)
+- [Apple processing and group verification](https://github.com/CoachBilliott/Player-Development-Site/actions/runs/40140558966)
 
-The signed app contains the same JavaScript verified on the deployed website. Its source commit is `c9ed444b906dc8018bb77b82ef4d48395ccb09ee`. Subsequent backend assignment cleanup does not change that binary.
+The signed app contains the same JavaScript verified on the deployed website. Its source commit is `2cf24b62cc3bc0c21a6d255a66cf4e29d8361f57`. Staff account settings are separate from customer household setup. Owners, Managers and Coaches do not need a Parent/Athlete profile to open their management tools.
 
 ## Accounts and training
 
@@ -22,9 +22,9 @@ Upload an original or licensed drill through Content. An Owner then assigns prot
 
 Bundle `com.coachbilliott.playerdevelopment`, team `4T6V3S3CZL`, App Store Connect app `6826677846`. Membership, App ID, app record, certificate/profile and upload credentials are already configured. Do not repeat enrollment or create another app record.
 
-The manual **Signed iPhone build and optional TestFlight upload** workflow uses Xcode 26.3. It requires successful Prototype checks and iPhone simulator tests for the exact main commit, imports the dedicated signing material only after dependencies/build steps, validates the certificate/profile match and removes temporary private files afterward. Build 4 has already reached Apple; use a new build number for another upload. Upload is off by default. Only the signed IPA is retained, without private signing keys.
+The manual **Signed iPhone build and optional TestFlight upload** workflow uses Xcode 26.3. It requires successful Prototype checks and iPhone simulator tests for the exact main commit, imports the dedicated signing material only after dependencies/build steps, validates the certificate/profile match and removes temporary private files afterward. Build 5 has already reached Apple; use a new build number for another upload. Upload is off by default. Only the signed IPA is retained, without private signing keys.
 
-The **Check Apple TestFlight status** workflow reads processing/beta status and each app group's assigned build numbers. Default mode is read-only. The legacy optional encryption update is restricted to reviewed build 3 and was denied with HTTP 403. Build 4 instead declares `ITSAppUsesNonExemptEncryption=false` in its Info.plist for standard HTTPS/iOS security use; Apple confirmed it without another owner compliance step.
+The **Check Apple TestFlight status** workflow reads processing/beta status and each app group's assigned build numbers. Default mode is read-only. The legacy optional encryption update is restricted to reviewed build 3 and was denied with HTTP 403. The current app declares `ITSAppUsesNonExemptEncryption=false` in its Info.plist for standard HTTPS/iOS security use; Apple confirmed it without another owner compliance step.
 
 Configured repository secrets are `PD_IOS_SIGNING_BUNDLE_JSON`, `PD_ASC_KEY_ID`, `PD_ASC_ISSUER_ID` and `PD_ASC_PRIVATE_KEY_P8`. Keep their values in secure GitHub settings, never chat, source, screenshots or public hosting. The integration cannot manage Actions secrets; no broader token/key permission was requested. Private local signing files remain ignored and excluded from source/static downloads.
 
