@@ -1,0 +1,159 @@
+name: Signed iPhone build and optional TestFlight upload
+on:
+  workflow_dispatch:
+    inputs:
+      build_number:
+        description: 'Unique App Store build number (1–9999; increase for each upload)'
+        required: true
+        default: '2'
+        type: string
+      upload_to_testflight:
+        description: 'Validate and upload to App Store Connect for TestFlight processing'
+        default: false
+        type: boolean
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: player-development-testflight
+  cancel-in-progress: false
+jobs:
+  distribution:
+    runs-on: macos-15
+    timeout-minutes: 35
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.3.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@v4
+      - name: Require tested main and configured signing material
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PD_REQUESTED_BUILD_NUMBER: ${{ inputs.build_number }}
+          PD_HAS_CERTIFICATE: ${{ secrets.PD_IOS_DISTRIBUTION_P12_BASE64 != '' }}
+          PD_HAS_CERTIFICATE_PASSWORD: ${{ secrets.PD_IOS_P12_PASSWORD != '' }}
+          PD_HAS_PROFILE: ${{ secrets.PD_IOS_APPSTORE_PROFILE_BASE64 != '' }}
+          PD_HAS_API_KEY: ${{ secrets.PD_ASC_PRIVATE_KEY_P8 != '' }}
+          PD_HAS_KEY_ID: ${{ secrets.PD_ASC_KEY_ID != '' }}
+          PD_HAS_ISSUER: ${{ secrets.PD_ASC_ISSUER_ID != '' }}
+          PD_UPLOAD_REQUESTED: ${{ inputs.upload_to_testflight }}
+        run: |
+          if [ "$GITHUB_REF" != refs/heads/main ]; then
+            echo 'Distribution is restricted to the tested main branch.' >&2
+            exit 1
+          fi
+          if ! [[ "$PD_REQUESTED_BUILD_NUMBER" =~ ^[1-9][0-9]{0,3}$ ]]; then
+            echo 'Choose a unique positive build number from 1 to 9999.' >&2
+            exit 1
+          fi
+          for PD_SETTING in PD_HAS_CERTIFICATE PD_HAS_CERTIFICATE_PASSWORD PD_HAS_PROFILE; do
+            if [ "${!PD_SETTING}" != true ]; then
+              echo 'Signing material is missing. Follow TESTFLIGHT-SETUP.md; do not put private keys in source or logs.' >&2
+              exit 1
+            fi
+          done
+          if [ "$PD_UPLOAD_REQUESTED" = true ]; then
+            for PD_SETTING in PD_HAS_API_KEY PD_HAS_KEY_ID PD_HAS_ISSUER; do
+              if [ "${!PD_SETTING}" != true ]; then
+                echo 'App Store Connect upload credentials are missing from secure repository settings.' >&2
+                exit 1
+              fi
+            done
+          fi
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs?head_sha=$GITHUB_SHA&per_page=100" > "$RUNNER_TEMP/pd-validation-runs.json"
+          python3 - <<'PY'
+          import json, os
+          runs = json.load(open(os.environ['RUNNER_TEMP'] + '/pd-validation-runs.json'))['workflow_runs']
+          for name in ['Prototype checks', 'iPhone app build and simulator tests']:
+              if not any(r['name'] == name and r['head_sha'] == os.environ['GITHUB_SHA'] and r['conclusion'] == 'success' for r in runs):
+                  raise SystemExit('Run and pass ' + name + ' for this exact commit before distribution.')
+          PY
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Build the tested client before importing private credentials
+        run: |
+          npm ci
+          npm run build:ios
+          brew install xcodegen
+          cd ios/App
+          xcodegen generate
+      - name: Import dedicated distribution signing material
+        id: signing
+        env:
+          PD_CERTIFICATE_BASE64: ${{ secrets.PD_IOS_DISTRIBUTION_P12_BASE64 }}
+          PD_CERTIFICATE_PASSWORD: ${{ secrets.PD_IOS_P12_PASSWORD }}
+          PD_PROFILE_BASE64: ${{ secrets.PD_IOS_APPSTORE_PROFILE_BASE64 }}
+        run: |
+          umask 077
+          mkdir -p "$RUNNER_TEMP/player-development-signing"
+          python3 - <<'PY'
+          import base64, os, pathlib
+          folder = pathlib.Path(os.environ['RUNNER_TEMP']) / 'player-development-signing'
+          for variable, name in [('PD_CERTIFICATE_BASE64', 'distribution.p12'), ('PD_PROFILE_BASE64', 'distribution.mobileprovision')]:
+              value = ''.join(os.environ[variable].split())
+              (folder / name).write_bytes(base64.b64decode(value, validate=True))
+          PY
+          security cms -D -i "$RUNNER_TEMP/player-development-signing/distribution.mobileprovision" > "$RUNNER_TEMP/player-development-signing/profile.plist"
+          python3 scripts/prepare_ios_signing.py "$RUNNER_TEMP/player-development-signing/profile.plist" "$RUNNER_TEMP/player-development-signing/ExportOptions.plist" >> "$GITHUB_OUTPUT"
+          PD_PROFILE_UUID=$(python3 -c 'import plistlib,os;print(plistlib.load(open(os.environ["RUNNER_TEMP"]+"/player-development-signing/profile.plist","rb"))["UUID"])')
+          mkdir -p "$HOME/Library/Developer/Xcode/UserData/Provisioning Profiles"
+          cp "$RUNNER_TEMP/player-development-signing/distribution.mobileprovision" "$HOME/Library/Developer/Xcode/UserData/Provisioning Profiles/$PD_PROFILE_UUID.mobileprovision"
+          PD_KEYCHAIN_PASSWORD=$(openssl rand -hex 32)
+          security create-keychain -p "$PD_KEYCHAIN_PASSWORD" "$RUNNER_TEMP/player-development-signing/distribution.keychain-db"
+          security set-keychain-settings -lut 21600 "$RUNNER_TEMP/player-development-signing/distribution.keychain-db"
+          security unlock-keychain -p "$PD_KEYCHAIN_PASSWORD" "$RUNNER_TEMP/player-development-signing/distribution.keychain-db"
+          security import "$RUNNER_TEMP/player-development-signing/distribution.p12" -P "$PD_CERTIFICATE_PASSWORD" -k "$RUNNER_TEMP/player-development-signing/distribution.keychain-db" -T /usr/bin/codesign -T /usr/bin/security
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -k "$PD_KEYCHAIN_PASSWORD" "$RUNNER_TEMP/player-development-signing/distribution.keychain-db" > /dev/null
+          security list-keychains -d user -s "$RUNNER_TEMP/player-development-signing/distribution.keychain-db"
+      - name: Archive and export the signed iPhone app
+        env:
+          PD_TEAM: ${{ steps.signing.outputs.team_id }}
+          PD_PROFILE_UUID: ${{ steps.signing.outputs.profile_uuid }}
+          PD_BUILD_NUMBER: ${{ inputs.build_number }}
+        run: |
+          mkdir -p mobile-builds/testflight
+          xcodebuild archive -project ios/App/App.xcodeproj -scheme App -configuration Release -destination 'generic/platform=iOS' -archivePath mobile-builds/testflight/PlayerDevelopment.xcarchive -derivedDataPath mobile-builds/TestFlightDerivedData "DEVELOPMENT_TEAM=$PD_TEAM" CODE_SIGN_STYLE=Manual CODE_SIGN_IDENTITY='Apple Distribution' "PROVISIONING_PROFILE_SPECIFIER=$PD_PROFILE_UUID" "CURRENT_PROJECT_VERSION=$PD_BUILD_NUMBER"
+          xcodebuild -exportArchive -archivePath mobile-builds/testflight/PlayerDevelopment.xcarchive -exportPath mobile-builds/testflight/export -exportOptionsPlist "$RUNNER_TEMP/player-development-signing/ExportOptions.plist"
+      - name: Validate and upload for TestFlight processing
+        if: inputs.upload_to_testflight
+        env:
+          PD_ASC_KEY_ID: ${{ secrets.PD_ASC_KEY_ID }}
+          PD_ASC_ISSUER_ID: ${{ secrets.PD_ASC_ISSUER_ID }}
+          PD_ASC_PRIVATE_KEY: ${{ secrets.PD_ASC_PRIVATE_KEY_P8 }}
+        run: |
+          umask 077
+          export API_PRIVATE_KEYS_DIR="$RUNNER_TEMP/player-development-signing/private_keys"
+          mkdir -p "$API_PRIVATE_KEYS_DIR"
+          python3 - <<'PY'
+          import os, pathlib, re, uuid
+          key_id = os.environ['PD_ASC_KEY_ID']
+          if not re.fullmatch(r'[A-Z0-9]{10}', key_id):
+              raise SystemExit('Invalid App Store Connect Key ID.')
+          uuid.UUID(os.environ['PD_ASC_ISSUER_ID'])
+          key = os.environ['PD_ASC_PRIVATE_KEY']
+          if '-----BEGIN PRIVATE KEY-----' not in key:
+              raise SystemExit('Expected the Apple API private key in PEM format.')
+          (pathlib.Path(os.environ['API_PRIVATE_KEYS_DIR']) / ('AuthKey_' + key_id + '.p8')).write_text(key)
+          PY
+          PD_IPA=$(find mobile-builds/testflight/export -maxdepth 1 -name '*.ipa' -print -quit)
+          test -n "$PD_IPA"
+          xcrun altool --validate-app --file "$PD_IPA" --type ios --apiKey "$PD_ASC_KEY_ID" --apiIssuer "$PD_ASC_ISSUER_ID"
+          xcrun altool --upload-app --file "$PD_IPA" --type ios --apiKey "$PD_ASC_KEY_ID" --apiIssuer "$PD_ASC_ISSUER_ID"
+          echo 'Upload accepted. Apple processing, beta details/review and tester invitations still need verification in App Store Connect.'
+      - name: Save the signed app, without private signing keys
+        uses: actions/upload-artifact@v4
+        with:
+          name: player-development-signed-iphone-app
+          path: mobile-builds/testflight/export/*.ipa
+          retention-days: 7
+      - name: Remove temporary private signing material
+        if: always()
+        env:
+          PD_PROFILE_UUID: ${{ steps.signing.outputs.profile_uuid }}
+        run: |
+          security delete-keychain "$RUNNER_TEMP/player-development-signing/distribution.keychain-db" 2>/dev/null || true
+          if [ -n "$PD_PROFILE_UUID" ]; then
+            rm -f "$HOME/Library/Developer/Xcode/UserData/Provisioning Profiles/$PD_PROFILE_UUID.mobileprovision"
+          fi
+          rm -rf "$RUNNER_TEMP/player-development-signing"

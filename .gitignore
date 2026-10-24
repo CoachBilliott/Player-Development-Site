@@ -20,3 +20,13 @@ mobile-builds/
 *.ipa
 *.xcarchive/
 *.xcresult/
+
+# Apple signing material belongs in secure storage, never source control.
+ios-signing/
+*.p12
+AuthKey_*.p8
+*.mobileprovision
+*.csr
+*.key
+__pycache__/
+*.pyc

@@ -1,6 +1,6 @@
 # Player Development: native iPhone testing through TestFlight
 
-The selected distribution route is TestFlight for the owner and partner. The native iOS client is built and simulator-tested. There is not yet a signed iPhone download or a TestFlight invitation. Apple membership, signing and App Store Connect setup remain required. The owner reports paying for Apple membership; activation and the owning Team ID have not yet been verified. No Apple account security settings have been changed.
+The selected distribution route is TestFlight for the owner and partner. The native iOS client is built and simulator-tested. There is not yet a signed iPhone download or a TestFlight invitation. The owner reports paying for Apple membership and has supplied Team ID **4T6V3S3CZL**, now recorded in both Xcode project configurations and `ios/testflight.json`. Apple account access and membership activation have not been independently verified. No Apple account security settings have been changed.
 
 ## Confirm enrollment on your iPhone
 
@@ -13,7 +13,30 @@ Payment has already been reported. Do not repeat the purchase: check the Account
 5. Wait until Apple confirms the membership is active. Creating an Apple Account or starting enrollment does not activate TestFlight distribution.
 6. Both testers can install the free [TestFlight app](https://apps.apple.com/app/testflight/id899247664) now. Player Development will appear after a valid invitation and an available build; installing TestFlight alone does not install this app.
 
-After activation, the useful next details are the Apple Team ID and whether enrollment is Individual or Organization. The Team ID is an identifier, not a signing credential. Passwords, verification codes, certificates/private keys and App Store Connect API keys must not be posted in chat or committed to this public repository.
+The Team ID has been received; it is an identifier, not a signing credential. Passwords, verification codes, certificates/private keys and App Store Connect API keys must not be posted in chat or committed to this public repository.
+
+## Prepared signing/upload workflow — not yet run
+
+`.github/workflows/testflight.yml` is a manual workflow for a signed iPhone build and an optional App Store Connect upload. It accepts only `main` after both the normal checks and iPhone simulator tests pass for the exact commit. Upload is off by default. Signing uses the dedicated team's manually supplied App Store profile and Apple Distribution certificate; it does not automatically create/revoke credentials, register devices, create an app record, invite testers or publish an App Store release.
+
+The profile validator rejects a different team, different/wildcard app identifier, expired profile, non-iOS profile and development/ad-hoc/enterprise signing. Temporary keys are removed from the runner at job end. Only the signed app is retained as an artifact; it contains normal embedded public signing metadata, not the private certificate key or Apple API key. That artifact is not a TestFlight invitation or a directly installable App Store release.
+
+After owner authorization, provision these **repository Actions secrets** through [GitHub's secure settings](https://github.com/CoachBilliott/Player-Development-Site/settings/secrets/actions):
+
+| Secret | Required value |
+| --- | --- |
+| `PD_IOS_DISTRIBUTION_P12_BASE64` | Base64 of the dedicated Apple Distribution certificate export, including its private key. |
+| `PD_IOS_P12_PASSWORD` | Password protecting that encrypted certificate export. |
+| `PD_IOS_APPSTORE_PROFILE_BASE64` | Base64 of the valid App Store distribution profile for this team and bundle ID. |
+| `PD_ASC_KEY_ID` | App Store Connect team API Key ID, for uploads. |
+| `PD_ASC_ISSUER_ID` | The corresponding App Store Connect API Issuer ID. |
+| `PD_ASC_PRIVATE_KEY_P8` | The API private key's original PEM text, for uploads. |
+
+The first three are needed for a signed build; the API fields are needed only when upload is explicitly selected. Use a role Apple permits for uploading this app, with the least necessary access; this upload workflow does not need permission to manage certificates or profiles. Registering the bundle/app record and creating the signing assets are separate owner-authorized steps. Do not use credentials belonging to unrelated projects.
+
+The current repository integration can push code and run builds, but its requests to list Actions secrets/variables returned **403 Resource not accessible by integration**. Existing secret names/values could not be verified. Secret setup therefore requires the owner's authenticated GitHub settings; no new personal access token or expanded integration permission has been requested. No secret values are present in these files.
+
+When those prerequisites are ready, run **Signed iPhone build and optional TestFlight upload**, choose a unique positive build number (1–9999), and leave upload off for the first signed-build verification. For an authorized upload, select the upload option with a new build number. After an accepted upload, check Apple's processing status, beta requirements/review and invitations. Avoid re-running an already uploaded build number. An upload success message alone does not mean the app can be installed by testers.
 
 ## What is already prepared
 
