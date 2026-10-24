@@ -48,7 +48,7 @@ export function ContentStudio({ shared, ...local }: Props) {
         </div>
         <p className="upload-destination" role="status">
           {scope === "shared"
-            ? "Publish here to share a resource with website visitors. Staff sign-in required."
+            ? "Staff publishing: protected training by default. Free demo samples are a separate choice."
             : "Practice mode: uploads stay in this browser. Your partner will not see them."}
         </p>
         {nextScope && (

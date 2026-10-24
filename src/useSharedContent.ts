@@ -18,6 +18,7 @@ export function useSharedContent() {
   }>({ userId: "", role: null });
   const [checking, setChecking] = useState(false);
   const [resources, setResources] = useState<Drill[]>([]);
+  const [libraryOwner, setLibraryOwner] = useState("");
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
@@ -54,8 +55,6 @@ export function useSharedContent() {
         await finishAuthRedirect(connection);
         const current = await connection.client.auth.getSession();
         if (!stopped) setSession(current.data.session);
-        const list = await connection.list();
-        if (!stopped) setResources(list);
       } catch (e) {
         if (!stopped)
           setConnectionError(
@@ -108,6 +107,29 @@ export function useSharedContent() {
   }, [service, session]);
   const role =
     session && session.user.id === access.userId ? access.role : null;
+  const libraryKey = `${session?.user.id || "public"}:${role || "none"}`;
+  useEffect(() => {
+    if (!service) return;
+    let stopped = false;
+    void service
+      .list()
+      .then((list) => {
+        if (!stopped) {
+          setResources(list);
+          setLibraryOwner(libraryKey);
+        }
+      })
+      .catch((e: Error) => {
+        if (!stopped) {
+          setResources([]);
+          setLibraryOwner(libraryKey);
+          setError(e.message);
+        }
+      });
+    return () => {
+      stopped = true;
+    };
+  }, [service, libraryKey]);
   async function refreshAccess() {
     if (!service || !session) return;
     const result = await service.getAccess();
@@ -119,6 +141,7 @@ export function useSharedContent() {
     setError("");
     try {
       setResources(await service.list());
+      setLibraryOwner(libraryKey);
     } catch (e) {
       setError(
         e instanceof Error ? e.message : "Could not refresh shared resources.",
@@ -146,7 +169,8 @@ export function useSharedContent() {
       (role === "coach" &&
         service?.resourceAuthors.get(id) === session?.user.id),
     checking,
-    resources,
+    libraryReady: libraryOwner === libraryKey,
+    resources: libraryOwner === libraryKey ? resources : [],
     error,
     message,
     refresh,
@@ -170,11 +194,15 @@ export function useSharedContent() {
         throw new Error("Could not sign out. Reconnect and try again.");
       setAccess({ userId: "", role: null });
       setSession(null);
+      setResources([]);
+      setLibraryOwner("");
+      setMessage("");
       setError("");
     },
     async publish(drill: Drill, file: File) {
       if (!service) throw new Error("Shared publishing is not connected.");
       const saved = await service.publish(drill, file);
+      setLibraryOwner(libraryKey);
       setResources((current) => [
         saved,
         ...current.filter((d) => d.id !== saved.id),
@@ -183,6 +211,7 @@ export function useSharedContent() {
     async update(drill: Drill, file?: File) {
       if (!service) throw new Error("Shared publishing is not connected.");
       const saved = await service.update(drill, file);
+      setLibraryOwner(libraryKey);
       setResources((current) =>
         current.map((d) => (d.id === saved.id ? saved : d)),
       );

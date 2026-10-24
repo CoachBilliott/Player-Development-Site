@@ -52,14 +52,16 @@ const rowSchema = z.object({
     assetName: true,
     assetUrl: true,
     backendVersion: true,
+    visibility: true,
   }),
   asset_path: z.string().min(1),
   asset_type: z.string(),
   asset_name: z.string(),
   version: z.number().int().positive(),
+  visibility: z.enum(["public_sample", "member_only"]).default("public_sample"),
 });
 const columns =
-  "id,created_by,content,asset_path,asset_type,asset_name,version";
+  "id,created_by,content,asset_path,asset_type,asset_name,version,visibility";
 const bucket = "training-media";
 const connections = new Map<string, Promise<SharedContent>>();
 export async function connectSharedContent(config: SharedConfig) {
@@ -189,7 +191,7 @@ export class SharedContent {
     if (row.created_by) this.resourceAuthors.set(row.id, row.created_by);
     const { data } = await this.client.storage
       .from(bucket)
-      .createSignedUrl(row.asset_path, 3600, {
+      .createSignedUrl(row.asset_path, 300, {
         download: /^(image|video)\//.test(row.asset_type)
           ? false
           : row.asset_name,
@@ -202,6 +204,7 @@ export class SharedContent {
       assetType: row.asset_type,
       assetName: row.asset_name,
       backendVersion: row.version,
+      visibility: row.visibility,
       ...(data?.signedUrl ? { assetUrl: data.signedUrl } : {}),
     };
   }
@@ -251,6 +254,7 @@ export class SharedContent {
         assetName: true,
         assetUrl: true,
         backendVersion: true,
+        visibility: true,
       })
       .parse(drill);
   }
@@ -279,6 +283,7 @@ export class SharedContent {
         asset_type: file.type,
         asset_name: file.name,
         status: "published",
+        visibility: drill.visibility || "member_only",
       })
       .select(columns)
       .single();
@@ -289,7 +294,11 @@ export class SharedContent {
         .select(columns)
         .eq("id", drill.id)
         .maybeSingle();
-      if (check.data?.asset_path === path) return this.convert(check.data);
+      if (
+        check.data?.asset_path === path &&
+        check.data.visibility === (drill.visibility || "member_only")
+      )
+        return this.convert(check.data);
       if (!check.error) await this.client.storage.from(bucket).remove([path]);
       throw new Error(
         "Shared publication could not be confirmed. Keep this draft and refresh the shared library before retrying.",
@@ -309,6 +318,7 @@ export class SharedContent {
       .from("training_resources")
       .update({
         content,
+        visibility: drill.visibility || "member_only",
         asset_path: path,
         asset_type: file?.type || drill.assetType,
         asset_name: file?.name || drill.assetName,
@@ -328,6 +338,7 @@ export class SharedContent {
         confirmed.success &&
         confirmed.data.version === drill.backendVersion + 1 &&
         confirmed.data.asset_path === path &&
+        confirmed.data.visibility === (drill.visibility || "member_only") &&
         JSON.stringify(confirmed.data.content) === JSON.stringify(content)
       ) {
         if (file)

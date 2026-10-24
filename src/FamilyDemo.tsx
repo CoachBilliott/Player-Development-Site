@@ -43,10 +43,22 @@ function read(): DemoState {
     return empty;
   }
 }
-export function FamilyDemo() {
+export function FamilyDemo({
+  initialView = "parent",
+  focused = false,
+}: {
+  initialView?: "parent" | "athlete" | "individual";
+  focused?: boolean;
+}) {
   const [revision, setRevision] = useState(0),
-    [view, setView] = useState<"parent" | "athlete" | "individual">("parent"),
-    [selected, setSelected] = useState(samples[0].id),
+    [view, setView] = useState<"parent" | "athlete" | "individual">(
+      initialView,
+    ),
+    [selected, setSelected] = useState(
+      samples[
+        initialView === "individual" ? 3 : initialView === "athlete" ? 2 : 0
+      ].id,
+    ),
     [warning, setWarning] = useState("");
   const data = useMemo(() => {
     void revision;
@@ -194,16 +206,35 @@ export function FamilyDemo() {
     else if (selected === samples[3].id) setSelected(samples[0].id);
   }
   return (
-    <main className="page member-page family-demo">
+    <main
+      className={`page member-page family-demo ${focused && view === "athlete" ? "junior-workspace" : ""}`}
+    >
       <div className="member-heading">
         <Tag>FICTIONAL FAMILY DEMO</Tag>
         <h1 tabIndex={-1}>
-          One athlete.
-          <br />A parent in control.
+          {focused ? (
+            view === "parent" ? (
+              "Your family. Their next step."
+            ) : view === "individual" ? (
+              "Your training. Your next step."
+            ) : (
+              "Ready for your next practice?"
+            )
+          ) : (
+            <>
+              One athlete.
+              <br />A parent in control.
+            </>
+          )}
         </h1>
         <p>
-          Try separate athlete profiles, parent permissions and workout review.
-          Every person here is fictional.
+          {focused
+            ? view === "parent"
+              ? "Manage the fictional family roster, choose who may record practice, and review their reports."
+              : view === "individual"
+                ? "Meet Morgan, a fictional adult athlete. Try a session and track self-reported practice."
+                : "Hi Casey. Your parent chooses when you can record practice. Ask them to review your workout when you finish."
+            : "Try separate athlete profiles, parent permissions and workout review. Every person here is fictional."}
         </p>
       </div>
       <Notice>
@@ -216,30 +247,39 @@ export function FamilyDemo() {
           {warning}
         </p>
       )}
-      <div
-        className="scene-tabs family-view-tabs"
-        role="group"
-        aria-label="Family demo view"
-      >
-        <button
-          aria-pressed={view === "parent"}
-          onClick={() => changeView("parent")}
+      {!focused && (
+        <div
+          className="scene-tabs family-view-tabs"
+          role="group"
+          aria-label="Family demo view"
         >
-          Parent view
-        </button>
-        <button
-          aria-pressed={view === "athlete"}
-          onClick={() => changeView("athlete")}
-        >
-          Athlete view
-        </button>
-        <button
-          aria-pressed={view === "individual"}
-          onClick={() => changeView("individual")}
-        >
-          Individual athlete
-        </button>
-      </div>
+          <button
+            aria-pressed={view === "parent"}
+            onClick={() => changeView("parent")}
+          >
+            Parent view
+          </button>
+          <button
+            aria-pressed={view === "athlete"}
+            onClick={() => changeView("athlete")}
+          >
+            Athlete view
+          </button>
+          <button
+            aria-pressed={view === "individual"}
+            onClick={() => changeView("individual")}
+          >
+            Individual athlete
+          </button>
+        </div>
+      )}
+      {focused && view === "athlete" && (
+        <Notice>
+          Ask your parent to allow recording for Casey in the{" "}
+          <a href="#demo-parent">Parent demo</a>, then return here. Each athlete
+          sees only their own practice. Real junior logins remain closed.
+        </Notice>
+      )}
       <div
         className="family-athlete-picker"
         role="group"
@@ -287,6 +327,7 @@ export function FamilyDemo() {
         player={player}
         service={service}
         demo
+        junior={focused && view === "athlete"}
       />
       <a className="text-button" href="#account">
         Open real member access

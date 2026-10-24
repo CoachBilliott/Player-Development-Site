@@ -90,6 +90,7 @@ export const drillSchema = z.object({
   cue: z.string(),
   kind: z.enum(["movement", "hands", "read"]),
   source: z.enum(["sample", "local", "shared"]),
+  visibility: z.enum(["public_sample", "member_only"]).optional(),
   assetId: z.string().optional(),
   assetType: z.string().optional(),
   assetName: z.string().optional(),

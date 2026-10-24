@@ -15,11 +15,13 @@ export function AthleteTraining({
   service,
   demo = false,
   onConnectionChange,
+  junior = false,
 }: {
   player: PrivatePlayer;
   service: FamilyService;
   demo?: boolean;
   onConnectionChange?: () => Promise<void>;
+  junior?: boolean;
 }) {
   const [state, setState] = useState<FamilyState | null>(null),
     [error, setError] = useState(""),
@@ -99,7 +101,11 @@ export function AthleteTraining({
             {state?.is_family ? "FAMILY ATHLETE" : "INDIVIDUAL ATHLETE"}
           </Tag>
           <h2>{player.nickname}’s workouts</h2>
-          <p>One athlete. Their own plan and history.</p>
+          <p>
+            {junior
+              ? "Your next practice, one step at a time. Your parent reviews what you report."
+              : "One athlete. Their own plan and history."}
+          </p>
         </div>
         <button
           className="button secondary"

@@ -9,6 +9,7 @@ type Row = {
   asset_name: string;
   version: number;
   status: string;
+  visibility: "public_sample" | "member_only";
 };
 const userId = "10000000-0000-4000-8000-000000000001";
 const user = {
@@ -79,10 +80,16 @@ async function mockProject(
               ? [rows.get(id)!]
               : []
             : [...rows.values()]
-          ).map((row) => ({
-            ...row,
-            content: Object.fromEntries(Object.entries(row.content).sort()),
-          })),
+          )
+            .filter(
+              (row) =>
+                row.visibility !== "member_only" ||
+                headers.authorization?.includes(".fictional-signature"),
+            )
+            .map((row) => ({
+              ...row,
+              content: Object.fromEntries(Object.entries(row.content).sort()),
+            })),
         });
       if (method === "POST") {
         const body = request.postDataJSON();
@@ -181,6 +188,7 @@ test("configured shared publishing saves, edits across visitors, and removes a s
   await page
     .getByLabel("Step-by-step instructions")
     .fill("Draw a shape.\nPoint to it.\nPause with an adult.");
+  await page.getByLabel("Content access").selectOption("public_sample");
   await page.getByLabel("I have the rights").check();
   await page.getByRole("button", { name: "Preview matches" }).click();
   expect(rows.size).toBe(0);
@@ -293,4 +301,69 @@ test("connected upload space opens on shared publishing and offers a clearly loc
     page.getByRole("heading", { name: "Coach sign-in", exact: true }),
   ).toBeVisible();
   expect(rows.size).toBe(0);
+});
+
+test("protected uploads stay out of public demo pages and disappear immediately after sign-out", async ({
+  page,
+  context,
+  browser,
+}) => {
+  const rows = new Map<string, Row>();
+  await mockProject(context, rows);
+  await sharedSignIn(page);
+  await page
+    .getByLabel("Choose a video or file", { exact: true })
+    .setInputFiles({
+      name: "protected.txt",
+      mimeType: "text/plain",
+      buffer: Buffer.from(
+        "Original illustrative practice. Fictional data only.",
+      ),
+    });
+  await expect(page.getByLabel("Content access")).toHaveValue("member_only");
+  await page.getByLabel("Resource title").fill("Protected original practice");
+  await page
+    .getByLabel("Step-by-step instructions")
+    .fill("Point to a shape.\nPause with a practice partner.");
+  await page.getByLabel("I have the rights").check();
+  await page.getByRole("button", { name: "Preview matches" }).click();
+  await expect(
+    page.getByText(
+      "Destination: protected training library · staff review only",
+    ),
+  ).toBeVisible();
+  await page
+    .getByRole("button", { name: "Publish to shared library" })
+    .dblclick();
+  await expect(
+    page.getByText("Saved to the protected training library.", { exact: true }),
+  ).toBeVisible();
+  expect([...rows.values()][0].visibility).toBe("member_only");
+  await page.goto("./#member-library");
+  await expect(
+    page.getByRole("button", { name: "Preview Protected original practice" }),
+  ).toBeVisible();
+  await page.goto("./#library");
+  await page.getByRole("searchbox").fill("Protected original practice");
+  await expect(
+    page.getByRole("button", { name: /Protected original practice/ }),
+  ).toHaveCount(0);
+  const visitor = await browser.newContext();
+  await mockProject(visitor, rows);
+  const partner = await visitor.newPage();
+  await partner.goto(new URL("./#library", page.url()).href);
+  await partner.getByRole("searchbox").fill("Protected original practice");
+  await expect(
+    partner.getByRole("button", { name: /Protected original practice/ }),
+  ).toHaveCount(0);
+  await visitor.close();
+  await page.goto("./#coach");
+  await page.getByRole("button", { name: "Sign out", exact: true }).click();
+  await page.goto("./#member-library");
+  await expect(
+    page.getByRole("heading", { name: "Sign in to open your workspace." }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Protected original practice", { exact: true }),
+  ).toHaveCount(0);
 });

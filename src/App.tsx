@@ -58,12 +58,21 @@ import { usePwa } from "./pwa";
 import { InstallApp } from "./InstallApp";
 import { MemberAccountPage } from "./MemberAccount";
 import { FamilyDemo } from "./FamilyDemo";
-const NAV = [
-  ["today", "Today"],
-  ["library", "Drill library"],
-  ["progress", "My progress"],
-  ["coach", "Coach studio"],
-] as const;
+import {
+  DemoHub,
+  Workspace,
+  AccessWorkspace,
+  WorkspaceLibrary,
+  LaunchReadiness,
+  ViewPreview,
+  OwnerAccessPreview,
+} from "./Workspaces";
+import {
+  navigationFor,
+  isDemoPage,
+  PREVIEW_VIEWS,
+  type PreviewView,
+} from "./views";
 const safeHash = () => {
   const value = window.location.hash.slice(1);
   return [
@@ -78,6 +87,14 @@ const safeHash = () => {
     "install",
     "account",
     "family-demo",
+    "demo",
+    "workspace",
+    "access",
+    "member-library",
+    "launch",
+    "demo-owner-access",
+    "demo-launch",
+    ...PREVIEW_VIEWS.map((view) => `demo-${view}`),
   ].includes(value)
     ? value
     : "home";
@@ -134,7 +151,11 @@ export default function App() {
       return false;
     }
   }
-  const drills = [...DRILLS, ...shared.resources, ...state.custom];
+  const drills = [
+    ...DRILLS,
+    ...shared.resources.filter((d) => d.visibility === "public_sample"),
+    ...state.custom,
+  ];
   const profile = state.profile;
   function requestStart(ids: string[]) {
     if (!profile) {
@@ -279,21 +300,32 @@ export default function App() {
     page === "onboarding" ||
     ((page === "today" || page === "session" || page === "progress") &&
       !profile);
+  const nav = navigationFor(page, shared.role);
+  const privatePage =
+    ["workspace", "account", "access", "member-library", "launch"].includes(
+      page,
+    ) ||
+    (page === "coach" && shared.signedIn);
+  const demoPage = isDemoPage(page);
   return (
     <MotionShell>
       <div className="demo-strip">
         <span className="live-dot" />{" "}
-        {page === "account" ? "MEMBER ACCOUNTS" : "SAMPLE-DATA DEMO"}{" "}
+        {privatePage
+          ? "PRIVATE WORKSPACE"
+          : demoPage
+            ? "SAMPLE-DATA DEMO"
+            : "PLAYER DEVELOPMENT · PREVIEW"}{" "}
         <span className="strip-divider">/</span>
         <span>
-          {page === "account"
+          {privatePage
             ? "Private adult & parent-managed profiles"
-            : "Fictional profiles · No account required"}
+            : demoPage
+              ? "Fictional profiles · No account required"
+              : "American football · More sports in the future"}
         </span>
         <span className="strip-note">
-          {page === "account"
-            ? "Public demo stays separate"
-            : "No account needed"}{" "}
+          {privatePage ? "Public demo stays separate" : "No account needed"}{" "}
           <ArrowUpRight size={13} />
         </span>
       </div>
@@ -301,7 +333,7 @@ export default function App() {
         <div className="header-inner">
           <Logo />
           <nav className="desktop-nav" aria-label="Main navigation">
-            {NAV.map(([id, label]) => (
+            {nav.map(([id, label]) => (
               <a
                 key={id}
                 className={page === id ? "active" : ""}
@@ -313,8 +345,11 @@ export default function App() {
             ))}
           </nav>
           <div className="header-actions">
-            <a className="member-header-link" href="#account">
-              {shared.signedIn ? "My account" : "Member access"}
+            <a
+              className="member-header-link"
+              href={shared.signedIn ? "#workspace" : "#account"}
+            >
+              {shared.signedIn ? "My workspace" : "Member access"}
             </a>
             <a
               className="header-demo"
@@ -343,14 +378,15 @@ export default function App() {
         </div>
         {menu && (
           <nav className="mobile-nav" aria-label="Mobile navigation">
-            {NAV.map(([id, label]) => (
+            {nav.map(([id, label]) => (
               <a key={id} href={`#${id}`}>
                 {label}
                 <ArrowUpRight size={18} />
               </a>
             ))}
             <a href="#account">
-              Member access <ArrowUpRight size={18} />
+              {shared.signedIn ? "Account settings" : "Member access"}{" "}
+              <ArrowUpRight size={18} />
             </a>
             <a href="#membership">
               Future memberships
@@ -359,6 +395,11 @@ export default function App() {
             <a href="#install">
               Get the app <ArrowUpRight size={18} />
             </a>
+            {!privatePage && (
+              <a href="#coach">
+                Staff sign-in <ArrowUpRight size={18} />
+              </a>
+            )}
           </nav>
         )}
       </header>
@@ -385,6 +426,34 @@ export default function App() {
             onChoose={chooseProfile}
             onCancel={() => go(profile ? "today" : "home")}
           />
+        ) : page === "demo" ? (
+          <DemoHub />
+        ) : page === "workspace" ? (
+          <Workspace shared={shared} />
+        ) : page === "access" ? (
+          <AccessWorkspace shared={shared} />
+        ) : page === "member-library" ? (
+          <WorkspaceLibrary
+            key={`${shared.session?.user.id}-${shared.role}`}
+            shared={shared}
+          />
+        ) : page === "launch" ? (
+          <LaunchReadiness shared={shared} />
+        ) : page === "demo-owner-access" ? (
+          <OwnerAccessPreview />
+        ) : page === "demo-launch" ? (
+          <LaunchReadiness demo />
+        ) : page.startsWith("demo-") ? (
+          <ViewPreview
+            view={page.slice(5) as PreviewView}
+            editor={{
+              onPublish: publish,
+              onUpdate: updateResource,
+              onRemove: removeResource,
+              resources: state.custom,
+              lockedIds: state.run?.drillIds,
+            }}
+          />
         ) : page === "family-demo" ? (
           <FamilyDemo />
         ) : page === "account" ? (
@@ -400,7 +469,12 @@ export default function App() {
             onOpen={setDetail}
           />
         ) : page === "library" ? (
-          <Library drills={drills} onOpen={setDetail} />
+          <Library
+            drills={drills.filter(
+              (d) => d.source !== "shared" || d.visibility === "public_sample",
+            )}
+            onOpen={setDetail}
+          />
         ) : page === "progress" && profile ? (
           <Progress
             profile={profile}
@@ -451,6 +525,8 @@ export default function App() {
             <a href="#home">About the demo</a>
             <a href="#account">Member access</a>
             <a href="#family-demo">Try the family demo</a>
+            <a href="#demo">Explore every demo view</a>
+            <a href="#coach">Staff sign-in</a>
             <a href="#install">
               Get the app <ArrowUpRight size={14} />
             </a>
@@ -651,8 +727,9 @@ function Home() {
             </button>
           </div>
           <p className="member-home-link">
-            Parents and athletes: <a href="#family-demo">Try the family demo</a>
-            . Ready for your own account?{" "}
+            One platform, different spaces:{" "}
+            <a href="#demo">Explore all demo views</a>. Ready for your own
+            account?{" "}
             <a href="#account">
               Member access <ArrowUpRight size={14} />
             </a>

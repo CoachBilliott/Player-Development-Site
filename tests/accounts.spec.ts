@@ -150,8 +150,11 @@ function fixture(
           };
           return route.fulfill({
             json: {
-              is_family: true,
-              is_parent: p.owner_id === id,
+              is_family:
+                accounts.get(p.owner_id as string)?.account_type === "parent",
+              is_parent:
+                accounts.get(p.owner_id as string)?.account_type === "parent" &&
+                p.owner_id === id,
               can_record: p.owner_id === id || permission.allowed,
               self_recording_allowed: permission.allowed,
               permission_version: permission.version,
@@ -249,10 +252,21 @@ function fixture(
               (sum: number, d: (typeof DRILLS)[number]) => sum + d.minutes,
               0,
             ),
-            status: p.owner_id === id ? "approved" : "pending_parent",
+            status:
+              p.owner_id === id
+                ? accounts.get(id)?.account_type === "parent"
+                  ? "approved"
+                  : "self_reported"
+                : "pending_parent",
             created_at: new Date().toISOString(),
-            reviewed_by: p.owner_id === id ? id : null,
-            reviewed_at: p.owner_id === id ? new Date().toISOString() : null,
+            reviewed_by:
+              p.owner_id === id && accounts.get(id)?.account_type === "parent"
+                ? id
+                : null,
+            reviewed_at:
+              p.owner_id === id && accounts.get(id)?.account_type === "parent"
+                ? new Date().toISOString()
+                : null,
             version: 1,
           };
           workouts.set(row.id, row);
@@ -941,6 +955,13 @@ test("a private family athlete joins with a parent code, reports practice withou
   await page
     .getByRole("button", { name: "Connect my athlete profile" })
     .click();
+  await page.goto("./#workspace");
+  await expect(
+    page.getByRole("heading", {
+      name: "Ready for your next practice?",
+      exact: true,
+    }),
+  ).toBeVisible();
   await expect(
     page.getByRole("heading", { name: "Fictional Pat’s workouts" }),
   ).toBeVisible();
@@ -1006,4 +1027,119 @@ test("a private family athlete joins with a parent code, reports practice withou
     page.getByRole("heading", { name: "Your parent manages athlete access." }),
   ).toBeVisible();
   await expect(page.getByLabel("Account type")).toHaveCount(0);
+});
+
+for (const [role, heading] of [
+  ["owner", "Your platform. Your playbook."],
+  ["manager", "Keep the team moving."],
+  ["coach", "Build the next great practice."],
+] as const) {
+  test(`${role} receives the matching authenticated workspace and cannot use demo selection to elevate permissions`, async ({
+    page,
+    context,
+  }) => {
+    const backend = fixture(false, false, role);
+    await backend.install(context);
+    await signIn(page);
+    await page.goto("./#workspace");
+    await expect(
+      page.getByRole("heading", { name: heading, exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: /Upload a workout/, exact: false }),
+    ).toBeVisible();
+    await page.goto("./#demo-owner");
+    await expect(
+      page.getByRole("heading", {
+        name: "Your platform. Your playbook.",
+        exact: true,
+      }),
+    ).toBeVisible();
+    await page.goto("./#workspace");
+    await expect(
+      page.getByRole("heading", { name: heading, exact: true }),
+    ).toBeVisible();
+    await page.goto("./#access");
+    if (role === "owner")
+      await expect(
+        page.getByRole("button", { name: "Manage account access" }),
+      ).toBeVisible();
+    else
+      await expect(
+        page.getByRole("heading", { name: "Owner access is required." }),
+      ).toBeVisible();
+    expect(backend.counts.roleWrites).toBe(0);
+  });
+}
+test("Parent and adult Athlete workspaces use private profiles; inactive memberships never unlock protected training", async ({
+  page,
+  context,
+}) => {
+  const backend = fixture(false, false, "parent");
+  await backend.install(context);
+  backend.accounts.set(parentId, {
+    user_id: parentId,
+    account_type: "parent",
+    adult_confirmed_at: "2026-01-01T00:00:00Z",
+    privacy_acknowledged_at: "2026-01-01T00:00:00Z",
+    privacy_version: "prototype-2026-01",
+  });
+  backend.accounts.set(otherId, {
+    user_id: otherId,
+    account_type: "adult",
+    adult_confirmed_at: "2026-01-01T00:00:00Z",
+    privacy_acknowledged_at: "2026-01-01T00:00:00Z",
+    privacy_version: "prototype-2026-01",
+  });
+  const player = {
+    id: crypto.randomUUID(),
+    owner_id: otherId,
+    nickname: "Fictional Solo",
+    age_group: "18+",
+    sport: "football",
+    position: "Defensive back",
+    experience: "Experienced",
+    goal: "Game understanding",
+    guardian_confirmed: false,
+    version: 1,
+  };
+  backend.players.set(player.id, player);
+  await signIn(page);
+  await page.goto("./#workspace");
+  await expect(
+    page.getByRole("heading", {
+      name: "Your family. Their next step.",
+      exact: true,
+    }),
+  ).toBeVisible();
+  await expect(page.getByText("Fictional Solo", { exact: true })).toHaveCount(
+    0,
+  );
+  await page.goto("./#member-library");
+  await expect(
+    page.getByRole("heading", { name: "Memberships are not active yet." }),
+  ).toBeVisible();
+  await page.goto("./#account");
+  await page.getByRole("button", { name: "Sign out of this browser" }).click();
+  await signIn(page, "fictional-adult@example.test");
+  await page.goto("./#workspace");
+  await expect(
+    page.getByRole("heading", {
+      name: "Your training. Your next step.",
+      exact: true,
+    }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", {
+      name: "Fictional Solo’s workouts",
+      exact: true,
+    }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Start sample workout", exact: true }),
+  ).toBeVisible();
+  await page.goto("./#access");
+  await expect(
+    page.getByRole("heading", { name: "Owner access is required." }),
+  ).toBeVisible();
 });

@@ -472,7 +472,7 @@ test("all screens fit mobile and navigation is keyboard accessible", async ({
     await page.getByRole("button", { name: "Open navigation" }).click();
     await page
       .getByRole("navigation", { name: "Mobile navigation" })
-      .getByRole("link", { name: "Coach studio" })
+      .getByRole("link", { name: "Staff sign-in" })
       .click();
     await expect(
       page.getByRole("heading", { name: "Coach content studio" }),

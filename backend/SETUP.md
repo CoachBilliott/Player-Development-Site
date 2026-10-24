@@ -1,6 +1,6 @@
 # Player Development backend — private adult pilot
 
-The dedicated project `iilbulpqbuknhdpmtrvm` is connected. Migrations `001-shared-content.sql`, `002-private-profiles.sql`, `003-account-levels.sql` and `004-family-athletes.sql` were applied once and verified against the live project. Do not rerun the initial migrations against this installed schema.
+The dedicated project `iilbulpqbuknhdpmtrvm` is connected. Migrations `001-shared-content.sql`, `002-private-profiles.sql`, `003-account-levels.sql`, `004-family-athletes.sql` and `005-content-audiences.sql` were applied once and verified against the live project. Do not rerun the initial migrations against this installed schema.
 
 The site URL and exact verification/recovery redirect URLs point to `https://coachbilliott.github.io/Player-Development-Site/`. Email confirmation is required and passwords require at least 12 characters. Management access is supplied securely by the owner; no administrative credential belongs in the repository, browser configuration, test fixtures or chat.
 
@@ -64,7 +64,7 @@ The live acceptance check uses only fictional adult family identities inside a r
 - Adult-player accounts can only create adult profiles. Real child logins remain gated; there are no public profiles, messaging or implicit coach access to player data.
 - Profiles are fetched online into memory. Only the authentication session persists locally; member profiles are not placed in demo localStorage, IndexedDB, the service worker cache or offline pages. Identity changes clear the member view, including cross-tab sign-out.
 - Member profile-data deletion cascades through that household's players. **The Auth email login remains**; full login erasure and provider backup retention require the project owner. The interface explicitly explains this difference. No hidden payment relationship is created.
-- Shared coach media publish/edit/replace/delete, explicit coach allowlist, public published sample reads, private media bucket with one-hour signed links, 12 MB/type limits and optimistic versions.
+- Shared coach media publish/edit/replace/delete, explicit coach allowlist, explicit public sample reads, protected staff-only content and a private media bucket with five-minute signed links, 12 MB/type limits and optimistic versions.
 - The existing fictional profiles, local uploads and demo practice history remain separate and never import into member accounts.
 
 ## Live acceptance before activation
@@ -81,3 +81,7 @@ Use fictional adult test identities only. Do not enter real children's informati
 ## Still outside this activation
 
 Payments, package definitions, recurring billing, unpaid-access suspension, entitlement enforcement, advanced real-member training integrations, native App Store/Play Store apps, verified guardian identity and reviewed real training prescriptions are not implemented. The current training remains illustrative and pending qualified review. No pricing, player allowance, scholarship or recruiting outcome is promised.
+
+## Separate workspaces and protected content
+
+Migration 005 is applied. Existing and new shared resources default to protected staff review (`member_only`). Only explicitly selected `public_sample` resources can be read by visitors. Parent/Athlete sign-in alone grants no protected training entitlement. RLS restricts metadata and media-signing selection; Owners/Managers review all protected resources and Coaches review their own. Existing private-profile policies remain in force. Signed media URLs last five minutes and already issued bearer URLs remain valid until expiry. There are no package grants, payment checkout or active subscriptions. See [VIEWS-GUIDE.md](../VIEWS-GUIDE.md) for routes, fictional previews, tests and remaining launch requirements. Live verification used only temporary fictional adult identities in a rolled-back transaction and confirmed zero remaining fixtures; no emails or child accounts were created.

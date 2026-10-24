@@ -6,11 +6,11 @@ Open [Coach studio](https://coachbilliott.github.io/Player-Development-Site/#coa
 
 1. Leave **Shared website** selected. Sign in with your existing Owner, Manager or Coach account. If you are already signed in with staff access, the editor opens directly.
 2. Tap **Choose a video or file** and select an original sample attachment from Photos or Files. Nothing is sent to storage yet. The workout fields appear, and the filename becomes an editable title.
-3. Write one practice step per line. Select a sample-audience shortcut or adjust ages, experience, position and primary skill yourself. Set planned practice minutes and confirm your rights to the illustrative sample material. Check the audience is suitable for that activity.
+3. Write one practice step per line. Select a sample-audience shortcut or adjust ages, experience, position and primary skill yourself. For shared uploads, leave **Content access** on protected staff review, or explicitly choose **Public demo sample** for a free resource. Set planned practice minutes and confirm your rights to the illustrative sample material. Check the audience is suitable for that activity.
 4. Tap **Preview matches**. Check the file, instructions, destination and matching fictional players. **Back to editing** keeps your draft. Tap **Publish to shared library** once and wait for success.
-5. Open **Drill library** and search for the title. Your partner can see a shared resource from another device after refreshing.
+5. Protected uploads appear in the **staff content library** for authorized staff. Explicit public samples appear in the demo **Drill library**. Your partner needs the appropriate staff account to review protected resources.
 
-Publishing shared content currently makes it visible to website visitors. Paid-package restrictions are not active. Do not upload private player information or real children's information. Content remains illustrative pending qualified review.
+New shared content defaults to protected staff review. Only an explicit Public demo sample is visible to website visitors. Paid member access is not active. Do not upload private player information or real children's information. Content remains illustrative pending qualified review.
 
 ## Practice first without signing in
 

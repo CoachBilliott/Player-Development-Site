@@ -6,7 +6,7 @@ A standalone, responsive virtual player-practice demo, beginning with American f
 
 Open [Member access](https://coachbilliott.github.io/Player-Development-Site/#account). The dedicated backend is connected for an invite-only adult pilot. Public registration remains closed; existing pilot accounts can sign in and reset their password. The repository now includes adult signup, email verification/recovery, private parent/adult account setup, private player create/edit/delete, identity isolation and server row-level security. Real under-18 enrollment and child self-access remain closed at the database until verified consent/privacy setup is complete. Parents can explore the complete family flow using fictional sample athletes. No demo records are imported. No payment package or price is needed for profile setup.
 
-See [backend setup and current pilot status](backend/SETUP.md). All four migrations have been applied to the dedicated owner-controlled project; do not rerun them. Live database privacy checks pass, while inbox delivery and owner activation require confirmation. Do not add real child information in the pilot. Full Auth-login erasure requires the owner; the self-service delete action removes member/profile data only. Private sample-workout reports and parent reviews now sync through the backend. Payments and advanced training/progress integrations remain future work.
+See [backend setup and current pilot status](backend/SETUP.md). All five migrations have been applied to the dedicated owner-controlled project; do not rerun them. Live database privacy checks pass, while inbox delivery and owner activation require confirmation. Do not add real child information in the pilot. Full Auth-login erasure requires the owner; the self-service delete action removes member/profile data only. Private sample-workout reports and parent reviews now sync through the backend. Payments and advanced training/progress integrations remain future work.
 
 ## Account levels
 
@@ -19,6 +19,10 @@ Try [the fictional family demo](https://coachbilliott.github.io/Player-Developme
 For real private pilot profiles, open **My account → Workouts & permissions**. Parents may generate a one-time private connection code for an eligible athlete's separate verified account. Each athlete accesses only that individual profile, not siblings or parent controls. Family reports are pending until parent review; standalone adult practice is labeled self-reported. Server metadata derives titles/minutes from the original sample catalog. Parent review is not evidence of improved athletic ability. Unfinished practice is not saved on refresh; submitted reports and reviews are saved remotely.
 
 The live child gates remain closed. Child self-access additionally requires a trusted consent-review record; parents cannot self-certify it or bypass it by editing age bands. A known guardian-managed account cannot reset itself into an adult/parent account after revocation. Adult family connections require the adult athlete to accept; existing independent profiles are never silently merged or discarded. Account invitations, reviewed curriculum and the full verified-consent/age-transition/support process remain launch requirements.
+
+## Separate views
+
+Open [all demo views](https://coachbilliott.github.io/Player-Development-Site/#demo) to inspect fictional Owner, Manager, Coach, Parent, Adult Athlete and Junior experiences. Signed-in accounts open their actual server-assigned [workspace](https://coachbilliott.github.io/Player-Development-Site/#workspace). Public navigation keeps marketing, demo and sign-in separate; the full library is not offered as free public training. See [the views and protected-content guide](VIEWS-GUIDE.md). Real child access and subscriptions remain closed.
 
 ## Easy workout uploads
 

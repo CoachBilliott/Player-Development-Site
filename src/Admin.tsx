@@ -32,6 +32,12 @@ export function Admin({
   const [pendingEdit, setPendingEdit] = useState<Drill | null>(null);
   const [removing, setRemoving] = useState<Drill | null>(null);
   const [savedEdit, setSavedEdit] = useState(false);
+  const [visibility, setVisibility] = useState<"member_only" | "public_sample">(
+    "member_only",
+  );
+  const [savedVisibility, setSavedVisibility] = useState<
+    "member_only" | "public_sample"
+  >("member_only");
   const [draftId, setDraftId] = useState(() => crypto.randomUUID());
   const [file, setFile] = useState<File>();
   const [error, setError] = useState("");
@@ -70,6 +76,7 @@ export function Admin({
     cue: "Take your time and pause whenever needed.",
     kind: "movement",
     source: shared ? "shared" : "local",
+    visibility: shared ? visibility : "public_sample",
     ...(editing
       ? {
           assetId: editing.assetId,
@@ -81,6 +88,7 @@ export function Admin({
       : {}),
   };
   function reset() {
+    setVisibility("member_only");
     setEditing(null);
     setDraftId(crypto.randomUUID());
     setFile(undefined);
@@ -98,6 +106,7 @@ export function Admin({
     if (input.current) input.current.value = "";
   }
   function edit(resource: Drill) {
+    setVisibility(resource.visibility || "public_sample");
     setEditing(resource);
     setFile(undefined);
     setTitle(resource.title);
@@ -146,6 +155,7 @@ export function Admin({
       else if (file) await onPublish(draft, file);
       else return;
       setSavedEdit(Boolean(editing));
+      setSavedVisibility(visibility);
       reset();
       setPublished(true);
     } catch (e) {
@@ -186,7 +196,7 @@ export function Admin({
         </ol>
         <p>
           {shared
-            ? "Published shared resources appear in the drill library for website visitors after refresh. Shared content is public sample material; paid-package access is not active."
+            ? "New shared uploads default to protected staff review. Only resources explicitly marked Public demo sample appear for free in the demo. Paid-package access is not active."
             : "This is a practice upload. To share with your partner, choose Shared website and sign in with a staff account."}
         </p>
         <p>
@@ -198,9 +208,9 @@ export function Admin({
       </details>
       {shared ? (
         <Notice>
-          <strong>Shared sample publishing.</strong> Changes reach visitors to
-          this website after refresh. Only approved coach accounts can publish.
-          Use original or licensed, fictional sample content only. This does not
+          <strong>Staff publishing.</strong> Choose protected content or a free
+          public demo sample. Only approved staff accounts can publish. Use
+          original or licensed, fictional sample content only. This does not
           create player accounts. Drafts are not saved: stay on this screen
           until publishing finishes.
         </Notice>
@@ -220,13 +230,29 @@ export function Admin({
               {savedEdit
                 ? "Resource changes saved."
                 : shared
-                  ? "Published to the shared sample library."
+                  ? savedVisibility === "member_only"
+                    ? "Saved to the protected training library."
+                    : "Published to the shared sample library."
                   : "Published to your local demo library."}
             </strong>
             <p>
-              Find your drill in the <a href="#library">drill library</a>.
+              Find your resource in the{" "}
+              <a
+                href={
+                  shared && savedVisibility === "member_only"
+                    ? "#member-library"
+                    : "#library"
+                }
+              >
+                {shared && savedVisibility === "member_only"
+                  ? "staff content library"
+                  : "demo drill library"}
+              </a>
+              .
               {shared
-                ? "Refresh another device to see the shared update."
+                ? savedVisibility === "member_only"
+                  ? "Protected resources remain staff-only until memberships are connected."
+                  : "Refresh another device to see the shared update."
                 : "It will remain here after refresh on this browser."}
             </p>
           </div>
@@ -270,7 +296,9 @@ export function Admin({
           <h2>{draft.title}</h2>
           <p className="upload-destination">
             {shared
-              ? "Destination: shared website · visible to visitors after publishing"
+              ? visibility === "member_only"
+                ? "Destination: protected training library · staff review only"
+                : "Destination: shared website · free public demo sample"
               : "Destination: this browser only · practice upload"}
           </p>
           <p>
@@ -318,9 +346,13 @@ export function Admin({
           )}
           <Notice>
             Publishing makes this illustrative resource available{" "}
-            {shared ? "to website visitors" : "locally"}. It does not certify
-            its safety, accuracy, or coaching quality. Qualified content review
-            is required before real training use.
+            {shared
+              ? visibility === "member_only"
+                ? "to authorized staff for review only"
+                : "to website visitors as a free sample"
+              : "locally"}
+            . It does not certify its safety, accuracy, or coaching quality.
+            Qualified content review is required before real training use.
           </Notice>
           <p className="form-error" role="alert">
             {error}
@@ -440,6 +472,28 @@ export function Admin({
                   onChange={(e) => setInstructions(e.target.value)}
                 />
               </label>
+              {shared && (
+                <label>
+                  Content access
+                  <select
+                    value={visibility}
+                    onChange={(e) =>
+                      setVisibility(e.target.value as typeof visibility)
+                    }
+                  >
+                    <option value="member_only">
+                      Protected training — staff review only
+                    </option>
+                    <option value="public_sample">
+                      Public demo sample — free for everyone
+                    </option>
+                  </select>
+                  <span className="upload-hint">
+                    Protected is the default. Member package access is not
+                    active yet; this choice does not start a subscription.
+                  </span>
+                </label>
+              )}
               <div
                 className="audience-shortcuts"
                 role="group"

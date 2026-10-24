@@ -21,7 +21,13 @@ import { AccountAccess } from "./AccountAccess";
 import { FamilyTraining } from "./family";
 import { AthleteTraining } from "./FamilyTraining";
 
-export function MemberAccountPage({ shared }: { shared: SharedState }) {
+export function MemberAccountPage({
+  shared,
+  workspace = false,
+}: {
+  shared: SharedState;
+  workspace?: boolean;
+}) {
   if (shared.loading)
     return (
       <main className="page narrow member-page">
@@ -71,6 +77,7 @@ export function MemberAccountPage({ shared }: { shared: SharedState }) {
       key={shared.session?.user.id || "visitor"}
       shared={shared}
       service={new Accounts(shared.service.client)}
+      workspace={workspace}
     />
   );
 }
@@ -103,9 +110,11 @@ function AccountPrinciples() {
 function ConnectedAccount({
   shared,
   service,
+  workspace,
 }: {
   shared: SharedState;
   service: Accounts;
+  workspace: boolean;
 }) {
   const client = service.client;
   const [familyService] = useState(() => new FamilyTraining(client));
@@ -280,7 +289,9 @@ function ConnectedAccount({
     });
   }
   return (
-    <main className="page member-page">
+    <main
+      className={`page member-page ${workspace ? "workspace-page" : ""} ${workspace && linkedPlayer?.age_group !== "18+" && linkedPlayer ? "junior-workspace" : ""}`}
+    >
       {shared.connectionError && (
         <p className="form-error member-feedback" role="alert">
           {shared.connectionError}
@@ -291,14 +302,24 @@ function ConnectedAccount({
           <LockKeyhole size={14} /> PRIVATE MEMBER SPACE
         </Tag>
         <h1 tabIndex={-1}>
-          {userId
-            ? "Your account. Your players."
-            : "A clear start. A private account."}
+          {workspace && userId
+            ? shared.role === "parent"
+              ? "Your family. Their next step."
+              : linkedPlayer && linkedPlayer.age_group !== "18+"
+                ? "Ready for your next practice?"
+                : "Your training. Your next step."
+            : userId
+              ? "Your account. Your players."
+              : "A clear start. A private account."}
         </h1>
         <p>
-          {userId
-            ? "Your household’s profiles stay separate from the public demo."
-            : "An adult account is the starting point. No credit card or subscription required."}
+          {workspace && userId
+            ? shared.role === "parent"
+              ? "Add your family athletes, choose their permissions and review practice, one athlete at a time."
+              : "One individual profile. Your own plan and honest practice history."
+            : userId
+              ? "Your household’s profiles stay separate from the public demo."
+              : "An adult account is the starting point. No credit card or subscription required."}
         </p>
       </div>
       {error && (
@@ -311,7 +332,14 @@ function ConnectedAccount({
           {message}
         </p>
       )}
-      {userId && !recovery && <AccountAccess shared={shared} />}
+      {userId && !recovery && !workspace && (
+        <>
+          <a className="button workspace-entry" href="#workspace">
+            Open my workspace <ArrowRight size={18} />
+          </a>
+          <AccountAccess shared={shared} />
+        </>
+      )}
       {userId &&
         !recovery &&
         !linkedPlayer &&
@@ -596,6 +624,7 @@ function ConnectedAccount({
             player={linkedPlayer}
             service={familyService}
             onConnectionChange={refresh}
+            junior={linkedPlayer.age_group !== "18+"}
           />
         </>
       ) : guardianManaged ? (
@@ -689,6 +718,30 @@ function ConnectedAccount({
         </div>
       ) : (
         <>
+          {workspace &&
+            account.account_type === "adult" &&
+            ownedPlayers.length === 1 && (
+              <AthleteTraining
+                player={ownedPlayers[0]}
+                service={familyService}
+              />
+            )}
+          {workspace && account.account_type === "parent" && (
+            <div className="workspace-metrics">
+              <div>
+                <strong>{ownedPlayers.length}</strong>
+                <span>Private family athletes</span>
+              </div>
+              <div>
+                <strong>You decide</strong>
+                <span>Separate recording permission for each athlete</span>
+              </div>
+              <div>
+                <strong>Parent review</strong>
+                <span>Athlete reports wait for your approval</span>
+              </div>
+            </div>
+          )}
           <div className="member-toolbar">
             <div>
               <Tag>
