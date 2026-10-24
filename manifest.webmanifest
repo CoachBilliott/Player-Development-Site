@@ -1,16 +1,31 @@
 {
   "id": "./",
-  "name": "Player Development — Training Demo",
+  "name": "Player Development",
   "short_name": "PD Training",
-  "description": "Guided American football practice with fictional sample players.",
+  "description": "Athlete development for individuals and families. Football sample training available now; other sports are future offerings.",
   "start_url": "./?source=app#home",
   "scope": "./",
   "display": "standalone",
   "background_color": "#0a121c",
   "theme_color": "#0a121c",
   "icons": [
-    { "src": "icons/app-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "icons/app-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "icons/app-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/app-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ]
 }
