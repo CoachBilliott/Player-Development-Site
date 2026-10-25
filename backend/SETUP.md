@@ -1,6 +1,6 @@
 # Player Development backend — private adult pilot
 
-The dedicated project `iilbulpqbuknhdpmtrvm` is connected. Migrations `001-shared-content.sql`, `002-private-profiles.sql`, `003-account-levels.sql`, `004-family-athletes.sql` and `005-content-audiences.sql` were applied once and verified against the live project. Migration `006-assigned-training-and-video-review.sql` is now also installed; it adds private assigned workouts and optional coach video review without opening billing or junior access. Migration `007-training-assignment-cleanup.sql` is also installed. Migration `008-workout-builder.sql` is installed for private workout templates and snapshot assignments. Do not rerun migrations 001–008 against this installed schema.
+The dedicated project `iilbulpqbuknhdpmtrvm` is connected. Migrations `001-shared-content.sql`, `002-private-profiles.sql`, `003-account-levels.sql`, `004-family-athletes.sql` and `005-content-audiences.sql` were applied once and verified against the live project. Migration `006-assigned-training-and-video-review.sql` is now also installed; it adds private assigned workouts and optional coach video review without opening billing or junior access. Migration `007-training-assignment-cleanup.sql` is also installed. Migration `008-workout-builder.sql` is installed for private workout templates and snapshot assignments. Migration `009-content-review-and-practice-resume.sql` is installed for shared draft approval, private resume and MOV/40 MB shared attachments. Do not rerun migrations 001–009 against this installed schema.
 
 The site URL and exact verification/recovery redirect URLs point to `https://coachbilliott.github.io/Player-Development-Site/`. Email confirmation is required and passwords require at least 12 characters. Management access is supplied securely by the owner; no administrative credential belongs in the repository, browser configuration, test fixtures or chat.
 
@@ -15,7 +15,7 @@ Supabase's built-in email sender is restricted and rate limited. The owner appro
 ## Verification performed
 
 - Live project identity and public Auth endpoint checked using the owner's supplied connection.
-- All fifteen public tables have row-level security enabled. Anonymous REST reads can access published training but receive permission-denied responses for member accounts and profiles.
+- All public application tables have row-level security enabled. Anonymous REST reads can access published training but receive permission-denied responses for member accounts and profiles.
 - Live transaction tests create only fictional temporary adult Auth/profile fixtures, exercise owner create/read/edit/version checks and cross-household read/write/delete rejection, reject account-type escalation and under-18 creation, and roll back every fixture. The cleanup check confirms zero remaining test users.
 - Browser tests intercept fictional backend responses and never use the owner's live project. They cover the actual SDK, email callbacks, private-profile CRUD and account switching. Local/hosted checks and actual public deployment must still be confirmed for each release.
 - Provider-issued activation/invitation/recovery links may use an implicit email callback. The app removes tokens from the URL and validates the session through Supabase Auth before showing account controls. Browser-initiated signup/recovery continues to use PKCE and requires the same browser for the callback.
@@ -32,9 +32,9 @@ Supabase's built-in email sender is restricted and rate limited. The owner appro
 
 | Level   | Implemented permissions                                                                                                                                |
 | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Owner   | Assign levels to existing verified adult accounts; manage all shared training resources. Own access cannot be changed through the website.             |
-| Manager | Manage shared training content across coaches. Cannot assign levels or read the account directory.                                                     |
-| Coach   | Publish and manage resources they created. Can read published content from other coaches but cannot edit their drafts/resources or remove their files. |
+| Owner   | Assign levels to existing verified adult accounts; manage all shared resources and approve/request changes. Own access cannot be changed through the website.             |
+| Manager | Manage shared content across coaches and approve/request changes. Cannot assign levels or read the account directory.                                                     |
+| Coach   | Create, edit and submit their own shared drafts; cannot approve publication. Can read published content from other coaches but cannot edit their drafts/resources or remove their files. |
 | Parent  | Add private family athletes, control self-recording and review practice. Real under-18 enrollment remains closed.                                      |
 | Athlete | Use one individual profile, standalone or family-connected. Cannot approve their own family reports.                                                   |
 
@@ -64,7 +64,7 @@ The live acceptance check uses only fictional adult family identities inside a r
 - Adult-player accounts can only create adult profiles. Real child logins remain gated; there are no public profiles, messaging or implicit coach access to player data.
 - Profiles are fetched online into memory. Only the authentication session persists locally; member profiles are not placed in demo localStorage, IndexedDB, the service worker cache or offline pages. Identity changes clear the member view, including cross-tab sign-out.
 - Member profile-data deletion cascades through that household's players. **The Auth email login remains**; full login erasure and provider backup retention require the project owner. The interface explicitly explains this difference. No hidden payment relationship is created.
-- Shared coach media publish/edit/replace/delete, explicit coach allowlist, explicit public sample reads, protected staff-only content and a private media bucket with five-minute signed links, 12 MB/type limits and optimistic versions.
+- Shared staff media drafts/review/approval/edit/replace/delete, verified staff roles, explicit public sample reads, protected staff-only content and a private media bucket with five-minute signed links, 40 MB/type limits (including MOV) and optimistic versions.
 - The existing fictional profiles, local uploads and demo practice history remain separate and never import into member accounts.
 
 ## Live acceptance before activation
@@ -75,7 +75,7 @@ Use fictional adult test identities only. Do not enter real children's informati
 - Create parent and adult-player test accounts. Create, edit, refresh and delete fictional adult profiles across two devices. Check a cancelled edit/delete, rapid save taps, a dropped response, stale edit versions and failure recovery. Switch accounts and sign out in another tab; no prior household profile may remain visible or be returned by REST.
 - With the public key and unrelated authenticated account, explicitly attempt to read a known other household ID, change ownership, rewrite consent/type, grant coach access or open under-18 enrollment. All must fail. Verify under-18 create/update is rejected while the server setting is false. Under-18 positive tests require fictional fixtures in a controlled environment only.
 - Delete one account's member data and confirm its player rows disappear while the second household and Auth login remain. Complete full Auth erasure through the provider dashboard when requested; define support, retention, backup and restore procedures.
-- For shared publishing, an approved coach uploads original sample media, publishes, edits/replaces/removes it; a separate visitor sees published changes after refresh. Anonymous and non-coach requests cannot write, access drafts or upload storage objects. Check file size/type enforcement and stale versions. Audit orphan-file cleanup. Malware scanning/content inspection and moderation are not implemented.
+- For shared publishing, an approved staff member uploads original sample media, submits a private draft and an Owner/Manager approves it; the staff member edits/replaces/removes it; a separate visitor sees published changes after refresh. Anonymous and non-coach requests cannot write, access drafts or upload storage objects. Check file size/type enforcement and stale versions. Audit orphan-file cleanup. Malware scanning/content inspection and moderation are not implemented.
 - On real iPhone Safari and Android Chrome, check signup keyboard/layout, email-link handoff to the same browser, recovery, file uploads/playback, installed-app sign-in, refresh, offline status and updates. Automated Chromium phone emulation does not replace these checks.
 
 ## Still outside this activation
@@ -95,3 +95,11 @@ Migration `007-training-assignment-cleanup.sql` is also installed. Withdrawing/d
 ## Complete ordered workout templates
 
 Migration 008 preserves existing account roles, private household boundaries, review settings and closed enrollment gates. Staff save protected templates; only Owners preview coarse account eligibility and assign snapshot sessions. Matching athletes receive all assigned drills in order; reports are bound to the opened template/version. New tables are RLS-protected and browser writes use guarded RPCs. See [WORKOUT-GUIDE.md](../WORKOUT-GUIDE.md). No real assignments or fixture records were created by migration installation.
+
+## Content approval and private saved practice (009)
+
+Installed and verified once. New shared resources start private in Draft; staff submit them for review. Owner/Manager alone can approve publication or request changes. Coaches manage/submit only their own drafts. Clients cannot forge publication, review status or reviewer identity through direct table updates. Edits to approved instructions/media/audience restore Draft and withdraw affected assignments. Internal notes/reviewer fields are excluded by safe-column grants and sanitized from athlete-plan responses; the full staff view uses a checked RPC. Private review audit rows are RLS-protected.
+
+Practice resumes have no direct browser table grants. Checked load/save/discard RPCs scope them to the acting user and authorized profile, revalidate current content/assignment/permission versions, reject stale concurrent writes and expire saved places after seven days. Expired/invalid entries are removed when checked. Stable session IDs and an atomic report trigger prevent an unfinished place from remaining after recorded completion. Pausing/watching is never completion.
+
+Live acceptance used temporary fictional adults in a rolled-back transaction. Migration installation created no real resources, assignments, profiles, media or emails. Anonymous resume/review REST calls returned 401; direct approval writes and direct access to internal notes/old private plan helper are denied. Training-media is still private, now with MOV and 40 MiB limits. The optional athlete-review bucket/quota is unchanged. Under-18 enrollment, child self-access and payments remain closed. See [APP-TESTING.md](../APP-TESTING.md) and [the phone guide](../PHONE-ACCEPTANCE.md).

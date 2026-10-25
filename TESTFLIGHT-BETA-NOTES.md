@@ -1,8 +1,8 @@
 # TestFlight beta submission draft
 
-Build 8: test the simplified staff and training screens and the 8-character password rule with all four required character types. Existing passwords are unchanged.
+Build 10: test Photos selection and MOV/HEVC preparation, actual transfer progress, private shared drafts → review → approval, approved drill → complete workout → Owner assignment, and Save & leave / Resume after relaunch. Use the two-phone guide in App Help. The simplified layout and 8-character password rule remain. Existing passwords are unchanged.
 
-Version **0.1.0 (8)** is uploaded, processed VALID and IN_BETA_TESTING in Owner Testing. The owner has installed a prior build and can update through TestFlight. The metadata below is an external-beta submission draft: review contact fields, feedback details, an approved adult review account and Apple's beta review still need completion. No external beta submission or public App Store release was made.
+Version **0.1.0 (10)** is uploaded, processed VALID and IN_BETA_TESTING in Owner Testing. The owner has installed a prior build and can update through TestFlight. The metadata below is an external-beta submission draft: review contact fields, feedback details, an approved adult review account and Apple's beta review still need completion. No external beta submission or public App Store release was made.
 
 ## Beta app description
 
@@ -12,7 +12,7 @@ All built-in sample activities are illustrative and pending qualified coaching r
 
 ## What to test
 
-Install and launch the app, sign in with an approved adult pilot account, practice an assigned workout and check submitted participation after closing/reopening. Test staff workout composition, saved order/preview and Owner assignment; then check that the matching athlete receives every drill in the named session and history retains its title. Also test drill instructions, media, next/previous actions and canceled unfinished practice. Authorized staff can check shared publishing, device draft save/restore and content editing. Private account/training access requires a connection; it is not an offline sample catalog. Please report the screen, iPhone/iOS version, steps, expected behavior and actual result, using fictional information only.
+Install and launch the app, sign in with an approved adult pilot account, practice an assigned workout and check submitted participation after closing/reopening. Test staff workout composition, saved order/preview and Owner assignment; then check that the matching athlete receives every drill in the named session and history retains its title. Also test drill instructions, media, next/previous actions and canceled unfinished practice. Authorized staff can check shared drafts, Owner/Manager approval or changes requested, Coach-only submission, device draft save/restore and content editing. Edits withdraw approved content until reapproval/reassignment. Save & leave must not create history; resuming uses the privately stored next-drill position. Repeated Finish creates one report. Private account/training access requires a connection; it is not an offline sample catalog. Please report the screen, iPhone/iOS version, steps, expected behavior and actual result, using fictional information only.
 
 ## Reviewer instructions
 
@@ -30,6 +30,6 @@ Review clips are stored privately until an authorized family/uploader deletes th
 - Beta feedback email, review contact name/email/phone and any approved review-account credentials needed for private features. No personal contact information or review passwords have been invented or made public in this draft.
 - Accurate privacy disclosures/policy URL, age-rating responses and encryption/export-compliance answers for the final binary and service behavior.
 - Tester invitation addresses supplied directly to the supported Apple workflow.
-- External tester invitations and any required external beta review approval. The current signed build is 0.1.0 (8), with VALID processing and active internal testing.
+- External tester invitations and any required external beta review approval. The current signed build is 0.1.0 (10), with VALID processing and active internal testing.
 
 Account/signing secrets and private review credentials belong in Apple's supported private fields or approved secure storage, not this document or repository.
