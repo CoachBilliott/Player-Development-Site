@@ -164,7 +164,8 @@ async function fixture(
       return json({ guardian_managed: false, linked_profile_id: null });
     if (
       p.endsWith("/rpc/athlete_training_plan") ||
-      p.endsWith("/training_resources")
+      p.endsWith("/training_resources") ||
+      p.endsWith("/rpc/staff_training_resources")
     )
       return json(resources);
     if (p.endsWith("/rpc/family_profile_state"))

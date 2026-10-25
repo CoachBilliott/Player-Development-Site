@@ -74,6 +74,16 @@ export async function mockProject(
       });
     if (url.pathname.includes("/rest/v1/coach_members"))
       return route.fulfill({ json: approved ? [{ user_id: identity }] : [] });
+    if (url.pathname.endsWith("/rpc/staff_training_resources"))
+      return route.fulfill({
+        json: approved
+          ? [...rows.values()].filter(
+              (row) =>
+                ["owner", "manager"].includes(role) ||
+                row.created_by === identity,
+            )
+          : [],
+      });
     if (url.pathname.endsWith("/rpc/review_training_resource")) {
       const body = request.postDataJSON(),
         row = rows.get(body.resource);

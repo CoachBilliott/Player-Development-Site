@@ -73,7 +73,7 @@ const rowSchema = z.object({
   review_notes: z.string().default(""),
 });
 const columns =
-  "id,created_by,content,asset_path,asset_type,asset_name,version,visibility,review_stage,review_notes";
+  "id,created_by,content,asset_path,asset_type,asset_name,version,visibility,review_stage";
 const bucket = "training-media";
 const connections = new Map<string, Promise<SharedContent>>();
 export async function connectSharedContent(config: SharedConfig) {
@@ -236,16 +236,18 @@ export class SharedContent {
   }
   async list() {
     const staff = await this.isCoach();
-    let query = this.client.from("training_resources").select(columns);
-    if (!staff) query = query.eq("status", "published");
-    const { data, error } = await query.order("created_at", {
-      ascending: false,
-    });
+    const { data, error } = staff
+      ? await this.client.rpc("staff_training_resources")
+      : await this.client
+          .from("training_resources")
+          .select(columns)
+          .eq("status", "published")
+          .order("created_at", { ascending: false });
     if (error)
       throw new Error(
         "Shared resources could not be loaded. Built-in demo drills remain available. Reconnect and refresh to try again.",
       );
-    return Promise.all((data || []).map((row) => this.convert(row)));
+    return Promise.all((data || []).map((row: unknown) => this.convert(row)));
   }
   private async upload(
     id: string,

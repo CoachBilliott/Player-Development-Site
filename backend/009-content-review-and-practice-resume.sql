@@ -73,6 +73,31 @@ $$;
 revoke all on function public.review_training_resource(uuid,text,text,integer) from public,anon;
 grant execute on function public.review_training_resource(uuid,text,text,integer) to authenticated;
 
+-- Internal review notes must never ride along with public/member drill rows.
+revoke select on public.training_resources from anon,authenticated;
+grant select(id,created_by,created_at,updated_at,version,status,content,asset_path,asset_type,asset_name,visibility,review_stage) on public.training_resources to anon,authenticated;
+create function public.staff_training_resources() returns setof public.training_resources language plpgsql stable security definer set search_path='' as $$
+begin
+ if coalesce(public.current_account_role() in ('owner','manager','coach'),false) is false then raise exception 'Staff access is required.';end if;
+ return query select r.* from public.training_resources r where public.can_edit_training(r.created_by) order by r.created_at desc;
+end;
+$$;
+revoke all on function public.staff_training_resources() from public,anon;
+grant execute on function public.staff_training_resources() to authenticated;
+alter function public.athlete_training_plan(uuid) rename to athlete_training_plan_internal_v8;
+revoke all on function public.athlete_training_plan_internal_v8(uuid) from public,anon,authenticated;
+create function public.athlete_training_plan(target_profile uuid) returns setof public.training_resources language plpgsql stable security definer set search_path='' as $$
+declare r public.training_resources;
+begin
+ for r in select * from public.athlete_training_plan_internal_v8(target_profile) loop
+  r.review_notes:='';r.reviewed_by:=null;r.reviewed_at:=null;
+  return next r;
+ end loop;
+end;
+$$;
+revoke all on function public.athlete_training_plan(uuid) from public,anon;
+grant execute on function public.athlete_training_plan(uuid) to authenticated;
+
 create table public.practice_resumes (
  user_id uuid not null references auth.users(id) on delete cascade,
  profile_id uuid not null references public.player_profiles(id) on delete cascade,

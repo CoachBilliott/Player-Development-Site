@@ -136,7 +136,8 @@ function fixture(
           return route.fulfill({ status: 204, body: "" });
         if (
           url.pathname.includes("/coach_members") ||
-          url.pathname.includes("/training_resources")
+          url.pathname.includes("/training_resources") ||
+          url.pathname.endsWith("/rpc/staff_training_resources")
         )
           return route.fulfill({ json: [] });
         if (url.pathname.endsWith("/rpc/athlete_account_context"))

@@ -111,6 +111,8 @@ async function fixture(
     if (path.endsWith("/logout"))
       return route.fulfill({ status: 204, body: "" });
     if (path.endsWith("/account_roles")) return json([{ role, version: 1 }]);
+    if (path.endsWith("/rpc/staff_training_resources"))
+      return json(backend.resources);
     if (path.endsWith("/training_resources")) {
       const requested = url.searchParams.get("id")?.replace("eq.", "");
       if (method === "POST") {

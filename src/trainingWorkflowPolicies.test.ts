@@ -217,7 +217,7 @@ it("only Owner or Manager can approve submitted content, with versioned idempote
   );
   const result = (
     await db.query<{ status: string; version: number; reviewed_by: string }>(
-      "select status,version,reviewed_by from public.training_resources where id=$1",
+      "select status,version,reviewed_by from public.staff_training_resources() where id=$1",
       [first],
     )
   ).rows[0];
@@ -269,7 +269,7 @@ it("requested changes stay private; editing approved content withdraws previous 
   expect(
     (
       await db.query<{ review_stage: string; review_notes: string }>(
-        "select review_stage,review_notes from public.training_resources where id=$1",
+        "select review_stage,review_notes from public.staff_training_resources() where id=$1",
         [first],
       )
     ).rows[0],
@@ -496,4 +496,50 @@ it("expired practice is removed rather than restored after its retention window"
     ).rows[0].result,
   ).toBeNull();
   await deny("select * from public.practice_resumes", [], /permission denied/);
+});
+
+it("internal approval notes cannot be read from public or assigned training responses", async () => {
+  await save();
+  await assign();
+  await as(parent);
+  const rows = (
+    await db.query<{ review_notes: string; reviewed_by: unknown }>(
+      "select review_notes,reviewed_by from public.athlete_training_plan($1)",
+      [profile],
+    )
+  ).rows;
+  expect(rows).toHaveLength(2);
+  expect(
+    rows.every((row) => row.review_notes === "" && row.reviewed_by === null),
+  ).toBe(true);
+  await deny(
+    "select review_notes from public.training_resources where id=$1",
+    [first],
+    /permission denied/,
+  );
+  await deny(
+    "select * from public.staff_training_resources()",
+    [],
+    /Staff access/,
+  );
+  await deny(
+    "select * from public.athlete_training_plan_internal_v8($1)",
+    [profile],
+    /permission denied/,
+  );
+  await as("", "anon");
+  await deny(
+    "select review_notes from public.training_resources",
+    [],
+    /permission denied/,
+  );
+  await as(coach);
+  expect(
+    (
+      await db.query<{ review_notes: string }>(
+        "select review_notes from public.staff_training_resources() where id=$1",
+        [first],
+      )
+    ).rows[0].review_notes,
+  ).toContain("Fictional technical test release");
 });
