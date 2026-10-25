@@ -8,7 +8,7 @@ A standalone, responsive player-development platform with a sport-neutral brand 
 
 ## Latest connected training workflow
 
-Native TestFlight build **0.1.0 (11)** and the verified website include iPhone MOV/HEVC preparation, actual transfer progress, shared private drafts with Owner/Manager approval, approved drill-to-workout handoff and private unfinished-workout resume. [Release checks and limits](APP-TESTING.md) · [Upload guide](UPLOAD-GUIDE.md) · [15–20 minute two-phone test](PHONE-ACCEPTANCE.md). Physical phone acceptance and original reviewed training content are still required; public enrollment, payments and real junior access remain closed.
+Native TestFlight build **0.1.0 (12)** and the verified website include iPhone MOV/HEVC preparation, actual transfer progress, shared private drafts with Owner/Manager approval, approved drill-to-workout handoff and private unfinished-workout resume. [Shared review-service workflow](SERVICE-FULFILLMENT.md) · [Release checks and limits](APP-TESTING.md) · [Upload guide](UPLOAD-GUIDE.md) · [15–20 minute two-phone test](PHONE-ACCEPTANCE.md). Physical phone acceptance and original reviewed training content are still required; public enrollment, payments and real junior access remain closed.
 
 ## Private member accounts — connected for an adult pilot
 
@@ -88,7 +88,7 @@ Playback automatically stops while offscreen or in a hidden tab and resumes when
 
 The member app now centers on **Today, Workouts, Progress and Account**. Parents can switch athletes, follow the selected plan, review reports and manage recording permissions under Account. Athlete accounts see only their authorized individual profile. Staff keep their authorized content tools. The website remains the public explanation, programs/packages and joining experience; both clients share the private account service. Practice history records participation, never a verified ability score.
 
-The native iOS project is in `ios/` with a repeatable Mac simulator build/test workflow. `npm run build:ios` bundles the shared client and synchronizes native plugins; `npm run open:ios` opens Xcode on a Mac. Native sessions use the iOS Keychain. Native build 0.1.0 (11) is verified available in the existing Owner Testing TestFlight group. Unsigned archives and simulator builds remain development artifacts. See [phone app testing](APP-TESTING.md).
+The native iOS project is in `ios/` with a repeatable Mac simulator build/test workflow. `npm run build:ios` bundles the shared client and synchronizes native plugins; `npm run open:ios` opens Xcode on a Mac. Native sessions use the iOS Keychain. Native build 0.1.0 (12) is verified available in the existing Owner Testing TestFlight group. Unsigned archives and simulator builds remain development artifacts. See [phone app testing](APP-TESTING.md).
 
 The mobile welcome and persistent navigation are also available at https://coachbilliott.github.io/Player-Development-Site/?source=app#app for immediate Safari/home-screen testing. The website continues to use its public homepage. Both clients use the same real account permissions. The single fictional customer demo stays on the public website and is blocked in the native app; demo history never becomes a real profile.
 

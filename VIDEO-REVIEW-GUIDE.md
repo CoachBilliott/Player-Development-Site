@@ -6,9 +6,9 @@ The native app is for real account access. The single public sample demo remains
 
 1. Sign in to the Owner/Coach workspace and open **Content** / **Upload & content**.
 2. Choose **Shared website**, upload your original or licensed demonstration, and add a title, short lesson, equipment, steps, coaching cue and intended age/position/experience/goal.
-3. Publish as **Protected training**. Public demo samples are a separate explicit visibility choice.
+3. Submit the protected draft for review; an Owner/Manager approves it before publication. Public demo samples are a separate explicit visibility choice.
 4. An Owner opens **Account access → Workouts & video review access**, chooses the verified customer account, checks the uploaded workouts, reviews and saves the change.
-5. The athlete refreshes **Today** or **Workouts**. Only assigned drills matching that athlete's age, position and experience appear. The goal ranks the available plan. Before starting, the session lists each drill and equipment. Begin once, then each drill shows its demonstration, purpose, numbered steps, equipment and cue together, with its position in the session and a preview of the next drill. **Complete drill · Next** advances; **Previous drill** revisits an earlier activity; **Finish workout** submits a practice report. Moving backward or playing a video does not submit a report. Unfinished sessions are still screen-only and are not saved on refresh.
+5. The athlete refreshes **Today** or **Workouts**. Only assigned drills matching that athlete's age, position and experience appear. The goal ranks the available plan. Before starting, the session lists each drill and equipment. Begin once, then each drill shows its demonstration, purpose, numbered steps, equipment and cue together, with its position in the session and a preview of the next drill. **Complete drill · Next** advances; **Previous drill** revisits an earlier activity; **Finish workout** submits a practice report. Moving backward or playing a video does not submit a report. Use **Save & leave workout** to preserve the private unfinished place across refresh/reopen; saving a place never creates a completion report.
 
 Do not treat a video view, a completion button or a parent review as proof of athletic improvement. Training remains noncontact and pending qualified coaching review. No real junior enrollment was opened.
 
@@ -28,15 +28,19 @@ The native app also offers **Choose & prepare iPhone video**: select a Photos re
 
 The pilot accepts MP4, MOV or WebM, up to **60 seconds / 40 MB**, with **5 active clips per household/account** and a **300 MB shared review-video reservation budget**. The database and private Storage bucket enforce byte limits/access; the client checks playable duration and file signatures. Conversion is performed on the iPhone, not on a server. Browser uploads retain their original codec. Server-side transcoding, duration verification and malware/content scanning are not implemented. No automated AI analysis is claimed. Camera availability, MOV/HEVC compatibility, microphone handling and background/upload behavior still require physical-iPhone testing.
 
+## Shared service desk and 48-hour delivery
+
+Customers without access can request one drill review without a charge. Requests and video submissions are saved automatically for Owners/Managers under **Service desk & reviews**. They track assignments, follow-up, due-soon/overdue targets and actual feedback delivery. The 48 consecutive-hour clock starts after a complete approved submission and never resets on reassignment. See [SERVICE-FULFILLMENT.md](SERVICE-FULFILLMENT.md) for the customer/staff steps and remaining payment/alerting requirements. Real junior media stays closed.
+
 ## Coach review
 
 Open **Reviews** in the app or **Video reviews** on the website. The assigned coach can open a private clip, enter a concise coaching note and send feedback. Only authorized family users and the currently assigned, approved coach can read that submission; being an Owner, Manager or another Coach alone does not grant clip/profile access. Coaches receive the drill title/date/submission reference, not general access to private player profiles. Feedback is attached to the submitted clip; this is not direct messaging.
 
-Disabling review access or changing the assigned coach removes the previous coach's new reads immediately. Already-issued signed media URLs last up to 60 seconds; instruction-media links last up to five minutes. Private videos and account data are never placed in the public demo cache or persisted into demo localStorage.
+Migration 011 snapshots the initial account-level coach onto each submitted review. Owners/Managers reassign existing reviews through the shared service desk; changing the account default affects future uploads. Disabling account review access or reassigning that review removes the previous coach’s new reads immediately. Already-issued signed media URLs last up to 60 seconds; instruction-media links last up to five minutes. Private videos and account data are never placed in the public demo cache or persisted into demo localStorage.
 
 ## Deletion and launch limits
 
-Clips remain stored until the authorized family/uploader deletes them; there is no automatic retention schedule. **Delete video → Delete video permanently** removes the stored object and its review. Unfinished uploads also appear in history for cleanup. Stored clips must be removed before deleting the athlete/profile data, preventing a cascade from stranding Storage objects. Full Auth deletion still follows the existing owner-supported process.
+Clips remain stored until the authorized family/uploader deletes them; there is no automatic retention schedule. **Delete video → Delete video permanently** removes the stored object and its review. Unfinished uploads also appear in history for cleanup. Stored clips must be removed before deleting the athlete/profile data, preventing a cascade from stranding Storage objects. Password-confirmed customer deletion removes Auth/profile/media and cascades service metadata; staff/guardian cases follow assisted review. See [ACCOUNT-LIFECYCLE.md](ACCOUNT-LIFECYCLE.md).
 
 Real under-18 video submissions remain closed, including parent submissions, until a qualified guardian-consent, child-media privacy and retention process is implemented. Changing a minor profile's age label does not bypass the restriction. Payments, monthly billing, package prices and public signup remain inactive. External beta review needs a real approved adult review account and accurate privacy/contact disclosures.
 
