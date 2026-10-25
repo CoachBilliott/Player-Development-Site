@@ -2,15 +2,15 @@
 
 ## Available now
 
-**Player Development Test — 0.1.0 (5)** is uploaded, processed **VALID**, and **IN_BETA_TESTING** in the existing **Owner Testing** internal group. Apple verified this state on October 24, 2026. The group includes build 5 and has access to all builds. Open the existing TestFlight invitation/app and tap **Update**. No new code, certificate installation or purchase is needed.
+**Player Development Test — 0.1.0 (6)** is uploaded, processed **VALID**, and **IN_BETA_TESTING** in the existing **Owner Testing** internal group. Apple verified this state for the released build. The group includes build 6 and has access to all builds. Open the existing TestFlight invitation/app and tap **Update**. No new code, certificate installation or purchase is needed.
 
 - [App Store Connect → TestFlight](https://appstoreconnect.apple.com/apps/6826677846/testflight/ios)
-- [Signed upload evidence](https://github.com/CoachBilliott/Player-Development-Site/actions/runs/40140169093)
-- [Native simulator/device build](https://github.com/CoachBilliott/Player-Development-Site/actions/runs/40139280121)
-- [Web/client checks for the binary's source](https://github.com/CoachBilliott/Player-Development-Site/actions/runs/40139276580)
-- [Apple processing and group verification](https://github.com/CoachBilliott/Player-Development-Site/actions/runs/40140558966)
+- [Signed upload evidence](https://github.com/CoachBilliott/Player-Development-Site/actions/runs/40148506080)
+- [Native simulator/device build](https://github.com/CoachBilliott/Player-Development-Site/actions/runs/40147815498)
+- [Web/client checks for the binary's source](https://github.com/CoachBilliott/Player-Development-Site/actions/runs/40147815342)
+- [Apple processing and group verification](https://github.com/CoachBilliott/Player-Development-Site/actions/runs/40148790630)
 
-The signed app contains the same JavaScript verified on the deployed website. Its source commit is `2cf24b62cc3bc0c21a6d255a66cf4e29d8361f57`. Staff account settings are separate from customer household setup. Owners, Managers and Coaches do not need a Parent/Athlete profile to open their management tools.
+The signed app contains the same JavaScript verified on the deployed website. Its source commit is `9d5108215b94cfa45526b3f082849361fdad08fa`. New shared uploads support explicit device drafts and editable coaching details. Guided practice shows the session order, next drill and previous drill. Staff account settings are separate from customer household setup. Owners, Managers and Coaches do not need a Parent/Athlete profile to open their management tools.
 
 ## Accounts and training
 

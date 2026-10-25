@@ -29,9 +29,9 @@ Workspace selection uses the authenticated, server-assigned level. Junior presen
 
 ## Protected content
 
-Migrations 001–005 are already applied to the dedicated project; do not rerun them. Shared uploads default to `member_only`. Owners/Managers review across coaches; Coaches review their own protected resources. Anonymous/unpaid Parent/Athlete accounts cannot read protected metadata or request signed media. The bucket stays private. Explicit **Public demo sample** is the only free shared-content choice.
+Migrations 001–007 are already applied to the dedicated project; do not rerun them. Shared uploads default to `member_only`. Owners/Managers review across coaches; Coaches review their own protected resources. Anonymous/unpaid Parent/Athlete accounts cannot read protected metadata or request signed media. The bucket stays private. Explicit **Public demo sample** is the only free shared-content choice.
 
-Protected currently means staff review only. Paid subscriptions, package entitlements and checkout are not active. The member library explains that state; private pilot sample practice is separate from paid content. Signed media URLs expire after five minutes; previously issued bearer links last until expiry. Resource state is isolated by authenticated identity and role and cleared on sign-out, and private data does not enter demo storage or service-worker cache.
+Protected uploads can be explicitly assigned to verified pilot accounts, with age/position/level checks. Paid subscriptions, automated package entitlements and checkout are not active. Real plans use only assigned eligible uploads, never imported sample catalog drills. Signed media URLs expire after five minutes; previously issued bearer links last until expiry. Resource state is isolated by authenticated identity and role and cleared on sign-out, and private data does not enter demo storage or service-worker cache.
 
 ## Before general launch
 

@@ -1,6 +1,6 @@
 # Player Development app testing
 
-The native iPhone app **0.1.0 (5)** is available in the existing **Owner Testing** TestFlight group. Open TestFlight → Player Development Test → Update. The public website is [live here](https://coachbilliott.github.io/Player-Development-Site/); its one customer demo stays on the website. The browser app preview is `?source=app#app` and is separate from installing the native TestFlight binary.
+The native iPhone app **0.1.0 (6)** is available in the existing **Owner Testing** TestFlight group. Open TestFlight → Player Development Test → Update. The public website is [live here](https://coachbilliott.github.io/Player-Development-Site/); its one customer demo stays on the website. The browser app preview is `?source=app#app` and is separate from installing the native TestFlight binary.
 
 ## What works
 
@@ -15,19 +15,21 @@ Manual pilot permissions do not represent a subscription or payment. Real junior
 
 ## Upload and guided-practice update
 
-The next native release adds explicit device drafts for new shared uploads, editable purpose/equipment/coaching cues, and a clearer session order/next-drill/previous-drill experience. See [UPLOAD-GUIDE.md](UPLOAD-GUIDE.md) for the device-only draft limits and fresh rights confirmation. Draft files are isolated by staff account, excluded from demo storage, and cleared on sign-out/account change. Failed device storage preserves the open form. Existing resource edits retain their instructional content and drill kind. No schema, role, payment, junior gate or live account data change is needed for this update.
+Build 6 adds explicit device drafts for new shared uploads, editable purpose/equipment/coaching cues, and a clearer session order/next-drill/previous-drill experience. See [UPLOAD-GUIDE.md](UPLOAD-GUIDE.md) for the device-only draft limits and fresh rights confirmation. Draft files are isolated by staff account, excluded from demo storage, and cleared on sign-out/account change. Failed device storage preserves the open form. Existing resource edits retain their instructional content and drill kind. No schema, role, payment, junior gate or live account data change is needed for this update.
 
-Before calling the update live, run the release checks, verify deployed asset hashes and check actual TestFlight processing/group availability. Existing build 5 remains the last verified native release until that evidence is recorded.
+The website HTML/JavaScript/CSS match the tested release and the signed binary. Apple reports build 6 as VALID and IN_BETA_TESTING, and the Owner Testing group includes it.
 
 ## Automated and live verification
 
-The signed binary's source `2cf24b62cc3bc0c21a6d255a66cf4e29d8361f57` passed lint, type checking, production build, **123 unit/SQL policy tests, 132 desktop/phone browser tests, 8 installed-web-app tests, 10 Python signing tests and 3 native simulator tests**. Staff regression cases cover Owner/Manager/Coach accounts with no household record, slow permission lookup, refresh, no customer-setup flash, zero household reads/writes, password setup/cancellation, sign-out, and permission failure/retry. The website's 10 deployed staff-flow checks also pass with fictional intercepted backend responses. No account roles or database policies were changed by the staff UI correction.
+The released source `9d5108215b94cfa45526b3f082849361fdad08fa` passed lint, type checking, production build, **123 unit/database-policy tests, 146 desktop/phone browser tests, 8 installed-web-app tests, 10 signing tests and 3 native simulator tests**. Clean GitHub runs: [web checks](https://github.com/CoachBilliott/Player-Development-Site/actions/runs/40147815342) and [native build/tests](https://github.com/CoachBilliott/Player-Development-Site/actions/runs/40147815498).
 
-The native tests ran on iPhone 17 Pro / iOS 26.2 with Xcode 26.3: assets/font/native bridge and Keychain round-trip, no native demo entry or legacy demo route access, private login/navigation and relaunch. They do not claim native camera/upload testing.
+Another **14 checks on the actual deployed website** use intercepted fictional backend responses: saved-file restoration, partial drafts, rights re-confirmation, canceled removal/replacement, storage failure/retry, account isolation, editing preservation, phone overflow, drill order, next/previous actions, repeated clicks and Escape/discard handling. No real customer records or media were written by those tests. The filled staff editor also has zero detected WCAG A/AA violations. Device drafts stay in a separate account-keyed IndexedDB store; they never enter demo localStorage or the service-worker cache.
 
-Live database tests use fictional adult identities inside a rolled-back transaction: matched assignments, private video authorization, assigned-coach-only access, profile isolation, idempotent finalization, feedback, cleanup guards, withdrawal assignment cleanup and feedback retention. No real videos/children or persistent fixture accounts were created. Anonymous REST/Storage requests were denied. The real Storage API upload/deletion path remains a physical-device acceptance item; live SQL tests use metadata fixtures, not uploaded objects.
+Native tests ran on iPhone 17 Pro / iOS 26.2 with Xcode 26.3: assets/font/native bridge and Keychain round-trip, no app demo/legacy demo route access, private login/navigation and relaunch. They do not establish physical camera, real Storage upload/deletion, background transfer or iPhone device-draft persistence acceptance.
 
-The deployed website HTML and JavaScript/CSS hashes match the tested build. Another 16 deployed phone/desktop flow checks use intercepted fictional backend responses; media playback, recording-input setup, preview/cancel, retry/repeated send, coach feedback, deletion and package-access controls passed. No customer data was written by those browser tests. The signed IPA passed ZIP integrity, bundle/version/build, embedded verified profile, signature presence, no-private-keys and deployed-JavaScript-match checks. Apple reports VALID processing and IN_BETA_TESTING for build 5 in Owner Testing.
+Previously completed live database acceptance uses fictional adult fixtures inside rolled-back transactions: matched assignments, private assigned-coach access, report/feedback isolation, finalization idempotency, cleanup guards and withdrawn-resource handling. No migration, user role, consent gate or payment setting changed in build 6. Production media and physical-device checks below remain necessary.
+
+The signed IPA passed ZIP integrity, bundle/version/build, expected team/profile, signature-resource presence, no-private-keys and exact bundled-HTML/JavaScript/CSS comparison with the verified website. [Signed upload](https://github.com/CoachBilliott/Player-Development-Site/actions/runs/40148506080) succeeded. [Apple state verification](https://github.com/CoachBilliott/Player-Development-Site/actions/runs/40148790630) confirms VALID / IN_BETA_TESTING and group inclusion for build 6.
 
 ## First physical-iPhone acceptance
 
