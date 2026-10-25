@@ -47,7 +47,9 @@
         if (!webView) { [completed fulfill]; return; }
         // Hosted tests start while WKWebView is still navigating. Wait outside
         // JavaScript so that initial navigation cannot destroy a pending call.
-        [self waitForApp:webView deadline:[NSDate dateWithTimeIntervalSinceNow:20] completion:^(BOOL ready) {
+        // A first boot on a hosted simulator can take longer than a warm launch.
+        // Keep the readiness and real Keychain assertions, with a bounded cold-start wait.
+        [self waitForApp:webView deadline:[NSDate dateWithTimeIntervalSinceNow:60] completion:^(BOOL ready) {
         XCTAssertTrue(ready, @"The bundled app did not finish loading");
         if (!ready) { [completed fulfill]; return; }
         NSURL *scriptURL = [[NSBundle bundleForClass:self.class] URLForResource:@"native-smoke" withExtension:@"js"];
@@ -65,6 +67,6 @@
             }];
         }];
     });
-    [self waitForExpectationsWithTimeout:40 handler:nil];
+    [self waitForExpectationsWithTimeout:80 handler:nil];
 }
 @end

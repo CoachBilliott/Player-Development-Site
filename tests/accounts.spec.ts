@@ -630,9 +630,7 @@ test("signup verifies email, recovery updates a password and adult accounts cann
   await page
     .getByLabel(/^(Adult|Account) email$/)
     .fill("fictional-parent@example.test");
-  await page
-    .getByLabel("Password", { exact: true })
-    .fill("fictional-password-only");
+  await page.getByLabel("Password", { exact: true }).fill("Fictional-signup8!");
   await page.getByRole("checkbox").check();
   await page.getByRole("button", { name: "Create adult account" }).click();
   await expect(page.getByRole("status")).toContainText("Check your email");
@@ -659,7 +657,7 @@ test("signup verifies email, recovery updates a password and adult accounts cann
   await page.goto("./?flow=recovery&code=fictional-recovery-code");
   await page
     .getByLabel("New password", { exact: true })
-    .fill("another-fictional-password");
+    .fill("Fictional-next8!");
   await page.getByRole("button", { name: "Save new password" }).click();
   await expect(page.getByRole("status")).toContainText("Password updated");
   expect(backend.counts.password).toBe(1);
@@ -825,7 +823,7 @@ test("private pilot accepts a verified email session, removes URL credentials an
   await expect(page).not.toHaveURL(/access_token=|refresh_token=/);
   await page
     .getByLabel("New password", { exact: true })
-    .fill("fictional-owner-password-only");
+    .fill("Fictional-owner8!");
   await page.getByRole("button", { name: "Save new password" }).click();
   await expect(page.getByLabel("Account type")).toBeVisible();
   expect(backend.counts.password).toBe(1);
@@ -1692,7 +1690,7 @@ test("Owner password setup finishes on the staff account without creating a Pare
   await page.goto("./?flow=recovery#" + fragment.toString());
   await page
     .getByLabel("New password", { exact: true })
-    .fill("fictional-staff-password-only");
+    .fill("Fictional-staff8!");
   await page
     .getByRole("button", { name: "Save new password", exact: true })
     .click();
@@ -1748,4 +1746,56 @@ test("failed role checks never fall back to customer setup and can be retried", 
     page.getByRole("heading", { name: "Your Owner account.", exact: true }),
   ).toBeVisible();
   expect(backend.accounts.size).toBe(0);
+});
+
+test("new passwords accept eight characters with all required groups and reject missing groups before sending", async ({
+  page,
+  context,
+}) => {
+  const backend = fixture();
+  await backend.install(context);
+  await page.goto("./#account");
+  await page
+    .getByRole("button", { name: "Create account", exact: true })
+    .click();
+  await page
+    .getByLabel(/^(Adult|Account) email$/)
+    .fill("fictional-parent@example.test");
+  await page.getByRole("checkbox").check();
+  const password = page.getByLabel("Password", { exact: true });
+  await expect(password).toHaveAttribute("minlength", "8");
+  for (const invalid of [
+    "Aa1!bbb",
+    "aa1!bbbb",
+    "AA1!BBBB",
+    "Aa!!bbbb",
+    "Aa12bbbb",
+    "Aa1 bbbb",
+  ]) {
+    await password.fill(invalid);
+    await page.getByRole("button", { name: "Create adult account" }).click();
+    if (invalid.length >= 8)
+      await expect(page.getByRole("alert")).toContainText(
+        "Use 8 or more characters",
+      );
+    expect(backend.counts.signup).toBe(0);
+  }
+  await password.fill("Aa1!bbbb");
+  await page.getByRole("button", { name: "Create adult account" }).click();
+  await expect(page.getByRole("status")).toContainText("Check your email");
+  expect(backend.counts.signup).toBe(1);
+  await page.goto("./?flow=recovery&code=fictional-recovery-code");
+  const replacement = page.getByLabel("New password", { exact: true });
+  await expect(replacement).toHaveAttribute("minlength", "8");
+  await expect(page.locator("#new-password-help")).toContainText(
+    "uppercase letter",
+  );
+  await replacement.fill("Aa12bbbb");
+  await page.getByRole("button", { name: "Save new password" }).click();
+  await expect(page.getByRole("alert")).toContainText("special character");
+  expect(backend.counts.password).toBe(0);
+  await replacement.fill("Bb2!cccc");
+  await page.getByRole("button", { name: "Save new password" }).click();
+  await expect(page.getByRole("status")).toContainText("Password updated");
+  expect(backend.counts.password).toBe(1);
 });

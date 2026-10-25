@@ -1,5 +1,10 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import {
+  PASSWORD_MIN_LENGTH,
+  PASSWORD_REQUIREMENTS,
+  passwordIssue,
+} from "./password";
+import {
   ArrowRight,
   Check,
   LockKeyhole,
@@ -254,6 +259,8 @@ function ConnectedAccount({
           throw new Error(
             "Accounts must be created by someone aged 18 or older.",
           );
+        const issue = passwordIssue(password);
+        if (issue) throw new Error(issue);
         const result = await client.auth.signUp({
           email: email.trim(),
           password,
@@ -525,7 +532,9 @@ function ConnectedAccount({
                       autoComplete={
                         mode === "signup" ? "new-password" : "current-password"
                       }
-                      minLength={mode === "signup" ? 12 : undefined}
+                      minLength={
+                        mode === "signup" ? PASSWORD_MIN_LENGTH : undefined
+                      }
                       maxLength={128}
                       required
                       value={password}
@@ -533,8 +542,8 @@ function ConnectedAccount({
                     />
                     {mode === "signup" && (
                       <small id="signup-password-help">
-                        Use at least 12 characters. Never use a child’s email
-                        for this account.
+                        {PASSWORD_REQUIREMENTS} Never use a child’s email for
+                        this account.
                       </small>
                     )}
                   </label>
@@ -626,6 +635,8 @@ function ConnectedAccount({
             onSubmit={(e) => {
               e.preventDefault();
               void act(async () => {
+                const issue = passwordIssue(password);
+                if (issue) throw new Error(issue);
                 const result = await client.auth.updateUser({ password });
                 if (result.error)
                   throw new Error(
@@ -643,12 +654,14 @@ function ConnectedAccount({
                 type="password"
                 autoComplete="new-password"
                 required
-                minLength={12}
+                minLength={PASSWORD_MIN_LENGTH}
+                aria-describedby="new-password-help"
                 maxLength={128}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={busy}
               />
+              <small id="new-password-help">{PASSWORD_REQUIREMENTS}</small>
             </label>
             <button className="button" disabled={busy}>
               Save new password
