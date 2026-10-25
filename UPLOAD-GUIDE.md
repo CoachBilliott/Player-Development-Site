@@ -33,3 +33,7 @@ Your uploaded resources appear below the editor. Choose **Edit**, change instruc
 ## Private athlete submissions
 
 The native app now separates coaching-resource uploads from athlete review clips. See [the video review guide](VIDEO-REVIEW-GUIDE.md) for the simple Record/Choose → Preview → Send flow, Owner assignment, private coach queue, parent approval, pilot quotas and deletion. The optional feature does not collect a payment.
+
+## Combine drills into a workout
+
+Choose **Build a complete workout** from Content to arrange protected drills, preview and save a named session. An Owner assigns that whole session to an eligible account. The older Account access checkboxes manage separate loose-drill grants and optional video-review access; they do not replace a saved-workout assignment. See [WORKOUT-GUIDE.md](WORKOUT-GUIDE.md).
