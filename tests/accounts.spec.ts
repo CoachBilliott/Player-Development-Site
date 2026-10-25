@@ -487,6 +487,9 @@ async function signIn(
     .getByLabel("Password", { exact: true })
     .fill("fictional-password-only");
   await page.getByRole("button", { name: "Sign in securely" }).click();
+  // Full-page navigation must wait for Auth to persist the successful session.
+  // Otherwise the following goto can cancel the token request on slower workers.
+  await expect(page.getByLabel(/^(Adult|Account) email$/)).toHaveCount(0);
 }
 async function setup(
   page: import("@playwright/test").Page,
