@@ -143,7 +143,11 @@ export function AthleteTraining({
               {state?.is_family ? "FAMILY ATHLETE" : "INDIVIDUAL ATHLETE"}
             </Tag>
           )}
-          <h2>
+          <h2
+            aria-label={
+              view === "today" ? `${player.nickname}’s next session` : undefined
+            }
+          >
             {view !== "today" && `${player.nickname}’s `}
             {view === "today"
               ? "Next session"
