@@ -1,3 +1,5 @@
+import { takeStaffHandoff } from "./staffHandoff";
+import { VideoPreparation } from "./VideoPreparation";
 import { appSurface } from "./mobile";
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, Check, FileUp, Users } from "lucide-react";
@@ -27,6 +29,7 @@ type Props = {
   scope?: "local" | "shared";
   draftOwnerId?: string;
   onBusyChange?: (busy: boolean) => void;
+  uploadProgress?: number | null;
 };
 export function Admin({
   onPublish,
@@ -37,6 +40,7 @@ export function Admin({
   scope = "local",
   draftOwnerId,
   onBusyChange,
+  uploadProgress = null,
 }: Props) {
   const shared = scope === "shared";
   const [editing, setEditing] = useState<Drill | null>(null);
@@ -76,15 +80,16 @@ export function Admin({
   const [permission, setPermission] = useState(false);
   const [review, setReview] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [preparing, setPreparing] = useState(false);
   const [published, setPublished] = useState(false);
   const [cancel, setCancel] = useState(false);
   const hasFile = Boolean(file || editing?.assetId);
   const locked = useRef(false);
   const input = useRef<HTMLInputElement>(null);
   useEffect(() => {
-    onBusyChange?.(busy);
+    onBusyChange?.(busy || preparing);
     return () => onBusyChange?.(false);
-  }, [busy, onBusyChange]);
+  }, [busy, preparing, onBusyChange]);
   useEffect(() => {
     if (!shared || !draftOwnerId) return;
     let active = true;
@@ -261,6 +266,22 @@ export function Admin({
     if (input.current) input.current.value = "";
     window.scrollTo({ top: 0, behavior: "instant" });
   }
+  const handoffChecked = useRef(false);
+  useEffect(() => {
+    if (!shared || !draftOwnerId || !resources.length) return;
+    let active = true;
+    void Promise.resolve().then(() => {
+      if (!active || handoffChecked.current) return;
+      handoffChecked.current = true;
+      const resourceId = takeStaffHandoff(draftOwnerId, "editor");
+      const resource = resources.find((row) => row.id === resourceId);
+      if (resource) edit(resource);
+    });
+    return () => {
+      active = false;
+    };
+  }, [shared, draftOwnerId, resources]);
+
   async function remove(resource: Drill) {
     if (locked.current || !onRemove) return;
     locked.current = true;
@@ -283,7 +304,7 @@ export function Admin({
     }
   }
   async function publish() {
-    if (locked.current || (!file && !editing)) return;
+    if (locked.current || preparing || (!file && !editing)) return;
     locked.current = true;
     setBusy(true);
     setError("");
@@ -342,10 +363,11 @@ export function Admin({
             : "This is a practice upload. To share with your partner, choose Shared website and sign in with a staff account."}
         </p>
         <p>
-          Use MP4 or WebM for video, or PNG, JPEG, WebP, PDF or TXT. Maximum 12
-          MB per file. Trim or export longer phone videos as a smaller MP4
-          first; MOV/HEVC files need conversion. Uploading does not convert or
-          compress video.
+          Use MP4, MOV or WebM for video, or PNG, JPEG, WebP, PDF or TXT.
+          Maximum 40 MB per file. Trim or export longer phone videos as a
+          smaller MP4 first. Use Choose & prepare iPhone video in the native app
+          to make a smaller MP4 from MOV/HEVC recordings. Browser uploads retain
+          their original codec.
         </p>
       </details>
       <details className="upload-policy" open={!appSurface()}>
@@ -506,31 +528,25 @@ export function Admin({
           <div>
             <strong>
               {savedEdit
-                ? "Resource changes saved."
+                ? shared
+                  ? "Changes saved as a draft. Send it for review again."
+                  : "Resource changes saved."
                 : shared
                   ? savedVisibility === "member_only"
-                    ? "Saved to the protected training library."
-                    : "Published to the shared sample library."
+                    ? "Shared draft saved. Send it for review before assigning it."
+                    : "Sample draft saved. It stays private until approved."
                   : "Published to your local demo library."}
             </strong>
             <p>
               Find your resource in the{" "}
-              <a
-                href={
-                  shared && savedVisibility === "member_only"
-                    ? "#member-library"
-                    : "#library"
-                }
-              >
-                {shared && savedVisibility === "member_only"
-                  ? "staff content library"
-                  : "demo drill library"}
+              <a href={shared ? "#content-review" : "#library"}>
+                {shared ? "draft review queue" : "demo drill library"}
               </a>
               .
               {shared
                 ? savedVisibility === "member_only"
-                  ? "An Owner can assign protected resources to verified pilot accounts through Workouts & video review access. No subscription is started."
-                  : "Refresh another device to see the shared update."
+                  ? "Send this draft for review. Once an Owner or Manager approves it, choose Build a workout with this drill in Drafts & approvals."
+                  : "An Owner or Manager must approve this sample before website visitors can see it."
                 : "It will remain here after refresh on this browser."}
             </p>
           </div>
@@ -630,7 +646,9 @@ export function Admin({
             </Notice>
           )}
           <Notice>
-            Publishing makes this illustrative resource available{" "}
+            {shared
+              ? "Approval makes this illustrative resource available"
+              : "Publishing makes this illustrative resource available"}{" "}
             {shared
               ? visibility === "member_only"
                 ? "to authorized staff for review only"
@@ -650,9 +668,11 @@ export function Admin({
             {busy
               ? "Saving…"
               : editing
-                ? "Save resource changes"
+                ? shared
+                  ? "Save changes for review"
+                  : "Save resource changes"
                 : shared
-                  ? "Publish to shared library"
+                  ? "Save shared draft"
                   : "Publish to demo library"}{" "}
             <ArrowRight size={18} />
           </button>
@@ -662,6 +682,7 @@ export function Admin({
           className="panel studio"
           onSubmit={(e) => {
             e.preventDefault();
+            if (preparing) return;
             if (!file && !editing?.assetId) {
               setError("Choose a sample file first.");
               return;
@@ -694,6 +715,17 @@ export function Admin({
                   ? "Add your workout details"
                   : "Start with your video or file"}
             </h2>
+            <VideoPreparation
+              disabled={busy}
+              onBusyChange={setPreparing}
+              onChoose={(prepared) => {
+                setFile(prepared);
+                setPermission(false);
+                setError("");
+                setPublished(false);
+                if (!title.trim()) setTitle("New training video");
+              }}
+            />
             <label className="upload-zone">
               <FileUp size={30} />
               <strong>
@@ -703,12 +735,15 @@ export function Admin({
                     ? `Current file: ${editing.assetName}`
                     : "Choose a video or file"}
               </strong>
-              <span>MP4, WebM, PNG, JPEG, WebP, PDF or TXT · up to 12 MB</span>
+              <span>
+                MP4, MOV, WebM, PNG, JPEG, WebP, PDF or TXT · up to 40 MB
+              </span>
               <input
                 ref={input}
                 aria-label="Choose a video or file"
                 type="file"
-                accept="video/mp4,video/webm,image/png,image/jpeg,image/webp,application/pdf,text/plain"
+                disabled={preparing}
+                accept="video/mp4,video/webm,video/quicktime,.mov,image/png,image/jpeg,image/webp,application/pdf,text/plain"
                 onChange={(e) => {
                   const selected = e.target.files?.[0];
                   if (!selected) return;
@@ -716,6 +751,7 @@ export function Admin({
                   setError(message);
                   if (!message) {
                     setFile(selected);
+                    setPermission(false);
                     if (!title.trim())
                       setTitle(
                         selected.name
@@ -728,6 +764,28 @@ export function Admin({
                 }}
               />
             </label>
+            {file?.type === "video/quicktime" && (
+              <Notice>
+                MOV playback depends on the browser and video codec. Use Choose
+                & prepare iPhone video in the native app for a compatible,
+                smaller MP4. Preview the actual attachment before submitting.
+              </Notice>
+            )}
+            {busy && uploadProgress !== null && (
+              <div role="status" className="upload-transfer">
+                <progress
+                  max={1}
+                  value={uploadProgress}
+                  aria-label="File upload progress"
+                />
+                <p>
+                  {Math.round(uploadProgress * 100)}% transferred
+                  {uploadProgress >= 1
+                    ? " · Saving the shared draft…"
+                    : " · Keep this screen open."}
+                </p>
+              </div>
+            )}
             {!hasFile && (
               <p className="upload-hint">
                 Tap Choose a video or file to open your phone’s picker. Your

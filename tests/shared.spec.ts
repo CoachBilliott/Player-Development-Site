@@ -5,6 +5,31 @@ import { mockProject, sharedSignIn, type Row } from "./contentFixture";
 test.beforeEach(async ({ context }) => {
   await disableBackend(context);
 });
+async function approveSample(
+  page: import("@playwright/test").Page,
+  title: string,
+) {
+  await page.goto("./#content-review");
+  const item = page
+    .locator(".approval-list > li")
+    .filter({ has: page.getByRole("heading", { name: title, exact: true }) });
+  await item.getByRole("button", { name: "Preview & review" }).click();
+  await page
+    .getByRole("button", { name: "Send for review", exact: true })
+    .click();
+  await page.getByRole("button", { name: "Confirm send for review" }).click();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await item.getByRole("button", { name: "Preview & review" }).click();
+  await page
+    .getByRole("button", { name: "Approve & publish", exact: true })
+    .click();
+  await page.getByRole("checkbox").check();
+  await page
+    .getByRole("button", { name: "Confirm approval & publish" })
+    .click();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await page.goto("./#coach");
+}
 
 test("configured shared publishing saves, edits across visitors, and removes a sample resource", async ({
   page,
@@ -12,7 +37,7 @@ test("configured shared publishing saves, edits across visitors, and removes a s
   browser,
 }) => {
   const rows = new Map<string, Row>();
-  await mockProject(context, rows, true, true);
+  await mockProject(context, rows, true, true, undefined, "owner");
   await sharedSignIn(page);
   await expect(
     page.getByRole("heading", { name: "Coach content studio", exact: true }),
@@ -32,13 +57,15 @@ test("configured shared publishing saves, edits across visitors, and removes a s
   await page.getByLabel("I have the rights").check();
   await page.getByRole("button", { name: "Preview matches" }).click();
   expect(rows.size).toBe(0);
-  await page
-    .getByRole("button", { name: "Publish to shared library" })
-    .dblclick();
+  await page.getByRole("button", { name: "Save shared draft" }).dblclick();
   await expect(
-    page.getByText("Published to the shared sample library.", { exact: true }),
+    page.getByText("Sample draft saved. It stays private until approved.", {
+      exact: true,
+    }),
   ).toBeVisible();
   expect(rows.size).toBe(1);
+  expect([...rows.values()][0].status).toBe("draft");
+  await approveSample(page, "Shared paper practice");
   const visitor = await browser.newContext();
   await mockProject(visitor, rows);
   const partner = await visitor.newPage();
@@ -53,10 +80,13 @@ test("configured shared publishing saves, edits across visitors, and removes a s
   await page.getByLabel("Resource title").fill("Updated shared paper practice");
   await page.getByLabel("I have the rights").check();
   await page.getByRole("button", { name: "Preview matches" }).click();
-  await page.getByRole("button", { name: "Save resource changes" }).click();
+  await page.getByRole("button", { name: "Save changes for review" }).click();
   await expect(
-    page.getByText("Resource changes saved.", { exact: true }),
+    page.getByText("Changes saved as a draft. Send it for review again.", {
+      exact: true,
+    }),
   ).toBeVisible();
+  await approveSample(page, "Updated shared paper practice");
   await partner.reload();
   await partner.getByRole("searchbox").fill("Updated shared paper practice");
   await expect(
@@ -90,7 +120,7 @@ test("signed-in accounts without coach membership never receive publishing contr
     "not approved to publish",
   );
   await expect(
-    page.getByRole("button", { name: /Publish to shared library/ }),
+    page.getByRole("button", { name: /Save shared draft/ }),
   ).toHaveCount(0);
   await expect(
     page.getByLabel("Choose a video or file", { exact: true }),
@@ -165,11 +195,12 @@ test("protected uploads stay out of public demo pages and disappear immediately 
       "Destination: protected training library · staff review only",
     ),
   ).toBeVisible();
-  await page
-    .getByRole("button", { name: "Publish to shared library" })
-    .dblclick();
+  await page.getByRole("button", { name: "Save shared draft" }).dblclick();
   await expect(
-    page.getByText("Saved to the protected training library.", { exact: true }),
+    page.getByText(
+      "Shared draft saved. Send it for review before assigning it.",
+      { exact: true },
+    ),
   ).toBeVisible();
   expect([...rows.values()][0].visibility).toBe("member_only");
   await page.goto("./#member-library");

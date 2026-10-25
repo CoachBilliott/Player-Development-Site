@@ -131,7 +131,7 @@ describe("library and uploads", () => {
     expect(validateFile({ type: "text/html", size: 100 })).not.toBe("");
     expect(validateFile({ type: "image/png", size: 0 })).not.toBe("");
     expect(
-      validateFile({ type: "text/plain", size: 13 * 1024 * 1024 }),
+      validateFile({ type: "text/plain", size: 41 * 1024 * 1024 }),
     ).not.toBe("");
   });
   it("rejects corrupt persisted data instead of trusting its shape", () => {

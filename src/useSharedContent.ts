@@ -23,6 +23,7 @@ export function useSharedContent() {
   const [libraryOwner, setLibraryOwner] = useState("");
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [membersEnabled, setMembersEnabled] = useState(false);
   const [signupEnabled, setSignupEnabled] = useState(false);
@@ -234,9 +235,18 @@ export function useSharedContent() {
       setMessage("");
       setError("");
     },
+    uploadProgress,
     async publish(drill: Drill, file: File) {
       if (!service) throw new Error("Shared publishing is not connected.");
-      const saved = await service.publish(drill, file);
+      setUploadProgress(0);
+      let saved: Drill;
+      try {
+        saved = await service.publish(drill, file, ({ loaded, total }) =>
+          setUploadProgress(total ? loaded / total : 0),
+        );
+      } finally {
+        setUploadProgress(null);
+      }
       setLibraryOwner(libraryKey);
       setResources((current) => [
         saved,
@@ -245,7 +255,15 @@ export function useSharedContent() {
     },
     async update(drill: Drill, file?: File) {
       if (!service) throw new Error("Shared publishing is not connected.");
-      const saved = await service.update(drill, file);
+      setUploadProgress(file ? 0 : null);
+      let saved: Drill;
+      try {
+        saved = await service.update(drill, file, ({ loaded, total }) =>
+          setUploadProgress(total ? loaded / total : 0),
+        );
+      } finally {
+        setUploadProgress(null);
+      }
       setLibraryOwner(libraryKey);
       setResources((current) =>
         current.map((d) => (d.id === saved.id ? saved : d)),

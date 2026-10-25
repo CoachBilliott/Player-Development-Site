@@ -1,3 +1,4 @@
+import { VideoPreparation } from "./VideoPreparation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { Camera, Upload, Play, Video, RefreshCw } from "lucide-react";
@@ -85,6 +86,8 @@ export function AthleteVideoReview({
   drills: Drill[];
 }) {
   const service = useMemo(() => new VideoReviews(client), [client]);
+  const [preparing, setPreparing] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [state, setState] = useState<VideoState | null>(null);
   const [user, setUser] = useState("");
   const [error, setError] = useState("");
@@ -195,6 +198,7 @@ export function AthleteVideoReview({
     draftId.current = null;
     draftStarted.current = false;
     setStarted(false);
+    setUploadProgress(null);
     setCompose(false);
   }
   return (
@@ -217,7 +221,7 @@ export function AthleteVideoReview({
       {!state && error && (
         <button
           className="button secondary"
-          disabled={busy}
+          disabled={busy || preparing}
           onClick={() => void act(refresh)}
         >
           Retry video review
@@ -283,7 +287,7 @@ export function AthleteVideoReview({
                     review.account_id === user && (
                       <button
                         className="button secondary"
-                        disabled={busy}
+                        disabled={busy || preparing}
                         onClick={() =>
                           void act(async () => {
                             await service.approve(review);
@@ -301,7 +305,7 @@ export function AthleteVideoReview({
                     review.submitted_by === user) && (
                     <button
                       className="text-button"
-                      disabled={busy}
+                      disabled={busy || preparing}
                       onClick={() => setRemoving(review)}
                     >
                       Delete video
@@ -317,7 +321,7 @@ export function AthleteVideoReview({
         <Modal
           title="Send a drill video"
           onClose={() => {
-            if (!busy)
+            if (!busy && !preparing)
               void act(async () => {
                 if (draftStarted.current && draftId.current)
                   await service.discard(draftId.current);
@@ -330,7 +334,7 @@ export function AthleteVideoReview({
             Which drill?
             <select
               value={drillId}
-              disabled={busy || started}
+              disabled={busy || preparing || started}
               onChange={(e) => setDrillId(e.target.value)}
             >
               {drills.map((d) => (
@@ -340,6 +344,13 @@ export function AthleteVideoReview({
               ))}
             </select>
           </label>
+          <VideoPreparation
+            maximumSeconds={60}
+            maxBytes={40 * 1024 * 1024}
+            disabled={busy || checking || started}
+            onBusyChange={setPreparing}
+            onChoose={(file) => void choose(file)}
+          />
           <input
             ref={camera}
             hidden
@@ -366,14 +377,14 @@ export function AthleteVideoReview({
           <div className="actions video-picker-actions">
             <button
               className="button secondary"
-              disabled={busy || checking || started}
+              disabled={busy || preparing || checking || started}
               onClick={() => camera.current?.click()}
             >
               <Camera size={18} /> Record video
             </button>
             <button
               className="button secondary"
-              disabled={busy || checking || started}
+              disabled={busy || preparing || checking || started}
               onClick={() => picker.current?.click()}
             >
               <Upload size={18} /> Choose video
@@ -400,6 +411,21 @@ export function AthleteVideoReview({
               {error}
             </p>
           )}
+          {busy && uploadProgress !== null && (
+            <div role="status" className="upload-transfer">
+              <progress
+                aria-label="Private video upload progress"
+                max={1}
+                value={uploadProgress}
+              />
+              <p>
+                {Math.round(uploadProgress * 100)}% transferred
+                {uploadProgress >= 1
+                  ? " · Confirming the private submission…"
+                  : " · Keep this screen open."}
+              </p>
+            </div>
+          )}
           <p className="member-fineprint">
             Private to your authorized family and assigned coach. Keep other
             people and private information out of the shot.
@@ -407,18 +433,21 @@ export function AthleteVideoReview({
           <div className="actions">
             <button
               className="button"
-              disabled={!selected || !drillId || checking || busy}
+              disabled={!selected || !drillId || checking || busy || preparing}
               onClick={() =>
                 void act(async () => {
                   if (!selected || !draftId.current) return;
                   draftStarted.current = true;
                   setStarted(true);
+                  setUploadProgress(0);
                   await service.send(
                     draftId.current,
                     player,
                     drillId,
                     selected.file,
                     selected.seconds,
+                    ({ loaded, total }) =>
+                      setUploadProgress(total ? loaded / total : 0),
                   );
                   clear();
                   await refresh();
@@ -436,7 +465,7 @@ export function AthleteVideoReview({
             </button>
             <button
               className="text-button"
-              disabled={busy}
+              disabled={busy || preparing}
               onClick={() =>
                 void act(async () => {
                   if (draftStarted.current && draftId.current)
@@ -473,7 +502,7 @@ export function AthleteVideoReview({
           <div className="actions">
             <button
               className="button danger"
-              disabled={busy}
+              disabled={busy || preparing}
               onClick={() =>
                 void act(async () => {
                   await service.remove(removing);
@@ -487,7 +516,7 @@ export function AthleteVideoReview({
             </button>
             <button
               className="button secondary"
-              disabled={busy}
+              disabled={busy || preparing}
               onClick={() => setRemoving(null)}
             >
               Keep video

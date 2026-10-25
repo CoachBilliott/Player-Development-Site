@@ -1,6 +1,9 @@
 // Runs inside the actual iPhone WKWebView, with isolated fictional data only.
 const store = window.Capacitor.Plugins.SecureStoragePlugin;
 if (!store || !window.Capacitor.isNativePlatform()) throw new Error('Native bridge is unavailable');
+if (!window.Capacitor.isPluginAvailable('TrainingVideo')) throw new Error('Native video preparation bridge is unavailable');
+await window.Capacitor.Plugins.TrainingVideo.cancelPreparation();
+await window.Capacitor.Plugins.TrainingVideo.releaseVideo({ id: 'fictional-missing-file' });
 const image = document.querySelector('.app-start-photo img');
 await image.decode();
 await document.fonts.ready;

@@ -41,8 +41,10 @@ targets:
     platform: iOS
     sources:
       - path: AppTests
-        excludes: [native-smoke.js]
+        excludes: [native-smoke.js, Fixtures]
       - path: AppTests/native-smoke.js
+        buildPhase: resources
+      - path: AppTests/Fixtures/fictional-hevc.mov
         buildPhase: resources
     settings:
       base:

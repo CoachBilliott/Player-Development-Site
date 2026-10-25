@@ -1,3 +1,4 @@
+import { takeStaffHandoff } from "./staffHandoff";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowDown,
@@ -61,10 +62,39 @@ function Builder({ shared }: { shared: SharedState }) {
   const [snapshot, setSnapshot] = useState(JSON.stringify(["", "", []]));
   const [pending, setPending] = useState<SavedWorkout | "new" | null>(null),
     [removing, setRemoving] = useState<SavedWorkout | null>(null);
+  const [incomingId, setIncomingId] = useState(() =>
+    takeStaffHandoff(shared.session!.user.id, "workout", false),
+  );
+  const incomingApplied = useRef(false);
   const lock = useRef(false);
   const resources = shared.resources.filter(
-    (d) => d.visibility === "member_only" && d.source === "shared",
+    (d) =>
+      d.visibility === "member_only" &&
+      d.source === "shared" &&
+      (d.reviewStage === undefined || d.reviewStage === "approved"),
   );
+  const incoming = resources.find((d) => d.id === incomingId);
+  useEffect(() => {
+    if (!incomingId || !shared.libraryReady) return;
+    let active = true;
+    void Promise.resolve().then(() => {
+      if (!active || incomingApplied.current) return;
+      incomingApplied.current = true;
+      takeStaffHandoff(shared.session!.user.id, "workout");
+      if (!incoming) {
+        setError(
+          "This drill needs approval or is no longer available. Review the content queue first.",
+        );
+        return;
+      }
+      setIds([incoming.id]);
+      setTitle(`${incoming.title} practice`.slice(0, 90));
+    });
+    return () => {
+      active = false;
+    };
+  }, [incomingId, incoming, shared.libraryReady, shared.session]);
+
   const items = ids.map((key) => resources.find((d) => d.id === key));
   const dirty = snapshot !== JSON.stringify([title, summary, ids]);
   const selected = saved.find((w) => w.id === id && w.version === version);
@@ -148,6 +178,34 @@ function Builder({ shared }: { shared: SharedState }) {
           <ArrowLeft size={17} /> Upload & content
         </a>
       </div>
+      {incoming && (
+        <section className="notice">
+          <strong>New approved drill: {incoming.title}</strong>
+          <p>
+            {ids.includes(incoming.id)
+              ? "This drill is in the open workout. You can also open a saved workout and add it there."
+              : "Add this drill to the open workout, then preview and save."}
+          </p>
+          <div className="actions">
+            <button
+              type="button"
+              className="button secondary"
+              disabled={busy || ids.includes(incoming.id) || ids.length >= 12}
+              onClick={() => setIds((current) => [...current, incoming.id])}
+            >
+              Add to this workout
+            </button>
+            <button
+              type="button"
+              className="text-button"
+              disabled={busy}
+              onClick={() => setIncomingId(null)}
+            >
+              Dismiss
+            </button>
+          </div>
+        </section>
+      )}
       {shared.error && (
         <p className="form-error" role="alert">
           {shared.error}

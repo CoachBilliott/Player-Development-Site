@@ -1242,3 +1242,81 @@
 .mobile-layout .app-training-today .session-equipment {
   margin-bottom: 10px;
 }
+.video-preparation {
+  margin: 18px 0;
+  padding: 18px 0;
+  border-block: 1px solid #ffffff20;
+}
+.video-preparation p {
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 12px 0;
+}
+.video-preparation progress {
+  width: 100%;
+  accent-color: #ff956b;
+}
+.clip-range {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 16px 0;
+}
+.clip-range label {
+  display: grid;
+  gap: 8px;
+  font-size: 13px;
+  min-width: 0;
+}
+.clip-range input {
+  width: 100%;
+}
+.review-library-tools {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 16px;
+  margin: 24px 0;
+  align-items: end;
+}
+.review-library-tools label,
+.review-note-label {
+  display: grid;
+  gap: 8px;
+  font-size: 14px;
+  min-width: 0;
+}
+.review-library-tools input,
+.review-library-tools select,
+.review-note-label textarea {
+  width: 100%;
+}
+.approval-list {
+  list-style: none;
+  display: grid;
+  gap: 18px;
+  padding: 0;
+}
+.approval-list > li {
+  padding: 24px;
+}
+.approval-list h2 {
+  font-size: 26px;
+  margin: 14px 0;
+}
+.approval-list p {
+  font-size: 13px;
+  line-height: 1.7;
+  margin: 12px 0;
+}
+.review-note-label {
+  margin: 22px 0;
+}
+.upload-transfer progress {
+  width: 100%;
+  accent-color: #ff956b;
+}
+@media (max-width: 500px) {
+  .review-library-tools {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

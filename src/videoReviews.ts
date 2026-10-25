@@ -1,3 +1,4 @@
+import { trackUpload, type UploadProgress } from "./uploadProgress";
 import { z } from "zod";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { PrivatePlayer } from "./accounts";
@@ -92,6 +93,7 @@ export class VideoReviews {
     trainingId: string,
     file: File,
     seconds: number,
+    progress?: (value: UploadProgress) => void,
   ) {
     const problem = videoFileError(file);
     if (problem) throw new Error(problem);
@@ -112,13 +114,18 @@ export class VideoReviews {
     const draft = reviewSchema.parse(data);
     if (draft.status !== "uploading") return draft;
     // Stable IDs make a lost upload/finalize response safe to retry. Never overwrite a clip.
-    const uploaded = await this.client.storage
-      .from("athlete-review-videos")
-      .upload(draft.asset_path, file, {
-        contentType: file.type,
-        upsert: false,
-        cacheControl: "0",
-      });
+    const uploaded = await trackUpload(
+      `athlete-review-videos/${draft.asset_path}`,
+      progress,
+      () =>
+        this.client.storage
+          .from("athlete-review-videos")
+          .upload(draft.asset_path, file, {
+            contentType: file.type,
+            upsert: false,
+            cacheControl: "0",
+          }),
+    );
     const finished = await this.client.rpc("finish_athlete_video", {
       review_id: id,
     });

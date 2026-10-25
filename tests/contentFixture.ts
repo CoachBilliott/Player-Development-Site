@@ -8,6 +8,9 @@ export type Row = {
   version: number;
   status: string;
   visibility: "public_sample" | "member_only";
+  created_by?: string;
+  review_stage?: string;
+  review_notes?: string;
 };
 const userId = "10000000-0000-4000-8000-000000000001";
 const user = {
@@ -30,6 +33,7 @@ export async function mockProject(
   approved = true,
   ambiguousWrites = false,
   identity = userId,
+  role = "coach",
 ) {
   const actor = { ...user, id: identity };
   await context.route("**/content-config.json", (route) =>
@@ -65,11 +69,34 @@ export async function mockProject(
     if (url.pathname.includes("/rest/v1/account_roles"))
       return route.fulfill({
         json: approved
-          ? [{ role: "coach", version: 1 }]
+          ? [{ role, version: 1 }]
           : [{ role: "parent", version: 1 }],
       });
     if (url.pathname.includes("/rest/v1/coach_members"))
       return route.fulfill({ json: approved ? [{ user_id: identity }] : [] });
+    if (url.pathname.endsWith("/rpc/review_training_resource")) {
+      const body = request.postDataJSON(),
+        row = rows.get(body.resource);
+      if (
+        !row ||
+        (body.decision !== "submit" && !["owner", "manager"].includes(role)) ||
+        row.version !== body.expected_version
+      )
+        return route.fulfill({
+          status: 400,
+          json: { message: "Fictional review conflict" },
+        });
+      row.review_stage =
+        body.decision === "submit"
+          ? "pending"
+          : body.decision === "approve"
+            ? "approved"
+            : "changes_requested";
+      row.review_notes = body.note;
+      row.status = row.review_stage === "approved" ? "published" : "draft";
+      row.version++;
+      return route.fulfill({ json: row });
+    }
     if (url.pathname.includes("/rest/v1/training_resources")) {
       const id = url.searchParams.get("id")?.replace(/^eq\./, "");
       const version = url.searchParams.get("version")?.replace(/^eq\./, "");
@@ -83,8 +110,12 @@ export async function mockProject(
           )
             .filter(
               (row) =>
-                row.visibility !== "member_only" ||
-                headers.authorization?.includes(".fictional-signature"),
+                (row.visibility === "public_sample" &&
+                  row.status === "published") ||
+                (headers.authorization?.includes(".fictional-signature") &&
+                  approved &&
+                  (["owner", "manager"].includes(role) ||
+                    row.created_by === identity)),
             )
             .map((row) => ({
               ...row,
@@ -93,7 +124,14 @@ export async function mockProject(
         });
       if (method === "POST") {
         const body = request.postDataJSON();
-        const row = { ...body, version: 1, created_by: identity };
+        const row = {
+          ...body,
+          version: 1,
+          created_by: identity,
+          status: "draft",
+          review_stage: "draft",
+          review_notes: "",
+        };
         rows.set(row.id, row);
         if (ambiguousWrites)
           return route.fulfill({
@@ -112,6 +150,9 @@ export async function mockProject(
           ...old,
           ...request.postDataJSON(),
           version: old.version + 1,
+          status: "draft",
+          review_stage: "draft",
+          review_notes: "",
         };
         rows.set(old.id, next);
         if (ambiguousWrites)

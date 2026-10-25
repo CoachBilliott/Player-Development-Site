@@ -99,6 +99,16 @@ export function ContentStudio({ shared, ...local }: Props) {
           >
             Build a complete workout
           </a>
+          <a
+            className="button secondary"
+            href="#content-review"
+            aria-disabled={editorBusy}
+            onClick={(e) => {
+              if (editorBusy) e.preventDefault();
+            }}
+          >
+            Drafts & approvals
+          </a>
           {(shared.error || error) && (
             <p className="form-error" role="alert">
               {shared.error || error}
@@ -238,6 +248,7 @@ export function ContentStudio({ shared, ...local }: Props) {
           <Admin
             key={`shared-${shared.session?.user.id}`}
             scope="shared"
+            uploadProgress={shared.uploadProgress}
             draftOwnerId={shared.session?.user.id}
             onBusyChange={setEditorBusy}
             onPublish={shared.publish}

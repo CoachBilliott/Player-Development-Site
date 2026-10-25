@@ -82,11 +82,12 @@ test("a saved staff draft restores the original file and coaching details after 
   await expect(
     page.getByText("Look at the next marker.", { exact: false }),
   ).toBeVisible();
-  await page
-    .getByRole("button", { name: "Publish to shared library" })
-    .dblclick();
+  await page.getByRole("button", { name: "Save shared draft" }).dblclick();
   await expect(
-    page.getByText("Saved to the protected training library.", { exact: true }),
+    page.getByText(
+      "Shared draft saved. Send it for review before assigning it.",
+      { exact: true },
+    ),
   ).toBeVisible();
   expect(rows.size).toBe(1);
   expect([...rows.values()][0].content).toMatchObject({
@@ -226,9 +227,12 @@ test("editing retains existing purpose, equipment, cue and drill kind", async ({
   await fill(page);
   await page.getByLabel("I have the rights").check();
   await page.getByRole("button", { name: "Preview matches" }).click();
-  await page.getByRole("button", { name: "Publish to shared library" }).click();
+  await page.getByRole("button", { name: "Save shared draft" }).click();
   await expect(
-    page.getByText("Saved to the protected training library.", { exact: true }),
+    page.getByText(
+      "Shared draft saved. Send it for review before assigning it.",
+      { exact: true },
+    ),
   ).toBeVisible();
   [...rows.values()][0].content.kind = "read";
   await page.reload();
@@ -241,9 +245,11 @@ test("editing retains existing purpose, equipment, cue and drill kind", async ({
   await page.getByLabel("Resource title").fill("Updated title only");
   await page.getByLabel("I have the rights").check();
   await page.getByRole("button", { name: "Preview matches" }).click();
-  await page.getByRole("button", { name: "Save resource changes" }).click();
+  await page.getByRole("button", { name: "Save changes for review" }).click();
   await expect(
-    page.getByText("Resource changes saved.", { exact: true }),
+    page.getByText("Changes saved as a draft. Send it for review again.", {
+      exact: true,
+    }),
   ).toBeVisible();
   expect([...rows.values()][0].content).toMatchObject({
     kind: "read",

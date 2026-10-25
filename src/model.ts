@@ -94,6 +94,10 @@ export const drillSchema = z.object({
   assetName: z.string().optional(),
   assetUrl: z.string().url().startsWith("https://").optional(),
   backendVersion: z.number().int().positive().optional(),
+  reviewStage: z
+    .enum(["draft", "pending", "changes_requested", "approved"])
+    .optional(),
+  reviewNotes: z.string().optional(),
 });
 export type Drill = z.infer<typeof drillSchema>;
 export const runSchema = z.object({

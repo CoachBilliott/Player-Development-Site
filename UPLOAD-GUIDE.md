@@ -1,39 +1,39 @@
-# Upload a workout from your phone
+# Upload a drill, then build a workout
 
-Open [Coach studio](https://coachbilliott.github.io/Player-Development-Site/#coach).
+Open **Content** in the iPhone app, or [Coach studio](https://coachbilliott.github.io/Player-Development-Site/#coach). Use an approved Owner, Manager or Coach account.
 
-## Share it on the website
+## 1. Choose and prepare the attachment
 
-1. Leave **Shared website** selected. Sign in with your existing Owner, Manager or Coach account. If you are already signed in with staff access, the editor opens directly.
-2. Tap **Choose a video or file** and select an original sample attachment from Photos or Files. Nothing is sent to storage yet. The workout fields appear, and the filename becomes an editable title.
-3. Add the drill's purpose under **What this drill trains**, its **Equipment and practice space**, and its **Main coaching cue**. Write one practice step per line. Select a sample-audience shortcut or adjust ages, experience, position and primary skill yourself. For shared uploads, leave **Content access** on protected staff review, or explicitly choose **Public demo sample** for a free resource. Set planned practice minutes and confirm your rights to the illustrative sample material. Check the audience is suitable for that activity.
-4. Tap **Preview matches**. Check the file, instructions, destination and matching fictional players. **Back to editing** keeps your draft. Tap **Publish to shared library** once and wait for success.
-5. Protected uploads appear in the **staff content library** for authorized staff. Explicit public samples appear in the demo **Drill library**. Your partner needs the appropriate staff account to review protected resources.
+In the native iPhone app, tap **Choose & prepare iPhone video**, select a recording from Photos, and choose the part to use. The default range is already filled in. Tap **Prepare this clip** to convert MOV/HEVC or other supported recordings to a smaller H.264 MP4. A drill clip can be up to 180 seconds; if preparation cannot meet the size limit, shorten it and retry. Your original stays in Photos. Preparation progress is real device progress and nothing uploads yet.
 
-New shared content defaults to protected staff review. Only an explicit Public demo sample is visible to website visitors. Paid member access is not active. Do not upload private player information or real children's information. Content remains illustrative pending qualified review.
+Or choose a video/file through the ordinary picker. Shared attachments support MP4, MOV, WebM, PNG, JPEG, WebP, PDF and TXT, up to **40 MB**. Browser uploads keep their original format; MOV/HEVC playback varies by browser and codec. Use native preparation for a compatible MP4 and preview actual playback before approval. Native preparation targets at most 12 MB for faster uploads. Keep the app open during preparation and transfer.
 
-## Optional local practice for signed-in staff
+Canceling the picker/preparation or rejecting a replacement keeps an earlier valid selected attachment. Choosing a new valid attachment requires confirming rights again. Preparation failures preserve the selected source/range so you can shorten and retry. Temporary native conversion files are removed after use or cancellation; stale temporary files from an interrupted app are cleaned after a day on a later launch.
 
-After signing in with staff access, switch to **This browser** and confirm. This is a local-only staff practice editor: the attachment and published resource stay in that browser. Your partner cannot see this version. Clearing browser data can remove it. Switching destinations discards an unsaved draft only after confirmation; it does not move files between destinations.
+## 2. Save a private shared draft
 
-## Edit or remove something
+Add the title, purpose, equipment, coaching cue, one practice step per line, planned minutes and intended ages/positions/experience/skill. Keep **Content access** on protected training, or explicitly choose a future public demo sample. Both remain private drafts until approval.
 
-Your uploaded resources appear below the editor. Choose **Edit**, change instructions or audience, and keep the existing attachment or choose a replacement. Preview and save. Choose **Remove** and confirm to remove the resource. Owners/Managers can edit shared resources; Coaches can edit their own. An active demo-session resource is locked until that session ends.
+Confirm rights, tap **Preview matches**, inspect the actual attachment, instructions and matching fictional players, then tap **Save shared draft**. Watch file-transfer progress and wait for confirmation. Repeated taps do not intentionally create duplicate drafts. If the response is interrupted, retain the draft, retry as instructed or refresh Drafts & approvals before creating another resource.
 
-## File limits and drafts
+## 3. Review, approve and publish
 
-- One attachment per resource, up to **12 MB**. Use MP4/WebM video, PNG/JPEG/WebP images, PDF or TXT. MOV/HEVC phone videos need conversion to a supported format. There is no automatic compression/conversion; longer recordings need trimming or a smaller export.
-- Canceling the file picker or choosing an invalid replacement keeps an already selected valid attachment. A rejected file is never uploaded.
-- For a **new Shared website upload**, choose **Save draft on this device** to keep the selected file and current details before leaving. One new-upload draft is kept per staff account in this app/browser's IndexedDB. It is local to this device, is not an upload, does not sync to your partner, and is cleared on sign-out or when site data is cleared. Browser storage can be restricted or evicted; retain your original files.
-- After refresh or returning to Content, choose **Continue saved draft**. Check the content and confirm rights again before Preview/Publish. Changes after a save require another explicit save. Replacing a different saved draft and removing a saved draft require confirmation; canceling keeps it. Successful publication removes the corresponding saved draft.
-- Edits to already-published resources and **This browser** practice drafts remain screen-only. Save resource changes through Preview, or keep the screen open. Discarding unsaved changes leaves an explicitly saved device draft intact. Nothing reaches shared storage until Publish/Save resource changes is confirmed.
-- If saving fails, keep the editor open and retry. Device draft failures preserve the open file/details and do not claim success. Publishing locks editing/destination/sign-out controls while the operation is pending. Repeated taps do not intentionally create extra resources; success is confirmed before the draft resets.
-- Real device acceptance is still needed on iPhone Safari/Android Chrome, including actual video format/playback and the partner's staff login. Tests use fictional accounts. General enrollment and real child access remain closed.
+Open **Drafts & approvals**, preview the saved draft and choose **Send for review**. An Owner or Manager previews it, checks the release acknowledgement and chooses **Approve & publish**, or **Request changes** with a note. Coaches can submit their own work but cannot approve it. Server permissions enforce the workflow; hiding a button is not the only control.
 
-## Private athlete submissions
+The stages are **Draft → Awaiting review → Approved**, with **Changes requested → Edit → Resubmit** when needed. Review notes and a private staff audit record retain the release decision and resource version. Staff approval does not substitute for qualified coaching review, rights, age suitability or your business's safeguarding process. Keep pilot material illustrative until those reviews are complete.
 
-The native app now separates coaching-resource uploads from athlete review clips. See [the video review guide](VIDEO-REVIEW-GUIDE.md) for the simple Record/Choose → Preview → Send flow, Owner assignment, private coach queue, parent approval, pilot quotas and deletion. The optional feature does not collect a payment.
+Approved public samples appear on the website. Approved protected drills remain restricted until an Owner assigns training. Editing an approved file, instructions or audience returns it to a draft and withdraws affected training access. Reapprove it and explicitly reassign affected workouts. Completed practice history remains saved.
 
-## Combine drills into a workout
+## 4. Continue into an assigned workout
 
-Choose **Build a complete workout** from Content to arrange protected drills, preview and save a named session. An Owner assigns that whole session to an eligible account. The older Account access checkboxes manage separate loose-drill grants and optional video-review access; they do not replace a saved-workout assignment. See [WORKOUT-GUIDE.md](WORKOUT-GUIDE.md).
+On an approved protected drill, choose **Build a workout with this drill**. It is added to a new workout. To use an existing saved workout, open it, confirm any unsaved-change prompt, and choose **Add to this workout** from the new-drill notice. Arrange 1–12 approved compatible drills, preview and save.
+
+An Owner chooses the approved adult pilot customer account, previews eligibility and confirms assignment. The customer refreshes Today and receives the complete ordered session. Assignment does not start a payment or enable optional video-review access. See [WORKOUT-GUIDE.md](WORKOUT-GUIDE.md).
+
+## Device drafts and local practice
+
+**Save draft on this device** retains one new shared-upload draft per staff account in that app/browser's IndexedDB. It is not an upload and does not sync to a partner. After returning, choose **Continue saved draft** and confirm rights again. Save explicitly after changes. Signing out/account switching or clearing site data removes device drafts; restricted/full storage can prevent saving. Keep originals. Successful shared saving removes the corresponding local draft.
+
+Published-resource edits and **This browser** practice edits remain screen-only until saved. Switching publishing destinations discards only unsaved editor changes after confirmation. This browser practice content never enters the shared approval or assignment flow. Canceling removal/replacement keeps the existing draft/resource.
+
+Private athlete clips use a separate bucket and approval/access process. See [VIDEO-REVIEW-GUIDE.md](VIDEO-REVIEW-GUIDE.md). Actual iPhone acceptance, original reviewed content and launch decisions are still needed. Follow [the two-phone test](PHONE-ACCEPTANCE.md); public registration, billing and real junior access remain closed.

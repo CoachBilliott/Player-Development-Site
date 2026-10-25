@@ -1,4 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import {
+  PracticeResumes,
+  resumeItems,
+  type PracticeResume,
+} from "./practiceResume";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowRight,
   ArrowLeft,
@@ -50,12 +55,24 @@ export function AthleteTraining({
       drills: string[];
       items: Drill[];
       assignment?: AthleteAssignment;
+      initialIndex?: number;
     } | null>(null),
     [review, setReview] = useState<{
       workout: AthleteWorkout;
       decision: "approved" | "needs_repeat";
     } | null>(null);
   const [available, setAvailable] = useState<Drill[]>([]);
+  const resumes = useMemo(
+    () => (client && !demo ? new PracticeResumes(client) : null),
+    [client, demo],
+  );
+  const [savedPractice, setSavedPractice] = useState<PracticeResume | null>(
+    null,
+  );
+  const [discardSaved, setDiscardSaved] = useState(false);
+  const savedPracticeRef = useRef<PracticeResume | null>(null);
+  const activeResumeVersion = useRef(0);
+
   const lock = useRef(false);
   useEffect(() => {
     let stopped = false;
@@ -67,11 +84,14 @@ export function AthleteTraining({
           : service.plan
             ? service.plan(player)
             : Promise.resolve([]),
+        resumes ? resumes.load(player.id) : Promise.resolve(null),
       ])
-        .then(([value, items]) => {
+        .then(([value, items, paused]) => {
           if (!stopped) {
             setState(value);
             setAvailable(items);
+            setSavedPractice(paused);
+            savedPracticeRef.current = paused;
             setError("");
           }
         })
@@ -88,7 +108,7 @@ export function AthleteTraining({
       stopped = true;
       window.removeEventListener("focus", refresh);
     };
-  }, [service, player, demo]);
+  }, [service, player, demo, resumes]);
   async function act(action: () => Promise<void>) {
     if (lock.current) return;
     lock.current = true;
@@ -107,16 +127,50 @@ export function AthleteTraining({
     }
   }
   async function refresh() {
-    const [next, items] = await Promise.all([
+    const [next, items, paused] = await Promise.all([
       service.load(player),
       demo
         ? Promise.resolve(DRILLS)
         : service.plan
           ? service.plan(player)
           : Promise.resolve([]),
+      resumes ? resumes.load(player.id) : Promise.resolve(null),
     ]);
     setState(next);
     setAvailable(items);
+    setSavedPractice(paused);
+    savedPracticeRef.current = paused;
+  }
+  async function savePosition(index: number) {
+    if (!resumes || !session) return;
+    const paused = await resumes.save(
+      player.id,
+      session.id,
+      session.items,
+      index,
+      activeResumeVersion.current,
+      session.assignment,
+    );
+    activeResumeVersion.current = paused.version;
+    savedPracticeRef.current = paused;
+    setSavedPractice(paused);
+  }
+  async function discardActive() {
+    if (
+      resumes &&
+      session &&
+      activeResumeVersion.current > 0 &&
+      savedPracticeRef.current
+    ) {
+      await resumes.discard(player.id, {
+        ...savedPracticeRef.current,
+        session_id: session.id,
+        version: activeResumeVersion.current,
+      });
+      savedPracticeRef.current = null;
+      setSavedPractice(null);
+    }
+    setSession(null);
   }
   const profile: Profile = {
     id: player.id,
@@ -320,22 +374,53 @@ export function AthleteTraining({
                 disabled={
                   busy || !state.can_record || !plan.length || !!session
                 }
-                onClick={() =>
+                onClick={() => {
+                  const pausedItems = savedPractice
+                    ? resumeItems(savedPractice, available, assigned)
+                    : null;
+                  if (savedPractice && !pausedItems) {
+                    setError(
+                      "Saved practice no longer matches this workout. Refresh training before continuing.",
+                    );
+                    return;
+                  }
+                  activeResumeVersion.current = savedPractice?.version || 0;
+                  const items = pausedItems || plan;
                   setSession({
-                    id: crypto.randomUUID(),
-                    drills: plan.map((d) => d.id),
-                    items: plan,
+                    id: savedPractice?.session_id || crypto.randomUUID(),
+                    drills: items.map((d) => d.id),
+                    items,
                     assignment: assigned?.eligible ? assigned : undefined,
-                  })
-                }
+                    initialIndex: savedPractice?.current_index || 0,
+                  });
+                }}
               >
-                {state.is_parent
-                  ? "Guide and record practice"
-                  : demo
-                    ? "Start sample workout"
-                    : "Start workout"}
+                {savedPractice
+                  ? "Resume workout"
+                  : state.is_parent
+                    ? "Guide and record practice"
+                    : demo
+                      ? "Start sample workout"
+                      : "Start workout"}
                 <ArrowRight size={18} />
               </button>
+              {savedPractice && (
+                <div className="saved-practice-note">
+                  <p>
+                    Saved at drill {savedPractice.current_index + 1} of{" "}
+                    {savedPractice.resource_ids.length}. No completed practice
+                    has been recorded.
+                  </p>
+                  <button
+                    type="button"
+                    className="text-button"
+                    disabled={busy || !!session}
+                    onClick={() => setDiscardSaved(true)}
+                  >
+                    Discard saved practice
+                  </button>
+                </div>
+              )}
               {view === "workouts" && (
                 <ol className="app-session-drills">
                   {plan.map((drill) => (
@@ -665,6 +750,47 @@ export function AthleteTraining({
           </div>
         </Modal>
       )}
+      {discardSaved && savedPractice && resumes && (
+        <Modal
+          title="Discard saved practice?"
+          onClose={() => {
+            if (!busy) setDiscardSaved(false);
+          }}
+        >
+          <p>
+            This removes only the unfinished place for {player.nickname}.
+            Completed practice history stays saved.
+          </p>
+          {error && (
+            <p role="alert" className="form-error">
+              {error}
+            </p>
+          )}
+          <div className="actions">
+            <button
+              className="button danger"
+              disabled={busy}
+              onClick={() =>
+                void act(async () => {
+                  await resumes.discard(player.id, savedPractice);
+                  setSavedPractice(null);
+                  savedPracticeRef.current = null;
+                  setDiscardSaved(false);
+                })
+              }
+            >
+              Discard saved practice permanently
+            </button>
+            <button
+              className="button secondary"
+              disabled={busy}
+              onClick={() => setDiscardSaved(false)}
+            >
+              Keep saved practice
+            </button>
+          </div>
+        </Modal>
+      )}
       {session && (
         <GuidedWorkout
           key={session.id}
@@ -675,6 +801,10 @@ export function AthleteTraining({
           workoutTitle={session.assignment?.title}
           busy={busy}
           error={error}
+          initialIndex={session.initialIndex}
+          onSavePosition={resumes ? savePosition : undefined}
+          onPause={resumes ? () => setSession(null) : undefined}
+          onDiscard={resumes ? discardActive : undefined}
           onCancel={() => setSession(null)}
           onComplete={() =>
             void act(async () => {
@@ -685,6 +815,8 @@ export function AthleteTraining({
                 session.assignment,
               );
               setSession(null);
+              savedPracticeRef.current = null;
+              setSavedPractice(null);
               await refresh();
               setMessage(
                 state?.is_family && !state.is_parent
@@ -847,6 +979,10 @@ function GuidedWorkout(props: {
   workoutTitle?: string;
   busy: boolean;
   error: string;
+  initialIndex?: number;
+  onSavePosition?: (index: number) => Promise<void>;
+  onPause?: () => void;
+  onDiscard?: () => Promise<void>;
   onCancel: () => void;
   onComplete: () => void;
 }) {
@@ -864,19 +1000,48 @@ function SimpleWorkout({
   error,
   onCancel,
   onComplete,
+  initialIndex = 0,
+  onSavePosition,
+  onPause,
+  onDiscard,
 }: {
   items: Drill[];
   workoutTitle?: string;
   profile: Profile;
   busy: boolean;
   error: string;
+  initialIndex?: number;
+  onSavePosition?: (index: number) => Promise<void>;
+  onPause?: () => void;
+  onDiscard?: () => Promise<void>;
   onCancel: () => void;
   onComplete: () => void;
 }) {
-  const [index, setIndex] = useState(0),
+  const [index, setIndex] = useState(initialIndex),
     [ready, setReady] = useState(false),
     [ack, setAck] = useState(false),
     [cancel, setCancel] = useState(false);
+  const [saving, setSaving] = useState(false),
+    [saveError, setSaveError] = useState("");
+  const working = busy || saving;
+  async function moveTo(next: number, begin = false) {
+    if (working) return;
+    setSaving(true);
+    setSaveError("");
+    try {
+      await onSavePosition?.(next);
+      if (begin) setReady(true);
+      else setIndex(next);
+    } catch (e) {
+      setSaveError(
+        e instanceof Error
+          ? e.message
+          : "Your place could not be saved. Retry when connected.",
+      );
+    } finally {
+      setSaving(false);
+    }
+  }
   const lastTap = useRef(0);
   const drillHeading = useRef<HTMLHeadingElement>(null);
   const drill = items[index];
@@ -887,7 +1052,7 @@ function SimpleWorkout({
     <Modal
       title={ready ? "Guided practice" : "Ready to practice?"}
       onClose={() => {
-        if (!busy) setCancel(true);
+        if (!working) setCancel(true);
       }}
     >
       {!ready ? (
@@ -912,8 +1077,9 @@ function SimpleWorkout({
           </ol>
           <Notice>
             Noncontact training. Use a clear practice space and appropriate
-            supervision. Content awaits qualified coaching review. Unfinished
-            practice is not saved on refresh.
+            supervision. Content awaits qualified coaching review. Your place is
+            saved after each drill when connected. Finishing is required to
+            record practice.
           </Notice>
           <label className="checkbox-label">
             <input
@@ -926,10 +1092,15 @@ function SimpleWorkout({
           </label>
           <button
             className="button full"
-            disabled={!ack}
-            onClick={() => setReady(true)}
+            disabled={!ack || working}
+            onClick={() => void moveTo(index, true)}
           >
-            Begin workout <ArrowRight size={18} />
+            {saving
+              ? "Saving your place…"
+              : initialIndex > 0
+                ? "Resume practice"
+                : "Begin workout"}{" "}
+            <ArrowRight size={18} />
           </button>
         </>
       ) : (
@@ -988,7 +1159,7 @@ function SimpleWorkout({
             )}
             <button
               className="button full"
-              disabled={busy}
+              disabled={working}
               onClick={() => {
                 const now = Date.now();
                 if (now - lastTap.current < 650) {
@@ -997,14 +1168,31 @@ function SimpleWorkout({
                 }
                 lastTap.current = now;
                 if (index < items.length - 1) {
-                  setIndex((n) => n + 1);
+                  void moveTo(index + 1);
                   drillHeading.current
                     ?.closest("dialog")
                     ?.scrollTo({ top: 0, behavior: "instant" });
-                } else onComplete();
+                } else {
+                  if (!onSavePosition) {
+                    onComplete();
+                    return;
+                  }
+                  setSaving(true);
+                  setSaveError("");
+                  void onSavePosition(index)
+                    .then(onComplete)
+                    .catch((e) =>
+                      setSaveError(
+                        e instanceof Error
+                          ? e.message
+                          : "Saved practice could not be checked.",
+                      ),
+                    )
+                    .finally(() => setSaving(false));
+                }
               }}
             >
-              {busy
+              {working
                 ? "Saving practice…"
                 : index < items.length - 1
                   ? "Complete drill · Next"
@@ -1018,7 +1206,7 @@ function SimpleWorkout({
             {index > 0 && (
               <button
                 className="text-button"
-                disabled={busy}
+                disabled={working}
                 onClick={() => {
                   const now = Date.now();
                   if (now - lastTap.current < 650) {
@@ -1026,7 +1214,7 @@ function SimpleWorkout({
                     return;
                   }
                   lastTap.current = now;
-                  setIndex((n) => n - 1);
+                  void moveTo(index - 1);
                   drillHeading.current
                     ?.closest("dialog")
                     ?.scrollTo({ top: 0, behavior: "instant" });
@@ -1038,10 +1226,24 @@ function SimpleWorkout({
           </div>
         </div>
       )}
+      {saveError && (
+        <p role="alert" className="form-error">
+          {saveError}
+        </p>
+      )}
+      {onPause && ready && (
+        <button
+          className="button secondary full"
+          disabled={working}
+          onClick={onPause}
+        >
+          Save & leave workout
+        </button>
+      )}
       {!cancel ? (
         <button
           className="text-button"
-          disabled={busy}
+          disabled={working}
           onClick={() => setCancel(true)}
         >
           End workout
@@ -1050,7 +1252,27 @@ function SimpleWorkout({
         <div className="discard-box">
           <p>Leave without recording this unfinished workout?</p>
           <div className="actions">
-            <button className="button secondary" onClick={onCancel}>
+            <button
+              className="button secondary"
+              disabled={working}
+              onClick={() => {
+                if (!onDiscard) {
+                  onCancel();
+                  return;
+                }
+                setSaving(true);
+                setSaveError("");
+                void onDiscard()
+                  .catch((e) =>
+                    setSaveError(
+                      e instanceof Error
+                        ? e.message
+                        : "Could not discard practice.",
+                    ),
+                  )
+                  .finally(() => setSaving(false));
+              }}
+            >
               Discard unfinished workout
             </button>
             <button className="text-button" onClick={() => setCancel(false)}>

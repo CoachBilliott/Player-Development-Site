@@ -1,3 +1,4 @@
+import { practiceResumeFixture } from "./practiceResumeFixture";
 import { test, expect, type BrowserContext } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { readFileSync } from "node:fs";
@@ -56,6 +57,7 @@ async function fixture(
   failFirstUpload = false,
   drillCount = 1,
 ) {
+  const paused = practiceResumeFixture();
   const rows: Review[] = [];
   const counts = {
     uploads: 0,
@@ -156,6 +158,8 @@ async function fixture(
           version: 1,
         },
       ]);
+    const resume = paused.handle(p, body, userId);
+    if (resume) return json(resume.data, resume.status);
     if (p.endsWith("/rpc/athlete_account_context"))
       return json({ guardian_managed: false, linked_profile_id: null });
     if (
@@ -193,6 +197,7 @@ async function fixture(
         version: 1,
       };
       workouts.push(w);
+      paused.complete(userId, w.profile_id, w.id);
       return json(w);
     }
     if (p.endsWith("/rpc/begin_athlete_video")) {

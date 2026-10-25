@@ -306,7 +306,7 @@ test("phone upload reveals details, keeps a valid file after a canceled or rejec
   await openLocalStudio(page);
   await expect(page.getByLabel("Resource title")).toHaveCount(0);
   await page.getByText("How uploads work", { exact: true }).click();
-  await expect(page.getByText(/Maximum 12 MB per file/)).toBeVisible();
+  await expect(page.getByText(/Maximum 40 MB per file/)).toBeVisible();
   const picker = page.getByLabel("Choose a video or file", { exact: true });
   await picker.setInputFiles({
     name: "original_ball-skills.txt",
@@ -322,8 +322,8 @@ test("phone upload reveals details, keeps a valid file after a canceled or rejec
     page.getByText("original_ball-skills.txt", { exact: true }),
   ).toBeVisible();
   await picker.setInputFiles({
-    name: "unsupported.mov",
-    mimeType: "video/quicktime",
+    name: "unsupported.html",
+    mimeType: "text/html",
     buffer: Buffer.from("Unsupported fictional media fixture"),
   });
   await expect(
@@ -441,19 +441,24 @@ test("invalid file, canceled file picker, discard and browser storage failure ar
       buffer: Buffer.from("<script>test</script>"),
     });
   await expect(
-    page.getByText("Choose MP4, WebM, PNG, JPEG, WebP, PDF, or plain text.", {
-      exact: true,
-    }),
+    page.getByText(
+      "Choose MP4, MOV, WebM, PNG, JPEG, WebP, PDF, or plain text.",
+      {
+        exact: true,
+      },
+    ),
   ).toBeVisible();
   await page
     .getByLabel("Choose a video or file", { exact: true })
     .setInputFiles({
       name: "big.txt",
       mimeType: "text/plain",
-      buffer: Buffer.alloc(13 * 1024 * 1024),
+      buffer: Buffer.alloc(41 * 1024 * 1024),
     });
   await expect(
-    page.getByText("Choose a file smaller than 12 MB."),
+    page.getByText(
+      "Choose a file no larger than 40 MB. Prepare or shorten a large video first.",
+    ),
   ).toBeVisible();
   await page.getByRole("button", { name: "Discard draft" }).click();
   await page.getByRole("button", { name: "Yes, discard draft" }).click();

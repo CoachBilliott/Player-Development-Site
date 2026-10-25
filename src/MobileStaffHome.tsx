@@ -85,6 +85,14 @@ export function MobileStaffHome({ shared }: { shared: SharedState }) {
             </span>
             <ChevronRight size={18} />
           </a>
+          <a href="#content-review">
+            <ShieldCheck size={22} />
+            <span>
+              <strong>Drafts & approvals</strong>
+              <small>Review content before players can see it.</small>
+            </span>
+            <ChevronRight size={18} />
+          </a>
           <a href="#video-reviews">
             <Video size={22} />
             <span>

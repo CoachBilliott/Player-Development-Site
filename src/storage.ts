@@ -74,6 +74,7 @@ export async function deleteAsset(id: string) {
 export const FILE_TYPES = [
   "video/mp4",
   "video/webm",
+  "video/quicktime",
   "image/png",
   "image/jpeg",
   "image/webp",
@@ -82,8 +83,9 @@ export const FILE_TYPES = [
 ];
 export function validateFile(file: { type: string; size: number }) {
   if (!FILE_TYPES.includes(file.type))
-    return "Choose MP4, WebM, PNG, JPEG, WebP, PDF, or plain text.";
+    return "Choose MP4, MOV, WebM, PNG, JPEG, WebP, PDF, or plain text.";
   if (file.size === 0) return "That file is empty. Choose a file with content.";
-  if (file.size > 12 * 1024 * 1024) return "Choose a file smaller than 12 MB.";
+  if (file.size > 40 * 1024 * 1024)
+    return "Choose a file no larger than 40 MB. Prepare or shorten a large video first.";
   return "";
 }

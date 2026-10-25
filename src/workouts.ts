@@ -61,7 +61,11 @@ export function workoutIssue(ids: string[], resources: Drill[]) {
   const items = ids.map((id) => resources.find((d) => d.id === id));
   if (
     items.some(
-      (d) => !d || d.visibility !== "member_only" || d.source !== "shared",
+      (d) =>
+        !d ||
+        d.visibility !== "member_only" ||
+        d.source !== "shared" ||
+        (d.reviewStage !== undefined && d.reviewStage !== "approved"),
     )
   )
     return "A selected drill is unavailable. Remove it or refresh the library.";

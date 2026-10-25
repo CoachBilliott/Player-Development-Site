@@ -4,6 +4,11 @@ import { drillSchema, type Drill } from "./model";
 import { validateFile } from "./storage";
 import { accessSchema, isStaff } from "./roles";
 import { nativeAuthStorage } from "./nativeStorage";
+import {
+  progressFetch,
+  trackUpload,
+  type UploadProgress,
+} from "./uploadProgress";
 
 const configSchema = z.object({
   enabled: z.boolean(),
@@ -54,15 +59,21 @@ const rowSchema = z.object({
     assetUrl: true,
     backendVersion: true,
     visibility: true,
+    reviewStage: true,
+    reviewNotes: true,
   }),
   asset_path: z.string().min(1),
   asset_type: z.string(),
   asset_name: z.string(),
   version: z.number().int().positive(),
   visibility: z.enum(["public_sample", "member_only"]).default("public_sample"),
+  review_stage: z
+    .enum(["draft", "pending", "changes_requested", "approved"])
+    .default("approved"),
+  review_notes: z.string().default(""),
 });
 const columns =
-  "id,created_by,content,asset_path,asset_type,asset_name,version,visibility";
+  "id,created_by,content,asset_path,asset_type,asset_name,version,visibility,review_stage,review_notes";
 const bucket = "training-media";
 const connections = new Map<string, Promise<SharedContent>>();
 export async function connectSharedContent(config: SharedConfig) {
@@ -77,7 +88,7 @@ async function createConnection(config: SharedConfig) {
   const storage = await nativeAuthStorage();
   const client = createClient(config.url, config.publishableKey, {
     global: {
-      fetch: (input, init) => fetch(input, { ...init, cache: "no-store" }),
+      fetch: progressFetch,
     },
     auth: {
       ...(storage ? { storage } : {}),
@@ -208,6 +219,8 @@ export class SharedContent {
       assetName: row.asset_name,
       backendVersion: row.version,
       visibility: row.visibility,
+      reviewStage: row.review_stage,
+      reviewNotes: row.review_notes,
       ...(data?.signedUrl ? { assetUrl: data.signedUrl } : {}),
     };
   }
@@ -222,24 +235,31 @@ export class SharedContent {
     return Promise.all((data || []).map((row: unknown) => this.convert(row)));
   }
   async list() {
-    const { data, error } = await this.client
-      .from("training_resources")
-      .select(columns)
-      .eq("status", "published")
-      .order("created_at", { ascending: false });
+    const staff = await this.isCoach();
+    let query = this.client.from("training_resources").select(columns);
+    if (!staff) query = query.eq("status", "published");
+    const { data, error } = await query.order("created_at", {
+      ascending: false,
+    });
     if (error)
       throw new Error(
         "Shared resources could not be loaded. Built-in demo drills remain available. Reconnect and refresh to try again.",
       );
     return Promise.all((data || []).map((row) => this.convert(row)));
   }
-  private async upload(id: string, file: File, userId: string) {
+  private async upload(
+    id: string,
+    file: File,
+    userId: string,
+    progress?: (value: UploadProgress) => void,
+  ) {
     const message = validateFile(file);
     if (message) throw new Error(message);
     const extension = (
       {
         "video/mp4": "mp4",
         "video/webm": "webm",
+        "video/quicktime": "mov",
         "image/png": "png",
         "image/jpeg": "jpg",
         "image/webp": "webp",
@@ -248,9 +268,11 @@ export class SharedContent {
       } as Record<string, string>
     )[file.type];
     const path = `${userId}/${id}/${crypto.randomUUID()}.${extension}`;
-    const { error } = await this.client.storage
-      .from(bucket)
-      .upload(path, file, { contentType: file.type, upsert: false });
+    const { error } = await trackUpload(`${bucket}/${path}`, progress, () =>
+      this.client.storage
+        .from(bucket)
+        .upload(path, file, { contentType: file.type, upsert: false }),
+    );
     if (error)
       throw new Error(
         "The shared upload did not finish. Check your connection, file size, and coach access, then retry. Your draft is still here.",
@@ -268,10 +290,16 @@ export class SharedContent {
         assetUrl: true,
         backendVersion: true,
         visibility: true,
+        reviewStage: true,
+        reviewNotes: true,
       })
       .parse(drill);
   }
-  async publish(drill: Drill, file: File) {
+  async publish(
+    drill: Drill,
+    file: File,
+    progress?: (value: UploadProgress) => void,
+  ) {
     const user = await this.requireCoach();
     const content = this.content(drill);
     // A stable draft ID makes retries detectable instead of publishing duplicate resources.
@@ -284,9 +312,9 @@ export class SharedContent {
       throw new Error("Could not check the shared draft. Reconnect and retry.");
     if (existing.data)
       throw new Error(
-        "This draft was already published. Refresh the shared library and edit the published resource instead.",
+        "This draft was already saved. Refresh Drafts & approvals and edit the shared resource instead.",
       );
-    const path = await this.upload(drill.id, file, user.id);
+    const path = await this.upload(drill.id, file, user.id, progress);
     const { data, error } = await this.client
       .from("training_resources")
       .insert({
@@ -295,7 +323,6 @@ export class SharedContent {
         asset_path: path,
         asset_type: file.type,
         asset_name: file.name,
-        status: "published",
         visibility: drill.visibility || "member_only",
       })
       .select(columns)
@@ -314,18 +341,22 @@ export class SharedContent {
         return this.convert(check.data);
       if (!check.error) await this.client.storage.from(bucket).remove([path]);
       throw new Error(
-        "Shared publication could not be confirmed. Keep this draft and refresh the shared library before retrying.",
+        "Shared draft saving could not be confirmed. Keep this draft and refresh the review queue before retrying.",
       );
     }
     return this.convert(data);
   }
-  async update(drill: Drill, file?: File) {
+  async update(
+    drill: Drill,
+    file?: File,
+    progress?: (value: UploadProgress) => void,
+  ) {
     const user = await this.requireCoach();
     if (!drill.backendVersion || !drill.assetId)
       throw new Error("Refresh the shared resource before editing.");
     const content = this.content(drill);
     const path = file
-      ? await this.upload(drill.id, file, user.id)
+      ? await this.upload(drill.id, file, user.id, progress)
       : drill.assetId;
     const { data, error } = await this.client
       .from("training_resources")
@@ -365,6 +396,23 @@ export class SharedContent {
       );
     }
     if (file) await this.client.storage.from(bucket).remove([drill.assetId]);
+    return this.convert(data);
+  }
+  async review(
+    drill: Drill,
+    decision: "submit" | "approve" | "request_changes",
+    note: string,
+  ) {
+    const { data, error } = await this.client.rpc("review_training_resource", {
+      resource: drill.id,
+      decision,
+      note,
+      expected_version: drill.backendVersion,
+    });
+    if (error)
+      throw new Error(
+        "Review was not confirmed. The resource may have changed; refresh and try again.",
+      );
     return this.convert(data);
   }
   async remove(drill: Drill) {

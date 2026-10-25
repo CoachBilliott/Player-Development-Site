@@ -1,3 +1,4 @@
+import { practiceResumeFixture } from "./practiceResumeFixture";
 import { DRILLS as SAMPLES } from "../src/data";
 import { disableBackend } from "./backendFixture";
 import { test, expect, type BrowserContext } from "@playwright/test";
@@ -23,6 +24,7 @@ function fixture(
   primaryRole:
     "owner" | "manager" | "coach" | "parent" | "athlete" | null = null,
 ) {
+  const paused = practiceResumeFixture();
   const accounts = new Map<string, Row>();
   const players = new Map<string, Row>();
   const levels = new Map<string, { role: string; version: number }>();
@@ -99,6 +101,9 @@ function fixture(
         const singular = req
           .headers()
           .accept?.includes("application/vnd.pgrst.object+json");
+        const resume = paused.handle(url.pathname, body, id);
+        if (resume)
+          return route.fulfill({ json: resume.data, status: resume.status });
         if (url.pathname.endsWith("/token")) {
           const loginId = body.email?.includes("adult") ? otherId : parentId;
           return route.fulfill({
@@ -301,6 +306,7 @@ function fixture(
             version: 1,
           };
           workouts.set(row.id, row);
+          paused.complete(id, row.profile_id, row.id);
           return route.fulfill({ json: row });
         }
         if (url.pathname.endsWith("/rpc/review_athlete_workout")) {

@@ -96,7 +96,8 @@ export function MobileTabs({
         const Icon = icons[route];
         const active =
           page === route ||
-          (route === "coach" && page === "workout-builder") ||
+          (route === "coach" &&
+            ["workout-builder", "content-review"].includes(page)) ||
           (route === "app" && page === "home") ||
           (route === "workspace" &&
             ["app", "home"].includes(page) &&
@@ -227,11 +228,25 @@ export function MobileHelp({ app }: { app: PwaState }) {
         </p>
         <p>
           Assigned workouts, private video submissions and feedback require
-          internet access. Video review is an optional account feature enabled
-          by an Owner; no subscription charge is started here. Keep clips to 60
+          internet access. Your unfinished practice position saves after each
+          drill; use Save & leave and Resume workout without recording a
+          completion. Video review is an optional account feature enabled by an
+          Owner; no subscription charge is started here. Keep clips to 60
           seconds and 40 MB. Real junior video uploads remain closed pending
           consent and retention review.
         </p>
+      </section>
+      <section className="panel">
+        <h2>Try the complete phone test.</h2>
+        <p>
+          Follow one original adult clip from upload and staff approval through
+          workout assignment, saved practice and optional review on both
+          iPhones.
+        </p>
+        <WebsiteLink path="phone-test.html">
+          Open the two-phone test guide <ArrowRight size={17} />
+        </WebsiteLink>
+        <WebsiteLink path="phone-test.pdf">Open printable PDF</WebsiteLink>
       </section>
       <section className="panel">
         <h2>

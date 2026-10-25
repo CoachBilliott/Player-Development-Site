@@ -68,6 +68,7 @@ import { MobileTraining } from "./MobileTraining";
 import { MobileStaffHome } from "./MobileStaffHome";
 import { CoachVideoReviews } from "./VideoReview";
 import { isStaff } from "./roles";
+import { ContentApprovals } from "./ContentApprovals";
 import { WorkoutBuilder } from "./WorkoutBuilder";
 import {
   Workspace,
@@ -112,6 +113,7 @@ const safeHash = () => {
     "app-progress",
     "video-reviews",
     "workout-builder",
+    "content-review",
     "onboarding",
     "today",
     "library",
@@ -361,6 +363,7 @@ export default function App() {
       "member-library",
       "launch",
       "workout-builder",
+      "content-review",
       "video-reviews",
     ].includes(page) ||
     (page === "coach" && shared.signedIn);
@@ -566,6 +569,8 @@ export default function App() {
             />
           ) : page === "install" ? (
             <InstallApp app={app} />
+          ) : page === "content-review" ? (
+            <ContentApprovals shared={shared} />
           ) : page === "workout-builder" ? (
             <WorkoutBuilder shared={shared} />
           ) : page === "coach" ? (
