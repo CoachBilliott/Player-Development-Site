@@ -1,11 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import {
-  ArrowRight,
-  BookOpen,
-  CircleHelp,
-  RefreshCw,
-  Users,
-} from "lucide-react";
+import { ArrowRight, RefreshCw, Users } from "lucide-react";
 import { Accounts } from "./accounts";
 import { FamilyTraining } from "./family";
 import { AthleteTraining } from "./FamilyTraining";
@@ -114,9 +108,9 @@ function ConnectedTraining({ shared, screen, selection, onSelect }: Props) {
   return (
     <main className={`page app-training app-training-${screen}`}>
       <div className="page-intro app-training-intro">
-        <Tag>FOOTBALL · PRIVATE TRAINING</Tag>
+        <Tag>YOUR TRAINING · FOOTBALL</Tag>
         <h1 tabIndex={-1}>{headings[screen]}</h1>
-        <p>{descriptions[screen]}</p>
+        {screen !== "today" && <p>{descriptions[screen]}</p>}
       </div>
       {error && (
         <section className="panel app-training-empty">
@@ -164,6 +158,9 @@ function ConnectedTraining({ shared, screen, selection, onSelect }: Props) {
             className="panel app-athlete-picker"
             aria-label="Current training athlete"
           >
+            <span className="app-athlete-avatar" aria-hidden="true">
+              {player.nickname.slice(0, 1).toUpperCase()}
+            </span>
             {parent && eligible.length > 1 ? (
               <div>
                 <label htmlFor="app-training-athlete">Training athlete</label>
@@ -194,11 +191,20 @@ function ConnectedTraining({ shared, screen, selection, onSelect }: Props) {
               </div>
             )}
             {screen !== "today" && (
-              <p>
+              <p className="app-athlete-meta">
                 {player.position} · Age {player.age_group}
                 <br />
                 {player.experience} · {player.goal}
               </p>
+            )}
+            {screen === "today" && (
+              <a
+                href="#account"
+                className="app-profile-link"
+                aria-label="Athlete profile and permissions"
+              >
+                <ArrowRight size={18} />
+              </a>
             )}
             {screen !== "today" && (
               <a className="text-button" href="#account">
@@ -217,21 +223,8 @@ function ConnectedTraining({ shared, screen, selection, onSelect }: Props) {
             junior={!!linked && player.age_group !== "18+"}
             view={screen}
           />
-          {screen === "today" && (
-            <div className="app-training-links">
-              <a className="button secondary" href="#app-workouts">
-                <BookOpen size={18} /> View workout plan
-              </a>
-              <a className="text-button" href="#app-progress">
-                Practice history & reviews <ArrowRight size={17} />
-              </a>
-            </div>
-          )}
         </>
       )}
-      <a href="#app-help" className="text-button app-training-help">
-        <CircleHelp size={17} /> App help & support
-      </a>
     </main>
   );
 }

@@ -48,13 +48,24 @@ export function WebsiteLink({
   );
 }
 
-export function MobileHeader({ demo }: { demo: boolean }) {
+export function MobileHeader({
+  demo,
+  signedIn,
+}: {
+  demo: boolean;
+  signedIn: boolean;
+}) {
   return (
     <header className="app-header">
-      <Logo href="#app" />
-      <span className="app-build-label">
-        {demo ? "SAMPLE DEMO" : "PRIVATE PILOT"}
-      </span>
+      <Logo href={signedIn ? "#workspace" : "#app"} />
+      <div className="app-header-tools">
+        <span className="app-build-label">
+          {demo ? "SAMPLE DEMO" : "PRIVATE PILOT"}
+        </span>
+        <a href="#app-help" className="app-help-shortcut" aria-label="App help">
+          <CircleHelp size={21} />
+        </a>
+      </div>
     </header>
   );
 }
@@ -68,7 +79,9 @@ export function MobileTabs({
   const icons: Record<string, typeof House> = {
     app: House,
     demo: Dumbbell,
-    workspace: Dumbbell,
+    workspace: ["owner", "manager", "coach"].includes(shared.role || "")
+      ? House
+      : Dumbbell,
     coach: BookOpen,
     "video-reviews": Video,
     "member-library": BookOpen,
@@ -85,6 +98,13 @@ export function MobileTabs({
           page === route ||
           (route === "coach" && page === "workout-builder") ||
           (route === "app" && page === "home") ||
+          (route === "workspace" &&
+            ["app", "home"].includes(page) &&
+            shared.signedIn) ||
+          (route === "account" && ["access", "launch"].includes(page)) ||
+          (route === "coach" &&
+            page === "member-library" &&
+            ["owner", "manager", "coach"].includes(shared.role || "")) ||
           (route === "app-workouts" && page === "member-library");
         return (
           <a

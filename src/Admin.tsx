@@ -1,3 +1,4 @@
+import { appSurface } from "./mobile";
 import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, Check, FileUp, Users } from "lucide-react";
 import {
@@ -315,15 +316,8 @@ export function Admin({
       setBusy(false);
     }
   }
-  return (
-    <main className="page narrow">
-      <div className="page-intro">
-        <Tag>
-          CONTENT STUDIO · {shared ? "SHARED TRAINING" : "LOCAL PRACTICE"}
-        </Tag>
-        <h1 tabIndex={-1}>Coach content studio</h1>
-        <p>Choose a file. Add the workout details. Preview and publish.</p>
-      </div>
+  const uploadGuidance = (
+    <>
       <details className="upload-help panel">
         <summary>How uploads work</summary>
         <ol>
@@ -354,23 +348,38 @@ export function Admin({
           compress video.
         </p>
       </details>
-      {shared ? (
-        <Notice>
-          <strong>Staff publishing.</strong> Choose protected content or a free
-          public demo sample. Only approved staff accounts can publish. Use
-          original or licensed, fictional sample content only. This does not
-          create player accounts. New uploads can be explicitly saved as a
-          device draft. They do not sync to your partner and are cleared on
-          sign-out or when you clear site data.
-        </Notice>
-      ) : (
-        <Notice>
-          <strong>Only in this browser.</strong> Your partner cannot see these
-          files or drills. Clearing browser data removes them; leaving or
-          refreshing loses unpublished drafts. Use original or licensed,
-          fictional sample content only.
-        </Notice>
-      )}
+      <details className="upload-policy" open={!appSurface()}>
+        <summary>Publishing rules & device storage</summary>
+        {shared ? (
+          <Notice>
+            <strong>Staff publishing.</strong> Choose protected content or a
+            free public demo sample. Only approved staff accounts can publish.
+            Use original or licensed, fictional sample content only. This does
+            not create player accounts. New uploads can be explicitly saved as a
+            device draft. They do not sync to your partner and are cleared on
+            sign-out or when you clear site data.
+          </Notice>
+        ) : (
+          <Notice>
+            <strong>Only in this browser.</strong> Your partner cannot see these
+            files or drills. Clearing browser data removes them; leaving or
+            refreshing loses unpublished drafts. Use original or licensed,
+            fictional sample content only.
+          </Notice>
+        )}
+      </details>
+    </>
+  );
+  return (
+    <main className="page narrow">
+      <div className="page-intro">
+        <Tag>
+          CONTENT STUDIO · {shared ? "SHARED TRAINING" : "LOCAL PRACTICE"}
+        </Tag>
+        <h1 tabIndex={-1}>Coach content studio</h1>
+        <p>Choose a file. Add the workout details. Preview and publish.</p>
+      </div>
+      {!appSurface() && uploadGuidance}
       {shared && draftOwnerId && (
         <section className="device-draft" aria-label="Device draft">
           {savedDraft && !file && !editing && (
@@ -996,6 +1005,7 @@ export function Admin({
           </fieldset>
         </form>
       )}
+      {appSurface() && uploadGuidance}
       {resources.length > 0 && (
         <section className="panel content-manager">
           <h2>{shared ? "Shared resources" : "Your uploaded resources"}</h2>

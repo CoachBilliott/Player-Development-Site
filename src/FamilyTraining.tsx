@@ -144,9 +144,9 @@ export function AthleteTraining({
             </Tag>
           )}
           <h2>
-            {player.nickname}’s{" "}
+            {view !== "today" && `${player.nickname}’s `}
             {view === "today"
-              ? "next session"
+              ? "Next session"
               : view === "progress"
                 ? "practice history"
                 : "workouts"}
@@ -263,7 +263,7 @@ export function AthleteTraining({
             </Notice>
           )}
           {view !== "progress" && (
-            <div className="family-plan">
+            <div className={`family-plan${plan.length ? " has-session" : ""}`}>
               <h3>
                 {demo
                   ? "Next illustrative session"
@@ -296,9 +296,13 @@ export function AthleteTraining({
                   upload a drill and an Owner can add it to your account.
                 </p>
               )}
-              {plan.length > 0 && <p>{plan.map((d) => d.title).join(" · ")}</p>}
+              {plan.length > 0 && (view !== "today" || !assigned?.eligible) && (
+                <p className="session-drill-preview">
+                  {plan.map((d) => d.title).join(" · ")}
+                </p>
+              )}
               {plan.length > 0 && (
-                <p>
+                <p className="session-equipment">
                   <Clock3 size={16} />{" "}
                   {plan.reduce((sum, d) => sum + d.minutes, 0)} planned minutes
                   ·{" "}
@@ -343,12 +347,15 @@ export function AthleteTraining({
               )}
 
               {plan.length > 0 && (
-                <p>
-                  Matched to age {player.age_group},{" "}
-                  {player.experience.toLowerCase()},{" "}
-                  {player.position.toLowerCase()} and{" "}
-                  {player.goal.toLowerCase()}.
-                </p>
+                <details className="session-fit" open={view !== "today"}>
+                  <summary>Why this session?</summary>
+                  <p>
+                    Matched to age {player.age_group},{" "}
+                    {player.experience.toLowerCase()},{" "}
+                    {player.position.toLowerCase()} and{" "}
+                    {player.goal.toLowerCase()}.
+                  </p>
+                </details>
               )}
               {!state.can_record && (
                 <p className="member-fineprint">

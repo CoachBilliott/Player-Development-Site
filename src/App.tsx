@@ -65,6 +65,7 @@ import {
 } from "./MobileApp";
 import { useNativeApp } from "./useNativeApp";
 import { MobileTraining } from "./MobileTraining";
+import { MobileStaffHome } from "./MobileStaffHome";
 import { CoachVideoReviews } from "./VideoReview";
 import { isStaff } from "./roles";
 import { WorkoutBuilder } from "./WorkoutBuilder";
@@ -368,7 +369,7 @@ export default function App() {
     <MotionShell>
       <div className={mobile ? "mobile-layout" : "website-layout"}>
         {mobile ? (
-          <MobileHeader demo={demoPage} />
+          <MobileHeader demo={demoPage} signedIn={shared.signedIn} />
         ) : (
           <>
             <div className="demo-strip">
@@ -482,11 +483,14 @@ export default function App() {
             />
           ) : page === "demo" ? (
             <FamilyDemo app={mobile} />
-          ) : page === "app" || (mobile && page === "home") ? (
+          ) : (page === "app" || (mobile && page === "home")) &&
+            (!shared.signedIn || !mobile) ? (
             <MobileWelcome signedIn={shared.signedIn} />
           ) : page === "app-help" || (nativeApp() && page === "install") ? (
             <MobileHelp app={app} />
-          ) : (mobile && page === "workspace" && !isStaff(shared.role)) ||
+          ) : (mobile &&
+              ["workspace", "app", "home"].includes(page) &&
+              !isStaff(shared.role)) ||
             ["app-workouts", "app-progress"].includes(page) ||
             (mobile && page === "member-library" && !isStaff(shared.role)) ? (
             <MobileTraining
@@ -501,6 +505,8 @@ export default function App() {
               selection={trainingSelection}
               onSelect={setTrainingSelection}
             />
+          ) : mobile && ["workspace", "app", "home"].includes(page) ? (
+            <MobileStaffHome shared={shared} />
           ) : page === "workspace" ? (
             <Workspace shared={shared} />
           ) : page === "video-reviews" ? (

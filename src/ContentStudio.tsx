@@ -4,6 +4,7 @@ import { Admin } from "./Admin";
 import { Notice } from "./components";
 import type { SharedState } from "./useSharedContent";
 import { ROLE_LABELS } from "./roles";
+import { appSurface } from "./mobile";
 
 type Props = ComponentProps<typeof Admin> & { shared: SharedState };
 export function ContentStudio({ shared, ...local }: Props) {
@@ -26,35 +27,68 @@ export function ContentStudio({ shared, ...local }: Props) {
     <>
       {shared.coach && (
         <div className="page narrow publishing-mode">
-          <div
-            className="scene-tabs"
-            role="group"
-            aria-label="Publishing destination"
-          >
-            <button
-              disabled={editorBusy}
-              aria-pressed={scope === "shared"}
-              onClick={() => {
-                if (scope !== "shared") setNextScope("shared");
-              }}
+          <details className="publishing-settings" open={!appSurface()}>
+            <summary>Publishing options</summary>
+            <div
+              className="scene-tabs"
+              role="group"
+              aria-label="Publishing destination"
             >
-              Shared website
-            </button>
-            <button
-              disabled={editorBusy}
-              aria-pressed={scope === "local"}
-              onClick={() => {
-                if (scope !== "local") setNextScope("local");
-              }}
-            >
-              This browser
-            </button>
-          </div>
-          <p className="upload-destination" role="status">
-            {scope === "shared"
-              ? "Staff publishing: protected training by default. Free demo samples are a separate choice."
-              : "Practice mode: uploads stay in this browser. Your partner will not see them."}
-          </p>
+              <button
+                disabled={editorBusy}
+                aria-pressed={scope === "shared"}
+                onClick={() => {
+                  if (scope !== "shared") setNextScope("shared");
+                }}
+              >
+                Shared website
+              </button>
+              <button
+                disabled={editorBusy}
+                aria-pressed={scope === "local"}
+                onClick={() => {
+                  if (scope !== "local") setNextScope("local");
+                }}
+              >
+                This browser
+              </button>
+            </div>
+            <p className="upload-destination" role="status">
+              {scope === "shared"
+                ? "Staff publishing: protected training by default. Free demo samples are a separate choice."
+                : "Practice mode: uploads stay in this browser. Your partner will not see them."}
+            </p>
+            <div className="page narrow shared-toolbar">
+              <span>
+                <LockKeyhole size={16} />{" "}
+                {shared.role ? ROLE_LABELS[shared.role] : "Staff"} · shared
+                website
+              </span>
+              <div className="actions">
+                <button
+                  className="button secondary"
+                  disabled={shared.checking || editorBusy}
+                  onClick={() => void shared.refresh()}
+                >
+                  <RefreshCw size={16} />
+                  Refresh shared library
+                </button>
+                <button
+                  className="text-button"
+                  disabled={busy || editorBusy}
+                  onClick={() => {
+                    setBusy(true);
+                    void shared
+                      .signOut()
+                      .catch((e: Error) => setError(e.message))
+                      .finally(() => setBusy(false));
+                  }}
+                >
+                  Sign out
+                </button>
+              </div>
+            </div>
+          </details>
           <a
             className="button secondary"
             href="#workout-builder"
@@ -65,6 +99,13 @@ export function ContentStudio({ shared, ...local }: Props) {
           >
             Build a complete workout
           </a>
+          {(shared.error || error) && (
+            <p className="form-error" role="alert">
+              {shared.error || error}
+            </p>
+          )}
+          {shared.message && <p role="status">{shared.message}</p>}
+
           {nextScope && (
             <div
               className="discard-box"
@@ -194,42 +235,6 @@ export function ContentStudio({ shared, ...local }: Props) {
         </main>
       ) : (
         <>
-          <div className="page narrow shared-toolbar">
-            <span>
-              <LockKeyhole size={16} />{" "}
-              {shared.role ? ROLE_LABELS[shared.role] : "Staff"} · shared
-              website
-            </span>
-            <div className="actions">
-              <button
-                className="button secondary"
-                disabled={shared.checking || editorBusy}
-                onClick={() => void shared.refresh()}
-              >
-                <RefreshCw size={16} />
-                Refresh shared library
-              </button>
-              <button
-                className="text-button"
-                disabled={busy || editorBusy}
-                onClick={() => {
-                  setBusy(true);
-                  void shared
-                    .signOut()
-                    .catch((e: Error) => setError(e.message))
-                    .finally(() => setBusy(false));
-                }}
-              >
-                Sign out
-              </button>
-            </div>
-            {(shared.error || error) && (
-              <p className="form-error" role="alert">
-                {shared.error || error}
-              </p>
-            )}
-            {shared.message && <p role="status">{shared.message}</p>}
-          </div>
           <Admin
             key={`shared-${shared.session?.user.id}`}
             scope="shared"

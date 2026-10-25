@@ -356,6 +356,16 @@ test("staff composes, reorders, previews and saves a protected workout; Owner as
       exact: true,
     }),
   ).toBeVisible();
+  const startBounds = await athlete
+    .getByRole("button", { name: "Guide and record practice" })
+    .boundingBox();
+  expect(startBounds!.y + startBounds!.height).toBeLessThan(750);
+  await expect(athlete.locator(".session-fit")).not.toHaveAttribute("open");
+  await athlete.getByText("Why this session?", { exact: true }).click();
+  await expect(athlete.locator(".session-fit")).toContainText(
+    "Matched to age 18+",
+  );
+  await athlete.getByText("Why this session?", { exact: true }).click();
   await athlete
     .getByRole("button", { name: "Guide and record practice" })
     .click();
@@ -603,3 +613,75 @@ test("editing a template does not silently replace an account assignment and uns
   ).toBeVisible();
   expect(backend.assignment?.workout_title).toBe("Revised complete practice");
 });
+
+for (const role of ["owner", "manager", "coach"]) {
+  test(`${role} app starts directly in the focused staff home with working creation tools`, async ({
+    page,
+    context,
+  }) => {
+    await fixture(context, state(), role);
+    await page.goto("./?source=app#app");
+    await expect(page.locator(".app-staff-home")).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "Open my training", exact: true }),
+    ).toHaveCount(0);
+    const nav = page.getByRole("navigation", { name: "App navigation" });
+    await expect(
+      nav.getByRole("link", { name: "Overview", exact: true }),
+    ).toHaveAttribute("aria-current", "page");
+    await expect(
+      page.getByRole("link", { name: "Accounts & training access" }),
+    ).toHaveCount(role === "owner" ? 1 : 0);
+    for (const width of [320, 390, 768]) {
+      await page.setViewportSize({ width, height: 850 });
+      expect(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth <= innerWidth,
+        ),
+      ).toBe(true);
+      const action = await page
+        .getByRole("link", { name: "Build a workout", exact: true })
+        .boundingBox();
+      expect(action!.height).toBeGreaterThanOrEqual(44);
+      expect(action!.y + action!.height).toBeLessThan(750);
+    }
+    expect(
+      (
+        await new AxeBuilder({ page })
+          .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+          .analyze()
+      ).violations,
+    ).toEqual([]);
+    await page
+      .getByRole("link", { name: "Build a workout", exact: true })
+      .click();
+    await expect(page.getByLabel("Workout name")).toBeVisible();
+    await expect(
+      nav.getByRole("link", { name: "Content", exact: true }),
+    ).toHaveAttribute("aria-current", "page");
+    await page.goto("./?source=app#workspace");
+    await page.getByRole("link", { name: "Upload a drill" }).click();
+    await page.setViewportSize({ width: 390, height: 850 });
+    await expect(
+      page.getByRole("heading", { name: "Coach content studio" }),
+    ).toBeVisible();
+    await expect(page.locator(".publishing-settings")).not.toHaveAttribute(
+      "open",
+    );
+    const picker = page.locator('input[type="file"]');
+    await expect(picker).toBeVisible();
+    const bounds = await picker.boundingBox();
+    expect(bounds!.y + bounds!.height).toBeLessThan(750);
+    await page.getByText("Publishing options", { exact: true }).click();
+    await expect(
+      page.getByRole("button", { name: "Refresh shared library" }),
+    ).toBeVisible();
+    await page.reload();
+    await expect(
+      page.getByRole("heading", { name: "Coach content studio" }),
+    ).toBeVisible();
+    await expect(page.locator(".publishing-settings")).not.toHaveAttribute(
+      "open",
+    );
+  });
+}
