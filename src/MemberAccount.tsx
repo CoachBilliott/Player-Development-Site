@@ -661,8 +661,8 @@ function ConnectedAccount({
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={busy}
               />
-              <small id="new-password-help">{PASSWORD_REQUIREMENTS}</small>
             </label>
+            <small id="new-password-help">{PASSWORD_REQUIREMENTS}</small>
             <button className="button" disabled={busy}>
               Save new password
             </button>
