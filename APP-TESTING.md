@@ -1,6 +1,14 @@
 # Player Development app testing
 
-The native iPhone app **0.1.0 (7)** is available in the existing **Owner Testing** TestFlight group. Open TestFlight → Player Development Test → Update. The public website is [live here](https://coachbilliott.github.io/Player-Development-Site/); its one customer demo stays on the website. The browser app preview is `?source=app#app` and is separate from installing the native TestFlight binary.
+The native iPhone app **0.1.0 (8)** is available in the existing **Owner Testing** TestFlight group. Open TestFlight → Player Development Test → Update. The public website is [live here](https://coachbilliott.github.io/Player-Development-Site/); its one customer demo stays on the website. The browser app preview is `?source=app#app` and is separate from installing the native TestFlight binary.
+
+## App layout and password update in build 8
+
+Staff open directly into a focused workspace with Build a workout, Upload a drill and compact content/review tools. Customers open into Today with a compact athlete switcher, a single next-session surface and an expandable matching explanation. Publishing settings and extended help no longer precede the file picker. See [APP-DESIGN.md](APP-DESIGN.md).
+
+New account passwords require 8 or more characters with an uppercase letter, lowercase letter, number and special character. Supabase Auth and the app/website forms enforce the same rule. Existing passwords are unchanged. See [PASSWORD-POLICY.md](PASSWORD-POLICY.md).
+
+No schema migration, role, junior enrollment or payment changes are part of this release. The hosted native test now allows a bounded 60-second cold-start wait while retaining its real asset, native bridge and Keychain assertions. Actual iPhone acceptance remains necessary.
 
 ## What works
 
@@ -17,19 +25,19 @@ Manual pilot permissions do not represent a subscription or payment. Real junior
 
 Build 6 adds explicit device drafts for new shared uploads, editable purpose/equipment/coaching cues, and a clearer session order/next-drill/previous-drill experience. See [UPLOAD-GUIDE.md](UPLOAD-GUIDE.md) for the device-only draft limits and fresh rights confirmation. Draft files are isolated by staff account, excluded from demo storage, and cleared on sign-out/account change. Failed device storage preserves the open form. Existing resource edits retain their instructional content and drill kind. No schema, role, payment, junior gate or live account data change is needed for this update.
 
-The current website HTML/JavaScript/CSS match the tested release and signed binary. Apple reports build 7 as VALID and IN_BETA_TESTING, and Owner Testing includes it.
+The current website HTML/JavaScript/CSS match the tested release and signed binary. Apple reports build 8 as VALID and IN_BETA_TESTING, and Owner Testing includes it.
 
 ## Automated and live verification
 
-The released source `41bdd8653aa3c07be922fe71e1d72d240a93c59d` passed lint, type checking, production build, **148 unit/database-policy tests, 162 desktop/phone browser tests, 8 installed-web-app tests, 10 signing tests and 3 native simulator tests**. Clean GitHub runs: [web checks](https://github.com/CoachBilliott/Player-Development-Site/actions/runs/40150996266) and [native build/tests](https://github.com/CoachBilliott/Player-Development-Site/actions/runs/40150995850).
+The released source `ac21f6d4e23adf81768105c4537e8f3191c6cd8d` passed lint, type checking, production build, **162 unit/database-policy tests, 170 desktop/phone browser tests, 8 installed-web-app tests, 10 signing tests and 3 native simulator tests**. Clean GitHub runs: [web checks](https://github.com/CoachBilliott/Player-Development-Site/actions/runs/40154383519) and [native build/tests](https://github.com/CoachBilliott/Player-Development-Site/actions/runs/40154383696).
 
-Another **16 workout-builder checks on the actual deployed website** use intercepted fictional backend responses: composition, ordering, protected previews, snapshots, eligibility, assignment, saved-name history, canceled actions, response failure/retry, permissions, phone overflow and accessibility. Previously released device-draft and guided-practice regression cases remain in the full browser suite. No real customer records or media were written by those tests. The filled staff editor also has zero detected WCAG A/AA violations. Device drafts stay in a separate account-keyed IndexedDB store; they never enter demo localStorage or the service-worker cache.
+Another **34 app/workout/password checks on the actual deployed website** use intercepted fictional backend responses: composition, ordering, protected previews, snapshots, eligibility, assignment, saved-name history, canceled actions, response failure/retry, permissions, phone overflow and accessibility. Previously released device-draft and guided-practice regression cases remain in the full browser suite. No real customer records or media were written by those tests. The filled staff editor also has zero detected WCAG A/AA violations. Device drafts stay in a separate account-keyed IndexedDB store; they never enter demo localStorage or the service-worker cache.
 
 Native tests ran on iPhone 17 Pro / iOS 26.2 with Xcode 26.3: assets/font/native bridge and Keychain round-trip, no app demo/legacy demo route access, private login/navigation and relaunch. They do not establish physical camera, real Storage upload/deletion, background transfer or iPhone device-draft persistence acceptance.
 
 Previously completed live database acceptance uses fictional adult fixtures inside rolled-back transactions: matched assignments, private assigned-coach access, report/feedback isolation, finalization idempotency, cleanup guards and withdrawn-resource handling. Migration 008 adds private workout templates and snapshot assignments; it creates no real assignments and changes no account roles, enrollment/consent gates or payment settings. Live workout checks used fictional adult fixtures in rolled-back transactions and confirmed order, privacy, snapshot versions, idempotency, stale-report rejection and whole-workout withdrawal handling. Anonymous REST/RPC probes were denied. Production media and physical-device checks below remain necessary.
 
-The signed IPA passed ZIP integrity, bundle/version/build, expected team/profile, signature-resource presence, no-private-keys and exact bundled-HTML/JavaScript/CSS comparison with the verified website. [Signed upload](https://github.com/CoachBilliott/Player-Development-Site/actions/runs/40151731165) succeeded. [Apple state verification](https://github.com/CoachBilliott/Player-Development-Site/actions/runs/40152098500) confirms VALID / IN_BETA_TESTING and group inclusion for build 7.
+The signed IPA passed ZIP integrity, bundle/version/build, expected team/profile, signature-resource presence, no-private-keys and exact bundled-HTML/JavaScript/CSS comparison with the verified website. [Signed upload](https://github.com/CoachBilliott/Player-Development-Site/actions/runs/40155199436) succeeded. [Apple state verification](https://github.com/CoachBilliott/Player-Development-Site/actions/runs/40155795825) confirms VALID / IN_BETA_TESTING and group inclusion for build 8.
 
 ## First physical-iPhone acceptance
 
@@ -52,4 +60,4 @@ Migrations 001–008 are installed in the dedicated project; do not rerun them. 
 
 ## Complete workout builder update
 
-Build 7 adds private saved workout templates, ordered drill previews and Owner assignment. Saved-template changes do not silently replace assigned snapshots. See [WORKOUT-GUIDE.md](WORKOUT-GUIDE.md) for scope and acceptance steps. Build 7 is verified available in Owner Testing. Try Content → Build a complete workout, save a protected session, preview its assignment to an eligible approved adult pilot account, and complete it in the saved order. Physical iPhone acceptance is still required; browser/simulator checks do not prove actual device usability.
+Build 7 adds private saved workout templates, ordered drill previews and Owner assignment. Saved-template changes do not silently replace assigned snapshots. See [WORKOUT-GUIDE.md](WORKOUT-GUIDE.md) for scope and acceptance steps. Build 8 is verified available in Owner Testing. Try Content → Build a complete workout, save a protected session, preview its assignment to an eligible approved adult pilot account, and complete it in the saved order. Physical iPhone acceptance is still required; browser/simulator checks do not prove actual device usability.

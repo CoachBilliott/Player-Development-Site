@@ -1,6 +1,8 @@
 # TestFlight beta submission draft
 
-Version **0.1.0 (7)** is uploaded, processed VALID and IN_BETA_TESTING in Owner Testing. The owner has installed a prior build and can update through TestFlight. The metadata below is an external-beta submission draft: review contact fields, feedback details, an approved adult review account and Apple's beta review still need completion. No external beta submission or public App Store release was made.
+Build 8: test the simplified staff and training screens and the 8-character password rule with all four required character types. Existing passwords are unchanged.
+
+Version **0.1.0 (8)** is uploaded, processed VALID and IN_BETA_TESTING in Owner Testing. The owner has installed a prior build and can update through TestFlight. The metadata below is an external-beta submission draft: review contact fields, feedback details, an approved adult review account and Apple's beta review still need completion. No external beta submission or public App Store release was made.
 
 ## Beta app description
 
@@ -28,6 +30,6 @@ Review clips are stored privately until an authorized family/uploader deletes th
 - Beta feedback email, review contact name/email/phone and any approved review-account credentials needed for private features. No personal contact information or review passwords have been invented or made public in this draft.
 - Accurate privacy disclosures/policy URL, age-rating responses and encryption/export-compliance answers for the final binary and service behavior.
 - Tester invitation addresses supplied directly to the supported Apple workflow.
-- External tester invitations and any required external beta review approval. The current signed build is 0.1.0 (7), with VALID processing and active internal testing.
+- External tester invitations and any required external beta review approval. The current signed build is 0.1.0 (8), with VALID processing and active internal testing.
 
 Account/signing secrets and private review credentials belong in Apple's supported private fields or approved secure storage, not this document or repository.
