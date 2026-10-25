@@ -1,4 +1,5 @@
 import { trackUpload, type UploadProgress } from "./uploadProgress";
+import { serviceSchema } from "./reviewServices";
 import { z } from "zod";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { PrivatePlayer } from "./accounts";
@@ -21,6 +22,8 @@ export const reviewSchema = z.object({
 });
 export type VideoReview = z.infer<typeof reviewSchema>;
 export const videoStateSchema = z.object({
+  service_tracking: z.boolean().default(false),
+  services: z.array(serviceSchema).default([]),
   can_submit: z.boolean(),
   adult_only: z.boolean(),
   remaining_slots: z.number().int().nonnegative().default(5),
@@ -193,6 +196,16 @@ export class VideoReviews {
     if (error)
       throw new Error("Your private review queue could not be loaded.");
     return z.array(reviewSchema).parse(data);
+  }
+  async start(review: VideoReview) {
+    const { error } = await this.client.rpc("start_drill_review", {
+      review_id: review.id,
+      expected_version: review.version,
+    });
+    if (error)
+      throw new Error(
+        "This review changed or is already being reviewed. Refresh before opening it again.",
+      );
   }
   async feedback(review: VideoReview, text: string) {
     const { error } = await this.client.rpc("save_athlete_video_feedback", {

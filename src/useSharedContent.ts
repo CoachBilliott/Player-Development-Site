@@ -11,6 +11,7 @@ import { isStaff, type AccountRole } from "./roles";
 import { clearStaffDrafts } from "./staffDrafts";
 
 export function useSharedContent() {
+  const [serviceTrackingEnabled, setServiceTrackingEnabled] = useState(false);
   const [accountLifecycleEnabled, setAccountLifecycleEnabled] = useState(false);
   const [accountNotice, setAccountNotice] = useState("");
   const [service, setService] = useState<SharedContent | null>(null);
@@ -50,6 +51,7 @@ export function useSharedContent() {
         if (stopped) return;
         setService(connection);
         setAccountLifecycleEnabled(raw.accountLifecycleEnabled === true);
+        setServiceTrackingEnabled(raw.serviceTrackingEnabled === true);
         setMembersEnabled(raw.membersEnabled === true);
         setSignupEnabled(raw.membersSignupEnabled !== false);
         let previousUser = "";
@@ -190,6 +192,7 @@ export function useSharedContent() {
   return {
     service,
     accountLifecycleEnabled,
+    serviceTrackingEnabled,
     accountNotice,
     setAccountNotice,
     session,

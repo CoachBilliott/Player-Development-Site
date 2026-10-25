@@ -1,3 +1,5 @@
+import { ServiceDesk } from "./ServiceDesk";
+import { ReviewServices, SERVICE_LABELS, reviewDate } from "./reviewServices";
 import { VideoPreparation } from "./VideoPreparation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
@@ -86,6 +88,7 @@ export function AthleteVideoReview({
   drills: Drill[];
 }) {
   const service = useMemo(() => new VideoReviews(client), [client]);
+  const requests = useMemo(() => new ReviewServices(client), [client]);
   const [preparing, setPreparing] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [state, setState] = useState<VideoState | null>(null);
@@ -227,6 +230,67 @@ export function AthleteVideoReview({
           Retry video review
         </button>
       )}
+      {state?.service_tracking && !state.adult_only && (
+        <>
+          <ol className="review-steps" aria-label="How a drill review works">
+            <li>1. Choose a drill</li>
+            <li>2. Record & preview</li>
+            <li>3. Send for feedback</li>
+          </ol>
+          <p>
+            One video, one focused review. Feedback within 48 hours after
+            submission and any required parent approval. This private pilot does
+            not collect payment or change your membership.
+          </p>
+          {state.services
+            .filter((r) => r.state === "requested")
+            .map((row) => (
+              <div className="review-service-status" key={row.id}>
+                <strong>{SERVICE_LABELS[row.state]}</strong>
+                <p>
+                  Request {row.id.slice(0, 8)} ·{" "}
+                  {state.can_submit
+                    ? "Access is ready. Send your drill video below."
+                    : "Your request is saved. The team will confirm pilot access before you send a video. No charge was made."}
+                </p>
+                <button
+                  className="text-button"
+                  disabled={busy}
+                  onClick={() =>
+                    void act(async () => {
+                      await requests.cancel(row);
+                      await refresh();
+                      setMessage(
+                        "Review request cancelled. No charge was made.",
+                      );
+                    })
+                  }
+                >
+                  Cancel review request
+                </button>
+              </div>
+            ))}
+          {!state.can_submit &&
+            player.owner_id === user &&
+            !state.services.some((r) => r.state === "requested") && (
+              <button
+                className="button secondary"
+                disabled={busy}
+                onClick={() =>
+                  void act(async () => {
+                    await requests.request(crypto.randomUUID(), player.id);
+                    await refresh();
+                    setMessage(
+                      "Request received. The team will confirm pilot access. No payment was taken.",
+                    );
+                  })
+                }
+              >
+                Request one drill review
+              </button>
+            )}
+        </>
+      )}
       {state && (
         <>
           {state.can_submit ? (
@@ -270,6 +334,24 @@ export function AthleteVideoReview({
                   {new Date(review.created_at).toLocaleDateString()} ·{" "}
                   {Math.round(review.duration_seconds)} sec
                 </p>
+                {state.service_tracking &&
+                  state.services.find((r) => r.video_id === review.id)
+                    ?.due_at && (
+                    <p className="member-fineprint">
+                      Feedback target:{" "}
+                      {reviewDate(
+                        state.services.find((r) => r.video_id === review.id)!
+                          .due_at!,
+                      )}{" "}
+                      ·{" "}
+                      {
+                        SERVICE_LABELS[
+                          state.services.find((r) => r.video_id === review.id)!
+                            .state
+                        ]
+                      }
+                    </p>
+                  )}
                 {review.feedback && (
                   <div className="coach-feedback">
                     <strong>Coach feedback</strong>
@@ -538,15 +620,35 @@ export function CoachVideoReviews({ shared }: { shared: SharedState }) {
       </main>
     );
   return (
-    <CoachQueue key={shared.session!.user.id} client={shared.service.client} />
+    <CoachQueue
+      key={shared.session!.user.id}
+      client={shared.service.client}
+      tracking={shared.serviceTrackingEnabled}
+      manager={shared.role === "owner" || shared.role === "manager"}
+      owner={shared.role === "owner"}
+      actor={shared.session!.user.id}
+    />
   );
 }
-function CoachQueue({ client }: { client: SupabaseClient }) {
+function CoachQueue({
+  client,
+  tracking,
+  manager,
+  owner,
+  actor,
+}: {
+  client: SupabaseClient;
+  tracking: boolean;
+  manager: boolean;
+  owner: boolean;
+  actor: string;
+}) {
   const service = useMemo(() => new VideoReviews(client), [client]);
   const [rows, setRows] = useState<VideoReview[]>([]),
     [error, setError] = useState(""),
     [busy, setBusy] = useState(false),
     [message, setMessage] = useState("");
+  const [queueVersion, setQueueVersion] = useState(0);
   const [current, setCurrent] = useState<VideoReview | null>(null),
     [feedback, setFeedback] = useState("");
   const lock = useRef(false);
@@ -563,7 +665,7 @@ function CoachQueue({ client }: { client: SupabaseClient }) {
     return () => {
       active = false;
     };
-  }, [service]);
+  }, [service, queueVersion]);
   async function act(action: () => Promise<void>) {
     if (lock.current) return;
     lock.current = true;
@@ -580,9 +682,22 @@ function CoachQueue({ client }: { client: SupabaseClient }) {
   }
   return (
     <main className="page narrow">
+      {tracking && manager && (
+        <ServiceDesk
+          client={client}
+          owner={owner}
+          actor={actor}
+          refreshKey={queueVersion}
+          onChange={() => setQueueVersion((v) => v + 1)}
+        />
+      )}
       <div className="page-intro">
         <Tag>PRIVATE · COACH REVIEW</Tag>
-        <h1 tabIndex={-1}>Watch. Coach. Send feedback.</h1>
+        {tracking && manager ? (
+          <h2>Your assigned videos</h2>
+        ) : (
+          <h1 tabIndex={-1}>Watch. Coach. Send feedback.</h1>
+        )}
         <p>
           Only submissions from accounts assigned to you appear here. Family
           approvals happen before clips reach this queue.
@@ -598,8 +713,12 @@ function CoachQueue({ client }: { client: SupabaseClient }) {
       {error && <p role="alert">{error}</p>}
       {message && <p role="status">{message}</p>}
       {!rows.length && !error && (
-        <section className="panel">
-          <h2>No videos waiting.</h2>
+        <section className="panel review-card">
+          <h2>
+            {tracking && manager
+              ? "No videos assigned to you yet."
+              : "No videos waiting."}
+          </h2>
           <p>
             An Owner enables video review and assigns a coach through Account
             access. No payment is collected by this pilot.
@@ -617,11 +736,17 @@ function CoachQueue({ client }: { client: SupabaseClient }) {
           </p>
           <button
             className="button secondary"
-            onClick={() => {
-              setCurrent(row);
-              setFeedback(row.feedback);
-              setError("");
-            }}
+            disabled={busy}
+            onClick={() =>
+              void act(async () => {
+                if (tracking && row.status === "queued")
+                  await service.start(row);
+                setCurrent(row);
+                setFeedback(row.feedback);
+                setError("");
+                setQueueVersion((v) => v + 1);
+              })
+            }
           >
             <Play size={17} /> Open review
           </button>
@@ -659,6 +784,7 @@ function CoachQueue({ client }: { client: SupabaseClient }) {
                 await service.feedback(current, feedback);
                 setCurrent(null);
                 setRows(await service.queue());
+                setQueueVersion((v) => v + 1);
                 setMessage(
                   "Coach feedback saved to the athlete’s private review.",
                 );

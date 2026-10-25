@@ -96,8 +96,16 @@ export function MobileStaffHome({ shared }: { shared: SharedState }) {
           <a href="#video-reviews">
             <Video size={22} />
             <span>
-              <strong>Video reviews</strong>
-              <small>Watch submissions and send feedback.</small>
+              <strong>
+                {shared.serviceTrackingEnabled && role !== "coach"
+                  ? "Service desk & reviews"
+                  : "Video reviews"}
+              </strong>
+              <small>
+                {shared.serviceTrackingEnabled && role !== "coach"
+                  ? "Track requests, deadlines and delivery."
+                  : "Watch submissions and send feedback."}
+              </small>
             </span>
             <ChevronRight size={18} />
           </a>

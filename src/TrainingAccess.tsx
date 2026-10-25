@@ -19,7 +19,18 @@ const empty: Access = {
 export function TrainingAccess({ shared }: { shared: SharedState }) {
   const client = shared.service!.client;
   const [members, setMembers] = useState<AccessMember[]>([]),
-    [account, setAccount] = useState(""),
+    [account, setAccount] = useState(() => {
+      try {
+        const raw = sessionStorage.getItem("pd-service-access-target");
+        if (!raw) return "";
+        const target = z
+          .object({ actor: z.string().uuid(), account: z.string().uuid() })
+          .parse(JSON.parse(raw));
+        return target.actor === shared.session?.user.id ? target.account : "";
+      } catch {
+        return "";
+      }
+    }),
     [value, setValue] = useState<Access>(empty),
     [loaded, setLoaded] = useState(false),
     [busy, setBusy] = useState(false),
@@ -27,6 +38,13 @@ export function TrainingAccess({ shared }: { shared: SharedState }) {
     [error, setError] = useState(""),
     [message, setMessage] = useState("");
   const lock = useRef(false);
+  useEffect(() => {
+    try {
+      sessionStorage.removeItem("pd-service-access-target");
+    } catch {
+      /* This handoff is optional; server authorization remains required. */
+    }
+  }, []);
   useEffect(() => {
     let active = true;
     void listAccess(client, "")

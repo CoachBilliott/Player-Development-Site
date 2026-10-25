@@ -4,5 +4,6 @@
   "publishableKey": "sb_publishable_po2WtdnM164R-Irgqwza1Q_SeWNVaZ6",
   "membersEnabled": true,
   "membersSignupEnabled": false,
-  "accountLifecycleEnabled": true
+  "accountLifecycleEnabled": true,
+  "serviceTrackingEnabled": true
 }
