@@ -1061,3 +1061,46 @@
     transform: none;
   }
 }
+
+.studio-fields {
+  min-width: 0;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 22px;
+}
+.device-draft:has(h2),
+.device-draft:has([role="status"]),
+.device-draft:has([role="alert"]) {
+  border: 1px solid #ffffff26;
+  border-left: 3px solid var(--accent, #ff8047);
+  padding: 18px;
+  margin: 22px 0;
+  background: #ffffff06;
+  overflow-wrap: anywhere;
+}
+.device-draft h2 {
+  font-size: 1.25rem;
+  margin-top: 0;
+}
+.studio-fields > label {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  font-size: 14px;
+  font-weight: 550;
+  line-height: 1.5;
+  min-width: 0;
+}
+.studio-fields > label > input,
+.studio-fields > label > textarea {
+  width: 100%;
+  font-weight: 400;
+}
+@media (max-width: 600px) {
+  .studio-fields > label > input,
+  .studio-fields > label > textarea {
+    font-size: 16px;
+  }
+}

@@ -14,6 +14,7 @@ export function ContentStudio({ shared, ...local }: Props) {
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [editorBusy, setEditorBusy] = useState(false);
   if (shared.loading && selectedScope === null)
     return (
       <main className="page narrow">
@@ -31,6 +32,7 @@ export function ContentStudio({ shared, ...local }: Props) {
             aria-label="Publishing destination"
           >
             <button
+              disabled={editorBusy}
               aria-pressed={scope === "shared"}
               onClick={() => {
                 if (scope !== "shared") setNextScope("shared");
@@ -39,6 +41,7 @@ export function ContentStudio({ shared, ...local }: Props) {
               Shared website
             </button>
             <button
+              disabled={editorBusy}
               aria-pressed={scope === "local"}
               onClick={() => {
                 if (scope !== "local") setNextScope("local");
@@ -60,7 +63,8 @@ export function ContentStudio({ shared, ...local }: Props) {
             >
               <p>
                 Switch publishing destination? Unsaved resource drafts will be
-                discarded. Published resources stay saved.
+                discarded. Explicitly saved device drafts and published
+                resources stay saved.
               </p>
               <div className="actions">
                 <button
@@ -84,7 +88,11 @@ export function ContentStudio({ shared, ...local }: Props) {
         </div>
       )}
       {scope === "local" && shared.coach ? (
-        <Admin key="local" {...local} />
+        <Admin
+          key={`local-${shared.session?.user.id}`}
+          {...local}
+          onBusyChange={setEditorBusy}
+        />
       ) : !shared.configured ? (
         <main className="page narrow">
           <div className="page-intro">
@@ -185,7 +193,7 @@ export function ContentStudio({ shared, ...local }: Props) {
             <div className="actions">
               <button
                 className="button secondary"
-                disabled={shared.checking}
+                disabled={shared.checking || editorBusy}
                 onClick={() => void shared.refresh()}
               >
                 <RefreshCw size={16} />
@@ -193,7 +201,7 @@ export function ContentStudio({ shared, ...local }: Props) {
               </button>
               <button
                 className="text-button"
-                disabled={busy}
+                disabled={busy || editorBusy}
                 onClick={() => {
                   setBusy(true);
                   void shared
@@ -213,8 +221,10 @@ export function ContentStudio({ shared, ...local }: Props) {
             {shared.message && <p role="status">{shared.message}</p>}
           </div>
           <Admin
-            key="shared"
+            key={`shared-${shared.session?.user.id}`}
             scope="shared"
+            draftOwnerId={shared.session?.user.id}
+            onBusyChange={setEditorBusy}
             onPublish={shared.publish}
             onUpdate={shared.update}
             onRemove={shared.remove}

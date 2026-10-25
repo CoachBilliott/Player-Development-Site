@@ -638,3 +638,78 @@
 .staff-account-email {
   overflow-wrap: anywhere;
 }
+
+/* Keep the practice order and next action clear at phone size. */
+.workout-outline {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+  margin: 22px 0;
+}
+.workout-outline li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.workout-outline li > span {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  background: #ff80471a;
+  color: #ffb18b;
+  border-radius: 50%;
+}
+.workout-outline strong,
+.workout-outline small {
+  display: block;
+  overflow-wrap: anywhere;
+}
+.workout-outline small {
+  margin-top: 4px;
+  color: var(--muted);
+}
+.drill-position {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  align-items: center;
+}
+.drill-position > span:last-child {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+.workout-progress {
+  width: 100%;
+  height: 5px;
+  margin: 14px 0;
+  accent-color: #ff8047;
+}
+.simple-drill .drill-focus-title {
+  font-size: clamp(1.4rem, 5vw, 2rem);
+  margin: 8px 0 16px;
+  overflow-wrap: anywhere;
+}
+.simple-drill .practice-heading {
+  font-size: 1rem;
+  margin-top: 24px;
+}
+.drill-finish-bar {
+  padding: 18px 0 0;
+  border-top: 1px solid #ffffff24;
+}
+.next-drill {
+  display: grid;
+  gap: 5px;
+  overflow-wrap: anywhere;
+}
+.next-drill span {
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  color: var(--muted);
+}
+.next-drill strong {
+  font-size: 1rem;
+}

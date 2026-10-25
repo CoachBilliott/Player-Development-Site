@@ -6,7 +6,7 @@ Open [Coach studio](https://coachbilliott.github.io/Player-Development-Site/#coa
 
 1. Leave **Shared website** selected. Sign in with your existing Owner, Manager or Coach account. If you are already signed in with staff access, the editor opens directly.
 2. Tap **Choose a video or file** and select an original sample attachment from Photos or Files. Nothing is sent to storage yet. The workout fields appear, and the filename becomes an editable title.
-3. Write one practice step per line. Select a sample-audience shortcut or adjust ages, experience, position and primary skill yourself. For shared uploads, leave **Content access** on protected staff review, or explicitly choose **Public demo sample** for a free resource. Set planned practice minutes and confirm your rights to the illustrative sample material. Check the audience is suitable for that activity.
+3. Add the drill's purpose under **What this drill trains**, its **Equipment and practice space**, and its **Main coaching cue**. Write one practice step per line. Select a sample-audience shortcut or adjust ages, experience, position and primary skill yourself. For shared uploads, leave **Content access** on protected staff review, or explicitly choose **Public demo sample** for a free resource. Set planned practice minutes and confirm your rights to the illustrative sample material. Check the audience is suitable for that activity.
 4. Tap **Preview matches**. Check the file, instructions, destination and matching fictional players. **Back to editing** keeps your draft. Tap **Publish to shared library** once and wait for success.
 5. Protected uploads appear in the **staff content library** for authorized staff. Explicit public samples appear in the demo **Drill library**. Your partner needs the appropriate staff account to review protected resources.
 
@@ -24,8 +24,10 @@ Your uploaded resources appear below the editor. Choose **Edit**, change instruc
 
 - One attachment per resource, up to **12 MB**. Use MP4/WebM video, PNG/JPEG/WebP images, PDF or TXT. MOV/HEVC phone videos need conversion to a supported format. There is no automatic compression/conversion; longer recordings need trimming or a smaller export.
 - Canceling the file picker or choosing an invalid replacement keeps an already selected valid attachment. A rejected file is never uploaded.
-- Drafts stay on the current screen only. Refreshing or leaving loses unpublished details; publication is the save action. Nothing uploads before you confirm Publish.
-- If saving fails, keep the editor open and retry. Repeated taps do not intentionally create extra resources; success is confirmed before the draft resets.
+- For a **new Shared website upload**, choose **Save draft on this device** to keep the selected file and current details before leaving. One new-upload draft is kept per staff account in this app/browser's IndexedDB. It is local to this device, is not an upload, does not sync to your partner, and is cleared on sign-out or when site data is cleared. Browser storage can be restricted or evicted; retain your original files.
+- After refresh or returning to Content, choose **Continue saved draft**. Check the content and confirm rights again before Preview/Publish. Changes after a save require another explicit save. Replacing a different saved draft and removing a saved draft require confirmation; canceling keeps it. Successful publication removes the corresponding saved draft.
+- Edits to already-published resources and **This browser** practice drafts remain screen-only. Save resource changes through Preview, or keep the screen open. Discarding unsaved changes leaves an explicitly saved device draft intact. Nothing reaches shared storage until Publish/Save resource changes is confirmed.
+- If saving fails, keep the editor open and retry. Device draft failures preserve the open file/details and do not claim success. Publishing locks editing/destination/sign-out controls while the operation is pending. Repeated taps do not intentionally create extra resources; success is confirmed before the draft resets.
 - Real device acceptance is still needed on iPhone Safari/Android Chrome, including actual video format/playback and the partner's staff login. Tests use fictional accounts. General enrollment and real child access remain closed.
 
 ## Private athlete submissions

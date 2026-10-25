@@ -8,7 +8,7 @@ The native app is for real account access. The single public sample demo remains
 2. Choose **Shared website**, upload your original or licensed demonstration, and add a title, short lesson, equipment, steps, coaching cue and intended age/position/experience/goal.
 3. Publish as **Protected training**. Public demo samples are a separate explicit visibility choice.
 4. An Owner opens **Account access → Workouts & video review access**, chooses the verified customer account, checks the uploaded workouts, reviews and saves the change.
-5. The athlete refreshes **Today** or **Workouts**. Only assigned drills matching that athlete's age, position and experience appear. The goal ranks the available plan. Begin a workout once, then each drill shows the demonstration, written steps, equipment and cue together. **Complete drill · Next** advances; **Finish workout** submits a practice report.
+5. The athlete refreshes **Today** or **Workouts**. Only assigned drills matching that athlete's age, position and experience appear. The goal ranks the available plan. Before starting, the session lists each drill and equipment. Begin once, then each drill shows its demonstration, purpose, numbered steps, equipment and cue together, with its position in the session and a preview of the next drill. **Complete drill · Next** advances; **Previous drill** revisits an earlier activity; **Finish workout** submits a practice report. Moving backward or playing a video does not submit a report. Unfinished sessions are still screen-only and are not saved on refresh.
 
 Do not treat a video view, a completion button or a parent review as proof of athletic improvement. Training remains noncontact and pending qualified coaching review. No real junior enrollment was opened.
 

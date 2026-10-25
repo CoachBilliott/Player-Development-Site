@@ -4,13 +4,13 @@ Version **0.1.0 (5)** is uploaded, processed VALID and IN_BETA_TESTING in Owner 
 
 ## Beta app description
 
-Player Development is an early football-training pilot for individual athletes and parent-managed families. Try a guided sample workout, record practice participation and explore the family review flow with fictional athletes. Approved adult pilot accounts use a separate private workspace with role-based access. Football is the current program; future sports have not been announced.
+Player Development is an early football-training pilot for individual athletes and parent-managed families. Approved adult pilot accounts sign in to a private workspace, practice assigned training and record participation. Staff publish protected instructional content and specifically assigned coaches can review optional private adult practice videos. A separate sample-data customer demo remains on the public website. Football is the current program; future sports have not been announced.
 
 All built-in sample activities are illustrative and pending qualified coaching review. Practice reports and parent reviews describe participation, not proof of improved athletic ability. The beta does not offer medical advice, guaranteed recruiting outcomes, live payments, public player profiles or direct messaging. Real junior enrollment is closed.
 
 ## What to test
 
-Install and launch the app, try Parent & family and Solo athlete within the single sample demo, complete a guided sample workout, check saved practice after closing/reopening, try prepared samples offline, and check readable layouts and navigation. Approved adult testers can also check their private account access and authorized content workflows. Please report the screen, iPhone/iOS version, steps, expected behavior and actual result, using fictional information only.
+Install and launch the app, sign in with an approved adult pilot account, practice an assigned workout and check submitted participation after closing/reopening. Test the drill order, instructions, media, next/previous actions and canceled unfinished practice. Authorized staff can check shared publishing, device draft save/restore and content editing. Private account/training access requires a connection; it is not an offline sample catalog. Please report the screen, iPhone/iOS version, steps, expected behavior and actual result, using fictional information only.
 
 ## Reviewer instructions
 

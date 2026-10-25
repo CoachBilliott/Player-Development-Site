@@ -19,17 +19,19 @@ const user = {
   user_metadata: {},
   created_at: "2026-01-01T00:00:00Z",
 };
-function token() {
+function token(subject = userId) {
   const encode = (v: unknown) =>
     Buffer.from(JSON.stringify(v)).toString("base64url");
-  return `${encode({ alg: "HS256", typ: "JWT" })}.${encode({ sub: userId, role: "authenticated", aud: "authenticated", exp: Math.floor(Date.now() / 1000) + 3600 })}.fictional-signature`;
+  return `${encode({ alg: "HS256", typ: "JWT" })}.${encode({ sub: subject, role: "authenticated", aud: "authenticated", exp: Math.floor(Date.now() / 1000) + 3600 })}.fictional-signature`;
 }
 export async function mockProject(
   context: BrowserContext,
   rows: Map<string, Row>,
   approved = true,
   ambiguousWrites = false,
+  identity = userId,
 ) {
+  const actor = { ...user, id: identity };
   await context.route("**/content-config.json", (route) =>
     route.fulfill({
       json: {
@@ -50,14 +52,14 @@ export async function mockProject(
     if (url.pathname.endsWith("/token"))
       return route.fulfill({
         json: {
-          access_token: token(),
+          access_token: token(identity),
           refresh_token: "fictional-refresh",
           expires_in: 3600,
           token_type: "bearer",
-          user,
+          user: actor,
         },
       });
-    if (url.pathname.endsWith("/user")) return route.fulfill({ json: user });
+    if (url.pathname.endsWith("/user")) return route.fulfill({ json: actor });
     if (url.pathname.endsWith("/logout"))
       return route.fulfill({ status: 204, body: "" });
     if (url.pathname.includes("/rest/v1/account_roles"))
@@ -67,7 +69,7 @@ export async function mockProject(
           : [{ role: "parent", version: 1 }],
       });
     if (url.pathname.includes("/rest/v1/coach_members"))
-      return route.fulfill({ json: approved ? [{ user_id: userId }] : [] });
+      return route.fulfill({ json: approved ? [{ user_id: identity }] : [] });
     if (url.pathname.includes("/rest/v1/training_resources")) {
       const id = url.searchParams.get("id")?.replace(/^eq\./, "");
       const version = url.searchParams.get("version")?.replace(/^eq\./, "");
@@ -91,7 +93,7 @@ export async function mockProject(
         });
       if (method === "POST") {
         const body = request.postDataJSON();
-        const row = { ...body, version: 1, created_by: userId };
+        const row = { ...body, version: 1, created_by: identity };
         rows.set(row.id, row);
         if (ambiguousWrites)
           return route.fulfill({

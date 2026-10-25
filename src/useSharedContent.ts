@@ -8,6 +8,7 @@ import {
 } from "./sharedContent";
 import type { Drill } from "./model";
 import { isStaff, type AccountRole } from "./roles";
+import { clearStaffDrafts } from "./staffDrafts";
 
 export function useSharedContent() {
   const [service, setService] = useState<SharedContent | null>(null);
@@ -47,8 +48,17 @@ export function useSharedContent() {
         setService(connection);
         setMembersEnabled(raw.membersEnabled === true);
         setSignupEnabled(raw.membersSignupEnabled !== false);
+        let previousUser = "";
         const subscription = connection.client.auth.onAuthStateChange(
           (_event, current) => {
+            if (!current || (previousUser && previousUser !== current.user.id))
+              void clearStaffDrafts().catch(() => {
+                if (!stopped)
+                  setMessage(
+                    "Signed-out device drafts could not be cleared. Clear this app's site data on a shared device.",
+                  );
+              });
+            previousUser = current?.user.id || "";
             if (!stopped) setSession(current);
           },
         );

@@ -54,6 +54,7 @@ async function fixture(
   context: BrowserContext,
   role = "athlete",
   failFirstUpload = false,
+  drillCount = 1,
 ) {
   const rows: Review[] = [];
   const counts = {
@@ -66,6 +67,21 @@ async function fixture(
   };
   let uploaded = false;
   const workouts: Record<string, unknown>[] = [];
+  const resources = Array.from({ length: drillCount }, (_, n) =>
+    n === 0
+      ? resource
+      : {
+          ...resource,
+          id: id(100 + n),
+          content: {
+            ...content,
+            title: `Fictional next drill ${n + 1}`,
+            steps: [`Read marker ${n + 1}.`],
+            equipment: `Paper marker ${n + 1}`,
+          },
+          asset_path: `${coachId}/${id(100 + n)}/${id(100 + n)}.webm`,
+        },
+  );
   const user = {
     id: userId,
     aud: "authenticated",
@@ -146,7 +162,7 @@ async function fixture(
       p.endsWith("/rpc/athlete_training_plan") ||
       p.endsWith("/training_resources")
     )
-      return json([resource]);
+      return json(resources);
     if (p.endsWith("/rpc/family_profile_state"))
       return json({
         guardian_managed: false,
@@ -322,13 +338,11 @@ test("recording can be canceled and unsupported files never upload", async ({
     "capture",
     "environment",
   );
-  await d
-    .getByLabel("Choose drill video")
-    .setInputFiles({
-      name: "bad.pdf",
-      mimeType: "application/pdf",
-      buffer: Buffer.from("not a video"),
-    });
+  await d.getByLabel("Choose drill video").setInputFiles({
+    name: "bad.pdf",
+    mimeType: "application/pdf",
+    buffer: Buffer.from("not a video"),
+  });
   await expect(d.getByRole("alert")).toContainText("MP4, MOV or WebM");
   await d.getByLabel("Choose drill video").setInputFiles([]);
   await d.getByRole("button", { name: "Cancel video", exact: true }).click();
@@ -465,4 +479,82 @@ test("Owner can separately assign workouts and optional review access without ch
     .dblclick();
   await expect(page.getByRole("dialog")).toHaveCount(0);
   expect(backend.counts.access).toBe(1);
+});
+
+test("multi-drill practice shows the order and next activity, allows review, and never treats playback or canceled practice as completion", async ({
+  page,
+  context,
+}) => {
+  const backend = await fixture(context, "athlete", false, 3);
+  await page.goto("./?source=app#workspace");
+  await page
+    .getByRole("button", { name: "Start workout", exact: true })
+    .click();
+  const dialog = page.getByRole("dialog");
+  await expect(
+    dialog.getByRole("list", { name: "Workout order" }).getByRole("listitem"),
+  ).toHaveCount(3);
+  await expect(
+    dialog.getByText("Paper marker 3", { exact: false }),
+  ).toBeVisible();
+  await dialog.getByRole("checkbox").check();
+  await dialog.getByRole("button", { name: "Begin workout" }).click();
+  await expect(
+    dialog.getByRole("heading", { name: content.title, exact: true }),
+  ).toBeFocused();
+  await expect(
+    dialog.getByRole("progressbar", { name: "Current drill position" }),
+  ).toHaveAttribute("value", "1");
+  await expect(dialog.locator(".next-drill")).toContainText(
+    "Fictional next drill 2",
+  );
+  await page.screenshot({
+    path: `artifacts/guided-drill-${page.viewportSize()?.width}.png`,
+  });
+  await expect(dialog.locator("video")).toHaveAttribute("playsinline", "");
+  await dialog
+    .locator("video")
+    .evaluate((el) => el.dispatchEvent(new Event("ended")));
+  expect(backend.counts.reports).toBe(0);
+  await dialog
+    .getByRole("button", { name: "Complete drill · Next" })
+    .dblclick();
+  await expect(
+    dialog.getByRole("heading", {
+      name: "Fictional next drill 2",
+      exact: true,
+    }),
+  ).toBeVisible();
+  await expect(dialog.getByRole("progressbar")).toHaveAttribute("value", "2");
+  await expect(
+    dialog.getByText("Read marker 2.", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    dialog.getByText("Set two markers.", { exact: true }),
+  ).toHaveCount(0);
+  await expect
+    .poll(() =>
+      dialog.getByRole("button", { name: "Previous drill" }).isEnabled(),
+    )
+    .toBe(true);
+  // A fresh intentional action follows the guard that coalesces repeated taps.
+  await page.waitForTimeout(700);
+  await dialog.getByRole("button", { name: "Previous drill" }).click();
+  await expect(
+    dialog.getByRole("heading", { name: content.title, exact: true }),
+  ).toBeFocused();
+  await expect(dialog.getByRole("progressbar")).toHaveAttribute("value", "1");
+  await page.keyboard.press("Escape");
+  await expect(dialog).toBeVisible();
+  await dialog.getByRole("button", { name: "Keep practicing" }).click();
+  await expect(dialog).toBeVisible();
+  await dialog
+    .getByRole("button", { name: "End workout", exact: true })
+    .click();
+  await dialog
+    .getByRole("button", { name: "Discard unfinished workout" })
+    .click();
+  expect(backend.counts.reports).toBe(0);
+  await page.reload();
+  expect(backend.counts.reports).toBe(0);
 });

@@ -223,7 +223,10 @@ export function Modal({
       ref={ref}
       className="modal"
       aria-label={title}
-      onCancel={onClose}
+      onCancel={(event) => {
+        event.preventDefault();
+        onClose();
+      }}
       onKeyDown={(event) => {
         if (event.key !== "Tab") return;
         const controls = Array.from(
@@ -352,6 +355,7 @@ export function AssetPreview({ drill, file }: { drill?: Drill; file?: File }) {
       {type.startsWith("video/") ? (
         <video
           controls
+          playsInline
           preload="metadata"
           src={asset.url}
           aria-label="Uploaded illustrative media"

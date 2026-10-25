@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowRight,
+  ArrowLeft,
   Check,
   Clock3,
   RefreshCw,
@@ -271,12 +272,17 @@ export function AthleteTraining({
                   upload a drill and an Owner can add it to your account.
                 </p>
               )}
-              <p>{plan.map((d) => d.title).join(" · ")}</p>
-              <p>
-                <Clock3 size={16} />{" "}
-                {plan.reduce((sum, d) => sum + d.minutes, 0)} planned minutes ·{" "}
-                {plan[0]?.equipment}
-              </p>
+              {plan.length > 0 && <p>{plan.map((d) => d.title).join(" · ")}</p>}
+              {plan.length > 0 && (
+                <p>
+                  <Clock3 size={16} />{" "}
+                  {plan.reduce((sum, d) => sum + d.minutes, 0)} planned minutes
+                  ·{" "}
+                  {Array.from(new Set(plan.map((d) => d.equipment))).join(
+                    " · ",
+                  )}
+                </p>
+              )}
               <button
                 className="button"
                 disabled={
@@ -311,11 +317,14 @@ export function AthleteTraining({
                 </ol>
               )}
 
-              <p>
-                Matched to age {player.age_group},{" "}
-                {player.experience.toLowerCase()},{" "}
-                {player.position.toLowerCase()} and {player.goal.toLowerCase()}.
-              </p>
+              {plan.length > 0 && (
+                <p>
+                  Matched to age {player.age_group},{" "}
+                  {player.experience.toLowerCase()},{" "}
+                  {player.position.toLowerCase()} and{" "}
+                  {player.goal.toLowerCase()}.
+                </p>
+              )}
               {!state.can_record && (
                 <p className="member-fineprint">
                   Independent recording is unavailable for this account, or
@@ -819,10 +828,14 @@ function SimpleWorkout({
     [ack, setAck] = useState(false),
     [cancel, setCancel] = useState(false);
   const lastTap = useRef(0);
+  const drillHeading = useRef<HTMLHeadingElement>(null);
   const drill = items[index];
+  useEffect(() => {
+    if (ready) drillHeading.current?.focus({ preventScroll: true });
+  }, [index, ready]);
   return (
     <Modal
-      title={ready ? drill.title : "Ready to practice?"}
+      title={ready ? "Guided practice" : "Ready to practice?"}
       onClose={() => {
         if (!busy) setCancel(true);
       }}
@@ -833,6 +846,19 @@ function SimpleWorkout({
             {profile.name} · {items.length} drills ·{" "}
             {items.reduce((n, d) => n + d.minutes, 0)} planned minutes
           </p>
+          <ol className="workout-outline" aria-label="Workout order">
+            {items.map((item, n) => (
+              <li key={item.id}>
+                <span>{n + 1}</span>
+                <div>
+                  <strong>{item.title}</strong>
+                  <small>
+                    {item.minutes} planned minutes · {item.equipment}
+                  </small>
+                </div>
+              </li>
+            ))}
+          </ol>
           <Notice>
             Noncontact training. Use a clear practice space and appropriate
             supervision. Content awaits qualified coaching review. Unfinished
@@ -857,11 +883,27 @@ function SimpleWorkout({
         </>
       ) : (
         <div className="simple-drill">
-          <Tag>
-            DRILL {index + 1} / {items.length} · {drill.minutes} MIN
-          </Tag>
+          <div className="drill-position" role="status" aria-live="polite">
+            <Tag>
+              DRILL {index + 1} / {items.length} · {drill.minutes} MIN
+            </Tag>
+            <span>
+              {index === items.length - 1
+                ? "Final drill"
+                : `${items.length - index - 1} more after this`}
+            </span>
+          </div>
+          <progress
+            className="workout-progress"
+            aria-label="Current drill position"
+            value={index + 1}
+            max={items.length}
+          />
+          <h3 className="drill-focus-title" ref={drillHeading} tabIndex={-1}>
+            {drill.title}
+          </h3>
           {drill.assetId ? (
-            <AssetPreview drill={drill} />
+            <AssetPreview key={drill.id} drill={drill} />
           ) : (
             <Notice>
               No demonstration is attached to this drill. Follow the written
@@ -872,6 +914,7 @@ function SimpleWorkout({
           <p className="drill-equipment">
             <strong>You need:</strong> {drill.equipment}
           </p>
+          <h4 className="practice-heading">Your practice steps</h4>
           <ol className="instruction-list compact-steps">
             {drill.steps.map((step, n) => (
               <li key={n}>{step}</li>
@@ -885,28 +928,63 @@ function SimpleWorkout({
               {error}
             </p>
           )}
-          <button
-            className="button full"
-            disabled={busy}
-            onClick={() => {
-              const now = Date.now();
-              if (now - lastTap.current < 650) return;
-              lastTap.current = now;
-              if (index < items.length - 1) setIndex((n) => n + 1);
-              else onComplete();
-            }}
-          >
-            {busy
-              ? "Saving practice…"
-              : index < items.length - 1
-                ? "Complete drill · Next"
-                : "Finish workout"}
-            <Check size={18} />
-          </button>
-          <p className="member-fineprint">
-            Complete a drill after practicing it. Watching a demonstration alone
-            does not record practice.
-          </p>
+          <div className="drill-finish-bar">
+            {items[index + 1] && (
+              <p className="next-drill">
+                <span>UP NEXT</span>
+                <strong>{items[index + 1].title}</strong>
+              </p>
+            )}
+            <button
+              className="button full"
+              disabled={busy}
+              onClick={() => {
+                const now = Date.now();
+                if (now - lastTap.current < 650) {
+                  drillHeading.current?.focus({ preventScroll: true });
+                  return;
+                }
+                lastTap.current = now;
+                if (index < items.length - 1) {
+                  setIndex((n) => n + 1);
+                  drillHeading.current
+                    ?.closest("dialog")
+                    ?.scrollTo({ top: 0, behavior: "instant" });
+                } else onComplete();
+              }}
+            >
+              {busy
+                ? "Saving practice…"
+                : index < items.length - 1
+                  ? "Complete drill · Next"
+                  : "Finish workout"}
+              <Check size={18} />
+            </button>
+            <p className="member-fineprint">
+              Complete a drill after practicing it. Watching a demonstration
+              alone does not record practice.
+            </p>
+            {index > 0 && (
+              <button
+                className="text-button"
+                disabled={busy}
+                onClick={() => {
+                  const now = Date.now();
+                  if (now - lastTap.current < 650) {
+                    drillHeading.current?.focus({ preventScroll: true });
+                    return;
+                  }
+                  lastTap.current = now;
+                  setIndex((n) => n - 1);
+                  drillHeading.current
+                    ?.closest("dialog")
+                    ?.scrollTo({ top: 0, behavior: "instant" });
+                }}
+              >
+                <ArrowLeft size={17} /> Previous drill
+              </button>
+            )}
+          </div>
         </div>
       )}
       {!cancel ? (

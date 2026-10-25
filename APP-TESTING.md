@@ -13,6 +13,12 @@ The native iPhone app **0.1.0 (5)** is available in the existing **Owner Testing
 
 Manual pilot permissions do not represent a subscription or payment. Real junior enrollment and video uploads remain closed. Activities await qualified coaching review; reports, parent approvals and feedback do not prove athletic improvement.
 
+## Upload and guided-practice update
+
+The next native release adds explicit device drafts for new shared uploads, editable purpose/equipment/coaching cues, and a clearer session order/next-drill/previous-drill experience. See [UPLOAD-GUIDE.md](UPLOAD-GUIDE.md) for the device-only draft limits and fresh rights confirmation. Draft files are isolated by staff account, excluded from demo storage, and cleared on sign-out/account change. Failed device storage preserves the open form. Existing resource edits retain their instructional content and drill kind. No schema, role, payment, junior gate or live account data change is needed for this update.
+
+Before calling the update live, run the release checks, verify deployed asset hashes and check actual TestFlight processing/group availability. Existing build 5 remains the last verified native release until that evidence is recorded.
+
 ## Automated and live verification
 
 The signed binary's source `2cf24b62cc3bc0c21a6d255a66cf4e29d8361f57` passed lint, type checking, production build, **123 unit/SQL policy tests, 132 desktop/phone browser tests, 8 installed-web-app tests, 10 Python signing tests and 3 native simulator tests**. Staff regression cases cover Owner/Manager/Coach accounts with no household record, slow permission lookup, refresh, no customer-setup flash, zero household reads/writes, password setup/cancellation, sign-out, and permission failure/retry. The website's 10 deployed staff-flow checks also pass with fictional intercepted backend responses. No account roles or database policies were changed by the staff UI correction.
@@ -27,7 +33,7 @@ The deployed website HTML and JavaScript/CSS hashes match the tested build. Anot
 
 Use fictional profiles or approved adult pilot accounts only.
 
-1. Update to build 4, launch from the icon, confirm there is no app demo entry, sign in/out, relaunch and check account isolation. Staff should see their staff account directly, with no Parent/Athlete choice. Parent/Athlete setup applies to customer training accounts.
+1. Install the latest verified build shown above, launch from the icon, confirm there is no app demo entry, sign in/out, relaunch and check account isolation. Staff should see their staff account directly, with no Parent/Athlete choice. Parent/Athlete setup applies to customer training accounts.
 2. Upload an original adult/noncontact drill, publish protected, and assign it to the test account. Start a workout, play its demonstration, read instructions, complete practice and check history after relaunch. Cancel an unfinished workout and confirm no practice report appears.
 3. Enable review access and select a coach. Test camera/microphone/photo prompts, recording a short adult/fictional clip, saved MOV/MP4 selection, canceling the camera/picker, preview playback and explicit Send. Test a clip over 60 seconds/40 MB, unsupported/corrupt media and selecting the same file again.
 4. Test a failed connection/retry, repeated Send taps, background/resume and app termination during upload. An unfinished upload must remain labeled unfinished; it is not a successful review submission. Clean it up from video history if necessary.
