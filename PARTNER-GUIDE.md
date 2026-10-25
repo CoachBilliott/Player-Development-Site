@@ -1,0 +1,17 @@
+# Partner walkthrough
+
+Share [the illustrated website and iPhone guide](https://coachbilliott.github.io/Player-Development-Site/partner-guide.html), or [its 12-page PDF](https://coachbilliott.github.io/Player-Development-Site/partner-guide.pdf). Both can be opened without signing in. The live workspace still requires approved private account access. The native app remains distributed through approved TestFlight access.
+
+The guide covers the public website and its one fictional demo, TestFlight and Player Development sign-in, all five account levels, upload and native preparation, private shared drafts, staff approval, complete workout building, Owner assignment, customer practice/resume/progress and optional private video review. It includes a first-run checklist and common questions. The guide follows private pilot build 10; actual account permissions and the installed approved app version remain authoritative.
+
+All private-workspace screenshots use the actual shared UI in Chromium with intercepted fictional responses from `tests/workoutFixture.ts`. They contain no real customer information and are labeled browser workspace previews. Native Photos/camera screens are described in text, not fabricated. Text attachments and sample activities are illustrative, pending qualified review. The public homepage capture uses this project's existing licensed media.
+
+## Update the guide
+
+Edit `public/partner-guide/guide.json`, then run `python3 scripts/build-partner-guide.py` with ReportLab and DejaVu Sans installed (or set `PD_GUIDE_FONT_DIR` to the font directory). The embedded PDF typeface license is included in `public/partner-guide/font-license.txt`. This regenerates both `public/partner-guide.html` and `public/partner-guide.pdf`. The responsive stylesheet and optional copy-link enhancement live beside the JSON. No account service, analytics, browser storage or remote fonts are required to read the guide.
+
+Capture screenshots with a fresh Playwright browser context and the existing `fixture(context, state(), role)` helper. Intercept the configured backend before opening the site. For staff captures, use the fictional Owner state and follow the upload/review/builder flow already covered in `tests/training-workflow.spec.ts`. For customer captures, assign that fictional state's saved workout, use a separate parent context, begin practice, save and leave, then refresh and capture Resume workout. Wait for the requested heading/button and for saving to finish before capturing. Never sign in as a real person or write to the live backend to create guide images. Native preparation should be captured from actual hardware only with approved adult media and access.
+
+Check mobile widths, anchors, full-size image links, PDF page boundaries, copy-link success/fallback and the existing App Help → two-phone guide → walkthrough path. Run the repository lint, type and build checks. Commit and publish with `npm run deploy:pages`, then verify actual deployed HTML, PDF, screenshots and stylesheet against `dist/` before reporting the URLs live.
+
+This is a guide publication, not a new native app release or a change to roles, billing, enrollment or media permissions. The existing native app can reach it through App Help → two-phone test guide → illustrated walkthrough. Camera, audio, real transfer/deletion and interrupted/background behavior still require the physical-phone acceptance steps in [PHONE-ACCEPTANCE.md](PHONE-ACCEPTANCE.md).

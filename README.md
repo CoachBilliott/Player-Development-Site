@@ -2,6 +2,10 @@
 
 A standalone, responsive player-development platform with a sport-neutral brand and American football as its only current training program. Future sports have not been chosen or announced. This project is independent of Coach Workroom and Spawnative; it uses neither their code, brands, accounts, nor hosting.
 
+## Show a partner how it works
+
+[Open the illustrated website and app walkthrough](https://coachbilliott.github.io/Player-Development-Site/partner-guide.html), or [download the PDF](https://coachbilliott.github.io/Player-Development-Site/partner-guide.pdf). The public guide uses fictional screenshots and walks through login, staff tools, uploads, approval, assignment, customer practice and optional video review. See [PARTNER-GUIDE.md](PARTNER-GUIDE.md) for updates and scope.
+
 ## Latest connected training workflow
 
 Native TestFlight build **0.1.0 (10)** and the verified website include iPhone MOV/HEVC preparation, actual transfer progress, shared private drafts with Owner/Manager approval, approved drill-to-workout handoff and private unfinished-workout resume. [Release checks and limits](APP-TESTING.md) · [Upload guide](UPLOAD-GUIDE.md) · [15–20 minute two-phone test](PHONE-ACCEPTANCE.md). Physical phone acceptance and original reviewed training content are still required; public enrollment, payments and real junior access remain closed.
