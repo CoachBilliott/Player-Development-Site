@@ -2,7 +2,11 @@
 
 Build 10: test Photos selection and MOV/HEVC preparation, actual transfer progress, private shared drafts → review → approval, approved drill → complete workout → Owner assignment, and Save & leave / Resume after relaunch. Use the two-phone guide in App Help. The simplified layout and 8-character password rule remain. Existing passwords are unchanged.
 
-Version **0.1.0 (10)** is uploaded, processed VALID and IN_BETA_TESTING in Owner Testing. The owner has installed a prior build and can update through TestFlight. The metadata below is an external-beta submission draft: review contact fields, feedback details, an approved adult review account and Apple's beta review still need completion. No external beta submission or public App Store release was made.
+Version **0.1.0 (11)** is uploaded, processed VALID and IN_BETA_TESTING in Owner Testing. The owner has installed a prior build and can update through TestFlight. The metadata below is an external-beta submission draft: review contact fields, feedback details, an approved adult review account and Apple's beta review still need completion. No external beta submission or public App Store release was made.
+
+## Account lifecycle test focus in build 11
+
+Use approved adult test identities only. Owners can review an invitation and cancel without sending; new-customer delivery requires the missing dedicated SMTP sender. Check the invited adult privacy/role acceptance screen, clear expired/cancelled recovery, and staff entry without Parent/Athlete selection. On a disposable adult customer account, review deletion counts, cancel once, then confirm the current password and DELETE only when all test data may be erased. A failed cleanup stays pending; Owner/staff/guardian-managed accounts request review and are not automatically erased. Check sign-out, relaunch and private-data isolation. TestFlight invitations are separate from app account invitations.
 
 ## Beta app description
 
@@ -30,6 +34,6 @@ Review clips are stored privately until an authorized family/uploader deletes th
 - Beta feedback email, review contact name/email/phone and any approved review-account credentials needed for private features. No personal contact information or review passwords have been invented or made public in this draft.
 - Accurate privacy disclosures/policy URL, age-rating responses and encryption/export-compliance answers for the final binary and service behavior.
 - Tester invitation addresses supplied directly to the supported Apple workflow.
-- External tester invitations and any required external beta review approval. The current signed build is 0.1.0 (10), with VALID processing and active internal testing.
+- External tester invitations and any required external beta review approval. The current signed build is 0.1.0 (11), with VALID processing and active internal testing.
 
 Account/signing secrets and private review credentials belong in Apple's supported private fields or approved secure storage, not this document or repository.
