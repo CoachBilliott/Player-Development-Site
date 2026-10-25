@@ -1,6 +1,6 @@
 # Player Development backend — private adult pilot
 
-The dedicated project `iilbulpqbuknhdpmtrvm` is connected. Migrations `001-shared-content.sql`, `002-private-profiles.sql`, `003-account-levels.sql`, `004-family-athletes.sql` and `005-content-audiences.sql` were applied once and verified against the live project. Migration `006-assigned-training-and-video-review.sql` is now also installed; it adds private assigned workouts and optional coach video review without opening billing or junior access. Migration `007-training-assignment-cleanup.sql` is also installed. Do not rerun migrations 001–007 against this installed schema.
+The dedicated project `iilbulpqbuknhdpmtrvm` is connected. Migrations `001-shared-content.sql`, `002-private-profiles.sql`, `003-account-levels.sql`, `004-family-athletes.sql` and `005-content-audiences.sql` were applied once and verified against the live project. Migration `006-assigned-training-and-video-review.sql` is now also installed; it adds private assigned workouts and optional coach video review without opening billing or junior access. Migration `007-training-assignment-cleanup.sql` is also installed. Migration `008-workout-builder.sql` is installed for private workout templates and snapshot assignments. Do not rerun migrations 001–008 against this installed schema.
 
 The site URL and exact verification/recovery redirect URLs point to `https://coachbilliott.github.io/Player-Development-Site/`. Email confirmation is required and passwords require at least 12 characters. Management access is supplied securely by the owner; no administrative credential belongs in the repository, browser configuration, test fixtures or chat.
 
@@ -91,3 +91,7 @@ Migration 005 is applied. Existing and new shared resources default to protected
 See [VIDEO-REVIEW-GUIDE.md](../VIDEO-REVIEW-GUIDE.md) for the Owner assignment workflow, adult pilot recording/upload, parent approval, coach feedback, quotas and explicit deletion. Migration 006 adds RLS-protected entitlements/reviews and a private 40 MB video bucket. No browser can self-grant access; Owner/Manager status alone does not reveal clips. Real accounts use only assigned matching uploads. The public illustrative catalog remains for the separate website demo. Do not rerun migration 006 on the installed schema.
 
 Migration `007-training-assignment-cleanup.sql` is also installed. Withdrawing/deleting protected content prunes its member assignments and increments their access version; existing submitted video feedback remains. No client permissions or child/payment gates are expanded by this cleanup.
+
+## Complete ordered workout templates
+
+Migration 008 preserves existing account roles, private household boundaries, review settings and closed enrollment gates. Staff save protected templates; only Owners preview coarse account eligibility and assign snapshot sessions. Matching athletes receive all assigned drills in order; reports are bound to the opened template/version. New tables are RLS-protected and browser writes use guarded RPCs. See [WORKOUT-GUIDE.md](../WORKOUT-GUIDE.md). No real assignments or fixture records were created by migration installation.

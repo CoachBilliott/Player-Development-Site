@@ -3,6 +3,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Drill } from "./model";
 import { SharedContent } from "./sharedContent";
 import type { PrivatePlayer } from "./accounts";
+import { athleteAssignmentSchema, type AthleteAssignment } from "./workouts";
 export const workoutSchema = z.object({
   id: z.string().uuid(),
   profile_id: z.string().uuid(),
@@ -20,6 +21,9 @@ export const workoutSchema = z.object({
   reviewed_by: z.string().uuid().nullable(),
   reviewed_at: z.string().nullable(),
   version: z.number().int().positive(),
+  workout_title: z.string().nullable().optional(),
+  training_workout_id: z.string().uuid().nullable().optional(),
+  workout_version: z.number().int().nullable().optional(),
 });
 export type AthleteWorkout = z.infer<typeof workoutSchema>;
 export const familyStateSchema = z.object({
@@ -32,6 +36,7 @@ export const familyStateSchema = z.object({
   has_link: z.boolean(),
   child_access_ready: z.boolean(),
   workouts: z.array(workoutSchema),
+  assigned_workout: athleteAssignmentSchema.nullable().optional(),
 });
 export type FamilyState = z.infer<typeof familyStateSchema>;
 export type FamilyService = {
@@ -46,6 +51,7 @@ export type FamilyService = {
     player: PrivatePlayer,
     id: string,
     drills: string[],
+    assignment?: AthleteAssignment,
   ) => Promise<void>;
   review: (
     id: string,
@@ -114,22 +120,41 @@ export class FamilyTraining implements FamilyService {
         "Permission was not confirmed. Refresh before retrying.",
       );
   }
-  async report(player: PrivatePlayer, id: string, drills: string[]) {
-    const { error } = await this.client.rpc("report_athlete_workout", {
-      workout_id: id,
-      target_profile: player.id,
-      requested_drills: drills,
-    });
+  async report(
+    player: PrivatePlayer,
+    id: string,
+    drills: string[],
+    assignment?: AthleteAssignment,
+  ) {
+    const { error } = await this.client.rpc(
+      assignment ? "report_saved_workout" : "report_athlete_workout",
+      {
+        workout_id: id,
+        target_profile: player.id,
+        requested_drills: drills,
+        ...(assignment
+          ? {
+              expected_workout: assignment.id,
+              expected_workout_version: assignment.version,
+            }
+          : {}),
+      },
+    );
     if (error) {
       const { data } = await this.client
         .from("athlete_workouts")
-        .select("id,profile_id,reported_by,drill_ids")
+        .select(
+          "id,profile_id,reported_by,drill_ids,training_workout_id,workout_version",
+        )
         .eq("id", id)
         .maybeSingle();
       const { data: auth } = await this.client.auth.getSession();
       if (
         data?.profile_id === player.id &&
         data.reported_by === auth.session?.user.id &&
+        (!assignment ||
+          (data.training_workout_id === assignment.id &&
+            data.workout_version === assignment.version)) &&
         JSON.stringify(data.drill_ids) === JSON.stringify(drills)
       )
         return;

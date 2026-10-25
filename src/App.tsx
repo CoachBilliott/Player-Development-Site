@@ -67,6 +67,7 @@ import { useNativeApp } from "./useNativeApp";
 import { MobileTraining } from "./MobileTraining";
 import { CoachVideoReviews } from "./VideoReview";
 import { isStaff } from "./roles";
+import { WorkoutBuilder } from "./WorkoutBuilder";
 import {
   Workspace,
   AccessWorkspace,
@@ -109,6 +110,7 @@ const safeHash = () => {
     "app-workouts",
     "app-progress",
     "video-reviews",
+    "workout-builder",
     "onboarding",
     "today",
     "library",
@@ -351,9 +353,15 @@ export default function App() {
       !profile);
   const nav = navigationFor(page, shared.role);
   const privatePage =
-    ["workspace", "account", "access", "member-library", "launch"].includes(
-      page,
-    ) ||
+    [
+      "workspace",
+      "account",
+      "access",
+      "member-library",
+      "launch",
+      "workout-builder",
+      "video-reviews",
+    ].includes(page) ||
     (page === "coach" && shared.signedIn);
   const demoPage = isDemoPage(page);
   return (
@@ -552,6 +560,8 @@ export default function App() {
             />
           ) : page === "install" ? (
             <InstallApp app={app} />
+          ) : page === "workout-builder" ? (
+            <WorkoutBuilder shared={shared} />
           ) : page === "coach" ? (
             <ContentStudio
               shared={shared}

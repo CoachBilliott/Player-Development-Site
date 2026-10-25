@@ -6,7 +6,7 @@ A standalone, responsive player-development platform with a sport-neutral brand 
 
 Open [Member access](https://coachbilliott.github.io/Player-Development-Site/#account). The dedicated backend is connected for an invite-only adult pilot. Public registration remains closed; existing pilot accounts can sign in and reset their password. The repository now includes adult signup, email verification/recovery, private parent/adult account setup, private player create/edit/delete, identity isolation and server row-level security. Real under-18 enrollment and child self-access remain closed at the database until verified consent/privacy setup is complete. Parents can explore the complete family flow using fictional sample athletes. No demo records are imported. No payment package or price is needed for profile setup.
 
-See [backend setup and current pilot status](backend/SETUP.md). Migrations 001–007 have been applied to the dedicated owner-controlled project; do not rerun them. Live database privacy checks pass and the existing Owner is verified; broader physical-device/email acceptance remains required. Do not add real child information in the pilot. Full Auth-login erasure requires the owner; the self-service delete action removes member/profile data only. Private reports for assigned matching uploads and parent reviews sync through the backend. Payments and advanced progress measurement remain future work.
+See [backend setup and current pilot status](backend/SETUP.md). Migrations 001–008 have been applied to the dedicated owner-controlled project; do not rerun them. Live database privacy checks pass and the existing Owner is verified; broader physical-device/email acceptance remains required. Do not add real child information in the pilot. Full Auth-login erasure requires the owner; the self-service delete action removes member/profile data only. Private reports for assigned matching uploads and parent reviews sync through the backend. Payments and advanced progress measurement remain future work.
 
 ## Account levels
 
@@ -27,6 +27,10 @@ Open [the website](https://coachbilliott.github.io/Player-Development-Site/). **
 ## Easy workout uploads
 
 Open [Coach studio](https://coachbilliott.github.io/Player-Development-Site/#coach) and sign in with an authorized staff account. Shared website is the default; browser-local practice publishing is also limited to signed-in staff. Choose a file, add purpose, equipment, practice steps, coaching cue and audience, preview and publish. New shared uploads can be explicitly saved as a device draft and restored after refresh; they are not cross-device drafts and are cleared on sign-out. Shared uploads default to protected staff review. See the [phone upload guide](UPLOAD-GUIDE.md) for steps, visibility and draft limits.
+
+## Complete workout builder
+
+Staff can combine protected uploaded drills into a named ordered workout, preview and save it, and an Owner can assign it to an eligible account. Assignment preserves the saved version and order; history retains its name. See [the workout builder guide](WORKOUT-GUIDE.md) for the one-current-workout-per-account scope, eligibility, revisions and removal. No billing or junior enrollment is activated.
 
 ## Run locally
 

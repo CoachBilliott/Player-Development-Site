@@ -36,6 +36,7 @@ beforeAll(async () => {
     "005-content-audiences.sql",
     "006-assigned-training-and-video-review.sql",
     "007-training-assignment-cleanup.sql",
+    "008-workout-builder.sql",
   ])
     await db.exec(
       readFileSync(new URL("../backend/" + name, import.meta.url), "utf8"),

@@ -49,3 +49,7 @@ Report device/iOS version, build number, screen, steps, expected/actual behavior
 Use Node from `.nvmrc`, then `npm ci`. Run `npm run lint`, `npm run typecheck`, `npm test`, `python3 -m unittest discover -s scripts/tests`, `npm run build`, `npm run test:e2e` and `npm run test:app`. For native development, `npm run build:ios`, generate the Xcode project from `ios/App/project.yml` using XcodeGen, and open it on a Mac with the current accepted Xcode. The repository's iPhone workflow performs native tests and device archiving.
 
 Migrations 001–007 are installed in the dedicated project; do not rerun them. Account credentials, signing material and Apple upload keys never belong in project attachments or public hosting.
+
+## Complete workout builder update
+
+The next native release adds private saved workout templates, ordered drill previews and Owner assignment. Saved-template changes do not silently replace assigned snapshots. See [WORKOUT-GUIDE.md](WORKOUT-GUIDE.md) for scope and acceptance steps. Build 6 remains the last verified available native release until the new signed release and Apple state are recorded.

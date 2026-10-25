@@ -19,6 +19,7 @@ import {
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { AthleteVideoReview } from "./VideoReview";
 import { AssetPreview, Field, Modal, Notice, Tag } from "./components";
+import { orderedWorkoutPlan, type AthleteAssignment } from "./workouts";
 export function AthleteTraining({
   player,
   service,
@@ -48,6 +49,7 @@ export function AthleteTraining({
       id: string;
       drills: string[];
       items: Drill[];
+      assignment?: AthleteAssignment;
     } | null>(null),
     [review, setReview] = useState<{
       workout: AthleteWorkout;
@@ -125,7 +127,10 @@ export function AthleteTraining({
     goal: player.goal,
     guardian: player.age_group !== "18+",
   };
-  const plan = planFor(profile, available);
+  const assigned = !demo ? state?.assigned_workout : null;
+  const plan = assigned?.eligible
+    ? orderedWorkoutPlan(assigned, available, profile)
+    : planFor(profile, available);
   return (
     <section
       className="family-training panel member-panel"
@@ -266,6 +271,25 @@ export function AthleteTraining({
                     ? "Your assigned workout"
                     : "Your workouts start here"}
               </h3>
+              {assigned?.eligible && (
+                <>
+                  <h4 className="assigned-workout-title">{assigned.title}</h4>
+                  {assigned.summary && <p>{assigned.summary}</p>}
+                </>
+              )}
+              {assigned && !assigned.eligible && (
+                <Notice>
+                  The saved workout does not currently match this athlete or
+                  needs a content update. Any separately assigned matching
+                  drills remain below.
+                </Notice>
+              )}
+              {assigned?.eligible && !plan.length && (
+                <Notice>
+                  The workout changed while loading. Refresh training before
+                  starting so every drill stays in its saved order.
+                </Notice>
+              )}
               {!demo && !plan.length && (
                 <p>
                   No matching workouts have been assigned yet. Your coach can
@@ -293,6 +317,7 @@ export function AthleteTraining({
                     id: crypto.randomUUID(),
                     drills: plan.map((d) => d.id),
                     items: plan,
+                    assignment: assigned?.eligible ? assigned : undefined,
                   })
                 }
               >
@@ -375,7 +400,12 @@ export function AthleteTraining({
                 state.workouts.map((workout) => (
                   <article className="family-workout" key={workout.id}>
                     <Tag>{WORKOUT_LABELS[workout.status]}</Tag>
-                    <h4>{workout.titles.join(" · ")}</h4>
+                    <h4>
+                      {workout.workout_title || workout.titles.join(" · ")}
+                    </h4>
+                    {workout.workout_title && (
+                      <p>{workout.titles.join(" · ")}</p>
+                    )}
                     <p>
                       {new Date(workout.created_at).toLocaleDateString()} ·{" "}
                       {workout.minutes} planned minutes
@@ -631,12 +661,18 @@ export function AthleteTraining({
           items={session.items}
           profile={profile}
           drills={session.drills}
+          workoutTitle={session.assignment?.title}
           busy={busy}
           error={error}
           onCancel={() => setSession(null)}
           onComplete={() =>
             void act(async () => {
-              await service.report(player, session.id, session.drills);
+              await service.report(
+                player,
+                session.id,
+                session.drills,
+                session.assignment,
+              );
               setSession(null);
               await refresh();
               setMessage(
@@ -797,6 +833,7 @@ function GuidedWorkout(props: {
   items: Drill[];
   profile: Profile;
   drills: string[];
+  workoutTitle?: string;
   busy: boolean;
   error: string;
   onCancel: () => void;
@@ -810,6 +847,7 @@ function GuidedWorkout(props: {
 }
 function SimpleWorkout({
   items,
+  workoutTitle,
   profile,
   busy,
   error,
@@ -817,6 +855,7 @@ function SimpleWorkout({
   onComplete,
 }: {
   items: Drill[];
+  workoutTitle?: string;
   profile: Profile;
   busy: boolean;
   error: string;
@@ -842,6 +881,7 @@ function SimpleWorkout({
     >
       {!ready ? (
         <>
+          {workoutTitle && <h3>{workoutTitle}</h3>}
           <p>
             {profile.name} · {items.length} drills ·{" "}
             {items.reduce((n, d) => n + d.minutes, 0)} planned minutes

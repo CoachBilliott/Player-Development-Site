@@ -105,6 +105,16 @@ function StaffDashboard({
       </div>
       <div className="workspace-actions">
         <WorkspaceLink
+          href="#workout-builder"
+          title={
+            role === "owner" ? "Build & assign workouts" : "Build workouts"
+          }
+          icon="library"
+        >
+          Arrange protected drills into a complete ordered session, preview it
+          and save it for Owner assignment.
+        </WorkspaceLink>
+        <WorkspaceLink
           href={root}
           title={
             role === "coach" ? "Your content studio" : "Upload & manage content"

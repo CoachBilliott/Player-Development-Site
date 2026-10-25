@@ -55,6 +55,16 @@ export function ContentStudio({ shared, ...local }: Props) {
               ? "Staff publishing: protected training by default. Free demo samples are a separate choice."
               : "Practice mode: uploads stay in this browser. Your partner will not see them."}
           </p>
+          <a
+            className="button secondary"
+            href="#workout-builder"
+            aria-disabled={editorBusy}
+            onClick={(event) => {
+              if (editorBusy) event.preventDefault();
+            }}
+          >
+            Build a complete workout
+          </a>
           {nextScope && (
             <div
               className="discard-box"

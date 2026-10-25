@@ -27,6 +27,7 @@ export function navigationFor(
       "launch",
       "coach",
       "video-reviews",
+      "workout-builder",
     ].includes(page) &&
     role
   ) {

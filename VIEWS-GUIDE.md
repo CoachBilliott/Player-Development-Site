@@ -29,10 +29,14 @@ Workspace selection uses the authenticated, server-assigned level. Junior presen
 
 ## Protected content
 
-Migrations 001–007 are already applied to the dedicated project; do not rerun them. Shared uploads default to `member_only`. Owners/Managers review across coaches; Coaches review their own protected resources. Anonymous/unpaid Parent/Athlete accounts cannot read protected metadata or request signed media. The bucket stays private. Explicit **Public demo sample** is the only free shared-content choice.
+Migrations 001–008 are already applied to the dedicated project; do not rerun them. Shared uploads default to `member_only`. Owners/Managers review across coaches; Coaches review their own protected resources. Anonymous/unpaid Parent/Athlete accounts cannot read protected metadata or request signed media. The bucket stays private. Explicit **Public demo sample** is the only free shared-content choice.
 
 Protected uploads can be explicitly assigned to verified pilot accounts, with age/position/level checks. Paid subscriptions, automated package entitlements and checkout are not active. Real plans use only assigned eligible uploads, never imported sample catalog drills. Signed media URLs expire after five minutes; previously issued bearer links last until expiry. Resource state is isolated by authenticated identity and role and cleared on sign-out, and private data does not enter demo storage or service-worker cache.
 
 ## Before general launch
 
 Define packages and recurring billing, failed-payment and cancellation entitlements; complete reviewed real training and media rights; verify live email/recovery, physical-phone video playback and actual staff access; finish verified parental consent, age transition, retention and support. Public registration and real child enrollment remain closed. No athletic, scholarship or recruiting outcome is guaranteed.
+
+## Complete workout templates
+
+Staff open Content → Build a complete workout (`#workout-builder`). Owners/Managers manage templates across staff; Coaches manage their own. Owner-only account assignment supplements existing manual loose-drill grants without changing video permissions. See [WORKOUT-GUIDE.md](WORKOUT-GUIDE.md).

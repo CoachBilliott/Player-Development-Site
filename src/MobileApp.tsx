@@ -83,6 +83,7 @@ export function MobileTabs({
         const Icon = icons[route];
         const active =
           page === route ||
+          (route === "coach" && page === "workout-builder") ||
           (route === "app" && page === "home") ||
           (route === "app-workouts" && page === "member-library");
         return (
