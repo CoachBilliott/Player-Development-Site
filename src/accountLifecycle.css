@@ -1,0 +1,83 @@
+.lifecycle-tools {
+  margin-top: 28px;
+  border-top: 1px solid var(--line, #404649);
+  padding-top: 24px;
+  min-width: 0;
+}
+.lifecycle-tools h3 {
+  margin-top: 28px;
+}
+.lifecycle-tools .member-form fieldset {
+  min-width: 0;
+}
+.lifecycle-tools details {
+  margin-top: 20px;
+}
+.lifecycle-tools summary {
+  min-height: 44px;
+  cursor: pointer;
+  font-weight: 600;
+  line-height: 1.5;
+}
+.lifecycle-tools details p {
+  font-size: 14px;
+  line-height: 1.7;
+}
+.lifecycle-tools .actions {
+  flex-wrap: wrap;
+}
+.lifecycle-list {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+}
+.lifecycle-list > li {
+  border: 1px solid var(--line, #41484a);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 14px;
+  min-width: 0;
+}
+.lifecycle-list p {
+  margin: 10px 0;
+}
+.lifecycle-list small {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--muted, #bcc4c7);
+  overflow-wrap: anywhere;
+}
+.lifecycle-email {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.lifecycle-tools label {
+  overflow-wrap: anywhere;
+}
+.lifecycle-tools .form-error {
+  margin: 16px 0;
+}
+.lifecycle-list .tag {
+  white-space: normal;
+}
+@media (max-width: 600px) {
+  .lifecycle-tools {
+    padding-top: 22px;
+    margin-top: 24px;
+  }
+  .lifecycle-list > li {
+    padding: 16px;
+  }
+  .lifecycle-tools .actions > .button {
+    width: 100%;
+  }
+  .lifecycle-tools .access-heading {
+    align-items: flex-start;
+  }
+  .lifecycle-tools input,
+  .lifecycle-tools select {
+    min-height: 48px;
+    min-width: 0;
+    width: 100%;
+  }
+}

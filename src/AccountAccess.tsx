@@ -11,6 +11,7 @@ import {
   type AccessMember,
 } from "./roles";
 import type { SharedState } from "./useSharedContent";
+import { OwnerAccountInvitations } from "./AccountInvitations";
 
 export function AccountAccess({ shared }: { shared: SharedState }) {
   const [open, setOpen] = useState(false);
@@ -64,6 +65,12 @@ export function AccountAccess({ shared }: { shared: SharedState }) {
       )}
       {role === "owner" && open && shared.service && shared.session && (
         <AccessManager key={shared.session.user.id} shared={shared} />
+      )}
+      {role === "owner" && shared.accountLifecycleEnabled && (
+        <OwnerAccountInvitations
+          key={shared.session?.user.id}
+          shared={shared}
+        />
       )}
     </section>
   );

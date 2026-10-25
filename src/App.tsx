@@ -50,6 +50,7 @@ import {
 } from "./components";
 import { ContentStudio } from "./ContentStudio";
 import { useSharedContent } from "./useSharedContent";
+import { AccountInvitationGate } from "./AccountInvitationGate";
 import { MotionShell } from "./Experience";
 import { usePwa } from "./pwa";
 import { InstallApp } from "./InstallApp";
@@ -478,113 +479,129 @@ export default function App() {
           </div>
         )}
         <div ref={mainRef} className="page-transition" key={page}>
-          {onboarding ? (
-            <Onboarding
-              current={profile}
-              onChoose={chooseProfile}
-              onCancel={() => go(profile ? "today" : "home")}
-            />
-          ) : page === "demo" ? (
-            <FamilyDemo app={mobile} />
-          ) : (page === "app" || (mobile && page === "home")) &&
-            (!shared.signedIn || !mobile) ? (
-            <MobileWelcome signedIn={shared.signedIn} />
-          ) : page === "app-help" || (nativeApp() && page === "install") ? (
-            <MobileHelp app={app} />
-          ) : (mobile &&
-              ["workspace", "app", "home"].includes(page) &&
-              !isStaff(shared.role)) ||
-            ["app-workouts", "app-progress"].includes(page) ||
-            (mobile && page === "member-library" && !isStaff(shared.role)) ? (
-            <MobileTraining
-              shared={shared}
-              screen={
-                page === "app-progress"
-                  ? "progress"
-                  : page === "app-workouts" || page === "member-library"
-                    ? "workouts"
-                    : "today"
-              }
-              selection={trainingSelection}
-              onSelect={setTrainingSelection}
-            />
-          ) : mobile && ["workspace", "app", "home"].includes(page) ? (
-            <MobileStaffHome shared={shared} />
-          ) : page === "workspace" ? (
-            <Workspace shared={shared} />
-          ) : page === "video-reviews" ? (
-            <CoachVideoReviews shared={shared} />
-          ) : page === "access" ? (
-            <AccessWorkspace shared={shared} />
-          ) : page === "member-library" ? (
-            <WorkspaceLibrary
-              key={`${shared.session?.user.id}-${shared.role}`}
-              shared={shared}
-            />
-          ) : page === "launch" ? (
-            <LaunchReadiness shared={shared} />
-          ) : page === "account" ? (
-            <MemberAccountPage shared={shared} />
-          ) : page === "home" ? (
-            <Home />
-          ) : page === "today" && profile ? (
-            <Dashboard
-              profile={profile}
-              drills={drills}
-              state={state}
-              onStart={requestStart}
-              onOpen={setDetail}
-            />
-          ) : page === "library" ? (
-            <Library
-              drills={drills.filter(
-                (d) =>
-                  d.source !== "shared" || d.visibility === "public_sample",
-              )}
-              onOpen={setDetail}
-            />
-          ) : page === "progress" && profile ? (
-            <Progress
-              profile={profile}
-              history={state.history.filter((h) => h.profileId === profile.id)}
-              onReset={() => setReset(true)}
-            />
-          ) : page === "session" && profile ? (
-            <Session
-              run={state.run}
-              drills={drills}
-              profile={profile}
-              onUpdate={(run) => commit({ ...state, run })}
-              onExit={() => setExit(true)}
-              onComplete={(reflection) => {
-                if (!state.run) return;
-                const next = completeRun(state, state.run, drills, reflection);
-                commit(next);
-                // Update the view in the same render that clears the run so a
-                // second tap cannot activate the empty-session fallback.
-                setPage("progress");
-                go("progress");
-                setToast("Practice recorded. Showing your session history.");
-              }}
-            />
-          ) : page === "install" ? (
-            <InstallApp app={app} />
-          ) : page === "content-review" ? (
-            <ContentApprovals shared={shared} />
-          ) : page === "workout-builder" ? (
-            <WorkoutBuilder shared={shared} />
-          ) : page === "coach" ? (
-            <ContentStudio
-              shared={shared}
-              onPublish={publish}
-              onUpdate={updateResource}
-              onRemove={removeResource}
-              resources={state.custom}
-              lockedIds={state.run?.drillIds}
-            />
-          ) : (
-            <Membership />
-          )}
+          <AccountInvitationGate
+            shared={shared}
+            enforce={
+              privatePage ||
+              (mobile &&
+                ["app", "home", "app-workouts", "app-progress"].includes(page))
+            }
+          >
+            {onboarding ? (
+              <Onboarding
+                current={profile}
+                onChoose={chooseProfile}
+                onCancel={() => go(profile ? "today" : "home")}
+              />
+            ) : page === "demo" ? (
+              <FamilyDemo app={mobile} />
+            ) : (page === "app" || (mobile && page === "home")) &&
+              (!shared.signedIn || !mobile) ? (
+              <MobileWelcome signedIn={shared.signedIn} />
+            ) : page === "app-help" || (nativeApp() && page === "install") ? (
+              <MobileHelp app={app} />
+            ) : (mobile &&
+                ["workspace", "app", "home"].includes(page) &&
+                !isStaff(shared.role)) ||
+              ["app-workouts", "app-progress"].includes(page) ||
+              (mobile && page === "member-library" && !isStaff(shared.role)) ? (
+              <MobileTraining
+                shared={shared}
+                screen={
+                  page === "app-progress"
+                    ? "progress"
+                    : page === "app-workouts" || page === "member-library"
+                      ? "workouts"
+                      : "today"
+                }
+                selection={trainingSelection}
+                onSelect={setTrainingSelection}
+              />
+            ) : mobile && ["workspace", "app", "home"].includes(page) ? (
+              <MobileStaffHome shared={shared} />
+            ) : page === "workspace" ? (
+              <Workspace shared={shared} />
+            ) : page === "video-reviews" ? (
+              <CoachVideoReviews shared={shared} />
+            ) : page === "access" ? (
+              <AccessWorkspace shared={shared} />
+            ) : page === "member-library" ? (
+              <WorkspaceLibrary
+                key={`${shared.session?.user.id}-${shared.role}`}
+                shared={shared}
+              />
+            ) : page === "launch" ? (
+              <LaunchReadiness shared={shared} />
+            ) : page === "account" ? (
+              <MemberAccountPage shared={shared} />
+            ) : page === "home" ? (
+              <Home />
+            ) : page === "today" && profile ? (
+              <Dashboard
+                profile={profile}
+                drills={drills}
+                state={state}
+                onStart={requestStart}
+                onOpen={setDetail}
+              />
+            ) : page === "library" ? (
+              <Library
+                drills={drills.filter(
+                  (d) =>
+                    d.source !== "shared" || d.visibility === "public_sample",
+                )}
+                onOpen={setDetail}
+              />
+            ) : page === "progress" && profile ? (
+              <Progress
+                profile={profile}
+                history={state.history.filter(
+                  (h) => h.profileId === profile.id,
+                )}
+                onReset={() => setReset(true)}
+              />
+            ) : page === "session" && profile ? (
+              <Session
+                run={state.run}
+                drills={drills}
+                profile={profile}
+                onUpdate={(run) => commit({ ...state, run })}
+                onExit={() => setExit(true)}
+                onComplete={(reflection) => {
+                  if (!state.run) return;
+                  const next = completeRun(
+                    state,
+                    state.run,
+                    drills,
+                    reflection,
+                  );
+                  commit(next);
+                  // Update the view in the same render that clears the run so a
+                  // second tap cannot activate the empty-session fallback.
+                  setPage("progress");
+                  go("progress");
+                  setToast("Practice recorded. Showing your session history.");
+                }}
+              />
+            ) : page === "install" ? (
+              <InstallApp app={app} />
+            ) : page === "content-review" ? (
+              <ContentApprovals shared={shared} />
+            ) : page === "workout-builder" ? (
+              <WorkoutBuilder shared={shared} />
+            ) : page === "coach" ? (
+              <ContentStudio
+                shared={shared}
+                onPublish={publish}
+                onUpdate={updateResource}
+                onRemove={removeResource}
+                resources={state.custom}
+                lockedIds={state.run?.drillIds}
+              />
+            ) : (
+              <Membership />
+            )}
+          </AccountInvitationGate>
         </div>
         {mobile ? (
           <MobileTabs shared={shared} page={page} />

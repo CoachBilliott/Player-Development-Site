@@ -237,6 +237,17 @@ export function MobileHelp({ app }: { app: PwaState }) {
         </p>
       </section>
       <section className="panel">
+        <h2>Invitations & account deletion</h2>
+        <p>
+          Owners prepare private adult account invitations. Customers can review
+          full account deletion after confirming their password; staff and
+          guardian-managed accounts request an ownership review.
+        </p>
+        <WebsiteLink path="account-help.html">
+          Open account setup & deletion help <ArrowRight size={17} />
+        </WebsiteLink>
+      </section>
+      <section className="panel">
         <h2>Try the complete phone test.</h2>
         <p>
           Follow one original adult clip from upload and staff approval through

@@ -28,6 +28,8 @@ import { FamilyTraining } from "./family";
 import { AthleteTraining } from "./FamilyTraining";
 import { appSurface } from "./mobile";
 import { WebsiteLink } from "./MobileApp";
+import { AccountClosure } from "./AccountClosure";
+import "./accountLifecycle.css";
 
 export function MemberAccountPage({
   shared,
@@ -403,6 +405,11 @@ function ConnectedAccount({
       {message && (
         <p className="member-feedback" role="status">
           {message}
+        </p>
+      )}
+      {shared.accountNotice && (
+        <p className="member-feedback" role="status">
+          {shared.accountNotice}
         </p>
       )}
       {userId && !recovery && !workspace && (
@@ -984,18 +991,23 @@ function ConnectedAccount({
             >
               Profile privacy details
             </button>
-            <button
-              className="text-button"
-              disabled={busy || !!draft}
-              onClick={() => {
-                setDeleteText("");
-                setDeleteData(true);
-              }}
-            >
-              Delete member profile data
-            </button>
+            {!shared.accountLifecycleEnabled && (
+              <button
+                className="text-button"
+                disabled={busy || !!draft}
+                onClick={() => {
+                  setDeleteText("");
+                  setDeleteData(true);
+                }}
+              >
+                Delete member profile data
+              </button>
+            )}
           </div>
         </>
+      )}
+      {userId && !workspace && shared.accountLifecycleEnabled && (
+        <AccountClosure key={userId} shared={shared} />
       )}
       {userId && (
         <div className="member-signout">
@@ -1128,22 +1140,27 @@ function ConnectedAccount({
             birth dates, school details, health information or photos.
           </p>
           <p>
-            Player profiles are private to the signed-in account. Coaches do not
-            receive profile access. Under-18 players use a parent or legal
-            guardian’s account, never their own login. Adult ownership and
-            guardianship are self-attested; identity verification is not
-            implemented.
+            Profiles are private to their household and explicitly linked
+            individual athlete. Coaches do not receive general profile access;
+            optional video review is limited to the assigned coach. Real
+            under-18 enrollment and junior logins remain closed. Adult status
+            and guardianship are self-attested; verified guardian consent and
+            identity checks still require separate launch work.
           </p>
           <p>
             Your login session is saved in this browser. Profile details are
             fetched online and are not saved into demo storage or the app’s
-            offline cache. The fictional demo remains separate. Profile deletion
-            is available in your account; provider backup retention and complete
-            email-login erasure require the project owner.
+            offline cache. The fictional demo remains separate.{" "}
+            {shared.accountLifecycleEnabled
+              ? "Customer account deletion includes the email login, owned profiles/history and private clips after password confirmation. Staff content and guardian-managed closure use assisted review. Other households keep their own records with your reporter identity removed. A minimal receipt retains the request ID, status, counts and dates without your email. Provider backups and already-downloaded copies follow their applicable retention rules."
+              : "Profile deletion is available in your account; provider backup retention and complete email-login erasure require the project owner."}
           </p>
           <p>
-            This is the profile pilot disclosure, version profile-pilot-2026-10.
-            A reviewed privacy policy, verified parental-consent process,
+            This is the adult pilot disclosure,{" "}
+            {shared.accountLifecycleEnabled
+              ? "version adult-pilot-lifecycle-2026-10"
+              : "version profile-pilot-2026-10"}
+            . A reviewed privacy policy, verified parental-consent process,
             support contact and retention policy are still required before
             public enrollment of children.
           </p>
@@ -1376,6 +1393,9 @@ function StaffAccount({
           </p>
         )}
       </section>
+      {shared.accountLifecycleEnabled && (
+        <AccountClosure key={shared.session?.user.id} shared={shared} />
+      )}
     </main>
   );
 }

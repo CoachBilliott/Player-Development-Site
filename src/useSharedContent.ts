@@ -11,6 +11,8 @@ import { isStaff, type AccountRole } from "./roles";
 import { clearStaffDrafts } from "./staffDrafts";
 
 export function useSharedContent() {
+  const [accountLifecycleEnabled, setAccountLifecycleEnabled] = useState(false);
+  const [accountNotice, setAccountNotice] = useState("");
   const [service, setService] = useState<SharedContent | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [access, setAccess] = useState<{
@@ -47,11 +49,13 @@ export function useSharedContent() {
         const connection = await connectSharedContent(config);
         if (stopped) return;
         setService(connection);
+        setAccountLifecycleEnabled(raw.accountLifecycleEnabled === true);
         setMembersEnabled(raw.membersEnabled === true);
         setSignupEnabled(raw.membersSignupEnabled !== false);
         let previousUser = "";
         const subscription = connection.client.auth.onAuthStateChange(
           (_event, current) => {
+            if (current) setAccountNotice("");
             if (!current || (previousUser && previousUser !== current.user.id))
               void clearStaffDrafts().catch(() => {
                 if (!stopped)
@@ -185,6 +189,9 @@ export function useSharedContent() {
   }
   return {
     service,
+    accountLifecycleEnabled,
+    accountNotice,
+    setAccountNotice,
     session,
     loading,
     membersEnabled,
