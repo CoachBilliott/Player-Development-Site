@@ -22,10 +22,13 @@ targets:
           - public
           - capacitor.config.json
           - Info.plist
+          - PrivacyInfo.xcprivacy
       - path: App/public
         type: folder
         buildPhase: resources
       - path: App/capacitor.config.json
+        buildPhase: resources
+      - path: App/PrivacyInfo.xcprivacy
         buildPhase: resources
     settings:
       base:

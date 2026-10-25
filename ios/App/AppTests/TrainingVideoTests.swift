@@ -5,7 +5,14 @@ import Darwin
 @testable import App
 
 final class TrainingVideoTests: XCTestCase {
-    func testClipValidationRejectsInvalidOrExcessiveRanges() {
+    func testClipValidationRejectsInvalidOrExcessiveRanges() throws {
+        let privacyURL = try XCTUnwrap(Bundle.main.url(forResource: "PrivacyInfo", withExtension: "xcprivacy"))
+        let privacy = try PropertyListSerialization.propertyList(from: Data(contentsOf: privacyURL), options: [], format: nil) as! [String: Any]
+        let accessed = try XCTUnwrap(privacy["NSPrivacyAccessedAPITypes"] as? [[String: Any]])
+        XCTAssertTrue(accessed.contains { entry in
+            entry["NSPrivacyAccessedAPIType"] as? String == "NSPrivacyAccessedAPICategoryFileTimestamp" && (entry["NSPrivacyAccessedAPITypeReasons"] as? [String])?.contains("C617.1") == true
+        })
+
         XCTAssertTrue(TrainingVideoExporter.validRange(duration: 20, start: 2, end: 12, maximum: 180))
         for values in [(-1.0, 1.0), (2.0, 2.0), (0.0, 21.0), (Double.nan, 3.0), (0.0, Double.infinity)] {
             XCTAssertFalse(TrainingVideoExporter.validRange(duration: 20, start: values.0, end: values.1, maximum: 180))
