@@ -1,12 +1,12 @@
 # The website, one customer demo, private workspaces
 
-The main website is https://coachbilliott.github.io/Player-Development-Site/. It explains Player Development, family and individual training, membership plans and sign-in. The header shows **Log in** for visitors and **My workspace** for signed-in members. The homepage keeps its main **Try the demo** button; every public demo button leads to the same customer experience at `#demo`.
+The main website is https://coachbilliott.github.io/Player-Development-Site/. It presents one football training platform with personalized workouts, guided practice and account support. Parents manage family athletes; adult athletes manage their own training. These are account setup choices, not separate products or membership tiers. The header shows **Log in** for visitors and **My workspace** for signed-in members. The homepage keeps its main **Try the demo** button; every public demo button leads to the same customer experience at `#demo`.
 
 The photographic theme uses black, warm white and orange, with an edge-to-edge training film, large type and photo-led family/solo sections. It uses licensed adult-training footage, separate family/solo football photographs and an empty-football-field still; credits are linked on the page. The silent hero footage loops without Replay, Pause or motion controls; a real still appears automatically for device reduced-motion preferences or unavailable playback. These are promotional stock images, not coaching lessons or actual members. Visual changes do not enable public signup, child access, paid content or checkout.
 
 ## One guided demo
 
-Visitors choose **Parent & family** or **Solo athlete** within the same demo. There is no public staff-role gallery or separate Owner/Manager/Coach demonstration.
+The demo asks **Who are you setting up training for?** Visitors choose **Parent & family** or **Solo athlete** as account-management options within that same training platform. There is no public staff-role gallery or separate Owner/Manager/Coach demonstration.
 
 - Parent & family: choose or add a fixed fictional athlete, decide who records practice, try that athlete's screen within the same journey, and return to approve the report or ask for another practice.
 - Solo athlete: meet fictional Morgan, follow a guided sample workout, and see self-reported practice history without parent approval.

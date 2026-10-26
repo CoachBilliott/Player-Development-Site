@@ -204,14 +204,18 @@ export function FamilyDemo({ app = false }: { app?: boolean }) {
         <Tag>FOOTBALL DEMO · SAMPLE DATA</Tag>
         <h1 tabIndex={-1}>See how your training works.</h1>
         <p>
-          Try a football training day as a parent or a solo athlete. Follow a
-          sample workout and see how practice is recorded. No account needed.
+          Explore one football training platform. Follow a sample workout and
+          see how practice is recorded. Choose who manages training below; no
+          account is needed for this demo.
         </p>
       </div>
+      <p className="eyebrow" id="demo-setup-label">
+        Who are you setting up training for?
+      </p>
       <div
         className="scene-tabs family-view-tabs"
         role="group"
-        aria-label="Demo journey"
+        aria-labelledby="demo-setup-label"
       >
         <button
           aria-pressed={view !== "individual"}

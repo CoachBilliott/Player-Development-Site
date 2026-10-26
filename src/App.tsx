@@ -1699,7 +1699,9 @@ function Membership() {
         <Tag>LOOKING AHEAD</Tag>
         <h1 tabIndex={-1}>Future memberships</h1>
         <p>
-          A look at possible future memberships.
+          One training platform, with future memberships based on the training
+          and coaching support included. Managing training for your family or
+          yourself is an account setup choice.
           <br />
           These are product concepts, not purchasable plans.
         </p>
@@ -1712,12 +1714,12 @@ function Membership() {
             items: [
               "Age-aware guided practice",
               "A simple weekly routine",
-              "Parent-managed experience",
+              "Clear practice steps and coaching cues",
             ],
             icon: Footprints,
           },
           {
-            name: "Position pathways",
+            name: "Position training",
             for: "For a little more direction",
             items: [
               "Deeper position-specific learning",
@@ -1767,7 +1769,7 @@ function Membership() {
         </div>
       </section>
       <Notice>
-        No checkout, billing, enrollment, or waitlist is active. American
+        No checkout, billing, public enrollment, or waitlist is active. American
         football is the only sport in this demo; other sports remain future
         offerings.
       </Notice>

@@ -742,7 +742,7 @@ function ConnectedAccount({
       ) : !account ? (
         <div className="member-layout">
           <section className="panel member-panel">
-            <h2>Who will you manage?</h2>
+            <h2>Who is the training for?</h2>
             <p>
               Signed in as {shared.session?.user.email}. Your account starts
               empty.

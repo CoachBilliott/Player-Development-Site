@@ -85,7 +85,7 @@ test("homepage is responsive and sample demo is obvious", async ({
   await expect(page.getByText(/\bbasketball\b|\bsoccer\b/i)).toHaveCount(0);
   await page.getByRole("button", { name: "See how it works" }).click();
   await expect(
-    page.getByRole("heading", { name: /A clear path from plan/ }),
+    page.getByRole("heading", { name: "A clear plan. Purposeful practice." }),
   ).toBeInViewport();
   const images = page.locator(".path-card > img, .football-program-image");
   await expect(images).toHaveCount(3);

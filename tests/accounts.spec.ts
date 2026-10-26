@@ -1604,7 +1604,7 @@ for (const role of ["owner", "manager", "coach"] as const) {
       (window as Window & { sawCustomerSetup?: boolean }).sawCustomerSetup =
         false;
       new MutationObserver(() => {
-        if (document.body?.textContent?.includes("Who will you manage?"))
+        if (document.body?.textContent?.includes("Who is the training for?"))
           (window as Window & { sawCustomerSetup?: boolean }).sawCustomerSetup =
             true;
       }).observe(document, { childList: true, subtree: true });

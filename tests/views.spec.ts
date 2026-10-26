@@ -69,7 +69,9 @@ test("the public website has one customer demo entry, with parent and solo journ
     page.getByRole("heading", { name: "See how your training works." }),
   ).toBeVisible();
   await expect(
-    page.getByRole("group", { name: "Demo journey" }).getByRole("button"),
+    page
+      .getByRole("group", { name: "Who are you setting up training for?" })
+      .getByRole("button"),
   ).toHaveCount(2);
   await expect(page.locator(".view-card")).toHaveCount(0);
   for (const journey of ["Parent & family", "Solo athlete"]) {

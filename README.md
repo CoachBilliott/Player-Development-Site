@@ -34,7 +34,7 @@ The live child gates remain closed. Child self-access additionally requires a tr
 
 ## The website and one customer demo
 
-Open [the website](https://coachbilliott.github.io/Player-Development-Site/). **Try the demo** opens one [guided customer demo](https://coachbilliott.github.io/Player-Development-Site/#demo), with Parent & family and Solo athlete journeys. There are no public Owner/Manager/Coach previews. Real signed-in accounts open their assigned [private workspace](https://coachbilliott.github.io/Player-Development-Site/#workspace); old staff-preview links now require sign-in. See [the workspace and demo guide](VIEWS-GUIDE.md).
+Open [the website](https://coachbilliott.github.io/Player-Development-Site/). It presents one football training platform; parent-managed and individual accounts are setup options, not separate products or membership tiers. **Try the demo** opens one [guided customer demo](https://coachbilliott.github.io/Player-Development-Site/#demo), with Parent & family and Solo athlete options under **Who are you setting up training for?** There are no public Owner/Manager/Coach previews. Real signed-in accounts open their assigned [private workspace](https://coachbilliott.github.io/Player-Development-Site/#workspace); old staff-preview links now require sign-in. See [the workspace and demo guide](VIEWS-GUIDE.md).
 
 ## Easy workout uploads
 

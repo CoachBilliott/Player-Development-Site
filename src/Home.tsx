@@ -23,8 +23,8 @@ export function Home() {
             <span className="electric-text">Your next rep.</span>
           </h1>
           <p className="hero-description">
-            A clear plan for the work you put in. Guided football practice for
-            individual athletes and parent-managed families.
+            A clear plan for the work you put in. Guided football workouts
+            matched to the athlete’s age, position, experience and goals.
           </p>
           <div className="actions">
             <a className="button" href="#demo">
@@ -64,21 +64,19 @@ export function Home() {
       </div>
 
       <Reveal className="athlete-paths-section">
-        <section className="page athlete-paths" aria-labelledby="paths-title">
+        <section className="page athlete-paths" aria-labelledby="platform-title">
           <div className="section-heading">
             <div>
-              <span className="eyebrow">
-                DIFFERENT STARTING POINTS. SAME PURPOSE.
-              </span>
-              <h2 id="paths-title">
-                Find your way
+              <span className="eyebrow">PERSONALIZED FOOTBALL TRAINING</span>
+              <h2 id="platform-title">
+                One platform.
                 <br />
-                into the work.
+                Every athlete.
               </h2>
             </div>
             <p>
-              One athlete or a whole family. See how a plan can fit the person
-              behind the player.
+              Training starts with the player. A clear plan, guided practice
+              and a record of the work keep the next step in focus.
             </p>
           </div>
           <div className="path-grid">
@@ -91,16 +89,17 @@ export function Home() {
                 height={960}
               />
               <div className="path-shade" aria-hidden="true" />
-              <span className="path-tag">01 / PARENT & FAMILY</span>
+              <span className="path-tag">SUPPORT AROUND THE ATHLETE</span>
               <div className="path-copy">
                 <h3>
-                  Their effort.
+                  Support.
                   <br />
-                  Your support.
+                  At every step.
                 </h3>
                 <p>
-                  Explore separate athlete profiles, parent permissions and
-                  workout reviews in the family demo.
+                  Parents manage family athletes, choose permissions and review
+                  reported practice. Adult athletes manage their own routine,
+                  all within the same platform.
                 </p>
                 <span className="path-detail">
                   <ShieldCheck size={16} /> Parent-managed for all athletes
@@ -117,19 +116,19 @@ export function Home() {
                 height={2160}
               />
               <div className="path-shade" aria-hidden="true" />
-              <span className="path-tag">02 / INDIVIDUAL ATHLETE</span>
+              <span className="path-tag">TRAINING THAT FITS THE PLAYER</span>
               <div className="path-copy">
                 <h3>
-                  Your goals.
+                  A plan.
                   <br />
-                  Your routine.
+                  A purpose.
                 </h3>
                 <p>
-                  Try a guided session matched to a fictional adult athlete’s
-                  position, experience and training goals.
+                  Follow guided workouts with short lessons, clear practice
+                  steps and coaching cues matched to the player.
                 </p>
                 <span className="path-detail">
-                  One athlete. Their own plan and practice history.
+                  Age, position, experience and goals shape the session.
                 </span>
               </div>
             </article>
@@ -140,7 +139,7 @@ export function Home() {
               profiles are fictional.
             </p>
             <a className="button" href="#demo">
-              Find your path in the demo <ArrowRight size={18} />
+              Explore the training demo <ArrowRight size={18} />
             </a>
           </div>
         </section>
@@ -150,7 +149,7 @@ export function Home() {
         <section id="how-it-works" className="page how-section">
           <div className="practice-intro">
             <span className="eyebrow">LESS GUESSWORK. MORE PURPOSE.</span>
-            <h2>A clear path from plan to practice.</h2>
+            <h2>A clear plan. Purposeful practice.</h2>
             <p>
               Open your session. Know what to work on. Take it one drill at a
               time.
