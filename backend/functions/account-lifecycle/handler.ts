@@ -42,6 +42,8 @@ export type LifecycleBackend = {
 };
 const origins = new Set([
   "https://coachbilliott.github.io",
+  "https://repformed.pages.dev",
+  "https://repformed.com",
   "capacitor://localhost",
   "http://localhost",
   "http://localhost:5173",
