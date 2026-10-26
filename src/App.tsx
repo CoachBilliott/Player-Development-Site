@@ -441,22 +441,21 @@ export default function App() {
                       <ArrowUpRight size={18} />
                     </a>
                   ))}
-                  <a href="#account">
-                    {shared.signedIn ? "Account settings" : "Log in"}{" "}
-                    <ArrowUpRight size={18} />
-                  </a>
-                  <a href="#membership">
-                    Future memberships
-                    <ArrowUpRight size={18} />
-                  </a>
+                  {!nav.some(([id]) => id === "account") && (
+                    <a href="#account">
+                      {shared.signedIn ? "Account settings" : "Log in"}{" "}
+                      <ArrowUpRight size={18} />
+                    </a>
+                  )}
+                  {!nav.some(([id]) => id === "membership") && (
+                    <a href="#membership">
+                      Future memberships
+                      <ArrowUpRight size={18} />
+                    </a>
+                  )}
                   <a href="#install">
                     Get the app <ArrowUpRight size={18} />
                   </a>
-                  {!privatePage && (
-                    <a href="#coach">
-                      Staff sign-in <ArrowUpRight size={18} />
-                    </a>
-                  )}
                 </nav>
               )}
             </header>
@@ -615,9 +614,10 @@ export default function App() {
                   Future memberships <ArrowUpRight size={14} />
                 </a>
                 <a href="#home">About Player Development</a>
-                <a href="#account">Member access</a>
+                <a href={shared.signedIn ? "#workspace" : "#account"}>
+                  {shared.signedIn ? "My workspace" : "Log in"}
+                </a>
                 <a href="#demo">Try the demo</a>
-                <a href="#coach">Staff sign-in</a>
                 <a href="#install">
                   Get the app <ArrowUpRight size={14} />
                 </a>

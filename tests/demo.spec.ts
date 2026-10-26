@@ -528,10 +528,10 @@ test("all screens fit mobile and navigation is keyboard accessible", async ({
     await page.getByRole("button", { name: "Open navigation" }).click();
     await page
       .getByRole("navigation", { name: "Mobile navigation" })
-      .getByRole("link", { name: "Staff sign-in" })
+      .getByRole("link", { name: "Log in", exact: true })
       .click();
     await expect(
-      page.getByRole("heading", { name: "Shared publishing needs setup." }),
+      page.getByRole("heading", { name: "Private profiles are being connected." }),
     ).toBeVisible();
     await expect(
       page.getByRole("button", { name: "Open navigation" }),
