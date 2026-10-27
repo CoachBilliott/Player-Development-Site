@@ -57,6 +57,7 @@ import { InstallApp } from "./InstallApp";
 import { MemberAccountPage } from "./MemberAccount";
 import { FamilyDemo } from "./FamilyDemo";
 import { Home } from "./Home";
+import { Contact } from "./Contact";
 import { appSurface, nativeApp } from "./mobile";
 import {
   MobileHeader,
@@ -122,6 +123,7 @@ const safeHash = () => {
     "session",
     "coach",
     "membership",
+    "contact",
     "install",
     "account",
     "family-demo",
@@ -535,6 +537,8 @@ export default function App() {
               <MemberAccountPage shared={shared} />
             ) : page === "home" ? (
               <Home />
+            ) : page === "contact" ? (
+              <Contact />
             ) : page === "today" && profile ? (
               <Dashboard
                 profile={profile}
@@ -614,6 +618,7 @@ export default function App() {
                   Future memberships <ArrowUpRight size={14} />
                 </a>
                 <a href="#home">About Player Development</a>
+                <a href="#contact">Contact</a>
                 <a href={shared.signedIn ? "#workspace" : "#account"}>
                   {shared.signedIn ? "My workspace" : "Log in"}
                 </a>

@@ -191,6 +191,9 @@ export function MobileHelp({ app }: { app: PwaState }) {
         <WebsiteLink path="#membership">
           View website membership information
         </WebsiteLink>
+        <WebsiteLink path="#contact">
+          Contact the team <ArrowRight size={17} />
+        </WebsiteLink>
       </section>
       <section className="panel">
         <h2>Accounts & privacy</h2>

@@ -4,6 +4,8 @@ A standalone, responsive player-development platform with a sport-neutral brand 
 
 ## Show a partner how it works
 
+The public [Contact page](https://coachbilliott.github.io/Player-Development-Site/#contact) links to the Owner-approved business inbox, **Repformed@gmail.com**, and offers searchable, authored answers about training, accounts, app access and reviews. The email button opens the visitor's email app; it does not claim a message was sent. See [contact and public help](CONTACT-HELP.md) for updates and the separate automatic-email setup.
+
 [Open the illustrated website and app walkthrough](https://coachbilliott.github.io/Player-Development-Site/partner-guide.html), or [download the PDF](https://coachbilliott.github.io/Player-Development-Site/partner-guide.pdf). The public guide uses fictional screenshots and walks through login, staff tools, uploads, approval, assignment, customer practice and optional video review. See [PARTNER-GUIDE.md](PARTNER-GUIDE.md) for updates and scope.
 
 ## Latest connected training workflow
