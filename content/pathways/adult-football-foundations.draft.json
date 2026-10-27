@@ -1,0 +1,80 @@
+{
+  "id": "adult-football-foundations",
+  "title": "Football foundations: build a practice routine",
+  "sport": "football",
+  "audience": {
+    "ageGroup": "18+",
+    "positions": ["All positions"],
+    "experience": "New to the game"
+  },
+  "publicationState": "draft",
+  "qualifiedReview": {
+    "status": "required",
+    "reviewer": null,
+    "reviewedAt": null,
+    "mediaRightsConfirmed": false
+  },
+  "schedule": {
+    "enabled": false,
+    "releaseDay": "Sunday",
+    "timeZone": null,
+    "localTime": null
+  },
+  "notice": "Illustrative adult-only draft for qualified coaching review. Not an approved program or a claim of firsthand testing. No automatic import, assignment or publication.",
+  "sessions": [
+    {
+      "id": "session-1",
+      "title": "Ready position and controlled steps",
+      "goal": "Footwork",
+      "purpose": "Introduce a clear setup, short practice sequence and one coaching cue at a time.",
+      "durationMinutes": 10,
+      "equipment": ["Two flat markers", "Clear non-slip space"],
+      "lesson": "Use a comfortable balanced starting position and controlled walking-pace movements. This draft includes no contact or maximal-speed activity.",
+      "practiceSteps": [
+        "Check the space and walk comfortably before starting.",
+        "Place two markers a few walking steps apart.",
+        "Set a comfortable ready position, walk to the second marker, then reset.",
+        "Use a short set of controlled repetitions with a rest between sets; the reviewing coach must set the final count and timing."
+      ],
+      "coachingCue": "Stay balanced and keep each step controlled.",
+      "nextDrill": "Reset and repeat only after reviewing the cue.",
+      "media": {
+        "status": "original_or_licensed_demonstration_required",
+        "file": null
+      },
+      "reviewChecklist": [
+        "Confirm adult suitability and accommodations",
+        "Approve final sets/rest/duration",
+        "Review instructions and safe space",
+        "Supply and verify demonstration rights"
+      ]
+    },
+    {
+      "id": "session-2",
+      "title": "Ball familiarity and attention",
+      "goal": "Game understanding",
+      "purpose": "Build on the practice routine using a football or a soft substitute at a controlled pace.",
+      "durationMinutes": 10,
+      "equipment": ["Football or soft substitute", "Clear non-slip space"],
+      "lesson": "Practice handling an object while maintaining comfortable balance and awareness. This draft includes no contact, tackling or competitive catching.",
+      "practiceSteps": [
+        "Check the practice space and review the first session's cue.",
+        "While standing comfortably, hold and reposition the ball slowly.",
+        "Add a few controlled walking steps only if the reviewing coach approves the progression.",
+        "Pause, reset and describe what felt clear or confusing; the coach must approve final repetitions and rest."
+      ],
+      "coachingCue": "Control the ball, then look up and reset.",
+      "nextDrill": "Return to the simpler standing version when the sequence becomes unclear.",
+      "media": {
+        "status": "original_or_licensed_demonstration_required",
+        "file": null
+      },
+      "reviewChecklist": [
+        "Approve the football technique and progression",
+        "Confirm suitable substitute and space",
+        "Set final timing/rest",
+        "Supply and verify demonstration rights"
+      ]
+    }
+  ]
+}

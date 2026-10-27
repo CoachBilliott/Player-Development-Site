@@ -1155,7 +1155,13 @@ test("Parent and adult Athlete workspaces use private profiles; inactive members
   );
   await page.goto("./#member-library");
   await expect(
-    page.getByRole("heading", { name: "Memberships are not active yet." }),
+    page.getByRole("heading", { name: "Continue in your private workspace." }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Open My family", exact: true }),
+  ).toHaveAttribute("href", "#workspace");
+  await expect(
+    page.getByText("Packages and payments are not active.", { exact: false }),
   ).toBeVisible();
   await page.goto("./#account");
   await page.getByRole("button", { name: "Sign out of this browser" }).click();

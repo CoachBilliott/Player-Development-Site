@@ -57,6 +57,7 @@ export async function fixture(
   failFirstUpload = false,
   drillCount = 1,
   tracking = false,
+  actorId = userId,
 ) {
   const paused = practiceResumeFixture();
   const rows: Review[] = [];
@@ -131,7 +132,7 @@ export async function fixture(
         },
   );
   const user = {
-    id: userId,
+    id: actorId,
     aud: "authenticated",
     role: "authenticated",
     email: "fictional-athlete@example.test",
@@ -143,7 +144,7 @@ export async function fixture(
   const encode = (v: unknown) =>
     Buffer.from(JSON.stringify(v)).toString("base64url");
   const session = {
-    access_token: `${encode({ alg: "HS256", typ: "JWT" })}.${encode({ sub: userId, role: "authenticated", aud: "authenticated", exp: Math.floor(Date.now() / 1000) + 3600 })}.fictional-signature`,
+    access_token: `${encode({ alg: "HS256", typ: "JWT" })}.${encode({ sub: actorId, role: "authenticated", aud: "authenticated", exp: Math.floor(Date.now() / 1000) + 3600 })}.fictional-signature`,
     refresh_token: "fictional-refresh",
     expires_at: Math.floor(Date.now() / 1000) + 3600,
     expires_in: 3600,
@@ -184,8 +185,8 @@ export async function fixture(
     if (p.endsWith("/account_roles")) return json([{ role, version: 1 }]);
     if (p.endsWith("/member_accounts"))
       return json({
-        user_id: userId,
-        account_type: "adult",
+        user_id: actorId,
+        account_type: role === "parent" ? "parent" : "adult",
         privacy_version: "pilot",
       });
     if (p.endsWith("/profile_settings"))
@@ -218,8 +219,8 @@ export async function fixture(
     if (p.endsWith("/rpc/family_profile_state"))
       return json({
         guardian_managed: false,
-        is_family: false,
-        is_parent: false,
+        is_family: role === "parent",
+        is_parent: role === "parent",
         can_record: true,
         self_recording_allowed: false,
         permission_version: 0,
@@ -296,17 +297,29 @@ export async function fixture(
     }
     if (p.endsWith("/rpc/report_athlete_workout")) {
       counts.reports++;
+      const existing = workouts.find(
+        (workout) => workout.id === body.workout_id,
+      );
+      if (existing) return json(existing);
+      const requested = (body.requested_drills as string[]).map((key) =>
+        resources.find((resource) => resource.id === key),
+      );
+      if (!requested.length || requested.some((resource) => !resource))
+        return json({ message: "Assigned drills required" }, 400);
       const w = {
         id: body.workout_id,
         profile_id: playerId,
         reported_by: userId,
-        drill_ids: [drillId],
-        titles: [content.title],
-        minutes: 3,
-        status: "self_reported",
+        drill_ids: requested.map((resource) => resource!.id),
+        titles: requested.map((resource) => resource!.content.title),
+        minutes: requested.reduce(
+          (sum, resource) => sum + resource!.content.minutes,
+          0,
+        ),
+        status: role === "parent" ? "approved" : "self_reported",
         created_at: new Date().toISOString(),
-        reviewed_by: null,
-        reviewed_at: null,
+        reviewed_by: role === "parent" ? actorId : null,
+        reviewed_at: role === "parent" ? new Date().toISOString() : null,
         version: 1,
       };
       workouts.push(w);
@@ -421,6 +434,7 @@ export async function fixture(
     return json({ message: `Unexpected fixture path: ${p}` }, 500);
   });
   return {
+    workouts,
     rows,
     counts,
     services,
