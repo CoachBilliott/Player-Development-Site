@@ -1,4 +1,18 @@
-# Grouped drill reviews — review draft
+# Grouped drill reviews — unpublished implementation and review draft
+
+## Current implementation checkpoint
+
+Migration draft 014 and the customer/assigned-coach screens now implement atomic
+clip reservation, interrupted-upload retry, one final submission/deadline, one
+feedback response and explicit deletion. New-group creation defaults OFF. No
+production migration or capability activation has occurred. The earlier design
+below records the intended contract; its implementation-status paragraphs are
+superseded by this checkpoint. Local validation: 269 unit tests, 32 affected browser
+cases, lint, types and build passed. Full hosted/native acceptance is outstanding.
+
+The owners are currently finalizing packages. Earlier review prices/inclusions
+below are planning context and can be superseded by their final decisions. They
+are not activated financial or entitlement rules.
 
 ## Recorded service terms
 

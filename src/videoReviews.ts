@@ -1,5 +1,6 @@
 import { trackUpload, type UploadProgress } from "./uploadProgress";
 import { serviceSchema } from "./reviewServices";
+import { groupSchema } from "./reviewGroups";
 import { z } from "zod";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { PrivatePlayer } from "./accounts";
@@ -19,9 +20,13 @@ export const reviewSchema = z.object({
   feedback: z.string(),
   created_at: z.string(),
   version: z.number().int().positive(),
+  review_request_id: z.string().uuid().nullable().optional(),
+  clip_ordinal: z.number().int().nullable().optional(),
 });
 export type VideoReview = z.infer<typeof reviewSchema>;
 export const videoStateSchema = z.object({
+  grouped_reviews_ready: z.boolean().default(false),
+  groups: z.array(z.lazy(() => groupSchema)).default([]),
   service_tracking: z.boolean().default(false),
   services: z.array(serviceSchema).default([]),
   can_submit: z.boolean(),
@@ -116,6 +121,24 @@ export class VideoReviews {
           : "Review access could not be confirmed. Your video has not been sent.",
       );
     const draft = reviewSchema.parse(data);
+    return this.sendReserved(draft, file, seconds, progress);
+  }
+  async sendReserved(
+    draft: VideoReview,
+    file: File,
+    seconds: number,
+    progress?: (value: UploadProgress) => void,
+  ) {
+    const problem = videoFileError(file);
+    if (problem) throw new Error(problem);
+    if (
+      file.size !== draft.byte_size ||
+      file.type !== draft.media_type ||
+      Math.abs(seconds - draft.duration_seconds) > 0.05
+    )
+      throw new Error(
+        "Choose the same clip reserved for this position, or delete the unfinished review and start again.",
+      );
     if (draft.status !== "uploading") return draft;
     // Stable IDs make a lost upload/finalize response safe to retry. Never overwrite a clip.
     const uploaded = await trackUpload(
@@ -131,7 +154,7 @@ export class VideoReviews {
           }),
     );
     const finished = await this.client.rpc("finish_athlete_video", {
-      review_id: id,
+      review_id: draft.id,
     });
     if (finished.error)
       throw new Error(

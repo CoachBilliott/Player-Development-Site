@@ -199,6 +199,17 @@ export function ServiceDesk({
               </span>
             </div>
             <h2>{row.drill_title}</h2>
+            {row.is_grouped && !row.group_erased && (
+              <p>
+                One grouped review · {row.uploaded_clips || 0} of{" "}
+                {row.clip_count} clips uploaded
+              </p>
+            )}
+            {row.group_erased && (
+              <p>
+                Media and feedback removed; service timing history retained.
+              </p>
+            )}
             <p>
               Request {row.id.slice(0, 8)} · Account{" "}
               {row.account_id.slice(0, 8)}

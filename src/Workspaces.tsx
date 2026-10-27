@@ -379,8 +379,8 @@ export function LaunchReadiness({ shared }: { shared?: SharedState }) {
         {[
           [
             "Packages",
-            "Terms recorded · billing inactive",
-            "The recorded terms are $15 for one review and $45 monthly, including four reviews per child and up to three minutes total per review. Confirm whether $45 covers one child or a household, billing-cycle/unused-review rules and cancellation/refund terms before checkout is enabled. Current customer uploads still have a 60-second limit and need alignment with the three-minute review allowance.",
+            "Packages being finalized · billing inactive",
+            "Earlier review planning terms were $15 for one review and $45 monthly, with four reviews per child and up to three minutes total per review. The owners are finalizing packages; later choices can replace these terms. Family coverage, credit-cycle and cancellation/refund rules are not active settings. Grouped reviews need the reviewed migration and supported app release before activation.",
           ],
           [
             "Recurring billing",

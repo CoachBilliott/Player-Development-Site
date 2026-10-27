@@ -1,4 +1,5 @@
 import { ServiceDesk } from "./ServiceDesk";
+import { GroupedReviewPanel, GroupedCoachReviews } from "./GroupedReviews";
 import { ReviewServices, SERVICE_LABELS, reviewDate } from "./reviewServices";
 import { VideoPreparation } from "./VideoPreparation";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -17,7 +18,7 @@ import {
 import type { SharedState } from "./useSharedContent";
 import { isStaff } from "./roles";
 
-function ClipPlayer({
+export function ClipPlayer({
   review,
   service,
 }: {
@@ -238,12 +239,15 @@ export function AthleteVideoReview({
             <li>3. Send for feedback</li>
           </ol>
           <p>
-            One video, one focused review. Feedback within 48 hours after
-            submission and any required parent approval. This private pilot does
-            not collect payment or change your membership.
+            {state.grouped_reviews_ready
+              ? "One complete clip set, one focused review."
+              : "One video, one focused review."}{" "}
+            Feedback within 48 hours after submission and any required parent
+            approval. This private pilot does not collect payment or change your
+            membership.
           </p>
           {state.services
-            .filter((r) => r.state === "requested")
+            .filter((r) => r.state === "requested" && !r.is_grouped)
             .map((row) => (
               <div className="review-service-status" key={row.id}>
                 <strong>{SERVICE_LABELS[row.state]}</strong>
@@ -293,7 +297,24 @@ export function AthleteVideoReview({
       )}
       {state && (
         <>
-          {state.can_submit ? (
+          {(state.grouped_reviews_ready || state.groups.length > 0) && (
+            <GroupedReviewPanel
+              client={client}
+              player={player}
+              drills={drills}
+              groups={state.groups}
+              canCreate={state.grouped_reviews_ready}
+              remaining={state.remaining_slots}
+              actor={user}
+              pendingRequest={
+                state.services.find(
+                  (s) => s.state === "requested" && !s.is_grouped,
+                )?.id
+              }
+              onChange={refresh}
+            />
+          )}
+          {state.can_submit && !state.grouped_reviews_ready ? (
             <button
               className="button secondary"
               disabled={!drills.length || state.remaining_slots === 0}
@@ -305,21 +326,24 @@ export function AthleteVideoReview({
             >
               <Camera size={19} /> Send a drill video
             </button>
-          ) : (
+          ) : !state.can_submit ? (
             <p>
               {state.adult_only
                 ? "Junior video uploads are not open yet. Verified guardian consent and media retention setup must be completed first."
                 : "Video review is an optional package feature. An Owner can enable pilot access and assign your review coach. No payment is collected here."}
             </p>
-          )}
+          ) : null}
           {state.can_submit && (
             <p className="member-fineprint">
               Storage: {state.remaining_slots} of 5 stored-clip spaces available
               across this account’s athletes. This is storage capacity, not a
-              monthly review balance. The current pilot accepts one clip per
-              review, up to 60 seconds. Clips remain stored until you delete
-              them; no automatic retention schedule is active. Deleting a clip
-              also removes its attached feedback.
+              monthly review balance.{" "}
+              {state.grouped_reviews_ready
+                ? "Grouped reviews accept up to three 60-second clips, at most three minutes total. Four fully retained three-clip reviews will not fit the current five-space account cap."
+                : "The current pilot accepts one clip per review, up to 60 seconds."}{" "}
+              Clips remain stored until you delete them; no automatic retention
+              schedule is active. Deleting a clip also removes its attached
+              feedback.
             </p>
           )}
           {state.can_submit && !drills.length && (
@@ -329,76 +353,79 @@ export function AthleteVideoReview({
             </p>
           )}
           <div className="review-history">
-            {state.reviews.map((review) => (
-              <article key={review.id} className="review-card">
-                <Tag>{REVIEW_STATUS[review.status]}</Tag>
-                <h4>{review.drill_title}</h4>
-                <p>
-                  {new Date(review.created_at).toLocaleDateString()} ·{" "}
-                  {Math.round(review.duration_seconds)} sec
-                </p>
-                {state.service_tracking &&
-                  state.services.find((r) => r.video_id === review.id)
-                    ?.due_at && (
-                    <p className="member-fineprint">
-                      Feedback target:{" "}
-                      {reviewDate(
-                        state.services.find((r) => r.video_id === review.id)!
-                          .due_at!,
-                      )}{" "}
-                      ·{" "}
-                      {
-                        SERVICE_LABELS[
+            {state.reviews
+              .filter((review) => !review.review_request_id)
+              .map((review) => (
+                <article key={review.id} className="review-card">
+                  <Tag>{REVIEW_STATUS[review.status]}</Tag>
+                  <h4>{review.drill_title}</h4>
+                  <p>
+                    {new Date(review.created_at).toLocaleDateString()} ·{" "}
+                    {Math.round(review.duration_seconds)} sec
+                  </p>
+                  {state.service_tracking &&
+                    state.services.find((r) => r.video_id === review.id)
+                      ?.due_at && (
+                      <p className="member-fineprint">
+                        Feedback target:{" "}
+                        {reviewDate(
                           state.services.find((r) => r.video_id === review.id)!
-                            .state
-                        ]
-                      }
-                    </p>
-                  )}
-                {review.feedback && (
-                  <div className="coach-feedback">
-                    <strong>Coach feedback</strong>
-                    <p>{review.feedback}</p>
-                  </div>
-                )}
-                <div className="actions">
-                  <button
-                    className="text-button"
-                    onClick={() => setPlaying(review)}
-                  >
-                    <Play size={16} /> View video
-                  </button>
-                  {review.status === "pending_parent" &&
-                    review.account_id === user && (
-                      <button
-                        className="button secondary"
-                        disabled={busy || preparing}
-                        onClick={() =>
-                          void act(async () => {
-                            await service.approve(review);
-                            await refresh();
-                            setMessage(
-                              "Video approved and sent to your assigned coach.",
-                            );
-                          })
+                            .due_at!,
+                        )}{" "}
+                        ·{" "}
+                        {
+                          SERVICE_LABELS[
+                            state.services.find(
+                              (r) => r.video_id === review.id,
+                            )!.state
+                          ]
                         }
-                      >
-                        Approve & send to coach
-                      </button>
+                      </p>
                     )}
-                  {(review.account_id === user ||
-                    review.submitted_by === user) && (
+                  {review.feedback && (
+                    <div className="coach-feedback">
+                      <strong>Coach feedback</strong>
+                      <p>{review.feedback}</p>
+                    </div>
+                  )}
+                  <div className="actions">
                     <button
                       className="text-button"
-                      disabled={busy || preparing}
-                      onClick={() => setRemoving(review)}
+                      onClick={() => setPlaying(review)}
                     >
-                      Delete video
+                      <Play size={16} /> View video
                     </button>
-                  )}
-                </div>
-              </article>
-            ))}
+                    {review.status === "pending_parent" &&
+                      review.account_id === user && (
+                        <button
+                          className="button secondary"
+                          disabled={busy || preparing}
+                          onClick={() =>
+                            void act(async () => {
+                              await service.approve(review);
+                              await refresh();
+                              setMessage(
+                                "Video approved and sent to your assigned coach.",
+                              );
+                            })
+                          }
+                        >
+                          Approve & send to coach
+                        </button>
+                      )}
+                    {(review.account_id === user ||
+                      review.submitted_by === user) && (
+                      <button
+                        className="text-button"
+                        disabled={busy || preparing}
+                        onClick={() => setRemoving(review)}
+                      >
+                        Delete video
+                      </button>
+                    )}
+                  </div>
+                </article>
+              ))}
           </div>
         </>
       )}
@@ -709,7 +736,7 @@ function CoachQueue({
       <button
         className="button secondary"
         disabled={busy}
-        onClick={() => void act(async () => setRows(await service.queue()))}
+        onClick={() => setQueueVersion((v) => v + 1)}
       >
         <RefreshCw size={17} /> Refresh reviews
       </button>
@@ -728,33 +755,52 @@ function CoachQueue({
           </p>
         </section>
       )}
-      {rows.map((row) => (
-        <article className="panel review-card" key={row.id}>
-          <Tag>{REVIEW_STATUS[row.status]}</Tag>
-          <h2>{row.drill_title}</h2>
-          <p>
-            {new Date(row.created_at).toLocaleDateString()} ·{" "}
-            {Math.round(row.duration_seconds)} sec · Submission{" "}
-            {row.id.slice(0, 8)}
-          </p>
-          <button
-            className="button secondary"
-            disabled={busy}
-            onClick={() =>
-              void act(async () => {
-                if (tracking && row.status === "queued")
-                  await service.start(row);
-                setCurrent(row);
-                setFeedback(row.feedback);
-                setError("");
-                setQueueVersion((v) => v + 1);
-              })
-            }
-          >
-            <Play size={17} /> Open review
-          </button>
-        </article>
-      ))}
+      {rows.some((r) => r.review_request_id) && (
+        <GroupedCoachReviews
+          client={client}
+          refreshKey={queueVersion}
+          ids={[
+            ...new Set(
+              rows
+                .map((r) => r.review_request_id)
+                .filter((id): id is string => !!id),
+            ),
+          ]}
+          onChange={() => {
+            setQueueVersion((v) => v + 1);
+            void act(async () => setRows(await service.queue()));
+          }}
+        />
+      )}
+      {rows
+        .filter((row) => !row.review_request_id)
+        .map((row) => (
+          <article className="panel review-card" key={row.id}>
+            <Tag>{REVIEW_STATUS[row.status]}</Tag>
+            <h2>{row.drill_title}</h2>
+            <p>
+              {new Date(row.created_at).toLocaleDateString()} ·{" "}
+              {Math.round(row.duration_seconds)} sec · Submission{" "}
+              {row.id.slice(0, 8)}
+            </p>
+            <button
+              className="button secondary"
+              disabled={busy}
+              onClick={() =>
+                void act(async () => {
+                  if (tracking && row.status === "queued")
+                    await service.start(row);
+                  setCurrent(row);
+                  setFeedback(row.feedback);
+                  setError("");
+                  setQueueVersion((v) => v + 1);
+                })
+              }
+            >
+              <Play size={17} /> Open review
+            </button>
+          </article>
+        ))}
       {current && (
         <Modal
           title={current.drill_title}
