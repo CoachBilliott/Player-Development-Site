@@ -59,7 +59,7 @@ test("contact email topics prepare a message without claiming to send or storing
   expect(email.protocol).toBe("mailto:");
   expect(email.pathname).toBe("Repformed@gmail.com");
   expect(email.searchParams.get("subject")).toBe(
-    "Player Development — Privacy and account deletion",
+    "Repformed — Privacy and account deletion",
   );
   await topic.selectOption("Video review questions");
   expect(
@@ -140,8 +140,5 @@ test("app help links to the public Contact page without a separate sign-in", asy
   await page.goto("./?source=app#app-help");
   await expect(
     page.getByRole("link", { name: "Contact the team", exact: true }),
-  ).toHaveAttribute(
-    "href",
-    "https://coachbilliott.github.io/Player-Development-Site/#contact",
-  );
+  ).toHaveAttribute("href", "https://repformed.com/#contact");
 });

@@ -6,7 +6,7 @@ it("addresses the approved inbox and encodes the selected question topic as one 
   expect(link.protocol).toBe("mailto:");
   expect(link.pathname).toBe(CONTACT_EMAIL);
   expect(link.searchParams.get("subject")).toBe(
-    "Player Development — Account and login help",
+    "Repformed — Account and login help",
   );
   expect([...link.searchParams.keys()]).toEqual(["subject"]);
 });
@@ -21,7 +21,7 @@ it("does not allow unknown topics to inject additional email headers or recipien
     const link = new URL(contactEmailLink(value));
     expect(link.pathname).toBe(CONTACT_EMAIL);
     expect(link.searchParams.get("subject")).toBe(
-      "Player Development — General training questions",
+      "Repformed — General training questions",
     );
     expect([...link.searchParams.keys()]).toEqual(["subject"]);
   }

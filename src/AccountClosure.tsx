@@ -180,7 +180,7 @@ export function AccountClosure({ shared }: { shared: SharedState }) {
                 accounts stay intact.
               </p>
               <Notice>
-                Re-enter your current Player Development password, then type
+                Re-enter your current Repformed password, then type
                 DELETE. Selecting the final button starts irreversible cleanup.
               </Notice>
             </>
@@ -224,7 +224,7 @@ export function AccountClosure({ shared }: { shared: SharedState }) {
                 setMessage(`Account deleted. Reference: ${result.requestId}.`);
                 await shared.signOut();
                 shared.setAccountNotice(
-                  `Your Player Development login and customer account were deleted. Reference: ${result.requestId}.`,
+                  `Your Repformed login and customer account were deleted. Reference: ${result.requestId}.`,
                 );
                 window.location.hash = "account";
               });

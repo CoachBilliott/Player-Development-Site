@@ -91,7 +91,7 @@ function HelpDialog({
                     .then(onClose)
                     .catch(() =>
                       setError(
-                        "The website could not open. Open Player Development in Safari for this step.",
+                        "The website could not open. Open Repformed in Safari for this step.",
                       ),
                     );
                 }}

@@ -15,7 +15,7 @@ const admin = createClient(
     auth: { persistSession: false, autoRefreshToken: false },
   },
 );
-const redirectTo = "https://coachbilliott.github.io/Player-Development-Site/";
+const redirectTo = "https://repformed.com/";
 async function rpc<T>(name: string, args: Record<string, unknown>): Promise<T> {
   const { data, error } = await admin.rpc(name, args);
   if (error) throw new Error(error.message);

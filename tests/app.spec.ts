@@ -25,6 +25,8 @@ test("installed-app shell reopens offline and saves completed sample practice", 
   ).json();
   expect(manifest.scope).toBe("./");
   expect(manifest.display).toBe("standalone");
+  expect(manifest.name).toBe("Repformed");
+  expect(manifest.theme_color).toBe("#181818");
   expect(manifest.icons.map((icon: { sizes: string }) => icon.sizes)).toContain(
     "512x512",
   );
@@ -41,6 +43,9 @@ test("installed-app shell reopens offline and saves completed sample practice", 
     ).flat();
   });
   expect(cached.some((url) => url.endsWith("/index.html"))).toBe(true);
+  expect(cached.some((url) => url.endsWith("/brand/repformed-mark.svg"))).toBe(
+    true,
+  );
   expect(cached.some((url) => url.endsWith("/media/training-poster.jpg"))).toBe(
     true,
   );
@@ -66,6 +71,13 @@ test("installed-app shell reopens offline and saves completed sample practice", 
   ).toBe(false);
   await context.setOffline(true);
   await page.goto("./#onboarding");
+  expect(
+    await page
+      .locator(".header .brand-mark")
+      .evaluate(
+        (image: HTMLImageElement) => image.complete && image.naturalWidth > 0,
+      ),
+  ).toBe(true);
   await expect(page.getByText(/You’re offline/)).toBeVisible();
   await page.getByRole("button", { name: /Morgan/ }).click();
   await page.getByRole("button", { name: "See my training" }).click();

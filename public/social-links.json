@@ -1,3 +1,9 @@
 {
-  "links": []
+  "links": [
+    { "platform": "Instagram", "url": "https://www.instagram.com/repformed/" },
+    { "platform": "TikTok", "url": "https://www.tiktok.com/@repformed" },
+    { "platform": "Facebook", "url": "https://www.facebook.com/Repformed/" },
+    { "platform": "X", "url": "https://x.com/Repformed" },
+    { "platform": "YouTube", "url": "https://www.youtube.com/@repformed" }
+  ]
 }

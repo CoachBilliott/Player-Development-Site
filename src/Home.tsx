@@ -41,12 +41,10 @@ export function Home() {
               See how it works <ArrowDown size={17} />
             </button>
           </div>
-          <p className="hero-demo-note">
-            Free sample-data demo. No account needed.
-          </p>
+          <p className="hero-demo-note">Free demo. No account needed.</p>
         </div>
         <div className="hero-edition" aria-hidden="true">
-          <span>PLAYER DEVELOPMENT</span>
+          <span>REPFORMED</span>
           <span>THE WORK STARTS HERE / 01</span>
         </div>
       </section>
@@ -64,7 +62,10 @@ export function Home() {
       </div>
 
       <Reveal className="athlete-paths-section">
-        <section className="page athlete-paths" aria-labelledby="platform-title">
+        <section
+          className="page athlete-paths"
+          aria-labelledby="platform-title"
+        >
           <div className="section-heading">
             <div>
               <span className="eyebrow">PERSONALIZED FOOTBALL TRAINING</span>
@@ -75,8 +76,8 @@ export function Home() {
               </h2>
             </div>
             <p>
-              Training starts with the player. A clear plan, guided practice
-              and a record of the work keep the next step in focus.
+              Training starts with the player. A clear plan, guided practice and
+              a record of the work keep the next step in focus.
             </p>
           </div>
           <div className="path-grid">
@@ -120,8 +121,7 @@ export function Home() {
               <div className="path-copy">
                 <h3>
                   A plan.
-                  <br />
-                  A purpose.
+                  <br />A purpose.
                 </h3>
                 <p>
                   Follow guided workouts with short lessons, clear practice
@@ -134,10 +134,6 @@ export function Home() {
             </article>
           </div>
           <div className="path-bottom">
-            <p>
-              Licensed stock imagery, not members or coaching lessons. Demo
-              profiles are fictional.
-            </p>
             <a className="button" href="#demo">
               Explore the training demo <ArrowRight size={18} />
             </a>
@@ -255,12 +251,6 @@ export function Home() {
               </div>
             </article>
           </div>
-          <p className="program-media-note">
-            Licensed stock field image · No venue affiliation.{" "}
-            <a href={`${media}credits.txt`} target="_blank" rel="noreferrer">
-              Media credits
-            </a>
-          </p>
         </section>
       </Reveal>
 
@@ -287,10 +277,8 @@ export function Home() {
           </div>
         </section>
         <div className="page home-disclaimer">
-          Invite-only pilot. Public signup and real junior enrollment are not
-          open. Sample activities are illustrative, noncontact and pending
-          qualified review. Practice records show participation, not proven
-          improvement. Scholarship and recruiting outcomes are never guaranteed.
+          Public signup and junior enrollment are not open yet. Explore the demo
+          with fictional profiles.
         </div>
       </Reveal>
     </main>

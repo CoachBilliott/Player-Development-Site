@@ -93,6 +93,27 @@ describe("trusted account lifecycle handler", () => {
     ).toBe(403);
     expect(backend.verifyUser).not.toHaveBeenCalled();
   });
+  it.each(["https://repformed.com", "https://repformed.pages.dev"])(
+    "accepts the production origin %s without bypassing session verification",
+    async (origin) => {
+      const { backend, handle } = setup();
+      const preflight = await handle(
+        new Request("https://project.supabase.co", {
+          method: "OPTIONS",
+          headers: { Origin: origin },
+        }),
+      );
+      expect(preflight.status).toBe(204);
+      expect(preflight.headers.get("Access-Control-Allow-Origin")).toBe(origin);
+      const unsigned = await handle(req(invitation, "", origin));
+      expect(unsigned.status).toBe(401);
+      expect(backend.verifyUser).not.toHaveBeenCalled();
+      const signed = await handle(req(invitation, "Bearer verified", origin));
+      expect(signed.status).toBe(200);
+      expect(signed.headers.get("Access-Control-Allow-Origin")).toBe(origin);
+      expect(backend.verifyUser).toHaveBeenCalledWith("verified");
+    },
+  );
   it("supports native preflight without running any account operation", async () => {
     const { backend, handle } = setup();
     const response = await handle(

@@ -30,7 +30,7 @@ export function Contact() {
   return (
     <main className="page contact-page">
       <div className="contact-intro">
-        <Tag>CONTACT PLAYER DEVELOPMENT</Tag>
+        <Tag>CONTACT REPFORMED</Tag>
         <h1 tabIndex={-1}>
           Let’s talk
           <br />

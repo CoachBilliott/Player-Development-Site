@@ -1,4 +1,8 @@
-# Player Development — private pilot and website demo
+# Repformed — football training platform
+
+Production is the existing Cloudflare Pages project **repformed**, at **https://repformed.com/**. Deployment is manual and only happens when the Owner requests it; source pushes do not deploy production. The saved Repformed cloud environment includes the scoped Cloudflare credential and pinned Wrangler tool. Verify its account/project and the tested source revision, then use `wrangler pages deploy dist --project-name=repformed --branch=main` through that environment. Verify the returned deployment and actual production content before calling a release live. `npm run deploy:pages` remains the GitHub Pages fallback only.
+
+The integrated Repformed identity retains Contact, approved-answer Quick Help and the single fictional customer demo. Five verified social profiles share `public/social-links.json` across the site, app help, online guides and illustrated PDF. Native name/icon/splash assets are prepared in source; installed iPhone apps still require a separately tested TestFlight update. [Release review and validation](docs/brand-review/RELEASE.md).
 
 A standalone, responsive player-development platform with a sport-neutral brand and American football as its only current training program. Future sports have not been chosen or announced. This project is independent of Coach Workroom and Spawnative; it uses neither their code, brands, accounts, nor hosting.
 

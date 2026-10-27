@@ -77,12 +77,6 @@ export function AthleteScene() {
         )}
         <div className="training-film-shade" aria-hidden="true" />
       </div>
-      <figcaption className="training-film-credit">
-        Licensed stock footage · Not a coaching lesson.{" "}
-        <a href={`${media}credits.txt`} target="_blank" rel="noreferrer">
-          Footage credits
-        </a>
-      </figcaption>
     </figure>
   );
 }

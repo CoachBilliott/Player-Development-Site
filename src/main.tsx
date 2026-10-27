@@ -9,6 +9,7 @@ import "./styles.css";
 import "./theme.css";
 import "./editorial.css";
 import "./mobile.css";
+import "./repformed.css";
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <App />

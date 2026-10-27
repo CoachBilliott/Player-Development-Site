@@ -2,12 +2,12 @@ import type { CapacitorConfig } from "@capacitor/cli";
 
 const config: CapacitorConfig = {
   appId: "com.coachbilliott.playerdevelopment",
-  appName: "Player Development",
+  appName: "Repformed",
   webDir: "dist",
-  backgroundColor: "#101010",
+  backgroundColor: "#181818",
   ios: {
     contentInset: "never",
-    backgroundColor: "#101010",
+    backgroundColor: "#181818",
     preferredContentMode: "mobile",
   },
   plugins: {

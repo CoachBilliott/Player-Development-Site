@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import process from "node:process";
 import { fileURLToPath, URL } from "node:url";
+import { assertDeploymentIdentity } from "./deployment-identity.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const git = (args, extraEnv = {}) =>
@@ -28,15 +29,7 @@ try {
     );
   }
   const dist = join(root, "dist");
-  if (
-    !readFileSync(join(dist, "index.html"), "utf8").includes(
-      "Player Development",
-    )
-  ) {
-    throw new Error(
-      "Build the Player Development static site before publishing.",
-    );
-  }
+  assertDeploymentIdentity(readFileSync(join(dist, "index.html"), "utf8"));
   writeFileSync(join(dist, ".nojekyll"), "");
   // Use an isolated index; never switch branches or change the source checkout.
   const indexEnv = { GIT_INDEX_FILE: join(releaseDir, "index") };
