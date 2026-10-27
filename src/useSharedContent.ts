@@ -12,6 +12,9 @@ import { clearStaffDrafts } from "./staffDrafts";
 
 export function useSharedContent() {
   const [serviceTrackingEnabled, setServiceTrackingEnabled] = useState(false);
+  const [staffRosterEnabled, setStaffRosterEnabled] = useState(false);
+  const [deliveryMonitoringEnabled, setDeliveryMonitoringEnabled] =
+    useState(false);
   const [accountLifecycleEnabled, setAccountLifecycleEnabled] = useState(false);
   const [accountNotice, setAccountNotice] = useState("");
   const [service, setService] = useState<SharedContent | null>(null);
@@ -52,19 +55,34 @@ export function useSharedContent() {
         setService(connection);
         setAccountLifecycleEnabled(raw.accountLifecycleEnabled === true);
         setServiceTrackingEnabled(raw.serviceTrackingEnabled === true);
+        setStaffRosterEnabled(raw.staffRosterEnabled === true);
+        setDeliveryMonitoringEnabled(raw.deliveryMonitoringEnabled === true);
         setMembersEnabled(raw.membersEnabled === true);
         setSignupEnabled(raw.membersSignupEnabled !== false);
         let previousUser = "";
         const subscription = connection.client.auth.onAuthStateChange(
           (_event, current) => {
             if (current) setAccountNotice("");
-            if (!current || (previousUser && previousUser !== current.user.id))
+            if (
+              !current ||
+              (previousUser && previousUser !== current.user.id)
+            ) {
+              try {
+                for (let i = sessionStorage.length - 1; i >= 0; i--) {
+                  const key = sessionStorage.key(i);
+                  if (key?.startsWith("repformed.training-selection."))
+                    sessionStorage.removeItem(key);
+                }
+              } catch {
+                /* No private profile records are cached; this is a tab-only selection ID. */
+              }
               void clearStaffDrafts().catch(() => {
                 if (!stopped)
                   setMessage(
                     "Signed-out device drafts could not be cleared. Clear this app's site data on a shared device.",
                   );
               });
+            }
             previousUser = current?.user.id || "";
             if (!stopped) setSession(current);
           },
@@ -193,6 +211,8 @@ export function useSharedContent() {
     service,
     accountLifecycleEnabled,
     serviceTrackingEnabled,
+    staffRosterEnabled,
+    deliveryMonitoringEnabled,
     accountNotice,
     setAccountNotice,
     session,

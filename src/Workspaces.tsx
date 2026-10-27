@@ -14,6 +14,8 @@ import type { SharedState } from "./useSharedContent";
 import { MemberAccountPage } from "./MemberAccount";
 import { TrainingAccess } from "./TrainingAccess";
 import { AccountAccess } from "./AccountAccess";
+import { ReleaseSchedulePreview } from "./ReleaseSchedulePreview";
+import { StaffServiceDashboard } from "./StaffServiceDashboard";
 import type { Drill } from "./model";
 
 const descriptions = {
@@ -52,10 +54,12 @@ function StaffDashboard({
   role,
   resources,
   pending = false,
+  shared,
 }: {
   role: "owner" | "manager" | "coach";
   resources: Drill[];
   pending?: boolean;
+  shared: SharedState;
 }) {
   const root = "#coach";
   return (
@@ -81,6 +85,14 @@ function StaffDashboard({
           }
         </div>
       </div>
+      <StaffServiceDashboard
+        key={`${shared.session!.user.id}:${role}`}
+        client={shared.service!.client}
+        actor={shared.session!.user.id}
+        role={role}
+        enabled={shared.staffRosterEnabled}
+        monitoring={shared.deliveryMonitoringEnabled}
+      />
       <div className="workspace-metrics">
         <div>
           <strong>{pending ? "…" : resources.length}</strong>
@@ -129,8 +141,9 @@ function StaffDashboard({
             title="Staff & account access"
             icon="access"
           >
-            Assign the five account levels. Family data stays private, including
-            from staff.
+            Assign the five account levels. Owners see the athlete nickname and
+            training audience needed to choose a plan; family controls stay
+            private.
           </WorkspaceLink>
         ) : (
           <WorkspaceLink
@@ -228,6 +241,7 @@ export function Workspace({ shared }: { shared: SharedState }) {
         role={shared.role as "owner" | "manager" | "coach"}
         resources={shared.resources.filter((d) => shared.canEditResource(d.id))}
         pending={!shared.libraryReady}
+        shared={shared}
       />
     );
   return <MemberAccountPage shared={shared} workspace />;
@@ -264,12 +278,12 @@ export function WorkspaceLibrary({ shared }: { shared: SharedState }) {
       <div className="workspace-hero">
         <Tag>PRIVATE · {staff ? "STAFF CONTENT" : "MEMBER TRAINING"}</Tag>
         <h1 tabIndex={-1}>
-          {staff ? "Your content library." : "Your package. Your training."}
+          {staff ? "Your content library." : "Your assigned training."}
         </h1>
         <p>
           {staff
             ? "Review the resources your account can manage. Protected content is kept out of the public demo."
-            : "This space will contain the training included in your active package."}
+            : "Open your private workspace to follow the workouts approved for your account."}
         </p>
       </div>
       {staff ? (
@@ -326,20 +340,24 @@ export function WorkspaceLibrary({ shared }: { shared: SharedState }) {
       ) : (
         <section className="panel membership-lock">
           <LockKeyhole size={32} />
-          <h2>Memberships are not active yet.</h2>
+          <h2>Continue in your private workspace.</h2>
           <p>
-            No package has been activated and no payment is being taken.
-            Protected workouts stay unavailable until package access and billing
-            are connected.
+            Owner-approved training is available through your workspace when a
+            matching workout has been assigned. Choose the family athlete first
+            to see their eligible practice.
           </p>
-          <a className="button secondary" href="#demo">
-            Try the free sample demo <ArrowRight size={17} />
+          <a className="button" href="#workspace">
+            {shared.role === "parent" ? "Open My family" : "Open My training"}{" "}
+            <ArrowRight size={17} />
           </a>
           <p>
-            Your private pilot sample practice remains available under My
-            training or My family. Those illustrative activities are separate
-            from paid content.
+            Packages and payments are not active. Assigned access does not
+            charge you or start a subscription. If no workout appears, contact
+            the team about your training access.
           </p>
+          <a className="text-button" href="#contact">
+            Contact the team
+          </a>
         </section>
       )}
       {selected && staff && shared.canEditResource(selected.id) && (
@@ -373,8 +391,8 @@ export function LaunchReadiness({ shared }: { shared?: SharedState }) {
         {[
           [
             "Packages",
-            "Awaiting your decisions",
-            "Define included training and access for each package. There are no final prices or allowances.",
+            "Packages being finalized · billing inactive",
+            "Earlier review planning terms were $15 for one review and $45 monthly, with four reviews per child and up to three minutes total per review. The owners are finalizing packages; later choices can replace these terms. Family coverage, credit-cycle and cancellation/refund rules are not active settings. Grouped reviews need the reviewed migration and supported app release before activation.",
           ],
           [
             "Recurring billing",
@@ -391,6 +409,26 @@ export function LaunchReadiness({ shared }: { shared?: SharedState }) {
             "Qualified review required",
             "Review age suitability, coaching instructions, media rights and physical-device video playback.",
           ],
+          [
+            "Invitation and recovery email",
+            "Delivery acceptance required",
+            "Configure the dedicated sender securely, then verify invitation, expired-link recovery and password reset on both actual phones. A contact Gmail link does not configure automatic email.",
+          ],
+          [
+            "Phone acceptance",
+            "Actual devices required",
+            "Verify installation/update, sign-in, selected-athlete persistence, camera/library video, private playback, review return and interrupted uploads. Browser and simulator checks are separate evidence.",
+          ],
+          [
+            "Family workout scope",
+            "Per-athlete draft · migration pending",
+            "The review branch supports separate sibling plans with eligibility checked for each athlete. Migration 012 and the updated website/app need release review before this becomes available live. Existing defaults and parent controls are preserved.",
+          ],
+          [
+            "Sunday release schedule",
+            "Not activated",
+            "Choose the business time zone and Sunday release time. The schedule preview handles clock changes but does not approve, publish or assign training.",
+          ],
         ].map(([title, status, body]) => (
           <section className="panel workspace-section" key={title}>
             <ClipboardCheck size={24} />
@@ -400,6 +438,12 @@ export function LaunchReadiness({ shared }: { shared?: SharedState }) {
           </section>
         ))}
       </div>
+      {shared?.role === "owner" && shared.session?.user.id && (
+        <ReleaseSchedulePreview
+          key={shared.session.user.id}
+          userId={shared.session.user.id}
+        />
+      )}
       <a href="#workspace" className="button secondary">
         Back to overview
       </a>

@@ -29,6 +29,10 @@ export const serviceSchema = z.object({
   created_at: z.string(),
   updated_at: z.string(),
   version: z.number().int().positive(),
+  is_grouped: z.boolean().optional(),
+  group_erased: z.boolean().optional(),
+  clip_count: z.number().int().optional(),
+  uploaded_clips: z.number().int().optional(),
 });
 export type ReviewService = z.infer<typeof serviceSchema>;
 export const SERVICE_LABELS: Record<ReviewService["state"], string> = {

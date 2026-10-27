@@ -1155,7 +1155,20 @@ test("Parent and adult Athlete workspaces use private profiles; inactive members
   );
   await page.goto("./#member-library");
   await expect(
-    page.getByRole("heading", { name: "Memberships are not active yet." }),
+    page.getByRole("heading", { name: "Continue in your private workspace." }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Open My family", exact: true }),
+  ).toHaveAttribute("href", "#workspace");
+  await expect(
+    page.getByText("Packages and payments are not active.", { exact: false }),
+  ).toBeVisible();
+  await page.getByRole("link", { name: "Open My family", exact: true }).click();
+  await expect(
+    page.getByRole("heading", {
+      name: "Your family. Their next step.",
+      exact: true,
+    }),
   ).toBeVisible();
   await page.goto("./#account");
   await page.getByRole("button", { name: "Sign out of this browser" }).click();
@@ -1175,6 +1188,16 @@ test("Parent and adult Athlete workspaces use private profiles; inactive members
   ).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Start workout", exact: true }),
+  ).toBeVisible();
+  await page.goto("./#member-library");
+  await page
+    .getByRole("link", { name: "Open My training", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", {
+      name: "Fictional Solo’s workouts",
+      exact: true,
+    }),
   ).toBeVisible();
   await page.goto("./#access");
   await expect(

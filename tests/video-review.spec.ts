@@ -39,8 +39,17 @@ test("recording can be canceled and unsupported files never upload", async ({
 }) => {
   const backend = await fixture(context);
   await page.goto("./?source=app#workspace");
+  const storage = page
+    .locator(".member-fineprint")
+    .filter({ hasText: "Storage:" });
+  await expect(storage).toContainText("not a monthly review balance");
+  await expect(storage).toContainText("one clip per review, up to 60 seconds");
+  await expect(storage).toContainText("removes its attached feedback");
   await page.getByRole("button", { name: "Send a drill video" }).click();
   const d = page.getByRole("dialog");
+  await expect(d.getByLabel("Choose drill video")).not.toHaveAttribute(
+    "multiple",
+  );
   await expect(d.getByLabel("Record drill video")).toHaveAttribute(
     "capture",
     "environment",

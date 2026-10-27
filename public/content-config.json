@@ -5,5 +5,7 @@
   "membersEnabled": true,
   "membersSignupEnabled": false,
   "accountLifecycleEnabled": true,
-  "serviceTrackingEnabled": true
+  "serviceTrackingEnabled": true,
+  "staffRosterEnabled": true,
+  "deliveryMonitoringEnabled": true
 }

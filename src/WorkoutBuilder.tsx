@@ -21,6 +21,7 @@ import {
   workoutIssue,
   type SavedWorkout,
   type WorkoutAssignment,
+  type AssignmentProfile,
 } from "./workouts";
 
 export function WorkoutBuilder({ shared }: { shared: SharedState }) {
@@ -720,6 +721,9 @@ function AssignWorkout({
 }) {
   const [members, setMembers] = useState<AccessMember[]>([]),
     [account, setAccount] = useState(""),
+    [profiles, setProfiles] = useState<AssignmentProfile[]>([]),
+    [profilesLoaded, setProfilesLoaded] = useState(false),
+    [profile, setProfile] = useState(""),
     [assignment, setAssignment] = useState<WorkoutAssignment | null>(null);
   const [busy, setBusy] = useState(false),
     [error, setError] = useState(""),
@@ -744,7 +748,31 @@ function AssignWorkout({
     let active = true;
     if (account)
       void service
-        .assignment(account)
+        .profiles(account)
+        .then((rows) => {
+          if (!active) return;
+          setProfiles(rows);
+          setProfilesLoaded(true);
+          setProfile((current) =>
+            rows.some((p) => p.id === current)
+              ? current
+              : rows.length === 1
+                ? rows[0].id
+                : "",
+          );
+        })
+        .catch((e: Error) => {
+          if (active) setError(e.message);
+        });
+    return () => {
+      active = false;
+    };
+  }, [account, service, retry]);
+  useEffect(() => {
+    let active = true;
+    if (account && profile)
+      void service
+        .assignment(account, profile)
         .then((value) => {
           if (active) setAssignment(value);
         })
@@ -754,7 +782,7 @@ function AssignWorkout({
     return () => {
       active = false;
     };
-  }, [account, service, retry]);
+  }, [account, profile, service, retry]);
   async function act(action: () => Promise<void>) {
     if (lock.current) return;
     lock.current = true;
@@ -779,10 +807,9 @@ function AssignWorkout({
     >
       <h2>Assign this workout</h2>
       <p>
-        One current saved workout per account. Every drill must match an
-        eligible athlete; nonmatching family athletes keep any separately
-        assigned loose drills. This does not change video-review permissions or
-        start a subscription.
+        Choose the athlete who will follow this workout. Siblings can have
+        different plans. Every drill must match the selected athlete. This does
+        not change video-review permissions or start a subscription.
       </p>
       {dirty && (
         <Notice>
@@ -797,6 +824,10 @@ function AssignWorkout({
           disabled={busy || dirty}
           onChange={(e) => {
             setAssignment(null);
+            setProfiles([]);
+            setProfilesLoaded(false);
+            setProfile("");
+            setConfirm(null);
             setError("");
             setMessage("");
             setAccount(e.target.value);
@@ -814,7 +845,39 @@ function AssignWorkout({
             ))}
         </select>
       </label>
-      {account && !assignment && !error && (
+      {account && profiles.length > 0 && (
+        <label>
+          Assign to athlete
+          <select
+            value={profile}
+            disabled={busy || dirty}
+            onChange={(e) => {
+              setProfile(e.target.value);
+              setAssignment(null);
+              setConfirm(null);
+              setMessage("");
+              setError("");
+            }}
+          >
+            <option value="">Choose an athlete</option>
+            {profiles.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.nickname} · {p.age_group} · {p.position}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
+      {account && !profile && !error && (
+        <p role="status">
+          {!profilesLoaded
+            ? "Loading private athletes…"
+            : profiles.length
+              ? "Choose an athlete to view their current assignment."
+              : "No athletes loaded. Add a private athlete profile before assigning, or reload the customer."}
+        </p>
+      )}
+      {profile && !assignment && !error && (
         <p role="status">Loading current workout assignment…</p>
       )}
       {assignment && (
@@ -831,9 +894,9 @@ function AssignWorkout({
               disabled={busy || dirty}
               onClick={() =>
                 void act(async () => {
-                  if (!(await service.preview(workout, account)))
+                  if (!(await service.preview(workout, account, profile)))
                     throw new Error(
-                      "No eligible athlete matches every drill. Existing training access is unchanged.",
+                      "No eligible athlete matches every drill for this selection. Existing training access is unchanged.",
                     );
                   setConfirm("assign");
                 })
@@ -889,13 +952,17 @@ function AssignWorkout({
         >
           <p>{members.find((m) => m.user_id === account)?.email}</p>
           <p>
+            Athlete:{" "}
+            <strong>{profiles.find((p) => p.id === profile)?.nickname}</strong>
+          </p>
+          <p>
             {confirm === "assign"
               ? `${workout.title} · version ${workout.version} · ${workout.resource_ids.length} ordered drills`
               : assignment.workout_title}
           </p>
           <p>
             {confirm === "assign"
-              ? "This replaces the current saved-workout assignment for matching athletes. Every drill remains in its saved order."
+              ? "This replaces only this athlete's current saved workout. Sibling plans stay unchanged. Every drill remains in its saved order."
               : "Separately granted loose-drill access and practice history stay unchanged."}{" "}
             No payment or video-review change will be made.
           </p>
@@ -914,6 +981,7 @@ function AssignWorkout({
                     confirm === "assign" ? workout : null,
                     account,
                     assignment.version,
+                    profile,
                   );
                   setAssignment(result);
                   setConfirm(null);
