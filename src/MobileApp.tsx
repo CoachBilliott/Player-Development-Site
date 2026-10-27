@@ -15,6 +15,8 @@ import { Logo, Notice, Tag } from "./components";
 import { mobileNavigation, nativeApp, openWebsite, WEBSITE } from "./mobile";
 import type { SharedState } from "./useSharedContent";
 import type { PwaState } from "./pwa";
+import { SocialLinks } from "./SocialLinks";
+import { QuickHelp } from "./QuickHelp";
 
 export function WebsiteLink({
   children,
@@ -177,6 +179,7 @@ export function MobileHelp({ app }: { app: PwaState }) {
       </div>
       <section className="panel">
         <h2>Train here. Explore on the website.</h2>
+        <QuickHelp />
         <p>
           Today brings up your next session. Workouts holds your available
           training. Progress shows reported practice and parent reviews. Account
@@ -194,6 +197,7 @@ export function MobileHelp({ app }: { app: PwaState }) {
         <WebsiteLink path="#contact">
           Contact the team <ArrowRight size={17} />
         </WebsiteLink>
+        <SocialLinks />
       </section>
       <section className="panel">
         <h2>Accounts & privacy</h2>

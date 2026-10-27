@@ -8,6 +8,8 @@ import {
   Smartphone,
 } from "lucide-react";
 import { Tag } from "./components";
+import { SocialLinks } from "./SocialLinks";
+import { QuickHelp } from "./QuickHelp";
 import {
   CONTACT_ANSWERS,
   CONTACT_EMAIL,
@@ -72,6 +74,7 @@ export function Contact() {
             leave passwords, payment details and private player videos out of
             general support messages.
           </p>
+          <SocialLinks />
         </section>
 
         <section
@@ -80,6 +83,7 @@ export function Contact() {
         >
           <p className="eyebrow">KEEP MOVING</p>
           <h2 id="contact-resources-title">Find your next step.</h2>
+          <QuickHelp />
           <a className="contact-resource" href="#account">
             <LogIn size={25} aria-hidden="true" />
             <span>

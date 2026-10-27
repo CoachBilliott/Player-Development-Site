@@ -1,0 +1,35 @@
+.social-links-block {
+  margin-top: 24px;
+}
+.social-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.social-links a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 44px;
+  padding: 10px 15px;
+  border: 1px solid #65625d;
+  border-radius: 4px;
+  color: #fffaf4;
+  font:
+    600 15px/1.4 system-ui,
+    sans-serif;
+  text-decoration: none;
+}
+.social-links a:hover {
+  background: #292724;
+  border-color: #ffb28b;
+}
+.social-links a:focus-visible {
+  outline: 3px solid #ffb28b;
+  outline-offset: 3px;
+}
+footer > .social-links-block {
+  max-width: 1400px;
+  margin: 24px auto;
+}

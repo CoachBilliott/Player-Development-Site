@@ -58,6 +58,8 @@ import { MemberAccountPage } from "./MemberAccount";
 import { FamilyDemo } from "./FamilyDemo";
 import { Home } from "./Home";
 import { Contact } from "./Contact";
+import { SocialLinks } from "./SocialLinks";
+import { QuickHelp } from "./QuickHelp";
 import { appSurface, nativeApp } from "./mobile";
 import {
   MobileHeader,
@@ -619,6 +621,7 @@ export default function App() {
                 </a>
                 <a href="#home">About Player Development</a>
                 <a href="#contact">Contact</a>
+                <QuickHelp />
                 <a href={shared.signedIn ? "#workspace" : "#account"}>
                   {shared.signedIn ? "My workspace" : "Log in"}
                 </a>
@@ -628,6 +631,7 @@ export default function App() {
                 </a>
               </div>
             </div>
+            <SocialLinks />
             <div className="footer-bottom">
               <span>
                 © {new Date().getFullYear()} Player Development · Temporary name
