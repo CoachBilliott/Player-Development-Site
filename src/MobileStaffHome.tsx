@@ -10,6 +10,7 @@ import { MemberAccountPage } from "./MemberAccount";
 import { Tag } from "./components";
 import { isStaff, ROLE_LABELS } from "./roles";
 import type { SharedState } from "./useSharedContent";
+import { StaffServiceDashboard } from "./StaffServiceDashboard";
 
 /** The app's staff home keeps daily actions separate from website administration. */
 export function MobileStaffHome({ shared }: { shared: SharedState }) {
@@ -25,38 +26,59 @@ export function MobileStaffHome({ shared }: { shared: SharedState }) {
     shared.canEditResource(d.id),
   );
   return (
-    <main className="page app-staff-home">
+    <main
+      className={`page app-staff-home${shared.staffRosterEnabled ? " has-service-roster" : ""}`}
+    >
       <div className="app-home-heading">
         <Tag>{ROLE_LABELS[role]} WORKSPACE</Tag>
         <h1 tabIndex={-1}>
-          {role === "owner"
-            ? "Your platform. Your playbook."
-            : role === "manager"
-              ? "Keep the team moving."
-              : "Build the next great practice."}
+          {shared.staffRosterEnabled
+            ? role === "coach"
+              ? "Your athletes."
+              : "Client service."
+            : role === "owner"
+              ? "Your platform. Your playbook."
+              : role === "manager"
+                ? "Keep the team moving."
+                : "Build the next great practice."}
         </h1>
-        <p>Good training starts with a clear plan.</p>
+        <p>
+          {shared.staffRosterEnabled
+            ? "Client service, assigned training and the next action."
+            : "Good training starts with a clear plan."}
+        </p>
       </div>
-      <section className="app-feature" aria-label="Create training">
-        <img
-          src={`${import.meta.env.BASE_URL}media/football-field.jpg`}
-          alt=""
-          width={1440}
-          height={960}
+      {shared.staffRosterEnabled && (
+        <StaffServiceDashboard
+          key={`${shared.session!.user.id}:${role}`}
+          client={shared.service!.client}
+          actor={shared.session!.user.id}
+          role={role}
+          enabled
         />
-        <div className="app-feature-content">
-          <span className="app-eyebrow">THE NEXT SESSION STARTS HERE</span>
-          <h2>
-            Build the plan.
-            <br />
-            Set the standard.
-          </h2>
-          <p>Pick your drills. Set the order. Preview the whole workout.</p>
-          <a className="button full" href="#workout-builder">
-            Build a workout <ArrowRight size={19} />
-          </a>
-        </div>
-      </section>
+      )}
+      {!shared.staffRosterEnabled && (
+        <section className="app-feature" aria-label="Create training">
+          <img
+            src={`${import.meta.env.BASE_URL}media/football-field.jpg`}
+            alt=""
+            width={1440}
+            height={960}
+          />
+          <div className="app-feature-content">
+            <span className="app-eyebrow">THE NEXT SESSION STARTS HERE</span>
+            <h2>
+              Build the plan.
+              <br />
+              Set the standard.
+            </h2>
+            <p>Pick your drills. Set the order. Preview the whole workout.</p>
+            <a className="button full" href="#workout-builder">
+              Build a workout <ArrowRight size={19} />
+            </a>
+          </div>
+        </section>
+      )}
       <a className="app-upload-action" href="#coach">
         <span className="app-tool-icon">
           <FileUp size={23} />

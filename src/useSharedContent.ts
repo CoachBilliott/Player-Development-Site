@@ -12,6 +12,7 @@ import { clearStaffDrafts } from "./staffDrafts";
 
 export function useSharedContent() {
   const [serviceTrackingEnabled, setServiceTrackingEnabled] = useState(false);
+  const [staffRosterEnabled, setStaffRosterEnabled] = useState(false);
   const [accountLifecycleEnabled, setAccountLifecycleEnabled] = useState(false);
   const [accountNotice, setAccountNotice] = useState("");
   const [service, setService] = useState<SharedContent | null>(null);
@@ -52,6 +53,7 @@ export function useSharedContent() {
         setService(connection);
         setAccountLifecycleEnabled(raw.accountLifecycleEnabled === true);
         setServiceTrackingEnabled(raw.serviceTrackingEnabled === true);
+        setStaffRosterEnabled(raw.staffRosterEnabled === true);
         setMembersEnabled(raw.membersEnabled === true);
         setSignupEnabled(raw.membersSignupEnabled !== false);
         let previousUser = "";
@@ -206,6 +208,7 @@ export function useSharedContent() {
     service,
     accountLifecycleEnabled,
     serviceTrackingEnabled,
+    staffRosterEnabled,
     accountNotice,
     setAccountNotice,
     session,

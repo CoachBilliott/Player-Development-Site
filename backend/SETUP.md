@@ -159,3 +159,25 @@ Keep the existing per-clip, account-count and shared private-media safeguards;
 storage capacity is not the monthly review allowance. Neither retention nor
 storage quotas are expanded by this draft. Do not apply 012 or 013 during
 environment setup or without the separate migration/release approval.
+
+## Grouped fulfillment and client-service roster (014–015 — NOT installed)
+
+`014-grouped-review-fulfillment.sql` adds grouped reservations/submission and
+private assigned-coach feedback. Creation defaults to disabled; applying the SQL
+alone does not activate grouped customer uploads. Storage limits stay unchanged.
+See [REVIEW-GROUPING-DRAFT.md](../REVIEW-GROUPING-DRAFT.md).
+
+`015-staff-client-service-dashboard.sql` adds narrow service projections and
+per-athlete service-coach responsibility. Owners/Managers see basic metadata for
+this dedicated deployment; Coaches see only assigned athletes and limited
+client context. Only Owners can change responsibility. This does not expand
+raw-profile, family-control, private-video or feedback access, nor billing/role
+authority. Review the broader Owner/Manager metadata scope before production.
+
+The website/app `staffRosterEnabled` flag defaults to false. Follow the
+[dashboard review and rollout checklist](../docs/staff-service-preview/README.md)
+before enabling it. Migrations 012–015 have only synthetic local validation;
+none is an environment startup step. Do not rerun installed 001–011, deploy new
+policies, enable flags or grant real accounts without coordinated approval.
+Retain new assignment/review records during recovery; prefer a reviewed forward
+fix or frontend disablement over dropping tables or restoring old functions.

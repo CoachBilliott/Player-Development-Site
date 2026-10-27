@@ -379,7 +379,11 @@ export default function App() {
           <MobileHeader demo={demoPage} signedIn={shared.signedIn} />
         ) : (
           <>
-            <div className="demo-strip">
+            <div
+              className="demo-strip"
+              role="region"
+              aria-label="Platform status"
+            >
               <span className="live-dot" />{" "}
               {privatePage
                 ? "PRIVATE WORKSPACE"

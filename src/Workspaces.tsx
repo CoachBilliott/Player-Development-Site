@@ -15,6 +15,7 @@ import { MemberAccountPage } from "./MemberAccount";
 import { TrainingAccess } from "./TrainingAccess";
 import { AccountAccess } from "./AccountAccess";
 import { ReleaseSchedulePreview } from "./ReleaseSchedulePreview";
+import { StaffServiceDashboard } from "./StaffServiceDashboard";
 import type { Drill } from "./model";
 
 const descriptions = {
@@ -53,10 +54,12 @@ function StaffDashboard({
   role,
   resources,
   pending = false,
+  shared,
 }: {
   role: "owner" | "manager" | "coach";
   resources: Drill[];
   pending?: boolean;
+  shared: SharedState;
 }) {
   const root = "#coach";
   return (
@@ -82,6 +85,13 @@ function StaffDashboard({
           }
         </div>
       </div>
+      <StaffServiceDashboard
+        key={`${shared.session!.user.id}:${role}`}
+        client={shared.service!.client}
+        actor={shared.session!.user.id}
+        role={role}
+        enabled={shared.staffRosterEnabled}
+      />
       <div className="workspace-metrics">
         <div>
           <strong>{pending ? "…" : resources.length}</strong>
@@ -230,6 +240,7 @@ export function Workspace({ shared }: { shared: SharedState }) {
         role={shared.role as "owner" | "manager" | "coach"}
         resources={shared.resources.filter((d) => shared.canEditResource(d.id))}
         pending={!shared.libraryReady}
+        shared={shared}
       />
     );
   return <MemberAccountPage shared={shared} workspace />;

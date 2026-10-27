@@ -1,0 +1,159 @@
+.staff-service {
+  margin: 30px 0;
+  min-width: 0;
+  padding: clamp(18px, 3vw, 28px);
+  grid-column: 1 / -1;
+  width: 100%;
+}
+.staff-service-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.staff-service-heading h2 {
+  margin: 12px 0;
+  font-size: clamp(28px, 4vw, 42px);
+}
+.staff-service-counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  padding: 20px 0;
+}
+.staff-service-counts strong {
+  font-size: 26px;
+  margin-right: 6px;
+}
+.staff-service-filter {
+  display: grid;
+  gap: 8px;
+  max-width: 320px;
+  margin-bottom: 20px;
+}
+.staff-service-filter select,
+.staff-service-coach select {
+  width: 100%;
+  min-height: 48px;
+  padding: 10px;
+  background: var(--paper, #faf5ea);
+  color: #181818;
+  border-radius: 8px;
+}
+.staff-service-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 14px;
+}
+.staff-service-table th {
+  text-align: left;
+  padding: 12px 10px;
+  color: #c7a45c;
+  background: #181818;
+}
+.staff-service-table td {
+  vertical-align: top;
+  padding: 18px 10px;
+  border-bottom: 1px solid #8c939d55;
+  overflow-wrap: anywhere;
+}
+.staff-service-table small {
+  display: block;
+  margin-top: 8px;
+  line-height: 1.5;
+}
+.staff-service-table .text-button {
+  min-height: 44px;
+  text-align: left;
+}
+.staff-service-empty {
+  padding: 24px 0;
+}
+.staff-service-table .staff-mobile-client {
+  display: none;
+}
+.staff-service-coach {
+  display: grid;
+  gap: 12px;
+  margin: 24px 0;
+}
+@media (max-width: 700px) {
+  .staff-service-table .staff-mobile-client {
+    display: block;
+  }
+  .has-service-roster .app-home-heading h1 {
+    font-size: 30px;
+    line-height: 1.1;
+    margin: 10px 0;
+  }
+  .has-service-roster .app-home-heading p {
+    display: none;
+  }
+  .staff-service {
+    margin: 12px 0;
+    padding: 16px;
+  }
+  .staff-service-heading p {
+    display: none;
+  }
+  .staff-service-heading h2 {
+    font-size: 24px;
+    margin: 8px 0;
+  }
+  .staff-service-heading .button {
+    min-height: 44px;
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+  .staff-service-counts {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    padding: 14px 0;
+    font-size: 12px;
+  }
+  .staff-service-counts strong {
+    display: block;
+    font-size: 24px;
+  }
+  .staff-service-table td[data-label="Client / payment"] {
+    display: none;
+  }
+  .staff-service-table td[data-label="Release"],
+  .staff-service-table td[data-label="Observed activity"] {
+    display: none;
+  }
+  .staff-service-table,
+  .staff-service-table tbody,
+  .staff-service-table tr,
+  .staff-service-table td {
+    display: block;
+    width: 100%;
+  }
+  .staff-service-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .staff-service-table tr {
+    border-top: 2px solid #c7a45c;
+    margin-bottom: 24px;
+  }
+  .staff-service-table td {
+    padding: 12px 0;
+  }
+  .staff-service-table td::before {
+    content: attr(data-label);
+    display: block;
+    font-weight: bold;
+    margin-bottom: 6px;
+    color: inherit;
+  }
+  .staff-service-table strong {
+    font-size: 16px;
+  }
+}

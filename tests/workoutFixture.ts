@@ -66,8 +66,9 @@ async function fixture(
   context: BrowserContext,
   backend: State,
   role = "owner",
+  actorId?: string,
 ) {
-  const id = role === "parent" ? accountId : staffId;
+  const id = actorId || (role === "parent" ? accountId : staffId);
   const user = {
     id,
     aud: "authenticated",

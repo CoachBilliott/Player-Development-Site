@@ -1,5 +1,21 @@
 # Repformed core journey audit
 
+## Latest unpublished implementation checkpoint
+
+The grouped-review workflow is implemented behind a disabled backend setting
+(migration 014), with 269 unit and 32 affected browser cases passed locally.
+The client-service dashboard is implemented behind `staffRosterEnabled: false`
+(migration 015): Owners/Managers see all clients in this deployment, Coaches
+only assigned athletes. Six new database-policy tests, four desktop/phone browser
+cases, lint, types and build passed. These are distinct runs, not a newly rerun
+combined suite. [Actual screenshots and exact rollout boundary](docs/staff-service-preview/README.md)
+are ready for review. Neither migration nor feature was published. The older
+preflight-only validation below records the preceding checkpoint.
+
+Custom delivery alerts, customer in-app/email notifications and simulated
+purchase/delivery acceptance views remain queued. No SMTP, scheduler, payments,
+junior access, real role grants or new TestFlight binary were enabled.
+
 Today's defensible acceptance target is an **invite-only adult customer journey**,
 with fictional athlete nicknames and original adult/noncontact test clips. This
 is not approval to open real junior enrollment or charge families.
