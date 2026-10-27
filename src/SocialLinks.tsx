@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { ArrowUpRight } from "lucide-react";
 import { nativeApp } from "./mobile";
-import { validSocialLinks, type SocialLink } from "./socialLinks";
+import { validSocialLinks, type SocialLink } from "./socialConfig";
 import "./social-links.css";
 
 export function SocialLinks() {
