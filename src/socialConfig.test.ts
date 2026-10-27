@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { validSocialLinks } from "./socialLinks";
+import { validSocialLinks } from "./socialConfig";
 
 it("publishes only explicit supported HTTPS profiles, removing duplicates and unsafe links", () => {
   expect(
