@@ -12,9 +12,26 @@ combined suite. [Actual screenshots and exact rollout boundary](docs/staff-servi
 are ready for review. Neither migration nor feature was published. The older
 preflight-only validation below records the preceding checkpoint.
 
-Custom delivery alerts, customer in-app/email notifications and simulated
-purchase/delivery acceptance views remain queued. No SMTP, scheduler, payments,
-junior access, real role grants or new TestFlight binary were enabled.
+Manual delivery rules/expectations, a staff-only overdue queue and private adult
+client in-app notices are now implemented behind disabled settings (draft 016).
+[Notification review screens and exact limitations](docs/delivery-preview/README.md)
+are available. Automatic monitoring, live email/push, active submission reminders
+and simulated purchase/delivery acceptance views remain unfinished. No SMTP,
+scheduler, payments, junior access, real grants or new TestFlight binary was enabled.
+
+The isolated [interactive client-service preview](https://client-service-preview.repformed.pages.dev/)
+was deployed from `f54fdd1` with fictional browser-memory data only. It does not
+contain the later notification extension and does not use production APIs. The
+production website remains unchanged; independent public-browser verification
+was requested because this worker's public Cloudflare requests were restricted.
+
+Latest local validation: 290 unit/database tests; 252 broad phone/desktop browser
+cases; 14 affected journey cases after effect/reminder fixes; four notification
+cases after final presentation changes; eight PWA/offline and two isolated preview
+cases. Reruns overlap. Lint, types, build, 11 Python checks and the account Edge
+Function's Deno check passed. Hosted CI/rehearsal and real-device acceptance remain
+separate. [The migration/permission matrix](backend/PILOT-MIGRATION-REVIEW.md)
+describes the exact source-only 012–016 rollout scope and required approvals.
 
 Today's defensible acceptance target is an **invite-only adult customer journey**,
 with fictional athlete nicknames and original adult/noncontact test clips. This

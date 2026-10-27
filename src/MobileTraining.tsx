@@ -3,6 +3,7 @@ import { ArrowRight, RefreshCw, Users } from "lucide-react";
 import { Accounts } from "./accounts";
 import { FamilyTraining } from "./family";
 import { AthleteTraining } from "./FamilyTraining";
+import { ContentInbox } from "./DeliveryWorkspace";
 import { MemberAccountPage } from "./MemberAccount";
 import { Notice, Tag } from "./components";
 import { isStaff } from "./roles";
@@ -231,6 +232,13 @@ function ConnectedTraining({ shared, screen, selection, onSelect }: Props) {
               </a>
             )}
           </section>
+          {screen === "today" && shared.deliveryMonitoringEnabled && (
+            <ContentInbox
+              key={`inbox:${userId}`}
+              client={client}
+              actor={userId}
+            />
+          )}
           <AthleteTraining
             key={player.id}
             player={player}

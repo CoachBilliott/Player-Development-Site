@@ -30,6 +30,7 @@ import { appSurface } from "./mobile";
 import { WebsiteLink } from "./MobileApp";
 import { AccountClosure } from "./AccountClosure";
 import "./accountLifecycle.css";
+import { ContentInbox } from "./DeliveryWorkspace";
 
 export function MemberAccountPage({
   shared,
@@ -411,6 +412,9 @@ function ConnectedAccount({
         <p className="member-feedback" role="status">
           {shared.accountNotice}
         </p>
+      )}
+      {userId && !recovery && workspace && shared.deliveryMonitoringEnabled && (
+        <ContentInbox key={userId} client={client} actor={userId} />
       )}
       {userId && !recovery && !workspace && (
         <>
@@ -1133,8 +1137,8 @@ function ConnectedAccount({
           onClose={() => setPrivacyOpen(false)}
         >
           <p>
-            Repformed stores the adult’s email and login credentials
-            through Supabase Auth. Member records store your account type,
+            Repformed stores the adult’s email and login credentials through
+            Supabase Auth. Member records store your account type,
             acknowledgement time, and each player’s nickname, age group,
             football position, experience and goal. Do not enter full names,
             birth dates, school details, health information or photos.

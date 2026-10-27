@@ -55,6 +55,7 @@ export function MobileStaffHome({ shared }: { shared: SharedState }) {
           actor={shared.session!.user.id}
           role={role}
           enabled
+          monitoring={shared.deliveryMonitoringEnabled}
         />
       )}
       {!shared.staffRosterEnabled && (

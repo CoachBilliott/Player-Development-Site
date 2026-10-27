@@ -8,6 +8,7 @@ import {
 import { Modal, Tag } from "./components";
 import { reviewDate, SERVICE_LABELS } from "./reviewServices";
 import "./staffService.css";
+import { DeliveryMonitor } from "./DeliveryWorkspace";
 function observed(value?: string | null) {
   return value ? reviewDate(value) : "Not observed";
 }
@@ -16,11 +17,13 @@ export function StaffServiceDashboard({
   role,
   actor,
   enabled,
+  monitoring = false,
 }: {
   client: SupabaseClient;
   role: "owner" | "manager" | "coach";
   actor: string;
   enabled: boolean;
+  monitoring?: boolean;
 }) {
   const api = useMemo(() => new StaffService(client), [client]);
   const [data, setData] = useState<ServiceRoster | null>(null),
@@ -289,6 +292,15 @@ export function StaffServiceDashboard({
             Private video access remains separately assigned.
           </p>
         </>
+      )}
+      {monitoring && data && (
+        <DeliveryMonitor
+          key={`${actor}:${role}`}
+          client={client}
+          actor={actor}
+          role={role}
+          profiles={data.rows}
+        />
       )}
       {target && (
         <Modal

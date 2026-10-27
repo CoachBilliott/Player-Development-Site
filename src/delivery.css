@@ -1,0 +1,83 @@
+.delivery-workspace,
+.delivery-inbox {
+  grid-column: 1/-1;
+  width: 100%;
+  padding: clamp(1rem, 3vw, 2rem);
+  margin-top: 1.5rem;
+}
+.delivery-workspace h2,
+.delivery-inbox h2 {
+  margin-top: 0;
+}
+.delivery-workspace > label,
+.delivery-workspace form > label,
+.delivery-field > label:not(.delivery-check) {
+  display: grid;
+  gap: 0.45rem;
+  margin: 1rem 0;
+}
+.delivery-workspace select,
+.delivery-workspace input:not([type="checkbox"]) {
+  width: 100%;
+  min-height: 48px;
+}
+.delivery-workspace details {
+  padding: 1rem 0;
+  border-top: 1px solid var(--line);
+}
+.delivery-workspace summary {
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+.delivery-rule-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 1rem;
+}
+.delivery-check {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  min-height: 44px;
+}
+.delivery-check input {
+  min-width: 24px;
+  min-height: 24px;
+}
+.delivery-list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 1rem;
+}
+.delivery-list > li {
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--brand-gold);
+  padding: 1rem;
+  border-radius: 8px;
+  overflow-wrap: anywhere;
+}
+.delivery-list .button,
+.delivery-list .text-button {
+  margin: 0.4rem 0.5rem 0.4rem 0;
+}
+@media (max-width: 600px) {
+  .delivery-rule-grid {
+    grid-template-columns: 1fr;
+  }
+  .delivery-workspace .button,
+  .delivery-inbox .button {
+    width: 100%;
+    margin: 0.5rem 0;
+  }
+  .delivery-workspace,
+  .delivery-inbox {
+    padding: 1rem;
+  }
+  .delivery-check {
+    font-size: 0.9rem;
+  }
+}

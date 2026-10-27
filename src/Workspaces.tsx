@@ -91,6 +91,7 @@ function StaffDashboard({
         actor={shared.session!.user.id}
         role={role}
         enabled={shared.staffRosterEnabled}
+        monitoring={shared.deliveryMonitoringEnabled}
       />
       <div className="workspace-metrics">
         <div>

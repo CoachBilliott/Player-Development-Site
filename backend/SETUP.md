@@ -181,3 +181,19 @@ none is an environment startup step. Do not rerun installed 001–011, deploy ne
 policies, enable flags or grant real accounts without coordinated approval.
 Retain new assignment/review records during recovery; prefer a reviewed forward
 fix or frontend disablement over dropping tables or restoring old functions.
+
+## Manual delivery checks and private inbox (016 — NOT installed)
+
+`016-delivery-monitoring-and-inbox.sql` requires 012–015. It adds draft package,
+client and athlete delivery rules, exact-version expectations, scoped staff alerts
+and verified adult/guardian in-app notices. Owner-only configuration does not
+change paid access or consent. Monitoring defaults off; the separate frontend
+`deliveryMonitoringEnabled` also defaults false. No scheduler, recurring check
+creation, SMTP, external send, device push or active submission reminder exists.
+Paused/cancelled monitoring suppresses alerts/notices, not actual training access.
+
+Do not apply or enable this during environment setup. Read the
+[migration/permission review](PILOT-MIGRATION-REVIEW.md) and
+[notification screenshots and boundaries](../docs/delivery-preview/README.md)
+before requesting coordinated production review. Tests use local synthetic data;
+they do not establish hosted permissions, real email delivery or phone acceptance.

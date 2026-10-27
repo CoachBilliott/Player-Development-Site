@@ -35,9 +35,11 @@ change account roles, create billing access or expose unrelated videos.
   Missing activity reads **not observed**, not “never opened.”
 - Saved practice/completion reflects reported participation, not improved skill
   or verification that the athlete performed the drill correctly.
-- Existing 48-hour review targets provide overdue flags. Custom training-delivery
-  alerts, missing-submission reminders, in-app notifications and email delivery
-  remain queued. No scheduler or live notification adapter was enabled.
+- Existing 48-hour review targets provide overdue flags. A later unpublished
+  extension now adds manual training-delivery checks and a private in-app inbox:
+  [review its separate screenshots and boundaries](../delivery-preview/README.md).
+  Automatic monitoring, active submission reminders and email delivery remain
+  unavailable. No scheduler or live notification adapter was enabled.
 
 ## Access boundary and tests
 
@@ -80,6 +82,10 @@ validation runs, not a new combined total.
    unless separately approved. Storage quotas and retention do not grow.
 5. Verify each staff role on the hosted website, then release an approved native
    build and test actual iPhones. Existing TestFlight build 13 is unchanged.
+
+The separate notification extension also requires migration 016 and explicit
+review of its default-off frontend/backend settings; this dashboard preview does
+not activate it.
 
 This review does not enable junior enrollment, payments, SMTP, notifications,
 scheduled delivery or coaching approval of illustrative training content.
