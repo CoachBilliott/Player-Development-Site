@@ -15,7 +15,7 @@ export function Home() {
         <AthleteScene />
         <div className="hero-copy">
           <div className="sport-tag">
-            <span /> ATHLETE DEVELOPMENT · AGES 5 TO ADULT
+            <span /> FOOTBALL · IN DEVELOPMENT
           </div>
           <h1 tabIndex={-1}>
             Your game.
@@ -23,8 +23,12 @@ export function Home() {
             <span className="electric-text">Your next rep.</span>
           </h1>
           <p className="hero-description">
-            A clear plan for the work you put in. Guided football workouts
-            matched to the athlete’s age, position, experience and goals.
+            We’re building football learning and guided practice around the
+            athlete’s age, position, experience and goals.
+          </p>
+          <p className="home-availability">
+            In development with a private adult pilot. Youth enrollment and paid
+            packages are not open.
           </p>
           <div className="actions">
             <a className="button" href="#demo">
@@ -41,7 +45,10 @@ export function Home() {
               See how it works <ArrowDown size={17} />
             </button>
           </div>
-          <p className="hero-demo-note">Free demo. No account needed.</p>
+          <p className="hero-demo-note">
+            Free fictional demo. No account needed.
+            <a href="#membership">See proposed packages</a>
+          </p>
         </div>
         <div className="hero-edition" aria-hidden="true">
           <span>REPFORMED</span>
@@ -98,13 +105,13 @@ export function Home() {
                   At every step.
                 </h3>
                 <p>
-                  Parents manage family athletes, choose permissions and review
-                  reported practice. Adult athletes manage their own routine,
-                  all within the same platform.
+                  The planned family experience gives parents control of athlete
+                  permissions and practice reports. Adult athletes manage their
+                  own routine within the same platform.
                 </p>
                 <span className="path-detail">
-                  <ShieldCheck size={16} /> Parent-managed for all athletes
-                  under 18
+                  <ShieldCheck size={16} /> Planned parent management · youth
+                  enrollment closed
                 </span>
               </div>
             </article>
@@ -217,7 +224,7 @@ export function Home() {
                 />
                 <div className="sport-program-top">
                   <span className="sport-program-index">0{i + 1}</span>
-                  <Tag>AVAILABLE NOW</Tag>
+                  <Tag>DEMO AVAILABLE</Tag>
                 </div>
                 <div className="sport-program-content">
                   <h3>{sport.name}</h3>
@@ -271,7 +278,7 @@ export function Home() {
                 Explore the free demo <ArrowUpRight size={20} />
               </a>
               <a className="text-button" href="#membership">
-                Explore future memberships <ArrowRight size={17} />
+                Explore proposed packages <ArrowRight size={17} />
               </a>
             </div>
           </div>

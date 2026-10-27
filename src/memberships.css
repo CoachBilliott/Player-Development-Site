@@ -1,0 +1,245 @@
+.proposed-memberships {
+  padding-bottom: 64px;
+}
+.proposed-memberships .page-intro {
+  max-width: 780px;
+  margin: 0 auto 30px;
+}
+.membership-availability {
+  max-width: 960px;
+  margin: 0 auto 32px;
+  padding: 20px 24px;
+  border: 1px solid #c7a45c66;
+  border-left: 4px solid var(--brand-gold);
+  background: #c7a45c0a;
+  border-radius: 6px;
+}
+.membership-availability strong {
+  font-size: 17px;
+  color: var(--ink);
+}
+.membership-availability p {
+  font-size: 14px;
+  line-height: 1.8;
+  margin: 8px 0;
+  color: var(--muted);
+}
+.proposed-package-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  align-items: stretch;
+}
+.experience .proposed-package {
+  padding: 28px;
+  gap: 18px;
+  background: var(--surface);
+  box-shadow: none;
+  border-radius: 8px;
+  border-color: var(--line);
+}
+.proposal-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+}
+.proposal-top > span:last-child {
+  font-family: var(--font-display);
+  font-size: 24px;
+  color: var(--muted);
+}
+.experience .proposal-top .tag {
+  font-size: 10px;
+  color: #e6cc98;
+  background: #c7a45c10;
+  border-color: #c7a45c60;
+}
+.experience .proposed-package h2 {
+  font-size: clamp(29px, 3vw, 38px);
+  line-height: 1.1;
+  margin: 0;
+}
+.experience .proposed-package .proposal-focus {
+  margin: 0;
+  color: var(--muted);
+  font-size: 15px;
+}
+.proposal-price {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: 100%;
+  padding: 18px 0;
+  border-block: 1px solid var(--line);
+}
+.proposal-price strong {
+  font-size: 38px;
+  line-height: 1;
+  font-family: var(--font-display);
+  color: var(--brand-ivory);
+}
+.proposal-price span {
+  font-size: 13px;
+  color: var(--muted);
+}
+.proposal-price small {
+  flex-basis: 100%;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.experience .proposed-package .proposal-cadence {
+  margin: 0;
+  font-size: 14px;
+  color: #e2c386;
+  font-weight: 600;
+  line-height: 1.6;
+}
+.experience .proposed-package .proposal-includes {
+  margin: 0;
+  font-size: 13px;
+  color: var(--ink);
+  font-weight: 600;
+  line-height: 1.7;
+}
+.proposed-package .check-lines {
+  gap: 12px;
+}
+.proposed-package .check-line {
+  font-size: 14px;
+}
+.experience .proposed-package .proposal-note {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--muted);
+  border-left: 2px solid #c7a45c70;
+  padding-left: 12px;
+}
+.proposal-closed {
+  margin-top: auto;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  padding-top: 8px;
+}
+.proposal-rhythm {
+  padding: 28px 0;
+  margin: 12px 0;
+}
+.proposal-rhythm h2 {
+  font-size: 32px;
+  margin: 0 0 12px;
+}
+.proposal-rhythm p {
+  max-width: 90ch;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.8;
+}
+.package-interest {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: 36px;
+  padding: 32px;
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--brand-gold);
+  border-radius: 8px;
+  background: var(--surface);
+  scroll-margin-top: 100px;
+}
+.package-interest h2 {
+  font-size: 38px;
+  line-height: 1.15;
+  margin: 16px 0;
+}
+.package-interest p {
+  font-size: 14px;
+  line-height: 1.8;
+  color: var(--muted);
+}
+.interest-actions {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+}
+.interest-actions label {
+  display: grid;
+  gap: 8px;
+  font-size: 14px;
+}
+.interest-actions select {
+  width: 100%;
+  min-height: 50px;
+  font-size: 16px;
+  background: var(--paper);
+  color: var(--ink);
+}
+.interest-actions .button {
+  min-height: 50px;
+  justify-content: center;
+}
+.interest-actions .interest-address {
+  user-select: all;
+  overflow-wrap: anywhere;
+  color: var(--ink);
+  font-size: 17px;
+  margin: 0;
+}
+.interest-actions .text-button {
+  justify-self: start;
+  min-height: 44px;
+}
+.interest-actions .interest-fallback,
+.interest-actions [role="status"] {
+  font-size: 12px;
+  margin: 0;
+}
+.home-availability {
+  max-width: 46ch;
+  margin: 12px 0 18px;
+  padding-left: 12px;
+  border-left: 2px solid var(--brand-gold);
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--ink);
+}
+.hero-demo-note a {
+  margin-left: 12px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+@media (max-width: 700px) {
+  .proposed-package-grid,
+  .package-interest {
+    grid-template-columns: 1fr;
+  }
+  .experience .proposed-package {
+    padding: 22px;
+    gap: 16px;
+  }
+  .package-interest {
+    padding: 22px;
+    gap: 22px;
+  }
+  .membership-availability {
+    padding: 18px;
+  }
+  .proposed-memberships .page-intro h1 {
+    font-size: 42px;
+  }
+  .home-availability {
+    font-size: 12px;
+    margin: 10px 0 14px;
+  }
+  .hero-demo-note a {
+    display: block;
+    margin: 6px 0 0;
+  }
+  .proposal-rhythm h2 {
+    font-size: 29px;
+  }
+}

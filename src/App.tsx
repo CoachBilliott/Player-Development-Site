@@ -17,7 +17,6 @@ import {
   Sparkles,
   Target,
   TrendingUp,
-  Users,
   X,
 } from "lucide-react";
 import {
@@ -39,7 +38,6 @@ import { DRILLS } from "./data";
 import { deleteAsset, loadState, putAsset, saveState } from "./storage";
 import {
   AssetPreview,
-  CheckLine,
   DrillCard,
   Field,
   Logo,
@@ -56,6 +54,7 @@ import { InstallApp } from "./InstallApp";
 import { MemberAccountPage } from "./MemberAccount";
 import { FamilyDemo } from "./FamilyDemo";
 import { Home } from "./Home";
+import { Membership } from "./Membership";
 import { Contact } from "./Contact";
 import { SocialLinks } from "./SocialLinks";
 import { QuickHelp } from "./QuickHelp";
@@ -396,14 +395,14 @@ export default function App() {
                   ? "Private adult & parent-managed profiles"
                   : demoPage
                     ? "Fictional profiles · No account required"
-                    : "Athlete development · Football available now"}
+                    : "In development · Private adult pilot"}
               </span>
               <span className="strip-note">
                 {privatePage
                   ? "Your private workspace"
                   : demoPage
                     ? "No account needed"
-                    : "Early access"}{" "}
+                    : "Youth enrollment closed"}{" "}
                 <ArrowUpRight size={13} />
               </span>
             </div>
@@ -456,7 +455,7 @@ export default function App() {
                   )}
                   {!nav.some(([id]) => id === "membership") && (
                     <a href="#membership">
-                      Future memberships
+                      Proposed packages
                       <ArrowUpRight size={18} />
                     </a>
                   )}
@@ -620,7 +619,7 @@ export default function App() {
               <p>A clear plan. A purposeful practice.</p>
               <div>
                 <a href="#membership">
-                  Future memberships <ArrowUpRight size={14} />
+                  Proposed packages <ArrowUpRight size={14} />
                 </a>
                 <a href="#home">About Repformed</a>
                 <a href="#contact">Contact</a>
@@ -1698,84 +1697,6 @@ function Progress({
         Saved on this browser for this fictional profile only. No public
         profiles, comparisons, or leaderboards.
       </p>
-    </main>
-  );
-}
-function Membership() {
-  return (
-    <main className="page memberships">
-      <div className="page-intro centered">
-        <Tag>LOOKING AHEAD</Tag>
-        <h1 tabIndex={-1}>Future memberships</h1>
-        <p>
-          One training platform, with future memberships based on the training
-          and coaching support included. Managing training for your family or
-          yourself is an account setup choice.
-          <br />
-          These are product concepts, not purchasable plans.
-        </p>
-      </div>
-      <div className="three-grid">
-        {[
-          {
-            name: "Foundations",
-            for: "For a confident first step",
-            items: [
-              "Age-aware guided practice",
-              "A simple weekly routine",
-              "Clear practice steps and coaching cues",
-            ],
-            icon: Footprints,
-          },
-          {
-            name: "Position training",
-            for: "For a little more direction",
-            items: [
-              "Deeper position-specific learning",
-              "Structured practice series",
-              "Reflection and practice history",
-            ],
-            icon: Target,
-          },
-          {
-            name: "Team & coach",
-            for: "For learning together",
-            items: [
-              "Reviewed coach-created content",
-              "Team practice assignments",
-              "Parent and coach collaboration",
-            ],
-            icon: Users,
-          },
-        ].map((p, i) => (
-          <article
-            className={`package-card ${i === 1 ? "featured" : ""}`}
-            key={p.name}
-          >
-            <Tag light={i === 1}>FUTURE CONCEPT</Tag>
-            <p.icon size={32} />
-            <h2>{p.name}</h2>
-            <p>{p.for}</p>
-            <div className="package-price">Pricing to be determined</div>
-            <div className="check-lines">
-              {p.items.map((t) => (
-                <CheckLine key={t}>{t}</CheckLine>
-              ))}
-            </div>
-            <span className="package-status">Not available to purchase</span>
-          </article>
-        ))}
-      </div>
-      <Notice>
-        No checkout, billing, public enrollment, or waitlist is active. American
-        football is the only sport in this demo; other sports remain future
-        offerings.
-      </Notice>
-      <div className="centered">
-        <a href="#demo" className="button">
-          Explore the free sample demo <ArrowRight size={18} />
-        </a>
-      </div>
     </main>
   );
 }
