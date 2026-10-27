@@ -58,13 +58,26 @@ export function useSharedContent() {
         const subscription = connection.client.auth.onAuthStateChange(
           (_event, current) => {
             if (current) setAccountNotice("");
-            if (!current || (previousUser && previousUser !== current.user.id))
+            if (
+              !current ||
+              (previousUser && previousUser !== current.user.id)
+            ) {
+              try {
+                for (let i = sessionStorage.length - 1; i >= 0; i--) {
+                  const key = sessionStorage.key(i);
+                  if (key?.startsWith("repformed.training-selection."))
+                    sessionStorage.removeItem(key);
+                }
+              } catch {
+                /* No private profile records are cached; this is a tab-only selection ID. */
+              }
               void clearStaffDrafts().catch(() => {
                 if (!stopped)
                   setMessage(
                     "Signed-out device drafts could not be cleared. Clear this app's site data on a shared device.",
                   );
               });
+            }
             previousUser = current?.user.id || "";
             if (!stopped) setSession(current);
           },

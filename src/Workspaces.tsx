@@ -14,6 +14,7 @@ import type { SharedState } from "./useSharedContent";
 import { MemberAccountPage } from "./MemberAccount";
 import { TrainingAccess } from "./TrainingAccess";
 import { AccountAccess } from "./AccountAccess";
+import { ReleaseSchedulePreview } from "./ReleaseSchedulePreview";
 import type { Drill } from "./model";
 
 const descriptions = {
@@ -377,8 +378,8 @@ export function LaunchReadiness({ shared }: { shared?: SharedState }) {
         {[
           [
             "Packages",
-            "Inclusions need approval",
-            "The selected prices are $15 for one review and $45 monthly. Confirm what the monthly package includes, family limits, review allowances and cancellation/refund terms before checkout is enabled.",
+            "Terms recorded · billing inactive",
+            "The recorded terms are $15 for one review and $45 monthly, including four reviews per child and up to three minutes total per review. Confirm whether $45 covers one child or a household, billing-cycle/unused-review rules and cancellation/refund terms before checkout is enabled. Current customer uploads still have a 60-second limit and need alignment with the three-minute review allowance.",
           ],
           [
             "Recurring billing",
@@ -407,8 +408,8 @@ export function LaunchReadiness({ shared }: { shared?: SharedState }) {
           ],
           [
             "Family workout scope",
-            "One current workout per account",
-            "Current assignment is account-wide and eligibility is checked for each athlete. Different simultaneous plans for siblings require a reviewed per-athlete assignment change; do not promise that scope yet.",
+            "Per-athlete draft · migration pending",
+            "The review branch supports separate sibling plans with eligibility checked for each athlete. Migration 012 and the updated website/app need release review before this becomes available live. Existing defaults and parent controls are preserved.",
           ],
           [
             "Sunday release schedule",
@@ -424,6 +425,12 @@ export function LaunchReadiness({ shared }: { shared?: SharedState }) {
           </section>
         ))}
       </div>
+      {shared?.role === "owner" && shared.session?.user.id && (
+        <ReleaseSchedulePreview
+          key={shared.session.user.id}
+          userId={shared.session.user.id}
+        />
+      )}
       <a href="#workspace" className="button secondary">
         Back to overview
       </a>

@@ -115,3 +115,33 @@ Actual Auth/Storage acceptance used two temporary fictional adult customers and 
 Installed once after the rolled-back live transaction rehearsal. Customers request one review without a charge; complete uploads automatically attach to that request or create their own service record. The database sets a fixed 48-hour target only after a complete approved submission. Owners/Managers manage per-review coach assignments and follow-up flags in the shared service desk; role alone does not reveal clips or private player profiles. Actual saved coaching feedback is the only delivery transition. Browser roles cannot directly read/write the service or audit tables. Existing account-closing freezes, private Storage policies and adult-only uploads remain in force. Account/profile erasure cascades service records and their audit events.
 
 Live API acceptance used five temporary fictional adult identities, an original black-frame test video, real private Storage upload, duplicate request retries, per-clip reassignment and feedback delivery. All fixtures were removed and the pre-test account/profile/clip/service counts restored. No email, payment or real customer record was changed. No automatic staff/customer notification or background reminder is implemented. See [SERVICE-FULFILLMENT.md](../SERVICE-FULFILLMENT.md) for the exact customer/staff workflow, elapsed-hour rule, daily operating checklist and required future payment integration. Do not rerun 011.
+
+
+## Per-athlete workout assignments (012 — review draft, NOT installed)
+
+`012-per-athlete-workout-assignments.sql` is an unpublished migration candidate.
+Do not apply it during environment setup or rerun migrations 001–011. Release
+review must cover the SQL diff, synthetic tests, existing data/backups, rollout
+and recovery before a separate production migration is authorized.
+
+The new table stores athlete-specific snapshots; a removal tombstone prevents a
+legacy account default from reappearing. No automatic backfill or grant occurs.
+Existing account assignments remain defaults for profiles without an override;
+old clients can still change those defaults, so staff must understand which
+athletes have explicit plans. The updated Owner picker requires the new RPCs.
+Existing customer API signatures remain unchanged, and the content-review
+redaction wrapper, consent gates, parent controls and erasure guards remain in
+force. Owner lookup exposes only nickname and audience fields needed to select
+an athlete. No Manager/Coach assignment permission is added.
+
+Before any release, validate independent sibling plans, stale/idempotent writes,
+wrong-household/profile substitution, linked-athlete isolation, parent pause and
+revocation, withdrawn content, save/resume invalidation and erasure. Review the
+web/native rollout together. This draft creates no weekly scheduler, billing
+credits, SMTP configuration or junior access.
+
+If rollout needs recovery, preserve the new athlete snapshots and stop new staff
+assignments while reviewing a forward fix or frontend rollback. Do not drop the
+new table, overwrite sibling plans with an account-wide plan, or blindly restore
+older function definitions. Migration/backup and recovery approval is separate
+from approval to edit this source branch.

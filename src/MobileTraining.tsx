@@ -57,6 +57,14 @@ export function MobileTraining(props: Props) {
 function ConnectedTraining({ shared, screen, selection, onSelect }: Props) {
   const client = shared.service!.client;
   const userId = shared.session!.user.id;
+  const selectionKey = `repformed.training-selection.${userId}`;
+  const [restoredSelection] = useState(() => {
+    try {
+      return sessionStorage.getItem(selectionKey) || "";
+    } catch {
+      return "";
+    }
+  });
   const service = useMemo(() => new FamilyTraining(client), [client]);
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const [error, setError] = useState("");
@@ -103,7 +111,9 @@ function ConnectedTraining({ shared, screen, selection, onSelect }: Props) {
       : [];
   const player =
     eligible.find(
-      (p) => selection.userId === userId && p.id === selection.playerId,
+      (p) =>
+        p.id ===
+        (selection.userId === userId ? selection.playerId : restoredSelection),
     ) || eligible[0];
   return (
     <main className={`page app-training app-training-${screen}`}>
@@ -167,9 +177,15 @@ function ConnectedTraining({ shared, screen, selection, onSelect }: Props) {
                 <select
                   id="app-training-athlete"
                   value={player.id}
-                  onChange={(event) =>
-                    onSelect({ userId, playerId: event.target.value })
-                  }
+                  onChange={(event) => {
+                    const playerId = event.target.value;
+                    try {
+                      sessionStorage.setItem(selectionKey, playerId);
+                    } catch {
+                      /* Selection remains available in memory when session storage is blocked. */
+                    }
+                    onSelect({ userId, playerId });
+                  }}
                 >
                   {eligible.map((p) => (
                     <option key={p.id} value={p.id}>

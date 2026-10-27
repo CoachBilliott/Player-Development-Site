@@ -34,6 +34,21 @@ function state() {
   }));
   return {
     resources,
+    profiles: [
+      {
+        id: profileId,
+        owner_id: accountId,
+        nickname: "Fictional Pilot",
+        age_group: "18+",
+        sport: "football",
+        position: "Quarterback",
+        experience: "New to the game",
+        goal: "Footwork",
+        guardian_confirmed: false,
+        version: 1,
+      },
+    ],
+    profileAssignments: new Map<string, Row>(),
     workouts: new Map<string, Row>(),
     assignment: null as Row | null,
     reports: [] as Row[],
@@ -170,6 +185,9 @@ async function fixture(
       row.version++;
       return json(row);
     }
+    const currentAssignment =
+      backend.profileAssignments.get(String(body.target_profile)) ||
+      backend.assignment;
     const resumeKey = `${id}:${body.target_profile}`;
     if (path.endsWith("/rpc/load_practice_resume"))
       return json(backend.resumes.get(resumeKey) || null);
@@ -189,7 +207,7 @@ async function fixture(
         current_index: body.current_position,
         workout_id: body.expected_workout,
         workout_version: body.expected_workout_version,
-        assignment_version: backend.assignment?.version || 0,
+        assignment_version: currentAssignment?.version || 0,
         permission_version: 0,
         version: Number(previous?.version || 0) + 1,
         updated_at: new Date().toISOString(),
@@ -234,6 +252,14 @@ async function fixture(
       backend.counts.removes++;
       backend.workouts.delete(String(body.workout));
       backend.assignment = null;
+      for (const [key, a] of backend.profileAssignments)
+        if (a.workout_id === body.workout)
+          backend.profileAssignments.set(key, {
+            ...a,
+            workout_id: null,
+            resource_ids: [],
+            version: Number(a.version) + 1,
+          });
       return json({});
     }
     if (path.endsWith("/rpc/list_account_access"))
@@ -247,26 +273,42 @@ async function fixture(
           adult_setup: true,
         },
       ]);
+    if (path.endsWith("/rpc/workout_assignment_profiles"))
+      return json(backend.profiles);
+    if (path.endsWith("/rpc/profile_workout_assignment"))
+      return json(currentAssignment);
     if (path.endsWith("/member_workout_assignments"))
       return json(backend.assignment);
-    if (path.endsWith("/rpc/workout_assignment_preview"))
+    if (
+      path.endsWith("/rpc/workout_assignment_preview") ||
+      path.endsWith("/rpc/profile_workout_preview")
+    )
       return json({ eligible: backend.eligible });
-    if (path.endsWith("/rpc/assign_training_workout")) {
+    if (
+      path.endsWith("/rpc/assign_training_workout") ||
+      path.endsWith("/rpc/assign_profile_workout")
+    ) {
       backend.counts.assigns++;
       if (backend.failAssign) {
         backend.failAssign = false;
         return json({ message: "Fictional assignment conflict" }, 400);
       }
       const w = backend.workouts.get(String(body.workout));
-      backend.assignment = {
+      const nextAssignment = {
         workout_id: w?.id || null,
         workout_title: w?.title || "",
         summary: w?.summary || "",
         resource_ids: w?.resource_ids || [],
         workout_version: w?.version || 0,
-        version: Number(backend.assignment?.version || 0) + 1,
+        version: Number(currentAssignment?.version || 0) + 1,
       };
-      return json(backend.assignment);
+      if (body.target_profile) {
+        backend.profileAssignments.set(
+          String(body.target_profile),
+          nextAssignment,
+        );
+      } else backend.assignment = nextAssignment;
+      return json(nextAssignment);
     }
     if (path.endsWith("/member_accounts"))
       return json({
@@ -276,21 +318,7 @@ async function fixture(
       });
     if (path.endsWith("/profile_settings"))
       return json({ under18_enabled: false });
-    if (path.endsWith("/player_profiles"))
-      return json([
-        {
-          id: profileId,
-          owner_id: accountId,
-          nickname: "Fictional Pilot",
-          age_group: "18+",
-          sport: "football",
-          position: "Quarterback",
-          experience: "New to the game",
-          goal: "Footwork",
-          guardian_confirmed: false,
-          version: 1,
-        },
-      ]);
+    if (path.endsWith("/player_profiles")) return json(backend.profiles);
     if (path.endsWith("/rpc/athlete_account_context"))
       return json({ guardian_managed: false, linked_profile_id: null });
     if (path.endsWith("/rpc/family_profile_state"))
@@ -303,22 +331,24 @@ async function fixture(
         permission_version: 0,
         has_link: false,
         child_access_ready: false,
-        workouts: backend.reports,
-        assigned_workout: backend.assignment?.workout_id
+        workouts: backend.reports.filter(
+          (r) => r.profile_id === body.target_profile,
+        ),
+        assigned_workout: currentAssignment?.workout_id
           ? {
-              id: backend.assignment.workout_id,
-              title: backend.assignment.workout_title,
-              summary: backend.assignment.summary,
-              resource_ids: backend.assignment.resource_ids,
-              version: backend.assignment.workout_version,
+              id: currentAssignment.workout_id,
+              title: currentAssignment.workout_title,
+              summary: currentAssignment.summary,
+              resource_ids: currentAssignment.resource_ids,
+              version: currentAssignment.workout_version,
               eligible: true,
             }
           : null,
       });
     if (path.endsWith("/rpc/athlete_training_plan"))
       return json(
-        backend.assignment
-          ? (backend.assignment.resource_ids as string[]).map((k) =>
+        currentAssignment
+          ? (currentAssignment.resource_ids as string[]).map((k) =>
               backend.resources.find((d) => d.id === k),
             )
           : [],
@@ -328,11 +358,11 @@ async function fixture(
     if (path.endsWith("/rpc/report_saved_workout")) {
       backend.counts.reports++;
       const ids = body.requested_drills as string[];
-      expect(ids).toEqual(backend.assignment?.resource_ids);
-      expect(body.expected_workout).toBe(backend.assignment?.workout_id);
+      expect(ids).toEqual(currentAssignment?.resource_ids);
+      expect(body.expected_workout).toBe(currentAssignment?.workout_id);
       const row = {
         id: body.workout_id,
-        profile_id: profileId,
+        profile_id: body.target_profile,
         reported_by: accountId,
         drill_ids: ids,
         titles: ids.map(
@@ -344,13 +374,13 @@ async function fixture(
         reviewed_by: accountId,
         reviewed_at: new Date().toISOString(),
         version: 1,
-        workout_title: backend.assignment?.workout_title,
+        workout_title: currentAssignment?.workout_title,
         training_workout_id: body.expected_workout,
         workout_version: body.expected_workout_version,
       };
       if (!backend.reports.some((report) => report.id === row.id))
         backend.reports.push(row);
-      backend.resumes.delete(`${id}:${profileId}`);
+      backend.resumes.delete(resumeKey);
       return json(row);
     }
     if (

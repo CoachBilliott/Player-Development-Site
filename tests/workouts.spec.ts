@@ -1,6 +1,14 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
-import { state, fixture, build, save, uid, accountId } from "./workoutFixture";
+import {
+  state,
+  fixture,
+  build,
+  save,
+  uid,
+  accountId,
+  profileId,
+} from "./workoutFixture";
 
 test("staff composes, reorders, previews and saves a protected workout; Owner assigns the whole session and the athlete records it once", async ({
   page,
@@ -229,7 +237,7 @@ test("removing a template or current assignment requires confirmation", async ({
   ).toBeVisible();
   await page.getByRole("button", { name: "Remove current assignment" }).click();
   await page.getByRole("button", { name: "Keep current assignment" }).click();
-  expect(backend.assignment?.workout_id).toBeTruthy();
+  expect(backend.profileAssignments.get(profileId)?.workout_id).toBeTruthy();
   await page.getByRole("button", { name: "Remove current assignment" }).click();
   await page
     .getByRole("button", { name: "Confirm removal of assignment" })
@@ -310,7 +318,9 @@ test("editing a template does not silently replace an account assignment and uns
   await page.getByLabel("Workout name").fill("Revised complete practice");
   await expect(page.getByLabel("Assign to customer account")).toBeDisabled();
   await save(page);
-  expect(backend.assignment?.workout_title).toBe("Fictional complete practice");
+  expect(backend.profileAssignments.get(profileId)?.workout_title).toBe(
+    "Fictional complete practice",
+  );
   expect(backend.counts.assigns).toBe(1);
   await page.getByLabel("Assign to customer account").selectOption(accountId);
   await expect(
@@ -327,7 +337,9 @@ test("editing a template does not silently replace an account assignment and uns
       { exact: true },
     ),
   ).toBeVisible();
-  expect(backend.assignment?.workout_title).toBe("Revised complete practice");
+  expect(backend.profileAssignments.get(profileId)?.workout_title).toBe(
+    "Revised complete practice",
+  );
 });
 
 for (const role of ["owner", "manager", "coach"]) {

@@ -54,14 +54,12 @@ test("a coach submits privately, an Owner reviews, then builds and assigns the a
     .click();
   await expect(staff.getByRole("dialog")).toHaveCount(0);
   await staff.getByLabel("Review stage").selectOption("approved");
-  const item = staff
-    .locator(".approval-list > li")
-    .filter({
-      has: staff.getByRole("heading", {
-        name: "Fictional drill 1",
-        exact: true,
-      }),
-    });
+  const item = staff.locator(".approval-list > li").filter({
+    has: staff.getByRole("heading", {
+      name: "Fictional drill 1",
+      exact: true,
+    }),
+  });
   await item
     .getByRole("button", { name: "Build a workout with this drill" })
     .click();
@@ -88,7 +86,9 @@ test("a coach submits privately, an Owner reviews, then builds and assigns the a
       { exact: true },
     ),
   ).toBeVisible();
-  expect(backend.assignment?.resource_ids).toHaveLength(2);
+  expect(backend.profileAssignments.get(profileId)?.resource_ids).toHaveLength(
+    2,
+  );
   await owner.close();
 });
 

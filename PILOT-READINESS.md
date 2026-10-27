@@ -28,12 +28,12 @@ is not approval to open real junior enrollment or charge families.
 | Adult access | Verified invitation acceptance, password setup/recovery, private profile CRUD, staff/customer separation; browser/server tests | Dedicated sending configuration and actual inbox/device acceptance |
 | Partner Owner access | Existing Owner can promote a verified adult after setup; confirmation, version/audit and last/self-Owner protections are tested | Partner account absent; invitation/activation and a specifically approved Owner grant are still required |
 | Family permissions | Per-profile controls, one linked-athlete identity, parent review, revocation and known-minor protection; SQL/browser tests | Legal/business guardian verification, consent/withdrawal, age transition and support process; real juniors stay closed |
-| Training | Shared content drafts/approvals, ordered workout builder, eligibility and Owner assignment | One current workout per account; different concurrent sibling plans need a separately reviewed per-profile design |
+| Training | Shared content drafts/approvals, ordered workout builder, eligibility and Owner assignment | This branch adds independent athlete plans; migration 012 and updated web/native code need review and an approved release. No production migration applied |
 | Practice/progress | Guided steps, completion acknowledgement, save/resume, idempotent reporting and parent/self-reported history | Actual phone acceptance; completion/parent approval is not an ability assessment |
 | Video reviews | Preview, private upload, assigned-coach feedback, deletion and 48-hour fulfillment tracking; browser/SQL/native bridge tests | Actual camera/Photos/audio, transfer interruption, playback/deletion and feedback return on both phones |
 | Content pathway | Existing matching/upload/review workflow | The first two-session adult draft is supplied in this branch; qualified coaching review, final repetitions/rest and licensed/original demonstration media are still required |
-| Weekly release | A tested source-level preview helper resolves explicit Sunday/time-zone choices, rejecting skipped/repeated clock times | No scheduling UI or scheduler exists or is enabled; business timezone/time and server-enforced release/access design need approval |
-| Packages | Selected prices are $15 single review and $45 monthly | Monthly inclusions, athlete limits, review allowance, cancellation/refund and failed-payment terms are undecided |
+| Weekly release | Owner-only Sunday/time-zone preview and device-local draft; rejects skipped/repeated clock times | No live scheduler or server release gate is enabled; canonical timezone/time and activation need owner approval |
+| Packages | Recorded: $15 single review, $45 monthly, four reviews per child, up to three minutes total per review | Clarify per-child versus household charge, billing cycle/unused credits, cancellation/refund and failed-payment terms; the recorded inclusion is already decided |
 | Billing | No checkout, charge, paid credit balance or automatic entitlement has been enabled | Payment-provider account/secure credentials, verified webhooks, renewals, failed charges, cancellation/refund tests and iOS purchasing-policy review |
 
 Age bands and adult/guardian acknowledgements are not verified birth dates or
@@ -59,6 +59,19 @@ because a checkbox or synthetic test passes.
    autumn times, invalid inputs and the exact release boundary. It is not a
    server authorization gate and no content release job is created.
 
+6. Add migration draft `backend/012-per-athlete-workout-assignments.sql` and an
+   athlete picker for Owner assignment. Each sibling has an independent snapshot,
+   revision and removal tombstone. Eligibility, ordered completion and practice
+   resume resolve the same athlete snapshot. Legacy account defaults and loose
+   grants are preserved. The migration has run only in local synthetic databases.
+7. Add an Owner-only Sunday preview form. Time and timezone start unset. A draft
+   is scoped to the signed-in Owner on this device; it is not a shared business
+   setting or a live scheduler.
+8. Preserve the selected athlete across tab refresh using only a user-scoped
+   session selection ID. Profiles are fetched and authorized afresh; unknown IDs
+   are ignored, and selection IDs are cleared on sign-out/account changes. No
+   private profile records are cached by this change.
+
 ## Smallest owner action list
 
 1. Select/configure the dedicated email sender securely, then approve a real
@@ -72,9 +85,11 @@ because a checkbox or synthetic test passes.
 4. Have a qualified coach review the two-session draft, approve its adult scope,
    final instructions/timing and demonstration rights. Other age/position
    pathways remain future work until reviewed.
-5. Decide what $45 monthly includes and the $15 review's refund/cancellation
-   rules. Choose the provider and iOS/web purchase route before configuring
-   secure test credentials. Test money/entitlements before enabling charges.
+5. Keep the recorded $15 single-review / $45 monthly / four reviews per child /
+   three-minute-total review terms. Clarify whether the monthly charge is per
+   child or household, credit cycle/expiry and refund/cancellation rules. Choose
+   the provider and iOS/web purchase route before secure test credentials. Test
+   renewals, credits and failed-payment/cancellation access before charges.
 6. Choose the canonical Sunday timezone and local time. The preview does not
    activate scheduling or replace approval/assignment checks.
 7. Complete the two-phone acceptance below. Review this branch's scope before
@@ -104,21 +119,37 @@ because a checkbox or synthetic test passes.
   orientation and background/connection interruptions on the actual phones.
   Browser emulation, simulator success and a legal checkbox do not replace this.
 
+## Accepted package terms versus current upload limits
+
+The three-minute-total allowance is a recorded business requirement, not an
+implemented paid entitlement. Customer `inspectVideo` validation and the
+`begin_athlete_video` database function currently cap one clip at 60 seconds.
+The 180-second staff content-upload limit is a different workflow. The pilot
+also allows five stored clips per account and a shared storage budget; those
+are not monthly credits. Align the submission format, native preparation,
+storage/retention and server entitlements before selling the package. This
+branch does not raise those limits or enable charging. The submission flow must
+enforce the recorded three-minute total whether it accepts one clip or a combined
+submission; the duration allowance does not need reapproval.
+
 ## Validation of this review branch — 2026-10-27
 
 - Lint, TypeScript and production build passed.
-- All 244 unit tests passed, including existing database-policy tests and four
-  new Sunday/time-zone boundary tests.
-- 68 focused browser cases passed across phone/desktop: accounts, service desk
-  and the new continuous adult-household journey. A further 14 existing video
-  cases passed, including cancelled recording, failed upload/retry, private
-  feedback and deletion confirmation.
-- Both strengthened customer-library navigation cases passed on rerun. These
-  are two of the 68 focused cases, not additional distinct tests.
-- All eight installed-web-app/offline cases passed.
+- All **253 unit tests** passed, including nine new per-athlete database-policy
+  cases against migrations 001–012 and four Sunday/time-zone boundary cases.
+- The final full phone/desktop browser suite passed **240 cases** with no failures.
+  It includes separate sibling assignments, cancelled confirmation, repeated taps,
+  independent completion/history, selected-athlete refresh persistence, owner-only
+  Sunday configuration, clock changes, device-only save and discard behavior.
+- All **eight installed-web-app/offline cases** passed, including private-record
+  exclusion, update handling and offline reopen.
+- SQL cases cover wrong-household/profile substitution, raw-write/internal-helper
+  denial, linked-athlete isolation, parent pause/revocation, stale/idempotent
+  assignment, legacy defaults/removal tombstones, isolated resume invalidation,
+  review-note redaction, content withdrawal and erasure freezes/cascades.
 
-These are synthetic local tests. The full browser suite, hosted CI, a new native
-build and actual inbox/phone/service acceptance have not been run for this pilot
+These are synthetic local tests. Hosted CI, a new native build, hosted migration
+rehearsal and actual inbox/phone/service acceptance have not run for this pilot
 branch. Production's separate brand-kit release passed its full hosted checks;
 that result does not approve these unpublished pilot changes.
 

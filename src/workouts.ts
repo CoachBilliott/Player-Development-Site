@@ -21,6 +21,13 @@ export const assignmentSchema = z.object({
   version: z.number().int().nonnegative(),
 });
 export type WorkoutAssignment = z.infer<typeof assignmentSchema>;
+export const assignmentProfileSchema = z.object({
+  id: z.string().uuid(),
+  nickname: z.string(),
+  age_group: z.string(),
+  position: z.string(),
+});
+export type AssignmentProfile = z.infer<typeof assignmentProfileSchema>;
 export const noAssignment: WorkoutAssignment = {
   workout_id: null,
   workout_title: "",
@@ -145,7 +152,34 @@ export class Workouts {
         "Removal was not confirmed. Refresh saved workouts before retrying.",
       );
   }
-  async assignment(account: string) {
+  async profiles(account: string) {
+    const { data, error } = await this.client.rpc(
+      "workout_assignment_profiles",
+      {
+        target_account: account,
+      },
+    );
+    if (error)
+      throw new Error(
+        "Athletes could not be loaded. Reload this customer before assigning.",
+      );
+    return z.array(assignmentProfileSchema).parse(data || []);
+  }
+  async assignment(account: string, profile?: string) {
+    if (profile) {
+      const { data, error } = await this.client.rpc(
+        "profile_workout_assignment",
+        {
+          target_account: account,
+          target_profile: profile,
+        },
+      );
+      if (error)
+        throw new Error(
+          "This athlete's assignment could not be loaded. Reload before making changes.",
+        );
+      return assignmentSchema.parse(data?.version ? data : noAssignment);
+    }
     const { data, error } = await this.client
       .from("member_workout_assignments")
       .select(
@@ -159,13 +193,14 @@ export class Workouts {
       );
     return assignmentSchema.parse(data || noAssignment);
   }
-  async preview(workout: SavedWorkout, account: string) {
+  async preview(workout: SavedWorkout, account: string, profile?: string) {
     const { data, error } = await this.client.rpc(
-      "workout_assignment_preview",
+      profile ? "profile_workout_preview" : "workout_assignment_preview",
       {
         workout: workout.id,
         workout_version: workout.version,
         target_account: account,
+        ...(profile ? { target_profile: profile } : {}),
       },
     );
     if (error)
@@ -174,13 +209,22 @@ export class Workouts {
       );
     return z.object({ eligible: z.boolean() }).parse(data).eligible;
   }
-  async assign(workout: SavedWorkout | null, account: string, version: number) {
-    const { data, error } = await this.client.rpc("assign_training_workout", {
-      target_account: account,
-      workout: workout?.id || null,
-      workout_version: workout?.version || 0,
-      expected_version: version,
-    });
+  async assign(
+    workout: SavedWorkout | null,
+    account: string,
+    version: number,
+    profile?: string,
+  ) {
+    const { data, error } = await this.client.rpc(
+      profile ? "assign_profile_workout" : "assign_training_workout",
+      {
+        target_account: account,
+        workout: workout?.id || null,
+        workout_version: workout?.version || 0,
+        expected_version: version,
+        ...(profile ? { target_profile: profile } : {}),
+      },
+    );
     if (error)
       throw new Error(
         "Assignment was not confirmed. Reload this account before retrying; eligibility or another Owner's changes may have changed.",
