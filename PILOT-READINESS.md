@@ -32,7 +32,7 @@ is not approval to open real junior enrollment or charge families.
 | Practice/progress | Guided steps, completion acknowledgement, save/resume, idempotent reporting and parent/self-reported history | Actual phone acceptance; completion/parent approval is not an ability assessment |
 | Video reviews | Preview, private upload, assigned-coach feedback, deletion and 48-hour fulfillment tracking; browser/SQL/native bridge tests | Actual camera/Photos/audio, transfer interruption, playback/deletion and feedback return on both phones |
 | Content pathway | Existing matching/upload/review workflow | The first two-session adult draft is supplied in this branch; qualified coaching review, final repetitions/rest and licensed/original demonstration media are still required |
-| Weekly release | A tested preview resolves explicit Sunday/time-zone choices, rejecting skipped/repeated clock times | No scheduler exists or is enabled; business timezone/time and server-enforced release/access design need approval |
+| Weekly release | A tested source-level preview helper resolves explicit Sunday/time-zone choices, rejecting skipped/repeated clock times | No scheduling UI or scheduler exists or is enabled; business timezone/time and server-enforced release/access design need approval |
 | Packages | Selected prices are $15 single review and $45 monthly | Monthly inclusions, athlete limits, review allowance, cancellation/refund and failed-payment terms are undecided |
 | Billing | No checkout, charge, paid credit balance or automatic entitlement has been enabled | Payment-provider account/secure credentials, verified webhooks, renewals, failed charges, cancellation/refund tests and iOS purchasing-policy review |
 
@@ -63,10 +63,10 @@ because a checkbox or synthetic test passes.
 
 1. Select/configure the dedicated email sender securely, then approve a real
    invitation/recovery delivery test. Do not send passwords or keys in chat.
-2. Confirm the partner's app email separately from their Apple identity. Use the
-   existing staff invitation/setup path, then separately confirm an Owner grant
-   after verified adult activation. Do not turn an Owner into a customer just to
-   test workouts.
+2. Use the partner's already-supplied app email in the existing staff invitation
+   and setup flow. After verified adult activation, approve the separate Owner
+   promotion from the existing Owner workspace. The Apple identity is separate;
+   an Owner does not need a customer account just to reach the staff tools.
 3. Approve a separate adult customer test identity for the family journey. Use
    fictional 18+ profiles; keep both real junior gates closed.
 4. Have a qualified coach review the two-session draft, approve its adult scope,
@@ -103,6 +103,24 @@ because a checkbox or synthetic test passes.
 - Test selected-profile persistence, large text, VoiceOver, camera/library/audio,
   orientation and background/connection interruptions on the actual phones.
   Browser emulation, simulator success and a legal checkbox do not replace this.
+
+## Validation of this review branch — 2026-10-27
+
+- Lint, TypeScript and production build passed.
+- All 244 unit tests passed, including existing database-policy tests and four
+  new Sunday/time-zone boundary tests.
+- 68 focused browser cases passed across phone/desktop: accounts, service desk
+  and the new continuous adult-household journey. A further 14 existing video
+  cases passed, including cancelled recording, failed upload/retry, private
+  feedback and deletion confirmation.
+- Both strengthened customer-library navigation cases passed on rerun. These
+  are two of the 68 focused cases, not additional distinct tests.
+- All eight installed-web-app/offline cases passed.
+
+These are synthetic local tests. The full browser suite, hosted CI, a new native
+build and actual inbox/phone/service acceptance have not been run for this pilot
+branch. Production's separate brand-kit release passed its full hosted checks;
+that result does not approve these unpublished pilot changes.
 
 ## Publication boundary
 
