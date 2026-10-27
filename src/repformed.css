@@ -159,6 +159,16 @@
 .experience .footer-bottom {
   border-color: #8c939d40;
 }
+@media (max-width: 1000px) {
+  .experience .footer-inner {
+    flex-wrap: wrap;
+  }
+  .experience .footer-inner > div {
+    flex-wrap: wrap;
+    min-width: 0;
+    max-width: 100%;
+  }
+}
 .experience .quick-help-question:hover {
   border-color: var(--brand-gold);
 }
@@ -230,13 +240,16 @@
   }
 }
 @media (max-width: 380px) {
-  .mobile-layout .brand {
+  .experience .brand {
     gap: 8px;
   }
-  .mobile-layout .brand-name {
+  .experience .brand-mark {
+    width: 32px;
+  }
+  .experience .brand-name {
     font-size: 19px;
   }
-  .mobile-layout .brand-name > span {
+  .experience .brand-name > span {
     font-size: 6px;
   }
   .app-header-tools {
