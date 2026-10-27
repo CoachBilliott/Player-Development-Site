@@ -23,10 +23,10 @@
 }
 .social-links a:hover {
   background: #292724;
-  border-color: #ffb28b;
+  border-color: #d9bc82;
 }
 .social-links a:focus-visible {
-  outline: 3px solid #ffb28b;
+  outline: 3px solid #d9bc82;
   outline-offset: 3px;
 }
 footer > .social-links-block {

@@ -59,7 +59,7 @@ test("contact email topics prepare a message without claiming to send or storing
   expect(email.protocol).toBe("mailto:");
   expect(email.pathname).toBe("Repformed@gmail.com");
   expect(email.searchParams.get("subject")).toBe(
-    "Player Development — Privacy and account deletion",
+    "Repformed — Privacy and account deletion",
   );
   await topic.selectOption("Video review questions");
   expect(

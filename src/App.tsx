@@ -386,7 +386,7 @@ export default function App() {
                 ? "PRIVATE WORKSPACE"
                 : demoPage
                   ? "SAMPLE-DATA DEMO"
-                  : "PLAYER DEVELOPMENT"}{" "}
+                  : "REPFORMED"}{" "}
               <span className="strip-divider">/</span>
               <span>
                 {privatePage
@@ -619,7 +619,7 @@ export default function App() {
                 <a href="#membership">
                   Future memberships <ArrowUpRight size={14} />
                 </a>
-                <a href="#home">About Player Development</a>
+                <a href="#home">About Repformed</a>
                 <a href="#contact">Contact</a>
                 <QuickHelp />
                 <a href={shared.signedIn ? "#workspace" : "#account"}>
@@ -634,7 +634,7 @@ export default function App() {
             <SocialLinks />
             <div className="footer-bottom">
               <span>
-                © {new Date().getFullYear()} Player Development · Temporary name
+                © {new Date().getFullYear()} Repformed · Athlete development
               </span>
               <span>
                 Illustrative content · pending qualified coaching review

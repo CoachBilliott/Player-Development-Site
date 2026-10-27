@@ -40,7 +40,7 @@ export async function openWebsite(path = "#home") {
     url.origin !== new URL(WEBSITE).origin ||
     !url.pathname.startsWith("/Player-Development-Site/")
   )
-    throw new Error("Only the Player Development website can be opened here.");
+    throw new Error("Only the Repformed website can be opened here.");
   if (nativeApp()) {
     const { AppLauncher } = await import("@capacitor/app-launcher");
     const result = await AppLauncher.openUrl({ url: url.href });

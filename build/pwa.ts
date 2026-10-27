@@ -12,6 +12,7 @@ export function appShell(): Plugin {
       const publicFiles = [
         "manifest.webmanifest",
         "favicon.svg",
+        "brand/repformed-mark.svg",
         "media/training-poster.jpg",
         "media/family-football.jpg",
         "media/solo-football.jpg",

@@ -1133,7 +1133,7 @@ function ConnectedAccount({
           onClose={() => setPrivacyOpen(false)}
         >
           <p>
-            Player Development stores the adult’s email and login credentials
+            Repformed stores the adult’s email and login credentials
             through Supabase Auth. Member records store your account type,
             acknowledgement time, and each player’s nickname, age group,
             football position, experience and goal. Do not enter full names,
@@ -1346,7 +1346,7 @@ function StaffAccount({
       <div className="page-intro">
         <Tag>PRIVATE · STAFF ACCOUNT</Tag>
         <h1 tabIndex={-1}>Your {ROLE_LABELS[role]} account.</h1>
-        <p>Manage Player Development with your assigned staff permissions.</p>
+        <p>Manage Repformed with your assigned staff permissions.</p>
       </div>
       <section className="panel member-panel">
         <h2>Signed in</h2>

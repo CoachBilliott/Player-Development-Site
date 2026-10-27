@@ -12,7 +12,7 @@ export const CONTACT_TOPICS = [
 export function contactEmailLink(topic: string) {
   const selected =
     CONTACT_TOPICS.find((item) => item === topic) || CONTACT_TOPICS[0];
-  return `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(`Player Development — ${selected}`)}`;
+  return `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(`Repformed — ${selected}`)}`;
 }
 
 // These are authored product answers, not generated coaching or account advice.

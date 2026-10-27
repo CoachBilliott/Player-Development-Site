@@ -46,7 +46,7 @@ export function Home() {
           </p>
         </div>
         <div className="hero-edition" aria-hidden="true">
-          <span>PLAYER DEVELOPMENT</span>
+          <span>REPFORMED</span>
           <span>THE WORK STARTS HERE / 01</span>
         </div>
       </section>

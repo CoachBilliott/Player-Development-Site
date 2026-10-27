@@ -56,7 +56,7 @@
             link.rel = "noopener noreferrer";
             link.setAttribute(
               "aria-label",
-              item.platform + " (opens outside Player Development)",
+              item.platform + " (opens outside Repformed)",
             );
             nav.append(link);
           } catch {

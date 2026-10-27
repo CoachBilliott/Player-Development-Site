@@ -39,7 +39,7 @@ export function WebsiteLink({
           if (!nativeApp()) return;
           event.preventDefault();
           void openWebsite(path).catch(() =>
-            setError("Open Player Development in Safari to continue."),
+            setError("Open Repformed in Safari to continue."),
           );
         }}
       >
@@ -136,7 +136,7 @@ export function MobileWelcome({ signedIn }: { signedIn: boolean }) {
         />
         <div className="app-start-shade" />
         <div className="app-start-title">
-          <Tag>FOOTBALL · PLAYER DEVELOPMENT</Tag>
+          <Tag>FOOTBALL · REPFORMED</Tag>
           <h1 tabIndex={-1}>
             Your training
             <br />
@@ -154,7 +154,7 @@ export function MobileWelcome({ signedIn }: { signedIn: boolean }) {
           <ShieldCheck size={19} />
           <p>
             Your private workouts, practice history and coach video reviews.
-            Sign in with your Player Development account.
+            Sign in with your Repformed account.
           </p>
         </div>
         <p className="app-pilot-note">
@@ -169,7 +169,7 @@ export function MobileHelp({ app }: { app: PwaState }) {
   return (
     <main className="page app-help">
       <div className="page-intro">
-        <Tag>PLAYER DEVELOPMENT · TEST BUILD 0.1.0</Tag>
+        <Tag>REPFORMED · TEST BUILD 0.1.0</Tag>
         <h1 tabIndex={-1}>Your app, explained.</h1>
         <p>
           {nativeApp()
@@ -202,7 +202,7 @@ export function MobileHelp({ app }: { app: PwaState }) {
       <section className="panel">
         <h2>Accounts & privacy</h2>
         <p>
-          Log in with your approved Player Development account. Real profiles
+          Log in with your approved Repformed account. Real profiles
           use the same private account service as the website. Account access
           determines which workspace you see.
         </p>
