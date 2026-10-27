@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "tsc -b && vite build --base=./",
+    "build:staff-preview": "vite build --config vite.staff-preview.config.ts",
+    "test:staff-preview": "playwright test --config playwright.staff-preview.config.ts",
     "preview": "vite preview --host 0.0.0.0",
     "typecheck": "tsc -b",
     "lint": "eslint .",
