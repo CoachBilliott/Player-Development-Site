@@ -53,7 +53,7 @@ export function navigationFor(
   }
   return [
     ["home", "The platform"],
-    ["membership", "Memberships"],
+    ["membership", "Proposed packages"],
     ["contact", "Contact"],
   ];
 }

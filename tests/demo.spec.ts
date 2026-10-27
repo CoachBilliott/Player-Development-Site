@@ -58,14 +58,14 @@ test("homepage is responsive and sample demo is obvious", async ({
   ).toBeVisible();
   await expect(page.locator(".hero .button")).toBeInViewport();
   await expect(page.locator(".hero .sport-tag")).toHaveText(
-    "ATHLETE DEVELOPMENT · AGES 5 TO ADULT",
+    "FOOTBALL · IN DEVELOPMENT",
   );
   await expect(page.locator(".hero .stadium-surface")).toHaveCount(0);
   const football = page.getByRole("article", {
     name: "American football program",
   });
   await expect(
-    football.getByText("AVAILABLE NOW", { exact: true }),
+    football.getByText("DEMO AVAILABLE", { exact: true }),
   ).toBeVisible();
   await expect(
     football.getByRole("link", { name: "Try the football demo", exact: true }),
@@ -490,8 +490,10 @@ test("corrupted data falls back safely and future memberships have no checkout",
     "Saved demo data could not be read",
   );
   await page.goto("./#membership");
-  await expect(page.getByText("Not available to purchase")).toHaveCount(3);
-  await expect(page.getByText("Pricing to be determined")).toHaveCount(3);
+  await expect(page.getByText("Not available to purchase")).toHaveCount(4);
+  await expect(page.getByText("PROPOSED PACKAGE", { exact: true })).toHaveCount(
+    4,
+  );
   await expect(
     page.getByRole("button", { name: /buy|pay|checkout/i }),
   ).toHaveCount(0);
@@ -531,7 +533,9 @@ test("all screens fit mobile and navigation is keyboard accessible", async ({
       .getByRole("link", { name: "Log in", exact: true })
       .click();
     await expect(
-      page.getByRole("heading", { name: "Private profiles are being connected." }),
+      page.getByRole("heading", {
+        name: "Private profiles are being connected.",
+      }),
     ).toBeVisible();
     await expect(
       page.getByRole("button", { name: "Open navigation" }),
