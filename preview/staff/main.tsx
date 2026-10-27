@@ -43,7 +43,7 @@ export function Preview() {
                     : "all_repformed_clients",
                 rows: rows.current.filter(allowed).map(view),
                 coaches:
-                  role === "owner"
+                  role !== "coach"
                     ? [
                         { id: coachA, label: "Fictional Coach Alex" },
                         { id: coachB, label: "Fictional Coach Blair" },
@@ -64,7 +64,7 @@ export function Preview() {
             return { data: view(row), error: null };
           if (
             name === "assign_athlete_service_coach" &&
-            role === "owner" &&
+            role !== "coach" &&
             row.coach_version === body.expected_version
           ) {
             row.coach_id = body.coach as string | null;

@@ -20,7 +20,9 @@ export function serviceAction(row: StaffAthlete, role: string) {
   if (row.overdue_reviews) return "Review overdue task";
   if (row.blocked_reviews) return "Resolve follow-up";
   if (!row.coach_id)
-    return role === "owner" ? "Assign service coach" : "View responsibility";
+    return role === "owner" || role === "manager"
+      ? "Assign service coach"
+      : "View responsibility";
   if (!row.workout_id || !row.eligible_access || !row.media_ready)
     return "Review training needs";
   return row.pending_reviews ? "View review tasks" : "View athlete details";

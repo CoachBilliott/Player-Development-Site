@@ -22,7 +22,7 @@ create function public.assign_athlete_service_coach(target_profile uuid,coach uu
 returns public.athlete_service_coaches language plpgsql security definer set search_path='' as $$
 declare a public.athlete_service_coaches;
 begin
- if public.current_account_role() is distinct from 'owner' or public.account_is_closing(auth.uid()) then raise exception 'Owner access is required.';end if;
+ if coalesce(public.current_account_role(),'') not in ('owner','manager') or public.account_is_closing(auth.uid()) then raise exception 'Owner or Manager access is required.';end if;
  if not public.staff_can_view_service_athlete(target_profile) then raise exception 'This athlete is unavailable.';end if;
  if coach is not null and not exists(select 1 from public.account_roles r join auth.users u on u.id=r.user_id where r.user_id=coach and r.role in ('owner','manager','coach') and u.email_confirmed_at is not null and not public.account_is_closing(r.user_id)) then raise exception 'Choose verified active coaching staff.';end if;
  perform pg_advisory_xact_lock(hashtextextended(target_profile::text,1515));
@@ -79,7 +79,7 @@ begin
  where r.role in ('parent','athlete') and not public.account_is_closing(a.user_id)
  and ((actor_role in ('owner','manager') and (p.id is null or public.staff_can_view_service_athlete(p.id))) or (actor_role='coach' and p.id is not null and public.staff_can_view_service_athlete(p.id)));
  return jsonb_build_object('source','account_backend','rows',roster_rows,'scope',case when actor_role='coach' then 'assigned_athletes' else 'all_repformed_clients' end,
- 'coaches',case when actor_role='owner' then coalesce((select jsonb_agg(jsonb_build_object('id',r.user_id,'label',u.email)) from public.account_roles r join auth.users u on u.id=r.user_id where r.role in ('owner','manager','coach') and u.email_confirmed_at is not null and not public.account_is_closing(r.user_id)),'[]'::jsonb) else '[]'::jsonb end);
+ 'coaches',case when actor_role in ('owner','manager') then coalesce((select jsonb_agg(jsonb_build_object('id',r.user_id,'label',u.email)) from public.account_roles r join auth.users u on u.id=r.user_id where r.role in ('owner','manager','coach') and u.email_confirmed_at is not null and not public.account_is_closing(r.user_id)),'[]'::jsonb) else '[]'::jsonb end);
 end;
 $$;
 revoke all on function public.assign_athlete_service_coach(uuid,uuid,integer),public.staff_athlete_service(uuid),public.staff_client_service_roster() from public,anon;

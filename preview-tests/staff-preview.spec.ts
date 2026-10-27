@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { mkdir } from "node:fs/promises";
-import { coachA } from "../preview/staff/data";
+import { coachA, coachB } from "../preview/staff/data";
 test("isolated preview has usable scoped roles, details, assignment, reset and no external API", async ({
   page,
 }) => {
@@ -54,9 +54,13 @@ test("isolated preview has usable scoped roles, details, assignment, reset and n
       exact: true,
     })
     .click();
-  await expect(
-    page.getByRole("button", { name: "Save service coach" }),
-  ).toHaveCount(0);
+  await page
+    .getByRole("dialog")
+    .locator("summary")
+    .filter({ hasText: "Service coach" })
+    .click();
+  await page.getByLabel("Responsible service coach").selectOption(coachB);
+  await page.getByRole("button", { name: "Save service coach" }).click();
   await page.getByRole("button", { name: "Back to client service" }).click();
   await page.reload();
   await expect(page.getByLabel("View as")).toHaveValue("owner");

@@ -90,7 +90,7 @@ test("Owner landing shows all clients, overdue service and private athlete drill
   ).toBe(true);
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 });
-test("Manager sees all clients read-only; Coach sees assigned athlete and direct sibling URL is denied", async ({
+test("Manager can change service coaches; Coach sees assigned athlete and direct sibling URL is denied", async ({
   page,
   context,
   browser,
@@ -104,14 +104,25 @@ test("Manager sees all clients read-only; Coach sees assigned athlete and direct
   await page
     .getByRole("button", { name: "Review overdue task for Fictional Jordan" })
     .click();
-  await expect(
-    page.getByRole("button", { name: "Save service coach" }),
-  ).toHaveCount(0);
+  await page
+    .getByRole("dialog")
+    .locator("summary")
+    .filter({ hasText: "Service coach" })
+    .click();
+  await page.getByLabel("Responsible service coach").selectOption(coachB);
+  await page.getByRole("button", { name: "Save service coach" }).click();
+  await expect(page.getByRole("dialog").getByRole("status")).toContainText(
+    "Service coach assignment saved",
+  );
+  expect(data.rows.find((r) => r.athlete_id === athleteA)?.coach_id).toBe(
+    coachB,
+  );
   await page.getByRole("button", { name: "Back to client service" }).click();
   await page.screenshot({
     path: `docs/staff-service-preview/manager-${info.project.name}.png`,
     fullPage: false,
   });
+  data.rows.find((r) => r.athlete_id === athleteA)!.coach_id = coachA;
   const coachContext = await browser.newContext({
     viewport: page.viewportSize() || { width: 390, height: 844 },
   });

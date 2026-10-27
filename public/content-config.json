@@ -6,6 +6,6 @@
   "membersSignupEnabled": false,
   "accountLifecycleEnabled": true,
   "serviceTrackingEnabled": true,
-  "staffRosterEnabled": false,
-  "deliveryMonitoringEnabled": false
+  "staffRosterEnabled": true,
+  "deliveryMonitoringEnabled": true
 }

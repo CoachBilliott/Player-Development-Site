@@ -444,13 +444,13 @@ export function StaffServiceDashboard({
                   <h3>{current.next_action}</h3>
                   {preview && (
                     <p>
-                      {!current.coach_id && role === "owner"
+                      {!current.coach_id && role !== "coach"
                         ? "Choose a sample service coach below. This changes fictional data in this browser only."
                         : "Review the sample status below. Real uploads, coaching feedback and training assignment are not connected in this preview."}
                     </p>
                   )}
                 </section>
-                {role === "owner" ? (
+                {role !== "coach" ? (
                   <details
                     className="staff-detail-group"
                     open={!current.coach_id}
@@ -520,7 +520,7 @@ export function StaffServiceDashboard({
                 ) : (
                   <p className="staff-detail-owner-note">
                     Service coach: {current.coach_label || "Unassigned"}. An
-                    Owner manages roster responsibility.
+                    Owner or Manager manages roster responsibility.
                   </p>
                 )}
                 <details

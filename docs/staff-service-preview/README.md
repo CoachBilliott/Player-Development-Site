@@ -24,7 +24,7 @@ current access/readiness, observed saved practice/completion and pending review
 tasks. Filters expose overdue reviews, unassigned responsibility and training
 attention. A detail panel opens from the athlete; Back returns to the roster.
 
-Owners can assign or revoke **service-roster responsibility**. Managers and
+Owners and Managers can assign or revoke **service-roster responsibility**.
 Coaches cannot use this control. It does not assign existing private reviews,
 change account roles, create billing access or expose unrelated videos.
 

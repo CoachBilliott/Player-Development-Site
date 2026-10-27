@@ -1,4 +1,6 @@
 -- REVIEW DRAFT ONLY. No production application, scheduler, sender or push setup.
+-- Requires 012 and 015; compatible with the existing 011 single-clip schema.
+-- Grouped migrations 013/014 are optional and NOT part of the minimal release.
 -- Manual checks record observation time, never a fabricated first-delivery time.
 begin;
 create table public.delivery_monitor_settings(singleton boolean primary key default true check(singleton),enabled boolean not null default false);
@@ -245,8 +247,8 @@ begin
   for s in select * from public.review_services where profile_id=target_profile and state='delivered' and delivered_at is not null loop
    if public.current_account_role()='coach' and s.assigned_to is distinct from auth.uid() then continue;end if;
    select * into v from public.athlete_video_reviews where id=s.video_id;
-   if (s.is_grouped and s.group_submitted_at is not null and s.group_reviewed_by is not null and not s.group_erased and length(btrim(s.group_feedback))>0)
-    or (not s.is_grouped and v.status='reviewed' and v.reviewed_by is not null and length(btrim(v.feedback))>0 and exists(select 1 from storage.objects o where o.bucket_id='athlete-review-videos' and o.name=v.asset_path)) then
+   if (coalesce((to_jsonb(s)->>'is_grouped')::boolean,false) and (to_jsonb(s)->>'group_submitted_at') is not null and (to_jsonb(s)->>'group_reviewed_by') is not null and not coalesce((to_jsonb(s)->>'group_erased')::boolean,false) and length(btrim((to_jsonb(s)->>'group_feedback')))>0)
+    or (not coalesce((to_jsonb(s)->>'is_grouped')::boolean,false) and v.status='reviewed' and v.reviewed_by is not null and length(btrim(v.feedback))>0 and exists(select 1 from storage.objects o where o.bucket_id='athlete-review-videos' and o.name=v.asset_path)) then
     insert into public.content_notices(profile_id,recipient_id,kind,source_id,source_version,event_key)
     values(target_profile,recipient,'review_ready',s.id,s.delivered_at::text,'review:'||s.id::text||':'||s.delivered_at::text||':'||recipient::text) on conflict(event_key) do nothing;
    end if;
@@ -282,7 +284,7 @@ begin
  if auth.uid() is null or public.account_is_closing(auth.uid()) then raise exception 'Verified member access is required.';end if;
  return coalesce((select jsonb_agg(jsonb_build_object('id',n.id,'profile_id',n.profile_id,'athlete_name',(select nickname from public.player_profiles where id=n.profile_id),'kind',n.kind,'observed_at',n.observed_at,'read_at',n.read_at,'email_status',n.email_status,
  'available_now',case when n.kind='training_ready' then exists(select 1 from public.delivery_expectations e where e.id=n.source_id and public.delivery_check_available(e))
- else exists(select 1 from public.review_services s where s.id=n.source_id and s.state='delivered' and ((s.is_grouped and s.group_submitted_at is not null and s.group_reviewed_by is not null and not s.group_erased and length(btrim(s.group_feedback))>0) or exists(select 1 from public.athlete_video_reviews v where v.id=s.video_id and v.status='reviewed' and v.reviewed_by is not null and length(btrim(v.feedback))>0))) end) order by n.observed_at desc)
+ else exists(select 1 from public.review_services s where s.id=n.source_id and s.state='delivered' and ((coalesce((to_jsonb(s)->>'is_grouped')::boolean,false) and (to_jsonb(s)->>'group_submitted_at') is not null and (to_jsonb(s)->>'group_reviewed_by') is not null and not coalesce((to_jsonb(s)->>'group_erased')::boolean,false) and length(btrim((to_jsonb(s)->>'group_feedback')))>0) or exists(select 1 from public.athlete_video_reviews v where v.id=s.video_id and v.status='reviewed' and v.reviewed_by is not null and length(btrim(v.feedback))>0))) end) order by n.observed_at desc)
  from (select * from public.content_notices where recipient_id=auth.uid() order by observed_at desc limit 100) n where public.delivery_recipient(n.profile_id)=auth.uid()),'[]'::jsonb);
 end;
 $$;

@@ -17,9 +17,9 @@ The filter menu includes overdue, attention, ready and unassigned records. Count
 no-results and clear/reset states reflect the current scoped records.
 
 Each athlete has a specific action: review an overdue task, assign a service coach,
-review training needs or open details. Assignment controls are Owner-only, with
+review training needs or open details. Assignment controls are Owner/Manager controls, with
 explicit browser-only sample feedback in the preview. Managers see all sample
-clients read-only; Coaches see assigned athletes. No upload, payment, real coaching
+clients and can change coaches; Coaches see assigned athletes. No upload, payment, real coaching
 feedback or real training assignment action is fabricated.
 
 Details prioritize the next step; an unassigned athlete opens directly to the

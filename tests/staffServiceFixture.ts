@@ -156,13 +156,12 @@ export async function staffFixture(
             scope:
               role === "coach" ? "assigned_athletes" : "all_repformed_clients",
             rows: data.rows.filter(allowed).map(view),
-            coaches:
-              role === "owner"
-                ? [
-                    { id: coachA, label: "fictional-coach-a@example.test" },
-                    { id: coachB, label: "fictional-coach-b@example.test" },
-                  ]
-                : [],
+            coaches: ["owner", "manager"].includes(role)
+              ? [
+                  { id: coachA, label: "fictional-coach-a@example.test" },
+                  { id: coachB, label: "fictional-coach-b@example.test" },
+                ]
+              : [],
           },
         });
       if (p.endsWith("/staff_athlete_service")) {
@@ -175,10 +174,10 @@ export async function staffFixture(
             });
       }
       if (p.endsWith("/assign_athlete_service_coach")) {
-        if (role !== "owner")
+        if (!["owner", "manager"].includes(role))
           return route.fulfill({
             status: 403,
-            json: { message: "Owner access required" },
+            json: { message: "Owner or Manager access required" },
           });
         const r = data.rows.find((r) => r.athlete_id === body.target_profile)!;
         data.counts.writes++;

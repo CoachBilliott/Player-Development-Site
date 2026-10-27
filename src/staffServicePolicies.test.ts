@@ -51,8 +51,6 @@ beforeAll(async () => {
     "010-account-invitations-and-closure.sql",
     "011-review-service-tracking.sql",
     "012-per-athlete-workout-assignments.sql",
-    "013-preview-review-groups.sql",
-    "014-grouped-review-fulfillment.sql",
     "015-staff-client-service-dashboard.sql",
   ])
     await db.exec(
@@ -194,7 +192,7 @@ it("Owners and Managers see all current Repformed clients/athletes; Coaches see 
       .rows,
   ).toEqual([{ profile_id: profile }]);
 });
-it("denies customers/anonymous direct APIs and prevents Managers/Coaches changing assignments or account roles", async () => {
+it("denies customers/anonymous direct APIs and prevents Coaches changing assignments and Managers/Coaches changing account roles", async () => {
   for (const actor of [parent, otherParent]) {
     await as(actor);
     await deny(
@@ -210,11 +208,12 @@ it("denies customers/anonymous direct APIs and prevents Managers/Coaches changin
   }
   for (const actor of [manager, coach]) {
     await as(actor);
-    await deny(
-      "select public.assign_athlete_service_coach($1,$2,0)",
-      [profile, coach],
-      /Owner access/,
-    );
+    if (actor === coach)
+      await deny(
+        "select public.assign_athlete_service_coach($1,$2,0)",
+        [profile, coach],
+        /Owner or Manager access/,
+      );
     await deny(
       "select public.assign_account_role($1,'owner',1)",
       [actor],
@@ -252,6 +251,42 @@ it("reassignment and revocation remove old Coach scope; repeated writes are idem
     profile,
   ]);
   await assign(profile, null, 2);
+  expect((await roster(id(4))).rows).toEqual([]);
+});
+it("Managers can assign, change and revoke service coaches with the same version and staff validation guards", async () => {
+  expect(
+    (await roster(manager)).coaches.some(
+      (c: unknown) => (c as { id: string }).id === coach,
+    ),
+  ).toBe(true);
+  await as(manager);
+  await db.query("select public.assign_athlete_service_coach($1,$2,0)", [
+    profile,
+    coach,
+  ]);
+  expect((await roster(coach)).rows.map((r) => r.athlete_id)).toEqual([
+    profile,
+  ]);
+  await as(manager);
+  await db.query("select public.assign_athlete_service_coach($1,$2,1)", [
+    profile,
+    id(4),
+  ]);
+  expect((await roster(coach)).rows).toEqual([]);
+  await as(manager);
+  await deny(
+    "select public.assign_athlete_service_coach($1,$2,0)",
+    [profile, null],
+    /changed/,
+  );
+  await deny(
+    "select public.assign_athlete_service_coach($1,$2,2)",
+    [profile, parent],
+    /verified active coaching staff/,
+  );
+  await db.query("select public.assign_athlete_service_coach($1,null,2)", [
+    profile,
+  ]);
   expect((await roster(id(4))).rows).toEqual([]);
 });
 it("basic roster visibility never grants unrelated private videos, feedback, family controls or sensitive raw profile APIs", async () => {

@@ -170,7 +170,7 @@ See [REVIEW-GROUPING-DRAFT.md](../REVIEW-GROUPING-DRAFT.md).
 `015-staff-client-service-dashboard.sql` adds narrow service projections and
 per-athlete service-coach responsibility. Owners/Managers see basic metadata for
 this dedicated deployment; Coaches see only assigned athletes and limited
-client context. Only Owners can change responsibility. This does not expand
+client context. Owners and Managers can change responsibility. This does not expand
 raw-profile, family-control, private-video or feedback access, nor billing/role
 authority. Review the broader Owner/Manager metadata scope before production.
 
@@ -184,7 +184,8 @@ fix or frontend disablement over dropping tables or restoring old functions.
 
 ## Manual delivery checks and private inbox (016 — NOT installed)
 
-`016-delivery-monitoring-and-inbox.sql` requires 012–015. It adds draft package,
+`016-delivery-monitoring-and-inbox.sql` requires 012 and 015. Grouped-review
+migrations 013–014 are optional and excluded from this release. It adds draft package,
 client and athlete delivery rules, exact-version expectations, scoped staff alerts
 and verified adult/guardian in-app notices. Owner-only configuration does not
 change paid access or consent. Monitoring defaults off; the separate frontend
