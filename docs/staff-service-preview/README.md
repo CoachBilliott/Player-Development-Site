@@ -1,6 +1,9 @@
 # Client-service dashboard review
 
 **Implemented on the unpublished `pilot/core-journey-readiness` branch. Not live.**
+The [action-first refinement](polish/README.md) contains the latest polished
+screens and test details. Its fictional isolated website preview is separate
+from production; the real account dashboard remains disabled pending rollout.
 All screenshots use fictional adult accounts and local API fixtures. Phone screens
 are Chromium emulation, not a physical iPhone or a new TestFlight build. No real
 purchase, email, minor profile or production permission changed.

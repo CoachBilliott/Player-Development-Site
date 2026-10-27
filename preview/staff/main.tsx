@@ -1,5 +1,6 @@
 import { useMemo, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
+import { ArrowUpRight } from "lucide-react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { StaffServiceDashboard } from "../../src/StaffServiceDashboard";
 import { Logo } from "../../src/components";
@@ -92,62 +93,71 @@ export function Preview() {
     <div className="experience">
       <header className="preview-header">
         <Logo href="https://repformed.com/" />
-        <a href="https://repformed.com/">Main website ↗</a>
+        <a href="https://repformed.com/">
+          Main website <ArrowUpRight size={13} aria-hidden="true" />
+        </a>
       </header>
       <main className="page preview-main">
         <div className="preview-banner" role="note">
           <strong>INTERACTIVE PREVIEW · FICTIONAL ADULTS ONLY</strong>
-          <p>
-            This is an isolated preview of unpublished client-service screens.
-            Role switching simulates access; it does not sign you into a real
-            staff account. No database, payments, emails or real video files are
-            connected.
-          </p>
+          <span>Changes stay in this browser.</span>
         </div>
-        <h1>Try the service dashboard.</h1>
-        <div className="preview-controls">
-          <label>
-            View as
-            <select
-              value={role}
-              onChange={(e) => {
+        <div className="preview-topline">
+          <div>
+            <p className="preview-eyebrow">REPFORMED WORKSPACE</p>
+            <h1>Client service.</h1>
+            <p>See who's ready and what needs attention.</p>
+          </div>
+          <div className="preview-controls">
+            <label>
+              View as
+              <select
+                value={role}
+                onChange={(e) => {
+                  clearDetail();
+                  setRole(e.target.value as Role);
+                }}
+              >
+                <option value="owner">Owner · all clients</option>
+                <option value="manager">Manager · all clients</option>
+                <option value="coach">Coach Alex · assigned athletes</option>
+              </select>
+            </label>
+            <button
+              className="button secondary"
+              onClick={() => {
+                rows.current = sampleRows();
                 clearDetail();
-                setRole(e.target.value as Role);
+                setRevision((n) => n + 1);
               }}
             >
-              <option value="owner">Owner · all clients</option>
-              <option value="manager">Manager · all clients</option>
-              <option value="coach">Coach Alex · assigned athletes</option>
-            </select>
-          </label>
-          <button
-            className="button secondary"
-            onClick={() => {
-              rows.current = sampleRows();
-              clearDetail();
-              setRevision((n) => n + 1);
-            }}
-          >
-            Reset fictional data
-          </button>
+              Reset fictional data
+            </button>
+          </div>
         </div>
-        <p>
-          Open an athlete to see their plan and next action. Owners can try
-          assigning a service coach. Changes last only until refresh or reset.
-        </p>
         <StaffServiceDashboard
           key={`${role}:${revision}`}
           client={client}
           role={role}
           actor={role === "coach" ? coachA : uid(1)}
           enabled
+          preview
         />
-        <p className="member-fineprint">
-          Review status and participation below are fictional examples. No
-          athletic ability, actual content delivery or payment is verified.
-          Custom delivery alerts and client notifications are being prepared
-          separately.
-        </p>
+        <details className="preview-about">
+          <summary>About this preview & what's connected</summary>
+          <p>
+            All profiles and activity are fictional. Role switching simulates
+            access; it does not sign you into an account. Search, filters,
+            service details and sample coach changes work in this browser.
+            Refresh or reset restores the samples.
+          </p>
+          <p>
+            Real uploads, coaching feedback, training assignment, payments,
+            notifications and client records are not connected. No athletic
+            ability, actual delivery or payment is verified. The production
+            website and TestFlight app are unchanged.
+          </p>
+        </details>
       </main>
     </div>
   );

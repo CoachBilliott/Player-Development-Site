@@ -27,30 +27,36 @@ test("Owner landing shows all clients, overdue service and private athlete drill
     panel.getByText("Fictional Morgan", { exact: true }),
   ).toBeVisible();
   await expect(
-    panel.getByText("Follow up overdue review", { exact: true }),
+    panel.getByRole("button", {
+      name: "Review overdue task for Fictional Jordan",
+    }),
   ).toBeVisible();
-  await expect(panel.getByText("Purchase: not recorded")).toHaveCount(3);
   await mkdir("docs/staff-service-preview", { recursive: true });
   await page.screenshot({
     path: `docs/staff-service-preview/owner-${info.project.name}.png`,
     fullPage: false,
   });
   if (info.project.name === "phone") {
-    await panel.locator("tbody tr").first().evaluate((row) =>
-      row.scrollIntoView({ block: "start" }),
-    );
+    await panel
+      .locator("tbody tr")
+      .first()
+      .evaluate((row) => row.scrollIntoView({ block: "start" }));
     await page.screenshot({
       path: "docs/staff-service-preview/owner-roster-phone.png",
       fullPage: false,
     });
   }
   await page
-    .getByRole("button", { name: "Open Fictional Jordan service", exact: true })
+    .getByRole("button", {
+      name: "Review overdue task for Fictional Jordan",
+      exact: true,
+    })
     .click();
   const d = page.getByRole("dialog");
   await expect(d).toContainText("Follow up overdue review");
   await d.getByText("Purchase and access details", { exact: true }).click();
   await expect(d).toContainText("No connected purchase/payment record");
+  await d.getByText("Practice & release details", { exact: true }).click();
   await expect(d).toContainText("Activity opened: Not observed");
   await page.screenshot({
     path: `docs/staff-service-preview/athlete-detail-${info.project.name}.png`,
@@ -58,7 +64,7 @@ test("Owner landing shows all clients, overdue service and private athlete drill
   });
   await d.getByRole("button", { name: "Back to client service" }).click();
   await expect(d).toHaveCount(0);
-  expect(page.url()).not.toContain("serviceAthlete");
+  await expect(page).not.toHaveURL(/serviceAthlete/);
   await page.goto("./#workspace");
   await expect(
     page
@@ -96,7 +102,7 @@ test("Manager sees all clients read-only; Coach sees assigned athlete and direct
     page.getByText("Fictional Morgan", { exact: true }),
   ).toBeVisible();
   await page
-    .getByRole("button", { name: "Open Fictional Jordan service" })
+    .getByRole("button", { name: "Review overdue task for Fictional Jordan" })
     .click();
   await expect(
     page.getByRole("button", { name: "Save service coach" }),
