@@ -143,6 +143,9 @@ submission; the duration allowance does not need reapproval.
   Sunday configuration, clock changes, device-only save and discard behavior.
 - All **eight installed-web-app/offline cases** passed, including private-record
   exclusion, update handling and offline reopen.
+- After the final staff-copy correction describing the minimal Owner athlete
+  lookup, all six targeted staff-role browser cases passed again, along with
+  lint and production build. This rerun is a subset of the full suite.
 - SQL cases cover wrong-household/profile substitution, raw-write/internal-helper
   denial, linked-athlete isolation, parent pause/revocation, stale/idempotent
   assignment, legacy defaults/removal tombstones, isolated resume invalidation,

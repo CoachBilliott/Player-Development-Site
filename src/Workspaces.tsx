@@ -130,8 +130,9 @@ function StaffDashboard({
             title="Staff & account access"
             icon="access"
           >
-            Assign the five account levels. Family data stays private, including
-            from staff.
+            Assign the five account levels. Owners see the athlete nickname and
+            training audience needed to choose a plan; family controls stay
+            private.
           </WorkspaceLink>
         ) : (
           <WorkspaceLink
