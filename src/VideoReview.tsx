@@ -339,7 +339,7 @@ export function AthleteVideoReview({
               across this account’s athletes. This is storage capacity, not a
               monthly review balance.{" "}
               {state.grouped_reviews_ready
-                ? "Grouped reviews accept up to three 60-second clips, at most three minutes total. Four fully retained three-clip reviews will not fit the current five-space account cap."
+                ? "Grouped reviews accept up to three 60-second clips, at most three minutes total. Two fully retained three-clip reviews need six spaces and will not fit the current five-space account cap."
                 : "The current pilot accepts one clip per review, up to 60 seconds."}{" "}
               Clips remain stored until you delete them; no automatic retention
               schedule is active. Deleting a clip also removes its attached

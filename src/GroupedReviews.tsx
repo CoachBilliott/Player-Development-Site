@@ -7,6 +7,7 @@ import { VideoPreparation } from "./VideoPreparation";
 import { ClipPlayer } from "./VideoReview";
 import { inspectVideo } from "./videoReviews";
 import { ReviewGroups, type ReviewGroup } from "./reviewGroups";
+import { reviewClipSelectionError } from "./reviewClipSelection";
 import { SERVICE_LABELS, reviewDate } from "./reviewServices";
 
 type Chosen = { id: string; file: File; seconds: number; url: string };
@@ -93,8 +94,11 @@ export function GroupedReviewPanel({
           urls.current.add(url);
           next.push({ id: crypto.randomUUID(), file, seconds, url });
         }
-        if ([...chosen, ...next].reduce((n, c) => n + c.seconds, 0) > 180)
-          throw new Error("Keep the complete review within three minutes.");
+        const selectionError = reviewClipSelectionError(
+          [...chosen, ...next].map((clip) => clip.seconds),
+          remaining,
+        );
+        if (selectionError) throw new Error(selectionError);
       } catch (e) {
         for (const c of next) {
           URL.revokeObjectURL(c.url);
@@ -238,8 +242,8 @@ export function GroupedReviewPanel({
             </select>
           </label>
           <p>
-            {remaining} stored-clip spaces available. Four monthly reviews do
-            not mean unlimited video storage. No charge or credit is used here.
+            {remaining} stored-clip spaces available. Monthly review allowances
+            are separate from video storage. No charge or credit is used here.
           </p>
           <label>
             Choose up to three review clips
