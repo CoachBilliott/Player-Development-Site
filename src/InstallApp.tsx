@@ -30,7 +30,7 @@ export function InstallApp({ app }: { app: PwaState }) {
         <div>
           <h2>
             {app.installed
-              ? "Player Development is installed."
+              ? "Repformed is installed."
               : "Your next rep. One tap away."}
           </h2>
           <p>
@@ -60,7 +60,7 @@ export function InstallApp({ app }: { app: PwaState }) {
               versions this is under More.
             </li>
             <li>Turn on Open as Web App if offered, then tap Add.</li>
-            <li>Tap the new PD Training icon on your home screen.</li>
+            <li>Tap the new Repformed icon on your home screen.</li>
           </ol>
         </section>
         <section className="panel">

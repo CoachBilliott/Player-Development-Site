@@ -4,12 +4,16 @@ import type { Drill } from "./model";
 import { getAsset } from "./storage";
 export function Logo({ href = "#home" }: { href?: string }) {
   return (
-    <a className="brand" href={href} title="Player Development home">
-      <span className="brand-mark" aria-hidden="true">
-        PD
-      </span>
+    <a className="brand" href={href} title="Repformed home">
+      <img
+        className="brand-mark"
+        src={`${import.meta.env.BASE_URL}brand/repformed-mark.svg`}
+        alt=""
+        width="48"
+        height="36"
+      />
       <span className="brand-name">
-        Player <span>Development</span>
+        REPFORMED <span>ATHLETE DEVELOPMENT</span>
       </span>
     </a>
   );

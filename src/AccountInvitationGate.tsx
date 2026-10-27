@@ -127,7 +127,7 @@ export function AccountInvitationGate({
         {!ready
           ? "Checking your account…"
           : active
-            ? "Welcome to Player Development."
+            ? "Welcome to Repformed."
             : "Your invitation is not active."}
       </h1>
       {error && (
@@ -246,7 +246,7 @@ export function AccountInvitationGate({
               window.location.assign(url);
             }}
           >
-            Choose my Player Development password
+            Choose my Repformed password
           </button>
         </section>
       ) : (

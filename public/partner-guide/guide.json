@@ -1,8 +1,8 @@
 {
   "title": "Your first session, from upload to finish.",
-  "subtitle": "A practical walkthrough of the Player Development website and iPhone app, made for you and your partner.",
-  "baseline": "Private pilot · iPhone build 10 · October 2026",
-  "notice": "Screenshots show the actual website and shared app workspace in a browser, using fictional accounts and sample text attachments. They are not photographs of native Photos/camera screens or coaching demonstrations. No real player information appears here.",
+  "subtitle": "A practical walkthrough of the Repformed website and iPhone app, made for you and your partner.",
+  "baseline": "Historical fictional browser previews · build 10 · October 2026",
+  "notice": "Screenshots show the actual website and shared app workspace in a browser, using fictional accounts and sample text attachments. They are not photographs of native Photos/camera screens or coaching demonstrations. No real player information appears here. Screenshots retain the earlier interface identity; current branding does not imply that a new native iPhone build is installed.",
   "chapters": [
     {
       "id": "website",

@@ -1,0 +1,273 @@
+/* Repformed / Built Forward. Option 09 is the shared web and app identity. */
+:root {
+  --brand-black: #181818;
+  --brand-gold: #c7a45c;
+  --brand-ivory: #faf5ea;
+  --brand-steel: #8c939d;
+  --green: var(--brand-gold);
+  --lime: var(--brand-gold);
+  --cyan: #d9bc82;
+  --ink: var(--brand-ivory);
+  --muted: #bdbbb5;
+  --line: #454440;
+  --paper: var(--brand-black);
+  --surface: #222221;
+  --surface-raised: #2c2c2b;
+  --on-accent: var(--brand-black);
+}
+.experience .brand {
+  gap: 12px;
+  flex-shrink: 0;
+}
+.experience .brand-mark {
+  width: 48px;
+  height: 36px;
+  display: block;
+  object-fit: contain;
+  background: transparent;
+  border-radius: 0;
+  transform: none;
+}
+.experience .brand-name {
+  font-family: var(--font-display);
+  color: var(--brand-ivory);
+  font-size: 25px;
+  line-height: 1;
+  font-weight: 700;
+  letter-spacing: 0.7px;
+}
+.experience .brand-name > span {
+  display: block;
+  color: #d3d0c8;
+  font-family: var(--font-body);
+  font-size: 8px;
+  line-height: 1.5;
+  letter-spacing: 1.7px;
+  margin-top: 5px;
+}
+.experience .header,
+.app-header {
+  background: #181818f5;
+  border-bottom-color: #8c939d45;
+}
+.experience .button:not(.secondary):not(.danger),
+.experience .header-account {
+  background: linear-gradient(125deg, #e2c68f, #c7a45c 58%, #bd984f);
+  border-color: #d4b579;
+  color: var(--brand-black);
+  box-shadow:
+    inset 0 1px 0 #faf5ea55,
+    0 6px 18px #0002;
+}
+.experience .button:not(.secondary):not(.danger):hover,
+.experience .header-account:hover {
+  background: #e4c889;
+  border-color: #faf5ea;
+}
+.experience :is(button, a, input, select, textarea):focus-visible {
+  outline: 2px solid var(--brand-ivory);
+  outline-offset: 4px;
+  box-shadow: 0 0 0 4px var(--brand-black);
+}
+.experience .hero {
+  border-bottom: 1px solid #c7a45c80;
+}
+.experience .hero h1 {
+  color: var(--brand-ivory);
+  font-size: clamp(90px, 9vw, 138px);
+  line-height: 0.94;
+  letter-spacing: -0.02em;
+}
+.experience .hero .electric-text {
+  color: var(--brand-gold);
+  background: linear-gradient(120deg, #f1dfba, #c7a45c 58%, #dbbd80);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.experience .hero-copy {
+  padding-top: 88px;
+  padding-bottom: 116px;
+}
+.experience .hero:after {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  right: 40px;
+  top: 36px;
+  width: 48px;
+  height: 140px;
+  border-right: 2px solid #c7a45ca0;
+  border-top: 1px solid #8c939d80;
+  transform: skewY(-32deg);
+}
+.training-principles {
+  background: linear-gradient(110deg, #282827, #202020);
+  color: var(--brand-ivory);
+  border-bottom: 1px solid #8c939d55;
+}
+.training-principles > div {
+  border-color: #8c939d40;
+  padding-block: 34px;
+}
+.training-principles p {
+  color: var(--brand-ivory);
+}
+.training-principles :is(svg, div > span) {
+  color: var(--brand-gold);
+}
+.athlete-paths-section,
+.sport-programs-section {
+  background: var(--brand-ivory);
+  color: var(--brand-black);
+}
+.experience :is(.athlete-paths-section, .sport-programs-section) .eyebrow {
+  color: #70551f;
+}
+.path-card {
+  border-radius: 6px;
+  box-shadow: 0 18px 30px #18181818;
+}
+.path-card:after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border: 1px solid #8c939d70;
+  border-top: 3px solid var(--brand-gold);
+  border-radius: inherit;
+}
+.practice-section {
+  background:
+    radial-gradient(ellipse at 90% 0, #c7a45c0d, transparent 65%), #181818;
+}
+.practice-step > span {
+  color: var(--brand-gold);
+}
+.home-finish {
+  background: linear-gradient(120deg, #e5cc97, #c7a45c 65%, #b69350);
+  border-top: 1px solid #faf5ea70;
+}
+.experience .finish-actions .button {
+  background: var(--brand-black) !important;
+  color: var(--brand-ivory) !important;
+  border-color: var(--brand-black) !important;
+}
+.experience footer {
+  background: #181818;
+  border-color: #8c939d55;
+}
+.experience .footer-bottom {
+  border-color: #8c939d40;
+}
+@media (max-width: 1000px) {
+  .experience .footer-inner {
+    flex-wrap: wrap;
+  }
+  .experience .footer-inner > div {
+    flex-wrap: wrap;
+    min-width: 0;
+    max-width: 100%;
+  }
+}
+.experience .quick-help-question:hover {
+  border-color: var(--brand-gold);
+}
+.mobile-layout {
+  --app-text: var(--brand-ivory);
+  --app-muted: #bdbbb5;
+  --app-line: #8c939d45;
+  --app-surface: #242423;
+  --surface: #242423;
+  --muted: #bdbbb5;
+  --line: #8c939d45;
+  --cyan: #d9bc82;
+  --lime: var(--brand-gold);
+  --app-accent: var(--brand-gold);
+  background:
+    radial-gradient(ellipse at 90% 0, #c7a45c0c, transparent 50%), #181818;
+}
+.mobile-layout .brand-mark {
+  width: 39px;
+  height: 30px;
+}
+.mobile-layout .brand-name {
+  font-size: 22px;
+}
+.mobile-layout .brand-name > span {
+  font-size: 7px;
+  letter-spacing: 1.25px;
+}
+.app-tabs {
+  background: linear-gradient(135deg, #30302ff5, #222221f5);
+  border-color: #8c939d66;
+  box-shadow:
+    inset 0 1px 0 #faf5ea12,
+    0 12px 40px #0007;
+}
+.app-tabs a.active {
+  background: #c7a45c18;
+  color: #e4c889;
+  box-shadow: inset 0 1px 0 #c7a45c55;
+}
+@media (max-width: 700px) {
+  .experience .brand-mark {
+    width: 38px;
+    height: 30px;
+  }
+  .experience .brand-name {
+    font-size: 22px;
+  }
+  .experience .brand-name > span {
+    font-size: 7px;
+    letter-spacing: 1.25px;
+  }
+  .experience .hero h1 {
+    font-size: clamp(52px, 14.6vw, 96px);
+    line-height: 0.96;
+  }
+  .experience .hero-copy {
+    padding: 54px 24px 80px;
+  }
+  .experience .hero:after {
+    right: 24px;
+    top: 28px;
+    height: 80px;
+    width: 32px;
+  }
+  .training-principles > div {
+    padding-block: 22px;
+    border-color: #8c939d40;
+  }
+}
+@media (max-width: 380px) {
+  .experience .brand {
+    gap: 8px;
+  }
+  .experience .brand-mark {
+    width: 32px;
+  }
+  .experience .brand-name {
+    font-size: 19px;
+  }
+  .experience .brand-name > span {
+    font-size: 6px;
+  }
+  .app-header-tools {
+    gap: 6px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .experience *,
+  .experience *:before,
+  .experience *:after {
+    scroll-behavior: auto !important;
+    animation: none !important;
+    transition: none !important;
+  }
+}
+@media (forced-colors: active) {
+  .experience .hero .electric-text {
+    background: none;
+    -webkit-text-fill-color: currentColor;
+  }
+}

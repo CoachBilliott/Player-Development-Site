@@ -33,7 +33,7 @@ export function SocialLinks() {
             href={link.url}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label={`${link.platform} (opens outside Player Development)`}
+            aria-label={`${link.platform} (opens outside Repformed)`}
             onClick={(event) => {
               if (!nativeApp()) return;
               event.preventDefault();

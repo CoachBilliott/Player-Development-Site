@@ -1,8 +1,7 @@
 import { Capacitor } from "@capacitor/core";
 import type { AccountRole } from "./roles";
 
-export const WEBSITE =
-  "https://coachbilliott.github.io/Player-Development-Site/";
+export const WEBSITE = "https://repformed.com/";
 export const nativeApp = () => Capacitor.isNativePlatform();
 export function appSurface() {
   return (
@@ -34,19 +33,20 @@ export function mobileNavigation(signedIn: boolean, role: AccountRole | null) {
     ["account", "Account"],
   ] as const;
 }
-export async function openWebsite(path = "#home") {
+export function websiteUrl(path = "#home") {
   const url = new URL(path, WEBSITE);
-  if (
-    url.origin !== new URL(WEBSITE).origin ||
-    !url.pathname.startsWith("/Player-Development-Site/")
-  )
-    throw new Error("Only the Player Development website can be opened here.");
+  if (url.origin !== new URL(WEBSITE).origin || url.username || url.password)
+    throw new Error("Only the Repformed website can be opened here.");
+  return url.href;
+}
+export async function openWebsite(path = "#home") {
+  const url = websiteUrl(path);
   if (nativeApp()) {
     const { AppLauncher } = await import("@capacitor/app-launcher");
-    const result = await AppLauncher.openUrl({ url: url.href });
+    const result = await AppLauncher.openUrl({ url });
     if (!result.completed)
       throw new Error(
         "The website could not be opened. Please open it in Safari.",
       );
-  } else window.open(url.href, "_blank", "noopener,noreferrer");
+  } else window.open(url, "_blank", "noopener,noreferrer");
 }

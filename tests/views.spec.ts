@@ -40,7 +40,7 @@ test("the public website has one customer demo entry, with parent and solo journ
   await expect(page).toHaveURL(/#account$/);
   await page
     .getByRole("banner")
-    .getByRole("link", { name: "Player Development", exact: true })
+    .getByRole("link", { name: "REPFORMED ATHLETE DEVELOPMENT", exact: true })
     .click();
   await expect(page).toHaveURL(/#home$/);
   const buttons = page.getByRole("link", { name: "Try the demo", exact: true });

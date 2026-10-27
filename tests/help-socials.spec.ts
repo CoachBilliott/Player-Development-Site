@@ -140,7 +140,7 @@ test("shared social configuration reaches website, app help and guides with safe
       .getByRole("navigation", { name: "Official social accounts" })
       .first();
     const link = nav.getByRole("link", {
-      name: "Instagram (opens outside Player Development)",
+      name: "Instagram (opens outside Repformed)",
     });
     await expect(link).toHaveAttribute(
       "href",

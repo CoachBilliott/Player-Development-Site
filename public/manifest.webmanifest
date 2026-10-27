@@ -1,13 +1,13 @@
 {
   "id": "./",
-  "name": "Player Development",
-  "short_name": "PD Training",
+  "name": "Repformed",
+  "short_name": "Repformed",
   "description": "Athlete development for individuals and families. Football sample training available now; other sports are future offerings.",
   "start_url": "./?source=app#app",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#101010",
-  "theme_color": "#101010",
+  "background_color": "#181818",
+  "theme_color": "#181818",
   "icons": [
     {
       "src": "icons/app-192.png",

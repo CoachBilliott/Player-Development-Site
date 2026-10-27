@@ -119,7 +119,7 @@ export function OwnerAccountInvitations({ shared }: { shared: SharedState }) {
         <MailPlus size={24} />
         <div>
           <p className="eyebrow">OWNER · PRIVATE ADULT PILOT</p>
-          <h2 id="invite-heading">Invite someone to Player Development</h2>
+          <h2 id="invite-heading">Invite someone to Repformed</h2>
         </div>
       </div>
       <p>

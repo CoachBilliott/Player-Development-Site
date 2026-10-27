@@ -37,7 +37,7 @@
   font-size: 16px;
 }
 .quick-help-search:focus-within {
-  outline: 2px solid #ffb28b;
+  outline: 2px solid #d9bc82;
   outline-offset: 3px;
 }
 .quick-help-count {
@@ -67,7 +67,7 @@
   flex-shrink: 0;
 }
 .quick-help-questions button:hover {
-  border-color: #ffb28b;
+  border-color: #d9bc82;
 }
 .quick-help h3 {
   margin-top: 22px;

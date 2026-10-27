@@ -1,14 +1,14 @@
 /* A photographic sports identity shared by the website and training product. */
 :root {
-  --green: #ff7846;
-  --lime: #ff7846;
-  --ink: #f4f3ee;
+  --green: #c7a45c;
+  --lime: #c7a45c;
+  --ink: #faf5ea;
   --muted: #b8b8b3;
   --line: #383834;
-  --paper: #101010;
+  --paper: #181818;
   --surface: #1c1c1b;
   --surface-raised: #292928;
-  --cyan: #ff7846;
+  --cyan: #c7a45c;
   --on-accent: #15100e;
 }
 
@@ -24,7 +24,7 @@
     border-color 180ms ease;
 }
 .experience .button:hover:not(:disabled) {
-  background: #ff966f;
+  background: #dfbe7a;
   box-shadow: none;
   transform: none;
 }
@@ -45,7 +45,7 @@
   border-color: #393936;
 }
 .experience .header {
-  background: #101010f5;
+  background: #181818f5;
   border-color: #393936;
 }
 .experience .brand-mark {
@@ -65,20 +65,20 @@
   box-shadow: none;
 }
 .experience .header-account {
-  background: #ff7846;
-  border-color: #ff7846;
-  color: #101010;
+  background: #c7a45c;
+  border-color: #c7a45c;
+  color: #181818;
   border-radius: 3px;
 }
 .experience .header-account:hover,
 .experience .icon-button:hover {
   background: #30302e;
-  border-color: #ff966f;
+  border-color: #dfbe7a;
 }
 .experience .header-account:hover {
-  background: #ff966f;
-  border-color: #ff966f;
-  color: #101010;
+  background: #dfbe7a;
+  border-color: #dfbe7a;
+  color: #181818;
 }
 .experience .mobile-nav {
   background: #1d1d1b;
@@ -88,8 +88,8 @@
 }
 .experience .tag,
 .experience .tag-light {
-  background: #ff78460a;
-  color: #f4c6b1;
+  background: #c7a45c0a;
+  color: #e4c889;
   border-color: #946c56;
   border-radius: 3px;
 }
@@ -149,21 +149,21 @@
 }
 .experience .scene-tabs button[aria-pressed="true"] {
   background: #443025;
-  color: #ffe1cc;
+  color: #f1dfba;
   box-shadow: inset 0 0 0 1px #ae7754;
 }
 .experience .family-athlete-choice {
   border-radius: 4px;
 }
 .experience .family-athlete-choice.selected {
-  background: #ff78460d;
+  background: #c7a45c0d;
 }
 .experience .demo-walkthrough span {
   color: var(--lime);
 }
 .experience .package-card.featured {
   border-color: #ad7758;
-  box-shadow: inset 0 2px 0 #ff7846;
+  box-shadow: inset 0 2px 0 #c7a45c;
 }
 .experience .package-status {
   background: #302e25;
@@ -195,7 +195,7 @@
   min-height: 740px;
   height: clamp(740px, 83svh, 940px);
   padding: 0;
-  background: #101010;
+  background: #181818;
   overflow: hidden;
 }
 .experience .hero:before,
@@ -216,7 +216,7 @@
   border: 0;
   border-radius: 0;
   box-shadow: none;
-  background: #101010;
+  background: #181818;
 }
 .training-poster,
 .hero-training-video {
@@ -230,12 +230,12 @@
   background:
     linear-gradient(
       90deg,
-      #101010 10%,
-      #101010e8 27%,
-      #10101075 50%,
-      #10101005 82%
+      #181818 10%,
+      #181818e8 27%,
+      #18181875 50%,
+      #18181805 82%
     ),
-    linear-gradient(0deg, #101010df, transparent 33%, #10101022);
+    linear-gradient(0deg, #181818df, transparent 33%, #18181822);
 }
 .training-film-credit {
   position: absolute;
@@ -347,14 +347,14 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
   padding: 0 max(40px, calc((100vw - 1200px) / 2));
   background: var(--lime);
-  color: #101010;
+  color: #181818;
 }
 .training-principles > div {
   display: flex;
   align-items: center;
   gap: 18px;
   padding: 27px 28px;
-  border-right: 1px solid #10101040;
+  border-right: 1px solid #18181840;
 }
 .training-principles > div:first-child {
   padding-left: 0;
@@ -368,7 +368,7 @@
   font-weight: 600;
 }
 .training-principles p {
-  color: #101010;
+  color: #181818;
   font-family: var(--font-display);
   font-size: clamp(23px, 2.5vw, 34px);
   font-weight: 700;
@@ -464,7 +464,7 @@
   padding: 8px 10px;
   border: 1px solid #ffffff85;
   color: #fff;
-  background: #10101080;
+  background: #18181880;
   font-size: 10px;
   letter-spacing: 1.4px;
 }
@@ -522,8 +522,8 @@
 
 /* The actual product workflow carries the middle chapter. */
 .experience .practice-section {
-  background: #101010;
-  color: #f4f3ee;
+  background: #181818;
+  color: #faf5ea;
 }
 .experience .how-section {
   display: grid;
@@ -564,7 +564,7 @@
   color: var(--lime);
 }
 .experience .practice-step h3 {
-  color: #f4f3ee;
+  color: #faf5ea;
   font-size: 19px;
   margin: 1px 0 10px;
 }
@@ -634,7 +634,7 @@
 .experience .sport-program.available .tag {
   background: var(--lime);
   border-color: var(--lime);
-  color: #101010;
+  color: #181818;
 }
 .sport-program-content {
   position: relative;
@@ -723,8 +723,8 @@
   gap: 0;
 }
 .experience .finish-actions .button {
-  background: #101010;
-  border-color: #101010;
+  background: #181818;
+  border-color: #181818;
   color: #fff;
   min-height: 56px;
 }
@@ -810,7 +810,7 @@
     padding: 0;
     min-height: 610px;
     height: calc(100svh - 104px);
-    background: #101010;
+    background: #181818;
   }
   .experience .hero-copy {
     padding: 50px 24px 80px;
@@ -860,11 +860,11 @@
   .training-film-shade {
     background: linear-gradient(
       180deg,
-      #10101022,
-      #10101038 22%,
-      #101010c7 50%,
-      #101010f5 82%,
-      #101010
+      #18181822,
+      #18181838 22%,
+      #181818c7 50%,
+      #181818f5 82%,
+      #181818
     );
   }
   .training-film-credit {
@@ -885,7 +885,7 @@
   .training-principles > div {
     padding: 17px 0;
     border-right: 0;
-    border-bottom: 1px solid #10101040;
+    border-bottom: 1px solid #18181840;
     gap: 18px;
   }
   .training-principles > div:last-child {
@@ -1074,7 +1074,7 @@
 .device-draft:has([role="status"]),
 .device-draft:has([role="alert"]) {
   border: 1px solid #ffffff26;
-  border-left: 3px solid var(--accent, #ff8047);
+  border-left: 3px solid var(--accent, #c7a45c);
   padding: 18px;
   margin: 22px 0;
   background: #ffffff06;

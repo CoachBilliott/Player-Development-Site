@@ -17,7 +17,6 @@ import {
   Sparkles,
   Target,
   TrendingUp,
-  Trophy,
   Users,
   X,
 } from "lucide-react";
@@ -386,7 +385,7 @@ export default function App() {
                 ? "PRIVATE WORKSPACE"
                 : demoPage
                   ? "SAMPLE-DATA DEMO"
-                  : "PLAYER DEVELOPMENT"}{" "}
+                  : "REPFORMED"}{" "}
               <span className="strip-divider">/</span>
               <span>
                 {privatePage
@@ -400,7 +399,7 @@ export default function App() {
                   ? "Your private workspace"
                   : demoPage
                     ? "No account needed"
-                    : "Invite-only pilot"}{" "}
+                    : "Early access"}{" "}
                 <ArrowUpRight size={13} />
               </span>
             </div>
@@ -619,7 +618,7 @@ export default function App() {
                 <a href="#membership">
                   Future memberships <ArrowUpRight size={14} />
                 </a>
-                <a href="#home">About Player Development</a>
+                <a href="#home">About Repformed</a>
                 <a href="#contact">Contact</a>
                 <QuickHelp />
                 <a href={shared.signedIn ? "#workspace" : "#account"}>
@@ -634,14 +633,11 @@ export default function App() {
             <SocialLinks />
             <div className="footer-bottom">
               <span>
-                © {new Date().getFullYear()} Player Development · Temporary name
+                © {new Date().getFullYear()} Repformed · Athlete development
               </span>
-              <span>
-                Illustrative content · pending qualified coaching review
-              </span>
-              <span>
-                No athletic, scholarship, or recruiting outcomes guaranteed.
-              </span>
+              <a href={`${import.meta.env.BASE_URL}credits.html`}>
+                Credits & licenses
+              </a>
             </div>
           </footer>
         )}
@@ -1766,17 +1762,6 @@ function Membership() {
           </article>
         ))}
       </div>
-      <section className="aspiration panel">
-        <Trophy size={35} />
-        <div>
-          <h2>A foundation for what comes later.</h2>
-          <p>
-            Scholarship and recruiting readiness may become longer-term learning
-            topics. This prototype offers neither recruiting services nor
-            exposure, evaluations, scholarships, or guaranteed outcomes.
-          </p>
-        </div>
-      </section>
       <Notice>
         No checkout, billing, public enrollment, or waitlist is active. American
         football is the only sport in this demo; other sports remain future
