@@ -3,6 +3,18 @@ export const uid = (n: number) =>
   `90000000-0000-4000-8000-${String(n).padStart(12, "0")}`;
 export const coachA = uid(70),
   coachB = uid(71);
+/** Match the backend's derived next step after every fictional roster change. */
+export function sampleNextAction(row: StaffAthlete): string {
+  if (row.overdue_reviews) return "Follow up overdue review";
+  if (row.blocked_reviews) return "Resolve review follow-up";
+  if (!row.coach_id) return "Assign service coach";
+  if (!row.workout_id) return "Assign training";
+  if (!row.eligible_access) return "Review content or eligibility";
+  if (!row.media_ready) return "Complete training upload";
+  return row.last_completion_at
+    ? "Review practice participation"
+    : "Await observed practice report";
+}
 export function sampleRows(): StaffAthlete[] {
   const now = new Date().toISOString();
   return ["Jordan", "Avery", "Morgan"].map((name, i) => {

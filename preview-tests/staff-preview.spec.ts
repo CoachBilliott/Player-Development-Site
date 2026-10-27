@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { mkdir } from "node:fs/promises";
+import { coachA } from "../preview/staff/data";
 test("isolated preview has usable scoped roles, details, assignment, reset and no external API", async ({
   page,
 }) => {
@@ -66,6 +67,56 @@ test("isolated preview has usable scoped roles, details, assignment, reset and n
   ).toBe(true);
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   expect(external).toEqual([]);
+});
+
+test("saving or removing Morgan's sample coach updates the open next step immediately", async ({
+  page,
+}, info) => {
+  await page.goto("/");
+  await page
+    .getByRole("button", {
+      name: "Assign service coach for Fictional Morgan",
+      exact: true,
+    })
+    .click();
+  const dialog = page.getByRole("dialog"),
+    next = dialog.getByRole("region", { name: "Next service action" });
+  await expect(
+    next.getByRole("heading", { name: "Assign service coach", exact: true }),
+  ).toBeVisible();
+  await dialog.getByLabel("Responsible service coach").selectOption(coachA);
+  await dialog
+    .getByRole("button", { name: "Save service coach", exact: true })
+    .click();
+  await expect(
+    next.getByRole("heading", { name: "Assign training", exact: true }),
+  ).toBeVisible();
+  await expect(
+    next.getByRole("heading", { name: "Assign service coach", exact: true }),
+  ).toHaveCount(0);
+  await mkdir("docs/staff-service-preview/polish", { recursive: true });
+  await page.screenshot({
+    path: `docs/staff-service-preview/polish/after-coach-save-${info.project.name}.png`,
+    fullPage: false,
+  });
+  await dialog.getByRole("button", { name: "Back to client service" }).click();
+  await page
+    .getByRole("button", {
+      name: "Review training needs for Fictional Morgan",
+      exact: true,
+    })
+    .click();
+  await expect(
+    next.getByRole("heading", { name: "Assign training", exact: true }),
+  ).toBeVisible();
+  await dialog.locator("summary").filter({ hasText: "Service coach" }).click();
+  await dialog.getByLabel("Responsible service coach").selectOption("");
+  await dialog
+    .getByRole("button", { name: "Save service coach", exact: true })
+    .click();
+  await expect(
+    next.getByRole("heading", { name: "Assign service coach", exact: true }),
+  ).toBeVisible();
 });
 
 test("action-first roster search, status filters, no results and keyboard/back preserve context", async ({

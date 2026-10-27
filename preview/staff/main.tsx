@@ -4,7 +4,7 @@ import { ArrowUpRight } from "lucide-react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { StaffServiceDashboard } from "../../src/StaffServiceDashboard";
 import { Logo } from "../../src/components";
-import { coachA, coachB, sampleRows, uid } from "./data";
+import { coachA, coachB, sampleRows, sampleNextAction, uid } from "./data";
 import "@fontsource/dm-sans/latin-400.css";
 import "@fontsource/dm-sans/latin-600.css";
 import "@fontsource/barlow-condensed/latin-700.css";
@@ -28,10 +28,11 @@ export function Preview() {
             role === "coach"
               ? {
                   ...r,
+                  next_action: sampleNextAction(r),
                   client_label: `Client ${r.client_id.slice(0, 8)}`,
                   review_scope: "assigned_only",
                 }
-              : r;
+              : { ...r, next_action: sampleNextAction(r) };
           if (name === "staff_client_service_roster")
             return {
               data: {

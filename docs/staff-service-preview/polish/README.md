@@ -8,6 +8,7 @@ are unchanged. The notification implementation remains preserved in `5d41200`.
 | --- | --- | --- |
 | Searchable service roster | [Open](overview-desktop.png) | [Open](overview-phone.png) |
 | Focused athlete details | [Open](detail-desktop.png) | [Open](detail-phone.png) |
+| Next step immediately after sample coach save | [Open](after-coach-save-desktop.png) | [Open](after-coach-save-phone.png) |
 
 The roster now uses four columns: athlete, training, service coach and next action.
 Overdue records sort first. Status summaries act as filters; search matches athlete,
@@ -40,3 +41,15 @@ public alias remains https://client-service-preview.repformed.pages.dev/. Verify
 the returned deployment environment/source and unchanged canonical production
 deployment. This worker's public Cloudflare requests were restricted previously;
 independent public-browser verification remains a separate acceptance step.
+
+Follow-up regression: the sample adapter now derives the next step on every read,
+matching the backend projection instead of retaining old fixture text. Saving a
+coach for Morgan changes the **open** detail's next step to `Assign training`;
+removing the coach restores `Assign service coach`. All **6 preview cases** passed
+on desktop/phone, including both transitions and the existing search/back/reset
+checks. Lint, types and the isolated-preview build passed. This correction changes
+only the fictional adapter and tests; no production API or migration changed.
+
+The separate notification validation and migration record remains available at
+[`docs/delivery-preview/README.md`](../../delivery-preview/README.md) and
+[`backend/PILOT-MIGRATION-REVIEW.md`](../../../backend/PILOT-MIGRATION-REVIEW.md).
