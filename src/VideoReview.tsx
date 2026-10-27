@@ -314,9 +314,12 @@ export function AthleteVideoReview({
           )}
           {state.can_submit && (
             <p className="member-fineprint">
-              {state.remaining_slots} of 5 pilot video slots available. Delete
-              old clips to free a slot. Clips remain stored until you delete
-              them; no automatic retention schedule is active.
+              Storage: {state.remaining_slots} of 5 stored-clip spaces available
+              across this account’s athletes. This is storage capacity, not a
+              monthly review balance. The current pilot accepts one clip per
+              review, up to 60 seconds. Clips remain stored until you delete
+              them; no automatic retention schedule is active. Deleting a clip
+              also removes its attached feedback.
             </p>
           )}
           {state.can_submit && !drills.length && (
@@ -577,8 +580,8 @@ export function AthleteVideoReview({
           }}
         >
           <p>
-            This removes the stored clip and its review record. This cannot be
-            undone.
+            This removes the stored clip and its review record, including
+            coaching feedback. This cannot be undone.
           </p>
           {error && <p role="alert">{error}</p>}
           <div className="actions">

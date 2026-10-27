@@ -145,3 +145,17 @@ assignments while reviewing a forward fix or frontend rollback. Do not drop the
 new table, overwrite sibling plans with an account-wide plan, or blindly restore
 older function definitions. Migration/backup and recovery approval is separate
 from approval to edit this source branch.
+
+## Grouped-review preflight (013 — review draft, NOT installed)
+
+`013-preview-review-groups.sql` is read-only planning validation after 012, tested
+only against local synthetic data. It does not create durable groups, file
+reservations, review services, paid credits or deadlines. Its capability marker
+is explicitly false. Applying it alone would not enable multi-clip submissions.
+
+Durable grouped requests require a subsequent coordinated schema/trigger/RPC and
+website/native workflow change described in [REVIEW-GROUPING-DRAFT.md](../REVIEW-GROUPING-DRAFT.md).
+Keep the existing per-clip, account-count and shared private-media safeguards;
+storage capacity is not the monthly review allowance. Neither retention nor
+storage quotas are expanded by this draft. Do not apply 012 or 013 during
+environment setup or without the separate migration/release approval.

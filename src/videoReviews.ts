@@ -26,6 +26,7 @@ export const videoStateSchema = z.object({
   services: z.array(serviceSchema).default([]),
   can_submit: z.boolean(),
   adult_only: z.boolean(),
+  // Legacy API name: stored clip/reservation capacity, never monthly review credits.
   remaining_slots: z.number().int().nonnegative().default(5),
   reviews: z.array(reviewSchema),
 });

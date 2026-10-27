@@ -71,6 +71,13 @@ because a checkbox or synthetic test passes.
    session selection ID. Profiles are fetched and authorized afresh; unknown IDs
    are ignored, and selection IDs are cleared on sign-out/account changes. No
    private profile records are cached by this change.
+9. Add read-only grouped-review preflight draft 013: up to three proposed
+   60-second clips, 180 seconds combined, same athlete/drill, existing access and
+   finite storage safeguards. It creates no groups, reservations or credits and
+   explicitly reports grouped submission unavailable. The durable grouped
+   workflow remains future implementation; see [the design and quota tradeoffs](REVIEW-GROUPING-DRAFT.md).
+   Current customer copy separates the five stored-clip spaces from review
+   allowance and states the existing one-clip limit and feedback-deletion effect.
 
 ## Smallest owner action list
 
@@ -135,9 +142,11 @@ submission; the duration allowance does not need reapproval.
 ## Validation of this review branch — 2026-10-27
 
 - Lint, TypeScript and production build passed.
-- All **253 unit tests** passed, including nine new per-athlete database-policy
-  cases against migrations 001–012 and four Sunday/time-zone boundary cases.
-- The final full phone/desktop browser suite passed **240 cases** with no failures.
+- All **260 unit tests** passed, including nine new per-athlete database-policy
+  cases, seven grouped-review preflight cases against migrations 001–013 and
+  four Sunday/time-zone boundary cases.
+- The full phone/desktop browser suite passed **240 cases** with no failures
+  before the subsequent read-only preflight and review-copy changes.
   It includes separate sibling assignments, cancelled confirmation, repeated taps,
   independent completion/history, selected-athlete refresh persistence, owner-only
   Sunday configuration, clock changes, device-only save and discard behavior.
@@ -146,6 +155,10 @@ submission; the duration allowance does not need reapproval.
 - After the final staff-copy correction describing the minimal Owner athlete
   lookup, all six targeted staff-role browser cases passed again, along with
   lint and production build. This rerun is a subset of the full suite.
+- After the grouping preflight/review-copy changes, all **28 affected review-flow
+  browser cases** passed, including current one-file controls, storage wording,
+  cancellation, upload/retry, coaching feedback and the adult-household journey.
+  Lint, types, the full 260-test unit suite and production build also passed.
 - SQL cases cover wrong-household/profile substitution, raw-write/internal-helper
   denial, linked-athlete isolation, parent pause/revocation, stale/idempotent
   assignment, legacy defaults/removal tombstones, isolated resume invalidation,
