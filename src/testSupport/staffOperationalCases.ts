@@ -92,7 +92,7 @@ export function staffOperationalCases(f: Setup) {
     expect(await claim()).toEqual([]);
     expect((await workspace()).email_enabled).toBe(false);
     expect((await workspace()).signup_status).toBe("unconfigured");
-    for (const who of [f.parent, f.otherParent, f.coach]) {
+    for (const who of [f.owner, f.manager, f.coach, f.parent, f.otherParent]) {
       await f.as(who);
       await rejected("select public.prepare_staff_notification_jobs(10)");
       await rejected("select * from public.staff_notification_jobs");
@@ -240,6 +240,19 @@ export function staffOperationalCases(f: Setup) {
       "update public.training_resources set review_stage='approved',status='published' where id=$1",
       [f.first],
     );
+    // Republishing changes the content version. The original expectation must
+    // stay unavailable until staff plan the exact newly approved version.
+    expect(
+      await value(
+        "select public.delivery_check_available(e) v from public.delivery_expectations e where id=$1",
+        [f.id(81)],
+      ),
+    ).toBe(false);
+    await f.as(f.owner);
+    await db().query(
+      "select public.plan_delivery_check($1,$2,'new-approved-version',$3,1,current_date-extract(dow from current_date)::integer+7,clock_timestamp())",
+      [f.id(82), f.profile, f.id(20)],
+    );
     await service();
     expect(await value("select public.observe_new_content_notices(10) v")).toBe(
       1,
@@ -292,5 +305,86 @@ export function staffOperationalCases(f: Setup) {
       1,
     );
     expect((await f.notices()).map((n) => n.kind)).toEqual(["review_ready"]);
+  });
+  it.each(["role_revoked", "email_unverified", "address_changed"] as const)(
+    "suppresses a queued staff job after %s",
+    async (change) => {
+      await missedTraining();
+      await prepare();
+      await f.as("", "postgres");
+      if (change === "role_revoked")
+        await db().query(
+          "update public.account_roles set role='parent' where user_id=$1",
+          [f.coach],
+        );
+      if (change === "email_unverified")
+        await db().query(
+          "update auth.users set email_confirmed_at=null where id=$1",
+          [f.coach],
+        );
+      if (change === "address_changed")
+        await db().query(
+          "update auth.users set email='changed-staff@example.test' where id=$1",
+          [f.coach],
+        );
+      expect(await claim()).toEqual([]);
+      expect((await workspace()).jobs[0].state).toBe("suppressed");
+      if (change !== "address_changed") {
+        await f.as(f.coach);
+        await rejected(
+          "select public.staff_notification_workspace()",
+          [],
+          /Staff access/,
+        );
+      }
+    },
+  );
+  it("does not email staff once the required training becomes accessible", async () => {
+    await missedTraining();
+    await prepare();
+    await f.assignWorkout();
+    await f.media();
+    expect(await claim()).toEqual([]);
+    expect((await workspace()).jobs[0].state).toBe("suppressed");
+  });
+  it("keeps future grace periods out of the staff outbox", async () => {
+    await missedTraining();
+    await f.as("", "postgres");
+    await db().exec(
+      "update public.delivery_expectations set rule_snapshot=jsonb_set(rule_snapshot,'{grace_minutes}','60')",
+    );
+    expect(await prepare()).toBe(0);
+    expect((await workspace()).jobs).toEqual([]);
+  });
+  it("stops automatic retries at the attempt cap without granting another send", async () => {
+    await missedTraining();
+    await prepare();
+    await claim();
+    await f.as("", "postgres");
+    await db().exec(
+      "update public.staff_notification_jobs set attempts=4,lease_until=clock_timestamp()-interval '1 second'",
+    );
+    expect(await claim()).toEqual([]);
+    expect((await workspace()).jobs[0]).toMatchObject({
+      state: "failed",
+      code: "attempt_limit",
+    });
+  });
+  it("does not email staff for unsubmitted or incomplete review media", async () => {
+    await f.configure();
+    await enable();
+    await f.as("", "postgres");
+    await db().query(
+      "insert into public.review_services(id,account_id,profile_id,requested_by,state,ready_at,due_at) values($1,$2,$3,$2,'uploading',clock_timestamp(),clock_timestamp())",
+      [f.id(92), f.parent, f.profile],
+    );
+    expect(await prepare()).toBe(0);
+    await f.as("", "postgres");
+    await db().query(
+      "update public.review_services set state='queued' where id=$1",
+      [f.id(92)],
+    );
+    expect(await prepare()).toBe(0);
+    expect((await workspace()).jobs).toEqual([]);
   });
 }

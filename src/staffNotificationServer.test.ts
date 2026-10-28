@@ -137,14 +137,12 @@ it("handles rate limits, provider failure and conflicting idempotency without st
   ] as const) {
     const send = resendStaffSender(
       "synthetic-key",
-      vi
-        .fn<typeof fetch>()
-        .mockResolvedValue(
-          new Response("private recipient", {
-            status,
-            headers: { "retry-after": "120" },
-          }),
-        ),
+      vi.fn<typeof fetch>().mockResolvedValue(
+        new Response("private recipient", {
+          status,
+          headers: { "retry-after": "120" },
+        }),
+      ),
     );
     const result = await send(job);
     expect(result).toMatchObject({ outcome, code });
@@ -163,4 +161,33 @@ it("does not report success after an invalid provider response", async () => {
     outcome: "retry",
     code: "provider_response_uncertain",
   });
+});
+
+it("rejects invalid claimed jobs before any provider request", async () => {
+  for (const invalid of [
+    { ...job, kind: "new_signup" },
+    {
+      ...job,
+      recipient_email: "staff@example.test\r\nBcc: child@example.test",
+    },
+    { ...job, idempotency_key: "different-key" },
+  ]) {
+    const f = setup();
+    vi.mocked(f.backend.claim).mockResolvedValue([invalid as StaffJob]);
+    expect((await f.handler(f.request())).status).toBe(503);
+    expect(f.send).not.toHaveBeenCalled();
+  }
+});
+it("uses a conservative retry floor even when the provider offers an immediate retry", async () => {
+  const transport = vi
+    .fn<typeof fetch>()
+    .mockResolvedValue(
+      new Response("rate limited", {
+        status: 429,
+        headers: { "retry-after": "1" },
+      }),
+    );
+  expect(
+    await resendStaffSender("synthetic-key", transport)(job),
+  ).toMatchObject({ outcome: "retry", retryAfter: 60 });
 });

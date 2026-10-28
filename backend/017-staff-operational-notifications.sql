@@ -61,7 +61,11 @@ begin
   routing:=e.rule_snapshot->>'routing';select coach_id into coach from public.athlete_service_coaches where profile_id=target;
  elsif kind='review_overdue' then
   select * into s from public.review_services where id=source_id and state in ('queued','in_review') and ready_at is not null and due_at is not null;
-  if not found or not exists(select 1 from public.member_training_access where account_id=s.account_id and video_review_enabled) then return null;end if;
+  if not found or not exists(select 1 from public.member_training_access where account_id=s.account_id and video_review_enabled)
+   or not exists(select 1 from public.player_profiles where id=s.profile_id and owner_id=s.account_id)
+   or not exists(select 1 from public.athlete_video_reviews v join storage.objects o on o.bucket_id='athlete-review-videos' and o.name=v.asset_path
+    where v.id=s.video_id and v.profile_id=s.profile_id and v.account_id=s.account_id and v.status='queued'
+    and (o.metadata->>'size')::bigint=v.byte_size and o.metadata->>'mimetype'=v.media_type) then return null;end if;
   target:=s.profile_id;deadline:=s.due_at;coach:=s.assigned_to;routing:='assigned_coach';
  else return null;end if;
  if public.delivery_recipient(target) is null or exists(select 1 from public.delivery_athlete_settings where profile_id=target and state<>'active')
@@ -87,6 +91,7 @@ end;$$;
 create function public.notification_review_ready(service public.review_services) returns boolean
 language sql stable security definer set search_path='' as $$
  select service.state='delivered' and service.delivered_at is not null
+ and exists(select 1 from public.player_profiles p where p.id=service.profile_id and p.owner_id=service.account_id)
  and not coalesce((to_jsonb(service)->>'is_grouped')::boolean,false)
  and exists(select 1 from public.member_training_access a where a.account_id=service.account_id and a.video_review_enabled)
  and exists(select 1 from public.athlete_video_reviews v where v.id=service.video_id and v.profile_id=service.profile_id and v.account_id=service.account_id
@@ -194,7 +199,7 @@ end;$$;
 create function public.staff_notification_workspace() returns jsonb
 language plpgsql stable security definer set search_path='' as $$
 begin
- if public.current_account_role() is null or public.current_account_role() not in ('owner','manager','coach') or public.account_is_closing(auth.uid()) then raise exception 'Staff access is required.';end if;
+ if public.current_account_role() is null or public.current_account_role() not in ('owner','manager','coach') or public.account_is_closing(auth.uid()) or not exists(select 1 from auth.users where id=auth.uid() and email_confirmed_at is not null) then raise exception 'Staff access is required.';end if;
  return jsonb_build_object('email_enabled',(select email_enabled from public.staff_notification_settings),
  'inapp_observation_enabled',(select inapp_observation_enabled from public.staff_notification_settings),'signup_status','unconfigured',
  'selected',coalesce((select selected from public.staff_notification_recipients where user_id=auth.uid()),false),
@@ -207,7 +212,7 @@ end;$$;
 create function public.set_staff_notification_opt_out(opt_out boolean) returns void
 language plpgsql security definer set search_path='' as $$
 begin
- if opt_out is null or public.current_account_role() is null or public.current_account_role() not in ('owner','manager','coach') or public.account_is_closing(auth.uid()) then raise exception 'Configured staff access is required.';end if;
+ if opt_out is null or public.current_account_role() is null or public.current_account_role() not in ('owner','manager','coach') or public.account_is_closing(auth.uid()) or not exists(select 1 from auth.users where id=auth.uid() and email_confirmed_at is not null) then raise exception 'Configured staff access is required.';end if;
  update public.staff_notification_recipients set opted_out=opt_out where user_id=auth.uid() and selected;
  if not found then raise exception 'An Owner must select notification recipients first.';end if;
 end;$$;

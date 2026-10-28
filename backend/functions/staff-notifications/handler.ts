@@ -77,7 +77,7 @@ export function resendStaffSender(
               : "provider_unavailable",
           retryAfter:
             Number.isFinite(seconds) && seconds > 0
-              ? Math.min(3600, Math.ceil(seconds))
+              ? Math.max(60, Math.min(3600, Math.ceil(seconds)))
               : 60,
         };
       }
@@ -155,7 +155,25 @@ export function staffNotificationHandler(options: {
         });
       const prepared = await options.backend.prepare(limit);
       const jobs = await options.backend.claim(limit);
-      if (jobs.length > limit) throw new Error();
+      if (
+        !Array.isArray(jobs) ||
+        jobs.length > limit ||
+        jobs.some(
+          (job) =>
+            !job ||
+            !["training_overdue", "review_overdue"].includes(job.kind) ||
+            !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+              job.id,
+            ) ||
+            !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+              job.lease_token,
+            ) ||
+            typeof job.recipient_email !== "string" ||
+            !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(job.recipient_email) ||
+            job.idempotency_key !== `repformed-staff/${job.id}/v1`,
+        )
+      )
+        throw new Error();
       let accepted = 0,
         failed = 0,
         suppressed = 0;
