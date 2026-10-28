@@ -1,3 +1,5 @@
+import { LearningAthlete } from "./learning/LearningAthlete";
+import { LearningApi } from "./learning/api";
 import { StaffLink } from "./StaffLinks";
 import { AthleteTrainingAssignment } from "./AthleteTrainingAssignment";
 import { StaffNotificationPanel } from "./StaffNotificationPanel";
@@ -39,6 +41,7 @@ export function StaffServiceDashboard({
   enabled,
   monitoring = false,
   operationalEmails = false,
+  learningEnabled = false,
   preview = false,
   mode = "roster",
 }: {
@@ -48,10 +51,12 @@ export function StaffServiceDashboard({
   enabled: boolean;
   monitoring?: boolean;
   operationalEmails?: boolean;
+  learningEnabled?: boolean;
   preview?: boolean;
   mode?: "roster" | "settings";
 }) {
   const api = useMemo(() => new StaffService(client), [client]);
+  const learning = useMemo(() => new LearningApi(client), [client]);
   const [data, setData] = useState<ServiceRoster | null>(null),
     [current, setCurrent] = useState<StaffAthlete | null>(null),
     [target, setTarget] = useState(urlTarget),
@@ -605,6 +610,16 @@ export function StaffServiceDashboard({
                     </p>
                   )}
                 </section>
+                {learningEnabled && current.athlete_id && (
+                  <LearningAthlete
+                    key={current.athlete_id + ":learning"}
+                    api={learning}
+                    profile={current.athlete_id}
+                    actor={actor}
+                    staff
+                    owner={role === "owner"}
+                  />
+                )}
                 {assignmentNotice && <p role="status">{assignmentNotice}</p>}
                 {assigning && current.athlete_id && role === "owner" && (
                   <AthleteTrainingAssignment

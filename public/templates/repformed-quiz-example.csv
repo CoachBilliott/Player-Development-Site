@@ -1,0 +1,4 @@
+question_id,order,type,question,option_a,option_b,option_c,option_d,correct_answer,points,explanation
+sample_1,1,multiple_choice,"Which marker says START?",START,FINISH,,,A,1,"Fictional format example only."
+sample_2,2,true_false,"This is a sample quiz, not a coaching assessment.",True,False,,,TRUE,1,"This demonstrates the upload format."
+sample_3,3,written,"Describe the sample marker in one sentence.",,,,,,2,"Staff review is required for written answers."

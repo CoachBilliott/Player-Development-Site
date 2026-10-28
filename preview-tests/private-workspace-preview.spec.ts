@@ -208,3 +208,148 @@ test("three staff journeys show real components but reject fictional assignment 
   }
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 });
+
+test("Google Sheets upload validates before saving a quiz version", async ({
+  page,
+}, info) => {
+  await page.goto("./#weekly-demo");
+  await expect(
+    page.getByRole("heading", { name: "Weekly learning walkthrough" }),
+  ).toBeVisible();
+  await page
+    .getByRole("button", { name: "Training bank", exact: true })
+    .click();
+  await page.getByRole("button", { name: "Quiz uploads", exact: true }).click();
+  await expect(
+    page.getByRole("link", { name: "Blank template" }),
+  ).toHaveAttribute("download", "");
+  await page
+    .getByLabel("Quiz title", { exact: true })
+    .fill("Fictional imported quiz");
+  await page
+    .getByLabel("CSV file")
+    .setInputFiles({
+      name: "bad.csv",
+      mimeType: "text/csv",
+      buffer: Buffer.from("wrong,headers\ninvalid,file"),
+    });
+  await expect(page.getByRole("alert")).toContainText("Nothing was published");
+  await expect(
+    page.getByRole("button", { name: "Save quiz version" }),
+  ).toHaveCount(0);
+  await page
+    .getByLabel("CSV file")
+    .setInputFiles("public/templates/repformed-quiz-example.csv");
+  await expect(
+    page.getByText(
+      "3 questions · 4 points. Verify the answer key before saving.",
+    ),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Save quiz version" }).click();
+  await expect(page.getByRole("status")).toContainText("Quiz version saved");
+  await expect(
+    page.getByText("Fictional imported quiz · version 1 · 4 points"),
+  ).toBeVisible();
+  await page.screenshot({
+    path: `artifacts/private-workspace/learning-upload-${info.project.name}.png`,
+    fullPage: true,
+  });
+});
+test("household saves quiz draft, submits inside site, coach grades, and history survives Sunday", async ({
+  page,
+}, info) => {
+  await page.goto("./#weekly-demo");
+  await page.getByLabel("Sample role").selectOption("parent");
+  await page.getByRole("button", { name: "Open week", exact: true }).click();
+  await page.getByRole("button", { name: "Take quiz", exact: true }).click();
+  await page.getByLabel("START", { exact: true }).check();
+  await page.getByRole("button", { name: "Save draft", exact: true }).click();
+  await expect(page.getByRole("status")).toContainText("Draft saved");
+  await page.getByRole("button", { name: "Back to this week" }).click();
+  await page
+    .getByRole("button", { name: "Continue quiz", exact: true })
+    .click();
+  await expect(page.getByLabel("START", { exact: true })).toBeChecked();
+  await page.getByLabel("True", { exact: true }).check();
+  await page
+    .getByLabel("Your answer", { exact: true })
+    .fill("Fictional sample response");
+  await page
+    .getByRole("button", { name: "Submit answers", exact: true })
+    .click();
+  await expect(page.getByRole("status")).toContainText(
+    "awaiting staff grading",
+  );
+  await page.getByRole("button", { name: "Back to this week" }).click();
+  await page.getByLabel("Sample role").selectOption("coach");
+  await page.getByRole("button", { name: "Open week", exact: true }).click();
+  await page
+    .getByText("Submitted · awaiting written grade", { exact: false })
+    .click();
+  await page
+    .getByRole("button", { name: "Grade written answers", exact: true })
+    .click();
+  await page
+    .getByLabel("Describe the sample marker in one sentence. · points / 2")
+    .fill("1.5");
+  await page
+    .getByLabel("Feedback", { exact: true })
+    .fill("Fictional graded response");
+  await page.getByRole("button", { name: "Save grade revision" }).click();
+  await expect(page.getByText("Score 3.5 / 4", { exact: false })).toBeVisible();
+  await page.getByLabel("Sample role").selectOption("parent");
+  await page
+    .getByRole("button", { name: "Simulate next Sunday release" })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "Sample learning week 2", exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Sample learning week 1", exact: true }),
+  ).toBeVisible();
+  await page
+    .getByRole("button", { name: "Open week", exact: true })
+    .nth(1)
+    .click();
+  await expect(page.getByText("Score 3.5 / 4", { exact: false })).toBeVisible();
+  await page.screenshot({
+    path: `artifacts/private-workspace/learning-history-${info.project.name}.png`,
+    fullPage: true,
+  });
+  await page.getByLabel("Sample role").selectOption("other_coach");
+  await expect(page.getByRole("alert")).toContainText(
+    "outside this fictional role",
+  );
+});
+test("Friday notices and reset work without external requests or phone overflow", async ({
+  page,
+}, info) => {
+  const foreign: string[] = [];
+  await page.route("**/*", (r) => {
+    if (new URL(r.request().url()).hostname !== "127.0.0.1") {
+      foreign.push(r.request().url());
+      return r.abort();
+    }
+    return r.continue();
+  });
+  await page.goto("./#weekly-demo");
+  await page.getByLabel("Sample role").selectOption("parent");
+  await page.getByRole("button", { name: "Simulate Friday reminder" }).click();
+  await expect(
+    page.getByText("There is unfinished work in this week’s plan."),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Mark read", exact: true }).click();
+  await expect(page.getByText("Unread ·")).toHaveCount(0);
+  await page.getByRole("button", { name: "Reset samples" }).click();
+  await expect(page.getByText("No active plan notices.")).toBeVisible();
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth + 1,
+    ),
+  ).toBe(true);
+  expect(foreign).toEqual([]);
+  await page.screenshot({
+    path: `artifacts/private-workspace/learning-athlete-${info.project.name}.png`,
+    fullPage: true,
+  });
+});

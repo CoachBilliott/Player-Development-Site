@@ -12,6 +12,7 @@ import { isStaff, type AccountRole } from "./roles";
 import { clearStaffDrafts } from "./staffDrafts";
 
 export function useSharedContent() {
+  const [learningPlansEnabled, setLearningPlansEnabled] = useState(false);
   const [interestEndpoint, setInterestEndpoint] = useState<string | null>(null);
   const [serviceTrackingEnabled, setServiceTrackingEnabled] = useState(false);
   const [staffRosterEnabled, setStaffRosterEnabled] = useState(false);
@@ -67,6 +68,7 @@ export function useSharedContent() {
         setAccountLifecycleEnabled(raw.accountLifecycleEnabled === true);
         setServiceTrackingEnabled(raw.serviceTrackingEnabled === true);
         setStaffRosterEnabled(raw.staffRosterEnabled === true);
+        setLearningPlansEnabled(raw.learningPlansEnabled === true);
         setStaffNotificationEmailsEnabled(
           raw.staffNotificationEmailsEnabled === true,
         );
@@ -225,6 +227,7 @@ export function useSharedContent() {
   }
   return {
     interestEndpoint,
+    learningPlansEnabled,
     service,
     accountLifecycleEnabled,
     serviceTrackingEnabled,

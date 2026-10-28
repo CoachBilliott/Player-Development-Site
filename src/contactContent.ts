@@ -47,6 +47,14 @@ export const CONTACT_ANSWERS = [
     link: "Log in to your account",
   },
   {
+    id: "weekly-plans",
+    question: "How will weekly plans and quizzes work?",
+    answer:
+      "The planned experience releases an athlete’s next approved week on Sunday at midnight, America/Chicago. Released weeks stay in their library during active access, with progress and quiz history retained. Friday in-app reminders are planned for unfinished work. Staff prepare quizzes in Google Sheets and upload a CSV; athletes answer inside Repformed on the website or app. This new delivery system is being validated and is not active for public enrollment yet.",
+    href: "#membership",
+    link: "View proposed packages",
+  },
+  {
     id: "memberships",
     question: "Can I buy a membership or a drill review?",
     answer:

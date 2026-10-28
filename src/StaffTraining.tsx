@@ -1,3 +1,4 @@
+import { LearningBankConnected } from "./learning/LearningBankConnected";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, FileUp, Plus, Search } from "lucide-react";
 import { AssetPreview, Modal, Notice, Tag } from "./components";
@@ -47,7 +48,7 @@ function TrainingHome({ shared }: { shared: SharedState }) {
   const [loading, setLoading] = useState(true),
     [error, setError] = useState(""),
     [attempt, setAttempt] = useState(0);
-  const [view, setView] = useState<"workouts" | "lessons">(() =>
+  const [view, setView] = useState<"workouts" | "lessons" | "plans">(() =>
       new URLSearchParams(location.search).get("trainingView") === "lessons"
         ? "lessons"
         : "workouts",
@@ -94,7 +95,7 @@ function TrainingHome({ shared }: { shared: SharedState }) {
       trainingUrl("training", { trainingSearch: value }),
     );
   }
-  function bankView(value: "workouts" | "lessons") {
+  function bankView(value: "workouts" | "lessons" | "plans") {
     setView(value);
     setQuery("");
     history.replaceState(
@@ -114,6 +115,18 @@ function TrainingHome({ shared }: { shared: SharedState }) {
     );
     window.dispatchEvent(new HashChangeEvent("hashchange"));
   }
+  if (view === "plans" && shared.learningPlansEnabled)
+    return (
+      <main className="page staff-workflow training-home">
+        <button
+          className="button secondary"
+          onClick={() => bankView("workouts")}
+        >
+          Back to training bank
+        </button>
+        <LearningBankConnected shared={shared} />
+      </main>
+    );
   return (
     <main className="page staff-workflow training-home">
       <header className="workflow-intro">
@@ -123,6 +136,11 @@ function TrainingHome({ shared }: { shared: SharedState }) {
           <p>Create once. Reuse a lesson or assemble a complete practice.</p>
         </div>
         <div className="actions">
+          {shared.learningPlansEnabled && (
+            <button className="button" onClick={() => bankView("plans")}>
+              Weekly plans & quizzes
+            </button>
+          )}
           <a className="button" href="#coach">
             <FileUp size={18} /> Upload a lesson
           </a>

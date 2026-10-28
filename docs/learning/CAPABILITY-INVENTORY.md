@@ -72,3 +72,8 @@ retain grade/history records without promising unrestricted old media access.
 Content snapshot retention/private media permissions require review before live
 activation. New junior enrollment stays closed pending actual guardian safeguards
 and consent acceptance. No claim of qualified coaching review is made by code.
+
+
+## Source increment, October 28 (not production)
+
+The weekly-learning branch adds draft migrations 019/020, server-side import/scoring/attempt history, athlete-specific enrollment, immutable week releases, group enrollment, configurable Friday in-app reminders, staff-only content capacity notices, and a fictional interactive walkthrough. This does not change the production inventory above. The importer contract is in [QUIZ-GOOGLE-SHEETS.md](QUIZ-GOOGLE-SHEETS.md). No quiz-writing studio or Google account connection is needed. Production migration/security/storage/scheduler approval and hosted/device acceptance remain required.

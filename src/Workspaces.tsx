@@ -43,6 +43,7 @@ function StaffDashboard({
         enabled={shared.staffRosterEnabled}
         monitoring={shared.deliveryMonitoringEnabled}
         operationalEmails={shared.staffNotificationEmailsEnabled}
+        learningEnabled={shared.learningPlansEnabled}
       />
     </main>
   );

@@ -4,10 +4,13 @@ import { resolve } from "node:path";
 import process from "node:process";
 const root = resolve("preview/private/public");
 await mkdir(resolve(root, "brand"), { recursive: true });
+await mkdir(resolve(root, "templates"), { recursive: true });
 for (const path of [
   "brand/repformed-mark.svg",
   "account-help.html",
   "credits.html",
+  "templates/repformed-quiz-blank.csv",
+  "templates/repformed-quiz-example.csv",
 ])
   await copyFile(resolve("public", path), resolve(root, path));
 await writeFile(
