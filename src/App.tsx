@@ -615,9 +615,9 @@ export default function App() {
               <nav className="footer-nav" aria-label="Footer navigation">
                 <div className="footer-group">
                   <h2>Explore</h2>
-                  <a href="#home">About Repformed</a>
+                  <a href="#home">Home</a>
                   <a href="#membership">Proposed packages</a>
-                  <a href="#demo">Try the demo</a>
+                  <a href="#demo">Fictional preview</a>
                 </div>
                 <div className="footer-group">
                   <h2>Help & access</h2>

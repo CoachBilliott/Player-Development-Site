@@ -4,7 +4,7 @@
   max-width: 840px;
   line-height: 0.9;
 }
-.home-package-journey .hero-demo-note {
+.home-package-journey .hero-how-link {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -13,7 +13,7 @@
   color: var(--muted);
   font-size: 12px;
 }
-.experience .home-package-journey .hero-demo-note .text-button {
+.experience .home-package-journey .hero-how-link .text-button {
   font-size: 12px;
   min-height: 44px;
   padding: 8px 0;
@@ -111,12 +111,12 @@
     font-size: 14px;
     line-height: 1.7;
   }
-  .home-package-journey .hero-demo-note {
+  .home-package-journey .hero-how-link {
     margin-top: 8px;
     gap: 0 14px;
     font-size: 11px;
   }
-  .experience .home-package-journey .hero-demo-note .text-button {
+  .experience .home-package-journey .hero-how-link .text-button {
     font-size: 11px;
   }
   .home-package-path {
@@ -323,5 +323,86 @@
   }
   .website-footer .footer-legal {
     gap: 2px 20px;
+  }
+}
+
+.home-about {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 56px;
+  align-items: center;
+  padding-top: 60px;
+  padding-bottom: 72px;
+}
+.home-about > img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border-radius: 8px;
+}
+.home-about h2 {
+  font: 700 clamp(38px, 4.5vw, 62px)/1 var(--font-display);
+  margin: 18px 0 24px;
+}
+.home-about p,
+.home-about li {
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.75;
+}
+.home-about ul {
+  padding-left: 20px;
+  margin: 24px 0;
+}
+.home-about li + li {
+  margin-top: 14px;
+}
+.home-about li strong {
+  color: var(--ink);
+}
+.home-about .home-sport-note {
+  font-size: 0.875rem;
+}
+@media (max-width: 700px) {
+  .home-about {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding-block: 44px;
+  }
+  .home-about > img {
+    aspect-ratio: 16 / 9;
+  }
+}
+@media (max-width: 600px) {
+  .home-package-ladder {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .home-package-ladder li {
+    display: block;
+    padding-top: 20px;
+  }
+  .home-package-ladder .package-step-number {
+    display: block;
+    margin-bottom: 12px;
+  }
+  .home-package-ladder h3 {
+    margin: 0 0 16px;
+    min-height: 0;
+    font-size: 1.9rem;
+    line-height: 1.1;
+    overflow-wrap: anywhere;
+  }
+  .home-package-ladder p,
+  .home-package-ladder strong,
+  .home-package-ladder small {
+    margin: 0 0 12px;
+    font-size: 0.9375rem;
+    line-height: 1.65;
+    overflow-wrap: anywhere;
+  }
+  .home-package-ladder small {
+    font-size: 0.875rem;
   }
 }

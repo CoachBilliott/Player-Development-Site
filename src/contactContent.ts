@@ -50,7 +50,7 @@ export const CONTACT_ANSWERS = [
     id: "memberships",
     question: "Can I buy a membership or a drill review?",
     answer:
-      "Checkout, subscriptions and paid review purchases are not active yet. Current review access is enabled separately by an Owner. Creating an account or requesting review access does not charge you or start a subscription. Four proposed packages are available for feedback, with future features and prices under review. Parents, guardians and adults can email interest from the package page; this is not enrollment, payment or a reservation.",
+      "Checkout, subscriptions and paid review purchases are not active yet. Current review access is enabled separately by an Owner. Creating an account or requesting review access does not charge you or start a subscription. Four proposed packages are available for feedback, with future features and prices under review. Parents, guardians and adults can express interest from the package page; this is not enrollment, payment or a reservation.",
     href: "#membership",
     link: "View membership information",
   },
@@ -58,13 +58,17 @@ export const CONTACT_ANSWERS = [
     id: "reviews",
     question: "How do private video reviews work?",
     answer:
-      "Approved adult accounts with review access can choose a drill, record or select a short clip, preview it and send it through the private review feature. The target is 48 consecutive hours after a complete submission and any required approval. Check your account for status and coaching feedback. Real junior video submissions remain closed. Please use the private review feature for footage rather than general contact email.",
+      "For the current private adult pilot, approved accounts with review access can choose a drill, record or select a short clip, preview it and send it through the private review feature. The current pilot target is 48 consecutive hours after a complete submission and any required approval. Check your account for status and coaching feedback. Real junior video submissions remain closed. Please use the private review feature for footage rather than general contact email. The proposed Elite package has different future terms: up to three minutes of footage per review and a three-business-day target. Those proposed terms are not current pilot capabilities.",
+    href: "#membership",
+    link: "Compare planned package terms",
   },
   {
     id: "uploads",
     question: "What should I check if my video will not upload?",
     answer:
-      "For an athlete review, use an MP4, MOV or WebM clip up to 60 seconds and 40 MB. Keep the app open during preparation and upload, and wait for confirmation. The iPhone app can prepare a smaller compatible MP4 from a Photos recording. If it fails, keep your original, note the error and email the team with your phone model and app version.",
+      "For a current private adult pilot review, use an MP4, MOV or WebM clip up to 60 seconds and 40 MB. Keep the app open during preparation and upload, and wait for confirmation. The iPhone app can prepare a smaller compatible MP4 from a Photos recording. If it fails, keep your original, note the error and email the team with your phone model and app version. The proposed Elite footage allowance does not change this current 60-second clip limit.",
+    href: "#membership",
+    link: "Compare planned package terms",
   },
   {
     id: "demo",
