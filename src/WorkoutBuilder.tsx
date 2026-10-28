@@ -197,8 +197,8 @@ function Builder({ shared }: { shared: SharedState }) {
           Choose protected drills, arrange the practice order, then preview and
           save.
         </p>
-        <a className="text-button" href="#coach">
-          <ArrowLeft size={17} /> Upload & content
+        <a className="text-button" href="#training">
+          <ArrowLeft size={17} /> Back to Training
         </a>
       </div>
       {incoming && (

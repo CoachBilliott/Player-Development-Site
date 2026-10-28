@@ -1622,11 +1622,10 @@ test("staff app navigation stays on authorized content tools rather than member 
   await page.goto("./?source=app#workspace");
   const nav = page.getByRole("navigation", { name: "App navigation" });
   await expect(nav.getByRole("link")).toHaveText([
-    "Overview",
-    "Content",
-    "Reviews",
+    "Athletes",
+    "Training",
+    "Staff",
     "Account",
-    "Help",
   ]);
   await expect(
     page.getByRole("heading", { name: "Your athletes." }),

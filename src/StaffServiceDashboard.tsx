@@ -689,7 +689,7 @@ export function StaffServiceDashboard({
                 disabled={busy}
                 onClick={close}
               >
-                Back to client service
+                Back to athletes
               </button>
             </div>
           </div>

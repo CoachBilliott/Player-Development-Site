@@ -98,7 +98,7 @@ test("a saved staff draft restores the original file and coaching details after 
   });
   await page.reload();
   await expect(
-    page.getByRole("heading", { name: "Coach content studio", exact: true }),
+    page.getByRole("heading", { name: "Upload a lesson.", exact: true }),
   ).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Continue saved draft" }),
@@ -138,7 +138,7 @@ test("incomplete drafts can be saved, removal can be canceled, and sign-out clea
   ).toBeVisible();
   await sharedSignIn(page);
   await expect(
-    page.getByRole("heading", { name: "Coach content studio", exact: true }),
+    page.getByRole("heading", { name: "Upload a lesson.", exact: true }),
   ).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Continue saved draft" }),
@@ -317,7 +317,7 @@ test("saved draft metadata is account-scoped and contains neither rights consent
   }, secondId);
   await page.reload();
   await expect(
-    page.getByRole("heading", { name: "Coach content studio", exact: true }),
+    page.getByRole("heading", { name: "Upload a lesson.", exact: true }),
   ).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Continue saved draft" }),

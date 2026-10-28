@@ -398,7 +398,7 @@ export function Admin({
         <Tag>
           CONTENT STUDIO · {shared ? "SHARED TRAINING" : "LOCAL PRACTICE"}
         </Tag>
-        <h1 tabIndex={-1}>Coach content studio</h1>
+        <h1 tabIndex={-1}>Upload a lesson.</h1>
         <p>Choose a file. Add the workout details. Preview and publish.</p>
       </div>
       {!appSurface() && uploadGuidance}

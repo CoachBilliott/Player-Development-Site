@@ -62,7 +62,7 @@ test("Owner landing shows all clients, overdue service and private athlete drill
     path: `docs/staff-service-preview/athlete-detail-${info.project.name}.png`,
     fullPage: false,
   });
-  await d.getByRole("button", { name: "Back to client service" }).click();
+  await d.getByRole("button", { name: "Back to athletes" }).click();
   await expect(d).toHaveCount(0);
   await expect(page).not.toHaveURL(/serviceAthlete/);
   await page.goto("./#workspace");
@@ -117,7 +117,7 @@ test("Manager can change service coaches; Coach sees assigned athlete and direct
   expect(data.rows.find((r) => r.athlete_id === athleteA)?.coach_id).toBe(
     coachB,
   );
-  await page.getByRole("button", { name: "Back to client service" }).click();
+  await page.getByRole("button", { name: "Back to athletes" }).click();
   await page.screenshot({
     path: `docs/staff-service-preview/manager-${info.project.name}.png`,
     fullPage: false,
@@ -150,7 +150,7 @@ test("Manager can change service coaches; Coach sees assigned athlete and direct
     "outside your service roster",
   );
   await expect(coach.getByRole("dialog")).not.toContainText("Fictional Avery");
-  await coach.getByRole("button", { name: "Back to client service" }).click();
+  await coach.getByRole("button", { name: "Back to athletes" }).click();
   data.rows.find((r) => r.athlete_id === athleteA)!.coach_id = coachB;
   await coach.getByRole("button", { name: "Refresh client service" }).click();
   await expect(

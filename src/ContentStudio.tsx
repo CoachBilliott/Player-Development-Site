@@ -18,7 +18,7 @@ export function ContentStudio({ shared, ...local }: Props) {
   if (shared.loading && selectedScope === null)
     return (
       <main className="page narrow">
-        <h1 tabIndex={-1}>Coach content studio</h1>
+        <h1 tabIndex={-1}>Upload a lesson.</h1>
         <p role="status">Opening your upload space…</p>
       </main>
     );

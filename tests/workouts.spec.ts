@@ -390,7 +390,7 @@ for (const role of ["owner", "manager", "coach"]) {
       .click();
     await page.setViewportSize({ width: 390, height: 850 });
     await expect(
-      page.getByRole("heading", { name: "Coach content studio" }),
+      page.getByRole("heading", { name: "Upload a lesson." }),
     ).toBeVisible();
     await expect(page.locator(".publishing-settings")).not.toHaveAttribute(
       "open",

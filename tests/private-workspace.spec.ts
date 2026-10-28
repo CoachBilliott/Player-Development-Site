@@ -210,6 +210,7 @@ test("Owner directory separates loading, failed reads and retry from an empty re
   await page
     .getByRole("button", { name: "Retry accounts", exact: true })
     .click();
+  await page.getByRole("button", { name: "All accounts", exact: true }).click();
   await expect(
     page.getByText("No matching accounts. Try another email or search again.", {
       exact: true,

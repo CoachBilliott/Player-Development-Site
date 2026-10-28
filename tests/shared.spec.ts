@@ -41,7 +41,7 @@ test("configured shared publishing saves, edits across visitors, and removes a s
   await mockProject(context, rows, true, true, undefined, "owner");
   await sharedSignIn(page);
   await expect(
-    page.getByRole("heading", { name: "Coach content studio", exact: true }),
+    page.getByRole("heading", { name: "Upload a lesson.", exact: true }),
   ).toBeVisible();
   await page
     .getByLabel("Choose a video or file", { exact: true })
