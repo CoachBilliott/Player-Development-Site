@@ -1,3 +1,4 @@
+import { sharedSignOut } from "./contentFixture";
 import { disableBackend } from "./backendFixture";
 import { test, expect } from "@playwright/test";
 import { mockProject, sharedSignIn, type Row } from "./contentFixture";
@@ -103,7 +104,7 @@ test("configured shared publishing saves, edits across visitors, and removes a s
   await expect(
     partner.getByRole("button", { name: /Updated shared paper practice/ }),
   ).toHaveCount(0);
-  await page.getByRole("button", { name: "Sign out", exact: true }).click();
+  await sharedSignOut(page);
   await expect(
     page.getByRole("heading", { name: "Log in to open the content studio." }),
   ).toBeVisible();
@@ -226,7 +227,7 @@ test("protected uploads stay out of public demo pages and disappear immediately 
   ).toHaveCount(0);
   await visitor.close();
   await page.goto("./#coach");
-  await page.getByRole("button", { name: "Sign out", exact: true }).click();
+  await sharedSignOut(page);
   await page.goto("./#member-library");
   await expect(
     page.getByRole("heading", { name: "Welcome back.", exact: true }),

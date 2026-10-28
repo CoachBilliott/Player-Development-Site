@@ -1,3 +1,4 @@
+import { StaffLink } from "./StaffLinks";
 import { StaffNotificationPanel } from "./StaffNotificationPanel";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
@@ -38,6 +39,7 @@ export function StaffServiceDashboard({
   monitoring = false,
   operationalEmails = false,
   preview = false,
+  mode = "roster",
 }: {
   client: SupabaseClient;
   role: "owner" | "manager" | "coach";
@@ -46,6 +48,7 @@ export function StaffServiceDashboard({
   monitoring?: boolean;
   operationalEmails?: boolean;
   preview?: boolean;
+  mode?: "roster" | "settings";
 }) {
   const api = useMemo(() => new StaffService(client), [client]);
   const [data, setData] = useState<ServiceRoster | null>(null),
@@ -167,6 +170,35 @@ export function StaffServiceDashboard({
           The dashboard is prepared for release review. Its production migration
           and rollout switch are not enabled.
         </p>
+      </section>
+    );
+  if (mode === "settings")
+    return (
+      <section className="staff-service" aria-label="Staff delivery settings">
+        {error && <p role="alert">{error}</p>}
+        {!data && !error && <p role="status">Loading delivery settings…</p>}
+        {monitoring && data && (
+          <DeliveryMonitor
+            key={`${actor}:${role}`}
+            client={client}
+            actor={actor}
+            role={role}
+            profiles={data.rows}
+          />
+        )}{" "}
+        {operationalEmails && (
+          <details className="workflow-secondary">
+            <summary>Staff email status</summary>
+            <StaffNotificationPanel
+              key={`staff-email:${actor}:${role}`}
+              client={client}
+              actor={actor}
+            />
+          </details>
+        )}
+        {!monitoring && !operationalEmails && (
+          <p>Delivery monitoring is not enabled for this connection.</p>
+        )}
       </section>
     );
   return (
@@ -403,21 +435,12 @@ export function StaffServiceDashboard({
           )}
         </>
       )}
-      {operationalEmails && (
-        <StaffNotificationPanel
-          key={`staff-email:${actor}:${role}`}
-          client={client}
-          actor={actor}
-        />
-      )}
-      {monitoring && data && (
-        <DeliveryMonitor
-          key={`${actor}:${role}`}
-          client={client}
-          actor={actor}
-          role={role}
-          profiles={data.rows}
-        />
+      {(monitoring || operationalEmails) && (
+        <div className="staff-secondary-work">
+          <a href="#staff-delivery" className="text-button">
+            Delivery checks & settings <ArrowRight size={16} />
+          </a>
+        </div>
       )}
       {target && (
         <Modal
@@ -452,6 +475,26 @@ export function StaffServiceDashboard({
                 >
                   <span className="tag">NEXT STEP</span>
                   <h3>{current.next_action}</h3>
+                  <div className="actions">
+                    {role === "owner" && current.athlete_id && (
+                      <StaffLink
+                        route="training-assign"
+                        values={{
+                          trainingAccount: current.client_id,
+                          trainingAthlete: current.athlete_id,
+                          trainingWorkout: "",
+                        }}
+                        className="button"
+                      >
+                        Assign workout <ArrowRight size={16} />
+                      </StaffLink>
+                    )}
+                    {(current.pending_reviews || 0) > 0 && (
+                      <a href="#video-reviews" className="button secondary">
+                        Open review queue
+                      </a>
+                    )}
+                  </div>
                   {preview && (
                     <p>
                       {!current.coach_id && role !== "coach"

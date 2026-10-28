@@ -1,3 +1,4 @@
+import { StaffLink } from "./StaffLinks";
 import { takeStaffHandoff } from "./staffHandoff";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -47,6 +48,9 @@ function Builder({ shared }: { shared: SharedState }) {
   const service = useMemo(
     () => new Workouts(shared.service!.client),
     [shared.service],
+  );
+  const [initialWorkout] = useState(
+    () => new URLSearchParams(location.search).get("trainingWorkout") || "",
   );
   const [saved, setSaved] = useState<SavedWorkout[]>([]),
     [ready, setReady] = useState(false),
@@ -109,6 +113,24 @@ function Builder({ shared }: { shared: SharedState }) {
         if (active) {
           setSaved(rows);
           setReady(true);
+          const chosen = rows.find((w) => w.id === initialWorkout);
+          if (chosen) {
+            setId(chosen.id);
+            setVersion(chosen.version);
+            setTitle(chosen.title);
+            setSummary(chosen.summary);
+            setIds(chosen.resource_ids);
+            setSnapshot(
+              JSON.stringify([
+                chosen.title,
+                chosen.summary,
+                chosen.resource_ids,
+              ]),
+            );
+          } else if (initialWorkout)
+            setError(
+              "That workout is unavailable. Choose a saved workout in your scope.",
+            );
         }
       })
       .catch((e: Error) => {
@@ -117,7 +139,7 @@ function Builder({ shared }: { shared: SharedState }) {
     return () => {
       active = false;
     };
-  }, [service]);
+  }, [service, initialWorkout]);
   function open(workout: SavedWorkout | "new") {
     const next = workout === "new" ? null : workout;
     setId(next?.id || crypto.randomUUID());
@@ -478,12 +500,25 @@ function Builder({ shared }: { shared: SharedState }) {
             </fieldset>
           </form>
           {selected && shared.role === "owner" && (
-            <AssignWorkout
-              key={`${selected.id}:${selected.version}`}
-              service={service}
-              workout={selected}
-              dirty={dirty}
-            />
+            <div className="workflow-assignment-entry">
+              <h2>Ready to use this practice?</h2>
+              <p>
+                Assign the saved workout in a separate step. Existing athlete
+                plans keep their current version until you confirm a
+                replacement.
+              </p>
+              {dirty ? (
+                <p>Save or discard your edits before assigning.</p>
+              ) : (
+                <StaffLink
+                  route="training-assign"
+                  values={{ trainingWorkout: selected.id }}
+                  className="button"
+                >
+                  Assign this workout <ArrowRight size={18} />
+                </StaffLink>
+              )}
+            </div>
           )}
         </section>
       </div>
@@ -710,7 +745,7 @@ function WorkoutPreview({
     </Modal>
   );
 }
-function AssignWorkout({
+export function AssignWorkout({
   service,
   workout,
   dirty,
@@ -720,10 +755,14 @@ function AssignWorkout({
   dirty: boolean;
 }) {
   const [members, setMembers] = useState<AccessMember[]>([]),
-    [account, setAccount] = useState(""),
+    [account, setAccount] = useState(
+      () => new URLSearchParams(location.search).get("trainingAccount") || "",
+    ),
     [profiles, setProfiles] = useState<AssignmentProfile[]>([]),
     [profilesLoaded, setProfilesLoaded] = useState(false),
-    [profile, setProfile] = useState(""),
+    [profile, setProfile] = useState(
+      () => new URLSearchParams(location.search).get("trainingAthlete") || "",
+    ),
     [assignment, setAssignment] = useState<WorkoutAssignment | null>(null);
   const [busy, setBusy] = useState(false),
     [error, setError] = useState(""),

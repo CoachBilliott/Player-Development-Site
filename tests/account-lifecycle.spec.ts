@@ -173,10 +173,7 @@ async function account(page: import("@playwright/test").Page, role = "owner") {
   await page.goto("./?source=app#workspace");
   await expect(
     page.getByRole("heading", {
-      name:
-        role === "owner"
-          ? "Your platform. Your playbook."
-          : "Today’s training.",
+      name: role === "owner" ? "Athletes." : "Today’s training.",
       exact: true,
     }),
   ).toBeVisible();
@@ -215,7 +212,7 @@ test("Owner reviews an invitation, canceling is harmless, repeated confirmation 
   expect(data.sent).toBe(1);
   await page.reload();
   await expect(
-    page.getByRole("heading", { name: "Team & access." }),
+    page.getByRole("heading", { name: "Staff & settings." }),
   ).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Invite staff", exact: true }),
@@ -280,7 +277,7 @@ test("an invited Coach accepts exactly the invited access without choosing Paren
   await page.getByRole("checkbox").nth(1).check();
   await accept.dblclick();
   await expect(
-    page.getByRole("heading", { name: "Build the next great practice." }),
+    page.getByRole("heading", { name: "Your athletes." }),
   ).toBeVisible();
   await page
     .getByRole("navigation", { name: "App navigation" })

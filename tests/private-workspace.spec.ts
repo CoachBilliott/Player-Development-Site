@@ -80,18 +80,22 @@ for (const role of ["owner", "manager", "coach"] as const) {
     await page.goto("./#workspace");
     const nav = page.getByRole("navigation", { name: "Workspace navigation" });
     await expect(
-      nav.getByRole("link", { name: "Client service", exact: true }),
+      nav.getByRole("link", { name: "Athletes", exact: true }),
     ).toHaveAttribute("aria-current", "page");
     await expect(
       page.getByRole("heading", {
         level: 1,
-        name: role === "coach" ? "Your athletes." : "Client service.",
+        name: role === "coach" ? "Your athletes." : "Athletes.",
       }),
     ).toBeVisible();
-    await expect(
-      nav.getByRole("link", { name: "Team & access", exact: true }),
-    ).toHaveCount(role === "owner" ? 1 : 0);
-    await nav.getByRole("link", { name: "Account", exact: true }).click();
+    await expect(nav.getByRole("link")).toHaveText([
+      "Athletes",
+      "Training",
+      "Staff & settings",
+    ]);
+    await page
+      .getByRole("link", { name: "Account settings", exact: true })
+      .click();
     await expect(
       page.getByRole("heading", { level: 1, name: "Account settings." }),
     ).toBeVisible();
@@ -152,7 +156,7 @@ test("Owner access directory is absent in settings and protected self access sta
     .getByRole("link", { name: "Manage team access", exact: true })
     .click();
   await expect(
-    page.getByRole("heading", { name: "Team & access." }),
+    page.getByRole("heading", { name: "Staff & settings." }),
   ).toBeVisible();
   await expect(
     page.getByLabel("Account level for fictional-staff@example.test"),

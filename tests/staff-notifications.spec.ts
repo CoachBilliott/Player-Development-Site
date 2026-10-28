@@ -156,7 +156,8 @@ test("Owner status separates provider acceptance, uncertain outcomes and disable
   context,
 }, info) => {
   const data = await alerts(context);
-  await page.goto("./?source=app#workspace");
+  await page.goto("./?source=app#staff-delivery");
+  await page.getByText("Staff email status", { exact: true }).click();
   const panel = page.getByRole("region", {
     name: "Staff operational email status",
   });
@@ -245,7 +246,8 @@ test("Manager sees the shared inbox status and private interest without recipien
   context,
 }) => {
   const data = await alerts(context, "manager");
-  await page.goto("./?source=app#workspace");
+  await page.goto("./?source=app#staff-delivery");
+  await page.getByText("Staff email status", { exact: true }).click();
   const panel = page.getByRole("region", {
     name: "Staff operational email status",
   });
@@ -271,7 +273,8 @@ test("Coach renders only scoped jobs and clears revoked assignment results on re
   context,
 }) => {
   const data = await alerts(context, "coach");
-  await page.goto("./?source=app#workspace");
+  await page.goto("./?source=app#staff-delivery");
+  await page.getByText("Staff email status", { exact: true }).click();
   const panel = page.getByRole("region", {
     name: "Staff operational email status",
   });
@@ -327,7 +330,8 @@ test("Status read failures are retryable and do not retain stale job data", asyn
   context,
 }) => {
   const data = await alerts(context);
-  await page.goto("./?source=app#workspace");
+  await page.goto("./?source=app#staff-delivery");
+  await page.getByText("Staff email status", { exact: true }).click();
   const panel = page.getByRole("region", {
     name: "Staff operational email status",
   });

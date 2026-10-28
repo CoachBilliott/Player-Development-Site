@@ -1,18 +1,10 @@
 import { useEffect, useState } from "react";
-import {
-  ArrowRight,
-  BookOpen,
-  Check,
-  ClipboardCheck,
-  FileUp,
-  LockKeyhole,
-  Users,
-} from "lucide-react";
+import { ArrowRight, ClipboardCheck, FileUp, LockKeyhole } from "lucide-react";
 import { Tag, Notice, Modal, AssetPreview } from "./components";
-import { ROLE_LABELS, isStaff } from "./roles";
+import { isStaff } from "./roles";
 import type { SharedState } from "./useSharedContent";
 import { MemberAccountPage } from "./MemberAccount";
-import { TrainingAccess } from "./TrainingAccess";
+import { IndividualTrainingAccess } from "./StaffTraining";
 import { AccountAccess } from "./AccountAccess";
 import { ReleaseSchedulePreview } from "./ReleaseSchedulePreview";
 import { StaffServiceDashboard } from "./StaffServiceDashboard";
@@ -21,75 +13,28 @@ import { OwnerAccountInvitations } from "./AccountInvitations";
 import { InterestInbox } from "./InterestInbox";
 import { PrivateAccessMessage } from "./PrivateShell";
 
-const descriptions = {
-  owner:
-    "Run the platform. Manage staff access and review content, with launch settings in one place.",
-  manager:
-    "Keep training content organized and ready. Manage resources across the coaching team.",
-  coach:
-    "Build clear practices. Upload, preview and maintain your own resources.",
-};
-function WorkspaceLink({
-  href,
-  title,
-  children,
-  icon = "content",
-}: {
-  href: string;
-  title: string;
-  children: React.ReactNode;
-  icon?: "content" | "access" | "library";
-}) {
-  const Icon =
-    icon === "access" ? Users : icon === "library" ? BookOpen : FileUp;
-  return (
-    <a href={href} className="workspace-action">
-      <Icon size={25} />
-      <h2>{title}</h2>
-      <p>{children}</p>
-      <span>
-        Open <ArrowRight size={17} />
-      </span>
-    </a>
-  );
-}
 function StaffDashboard({
   role,
-  resources,
-  pending = false,
   shared,
 }: {
   role: "owner" | "manager" | "coach";
-  resources: Drill[];
-  pending?: boolean;
   shared: SharedState;
 }) {
-  const root = "#coach";
   return (
-    <main className={`page workspace-page workspace-${role}`}>
-      <div className="workspace-hero">
-        <Tag>{ROLE_LABELS[role]} · FOOTBALL</Tag>
-        <h1 tabIndex={-1}>
-          {shared.staffRosterEnabled
-            ? role === "coach"
-              ? "Your athletes."
-              : "Client service."
-            : role === "owner"
-              ? "Your platform. Your playbook."
-              : role === "manager"
-                ? "Keep the team moving."
-                : "Build the next great practice."}
-        </h1>
-        <p>{descriptions[role]}</p>
-        <div className="actions">
-          <a className="button" href={root}>
-            Upload a workout <FileUp size={18} />
-          </a>
-          <a className="button secondary" href="#workout-builder">
-            Build a workout
-          </a>
+    <main className="page staff-workflow athletes-workspace">
+      <header className="workflow-intro">
+        <div>
+          <Tag>ATHLETES</Tag>
+          <h1 tabIndex={-1}>
+            {role === "coach" ? "Your athletes." : "Athletes."}
+          </h1>
+          <p>
+            {role === "coach"
+              ? "Your assigned athletes and the next thing they need."
+              : "Find an athlete, check their plan and take the next action."}
+          </p>
         </div>
-      </div>
+      </header>
       <StaffServiceDashboard
         key={`${shared.session!.user.id}:${role}`}
         client={shared.service!.client}
@@ -99,115 +44,6 @@ function StaffDashboard({
         monitoring={shared.deliveryMonitoringEnabled}
         operationalEmails={shared.staffNotificationEmailsEnabled}
       />
-      <details className="workspace-content-tools">
-        <summary>Content tools & resources</summary>
-        <div className="workspace-metrics">
-          <div>
-            <strong>{pending ? "…" : resources.length}</strong>
-            <span>
-              {role === "coach"
-                ? "Your training resources"
-                : "Accessible training resources"}
-            </span>
-          </div>
-          <div>
-            <strong>
-              {pending
-                ? "…"
-                : resources.filter((d) => d.visibility === "member_only")
-                    .length}
-            </strong>
-            <span>Protected for staff review</span>
-          </div>
-        </div>
-        <div className="workspace-actions">
-          <WorkspaceLink
-            href="#workout-builder"
-            title={
-              role === "owner" ? "Build & assign workouts" : "Build workouts"
-            }
-            icon="library"
-          >
-            Arrange protected drills into a complete ordered session, preview it
-            and save it for Owner assignment.
-          </WorkspaceLink>
-          <WorkspaceLink
-            href={root}
-            title={
-              role === "coach"
-                ? "Your content studio"
-                : "Upload & manage content"
-            }
-          >
-            Choose a file, add instructions and audience, then preview before
-            publishing.
-          </WorkspaceLink>
-          {role === "owner" ? (
-            <WorkspaceLink
-              href="#access"
-              title="Team & account access"
-              icon="access"
-            >
-              Assign the five account levels. Owners see the athlete nickname
-              and training audience needed to choose a plan; family controls
-              stay private.
-            </WorkspaceLink>
-          ) : (
-            <WorkspaceLink
-              href="#member-library"
-              title={
-                role === "manager"
-                  ? "Team content library"
-                  : "Your content library"
-              }
-              icon="library"
-            >
-              {role === "manager"
-                ? "Review resources across the team."
-                : "Edit your own resources and keep instructions up to date."}
-            </WorkspaceLink>
-          )}
-          <WorkspaceLink
-            href="#video-reviews"
-            title="Athlete video reviews"
-            icon="library"
-          >
-            Watch private drill submissions and send coaching feedback for
-            accounts assigned to you.
-          </WorkspaceLink>
-          <WorkspaceLink href="#launch" title="Launch readiness" icon="library">
-            See what is still needed for packages, payments, reviewed training
-            and junior enrollment.
-          </WorkspaceLink>
-        </div>
-        <section className="panel workspace-section">
-          <h2>
-            {role === "coach"
-              ? "Your publishing checklist"
-              : "Content overview"}
-          </h2>
-          <p>
-            New uploads default to protected staff review. Choose Public demo
-            sample only for content you intend to share for free.
-          </p>
-          <ol className="workspace-checklist">
-            <li>
-              <Check size={18} /> Choose original or licensed sample media.
-            </li>
-            <li>
-              <Check size={18} /> Match age, position, experience and skill.
-            </li>
-            <li>
-              <Check size={18} /> Check visibility and preview before
-              publishing.
-            </li>
-          </ol>
-          <p className="member-fineprint">
-            No revenue figures, member totals or coaching outcomes are invented.
-            Counts above come from the resources this view can access.
-          </p>
-        </section>
-      </details>
     </main>
   );
 }
@@ -250,8 +86,6 @@ export function Workspace({ shared }: { shared: SharedState }) {
       <StaffDashboard
         key={shared.session!.user.id}
         role={shared.role as "owner" | "manager" | "coach"}
-        resources={shared.resources.filter((d) => shared.canEditResource(d.id))}
-        pending={!shared.libraryReady}
         shared={shared}
       />
     );
@@ -283,14 +117,16 @@ export function AccessWorkspace({ shared }: { shared: SharedState }) {
         service.
       </PrivateAccessMessage>
     );
+  if (selected === "training")
+    return <IndividualTrainingAccess shared={shared} />;
   return (
     <main className="page workspace-page">
       <div className="workspace-hero">
         <Tag>OWNER ADMINISTRATION</Tag>
-        <h1 tabIndex={-1}>Team & access.</h1>
+        <h1 tabIndex={-1}>Staff & settings.</h1>
         <p>
-          Manage account roles, invitations and training access in separate
-          steps. Your personal sign-in settings stay in Account.
+          Invite staff or manage an existing account. Athlete training is
+          managed in Training; your own sign-in details stay in Account.
         </p>
       </div>
       <div
@@ -303,7 +139,6 @@ export function AccessWorkspace({ shared }: { shared: SharedState }) {
           ...(shared.accountLifecycleEnabled
             ? [["invites", "Invite staff"]]
             : []),
-          ["training", "Training access"],
         ].map(([id, label]) => (
           <button
             key={id}
@@ -319,15 +154,22 @@ export function AccessWorkspace({ shared }: { shared: SharedState }) {
           </button>
         ))}
       </div>
-      {selected === "roles" && <AccountAccess shared={shared} manage />}
+      {selected === "roles" && (
+        <>
+          <AccountAccess shared={shared} manage />
+          <details className="workflow-secondary">
+            <summary>Platform tools</summary>
+            <a href="#staff-delivery">Delivery checks & rules</a>
+            <a href="#launch">Launch checklist & release preview</a>
+            <a href="#training-access">Individual training permissions</a>
+          </details>
+        </>
+      )}
       {selected === "invites" && shared.accountLifecycleEnabled && (
         <OwnerAccountInvitations
           key={shared.session?.user.id}
           shared={shared}
         />
-      )}
-      {selected === "training" && shared.service && (
-        <TrainingAccess key={shared.session?.user.id} shared={shared} />
       )}
     </main>
   );
@@ -545,6 +387,57 @@ export function LaunchReadiness({ shared }: { shared?: SharedState }) {
       <a href="#workspace" className="button secondary">
         Back to overview
       </a>
+    </main>
+  );
+}
+
+export function StaffSettingsWorkspace({ shared }: { shared: SharedState }) {
+  if (!shared.signedIn || !shared.accessReady || shared.accessError)
+    return <MemberAccountPage shared={shared} />;
+  if (!isStaff(shared.role))
+    return (
+      <PrivateAccessMessage signedIn title="Staff access is required.">
+        Personal settings are in Account.
+      </PrivateAccessMessage>
+    );
+  if (shared.role === "owner") return <AccessWorkspace shared={shared} />;
+  return (
+    <main className="page staff-workflow">
+      <header className="workflow-intro">
+        <div>
+          <Tag>STAFF & SETTINGS</Tag>
+          <h1 tabIndex={-1}>Your staff settings.</h1>
+          <p>
+            Your role and daily tools are already connected. An Owner manages
+            staff invitations, account roles and platform permissions.
+          </p>
+        </div>
+      </header>
+      <div className="workflow-bank">
+        <a className="workflow-bank-row" href="#staff-delivery">
+          <span>
+            <strong>Delivery checks</strong>
+            <small>
+              Expected training and staff alert status in your scope
+            </small>
+          </span>
+          <ArrowRight size={18} />
+        </a>
+        <a className="workflow-bank-row" href="#account">
+          <span>
+            <strong>Personal account</strong>
+            <small>Password, sign out and privacy preferences</small>
+          </span>
+          <ArrowRight size={18} />
+        </a>
+        <a className="workflow-bank-row" href="#contact">
+          <span>
+            <strong>Get help</strong>
+            <small>Contact Repformed about your access</small>
+          </span>
+          <ArrowRight size={18} />
+        </a>
+      </div>
     </main>
   );
 }

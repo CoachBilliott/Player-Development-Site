@@ -1,3 +1,5 @@
+import { DRILLS } from "../../src/data";
+import { noAssignment } from "../../src/workouts";
 // Isolated review adapter. Never constructs a real Supabase client or sends HTTP.
 // All state-changing operations fail explicitly; role selection is a visual fixture.
 import type { SupabaseClient, Session } from "@supabase/supabase-js";
@@ -59,6 +61,34 @@ export function previewShared(
     version: 1,
   };
   const sample = sampleRows();
+  const lesson = {
+    ...DRILLS[0],
+    id: uid(90),
+    title: "Controlled steps · illustrative sample",
+    ages: ["18+" as const],
+    levels: ["New to the game" as const],
+    positions: [],
+    source: "shared" as const,
+    visibility: "member_only" as const,
+    reviewStage: "approved" as const,
+    assetId: undefined,
+    createdBy: actor,
+    version: 1,
+  };
+  const savedWorkouts = isStaff(role)
+    ? [
+        {
+          id: uid(80),
+          title: "Ready position & controlled steps",
+          summary: "Illustrative noncontact practice for design review.",
+          resource_ids: [lesson.id],
+          created_by: actor,
+          version: 1,
+          updated_at: "2026-10-28T12:00:00Z",
+        },
+      ]
+    : [];
+
   const allowed = (row: ReturnType<typeof sampleRows>[number]) =>
     role !== "coach" || row.coach_id === coachA;
   const view = (row: ReturnType<typeof sampleRows>[number]) => ({
@@ -89,15 +119,27 @@ export function previewShared(
         write = false;
       const equals: Record<string, unknown> = {};
       const data = () =>
-        table === "member_accounts"
-          ? [account]
-          : table === "profile_settings"
-            ? [{ under18_enabled: false }]
-            : table === "player_profiles" && !isStaff(role)
-              ? [player]
-              : table === "account_roles" && role
-                ? [{ role, version: 1 }]
-                : [];
+        table === "training_workouts"
+          ? savedWorkouts
+          : table === "member_training_access" && role === "owner"
+            ? [
+                {
+                  account_id: uid(50),
+                  resource_ids: [],
+                  video_review_enabled: false,
+                  review_coach_id: null,
+                  version: 0,
+                },
+              ]
+            : table === "member_accounts"
+              ? [account]
+              : table === "profile_settings"
+                ? [{ under18_enabled: false }]
+                : table === "player_profiles" && !isStaff(role)
+                  ? [player]
+                  : table === "account_roles" && role
+                    ? [{ role, version: 1 }]
+                    : [];
       const q: Record<string, unknown> = {};
       for (const method of [
         "select",
@@ -142,7 +184,42 @@ export function previewShared(
     },
     async rpc(name: string, body: Record<string, unknown> = {}) {
       let data: unknown;
-      if (name === "staff_client_service_roster" && isStaff(role))
+      if (name === "workout_assignment_profiles" && role === "owner")
+        data = sample
+          .filter((r) => r.client_id === body.target_account)
+          .map((r) => ({
+            id: r.athlete_id,
+            nickname: r.athlete_name,
+            age_group: r.age_group,
+            position: r.position,
+          }));
+      else if (name === "profile_workout_assignment" && role === "owner") {
+        const row = sample.find(
+          (r) =>
+            r.client_id === body.target_account &&
+            r.athlete_id === body.target_profile,
+        );
+        if (!row) return disabled();
+        data = row.workout_id
+          ? {
+              ...noAssignment,
+              workout_id: row.workout_id,
+              workout_title: row.workout_title,
+              resource_ids: row.resources.map((r) => r.id),
+              workout_version: row.workout_version,
+              version: 1,
+            }
+          : noAssignment;
+      } else if (name === "profile_workout_preview" && role === "owner")
+        data = {
+          eligible:
+            sample.some(
+              (r) =>
+                r.client_id === body.target_account &&
+                r.athlete_id === body.target_profile,
+            ) && savedWorkouts.some((w) => w.id === body.workout),
+        };
+      else if (name === "staff_client_service_roster" && isStaff(role))
         data = {
           source: "account_backend",
           scope:
@@ -171,6 +248,24 @@ export function previewShared(
             email_verified: true,
             adult_setup: true,
           }))
+          .concat([
+            {
+              user_id: uid(50),
+              email: "fictional-family@example.test",
+              role: "parent",
+              version: 1,
+              email_verified: true,
+              adult_setup: true,
+            },
+            {
+              user_id: uid(51),
+              email: "fictional-solo@example.test",
+              role: "athlete",
+              version: 1,
+              email_verified: true,
+              adult_setup: true,
+            },
+          ])
           .filter((r) => r.email.includes(String(body.search_text || "")));
       else if (
         name === "interest_staff_inbox" &&
@@ -271,10 +366,10 @@ export function previewShared(
     accessError: "",
     refreshAccess: noop,
     coach: isStaff(role),
-    canEditResource: () => false,
+    canEditResource: (id: string) => isStaff(role) && id === lesson.id,
     checking: false,
     libraryReady: true,
-    resources: [],
+    resources: isStaff(role) ? [lesson] : [],
     error: "",
     message: "",
     refresh: noop,

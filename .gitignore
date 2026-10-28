@@ -33,3 +33,5 @@ AuthKey_*.p8
 *.key
 __pycache__/
 *.pyc
+
+test-results-private-preview/

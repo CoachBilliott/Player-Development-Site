@@ -20,11 +20,10 @@ export function mobileNavigation(signedIn: boolean, role: AccountRole | null) {
     ] as const;
   if (role === "owner" || role === "manager" || role === "coach")
     return [
-      ["workspace", "Overview"],
-      ["coach", "Content"],
-      ["video-reviews", "Reviews"],
+      ["workspace", "Athletes"],
+      ["training", "Training"],
+      ["staff-settings", "Staff"],
       ["account", "Account"],
-      ["app-help", "Help"],
     ] as const;
   return [
     ["workspace", "Today"],

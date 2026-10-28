@@ -1,3 +1,4 @@
+import { sharedSignOut } from "./contentFixture";
 import { test, expect } from "@playwright/test";
 import { disableBackend } from "./backendFixture";
 import { mockProject, sharedSignIn, type Row } from "./contentFixture";
@@ -131,7 +132,7 @@ test("incomplete drafts can be saved, removal can be canceled, and sign-out clea
   ).toBeVisible();
   await page.getByRole("button", { name: "Continue saved draft" }).click();
   await expect(page.getByLabel("Step-by-step instructions")).toHaveValue("");
-  await page.getByRole("button", { name: "Sign out", exact: true }).click();
+  await sharedSignOut(page);
   await expect(
     page.getByRole("heading", { name: "Log in to open the content studio." }),
   ).toBeVisible();

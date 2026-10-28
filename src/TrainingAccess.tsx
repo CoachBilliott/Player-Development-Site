@@ -90,11 +90,11 @@ export function TrainingAccess({ shared }: { shared: SharedState }) {
       className="panel training-access"
       aria-label="Workout and video package access"
     >
-      <h2>Workouts & video review access</h2>
+      <h2>Account permissions</h2>
       <p>
-        Assign uploaded workouts and optionally enable private video review.
-        These are manual pilot permissions, ready to connect to future packages.
-        Saving does not charge a customer or start a subscription.
+        Set review access for this customer, or grant selected lessons manually.
+        These permissions persist until changed. They do not assign future
+        uploads or activate a package.
       </p>
       <label>
         Customer account
@@ -126,29 +126,36 @@ export function TrainingAccess({ shared }: { shared: SharedState }) {
       )}
       {loaded && (
         <>
-          <fieldset disabled={busy}>
-            <legend>Assigned workouts</legend>
-            {!resources.length && (
-              <p>Upload and publish a protected workout in Content first.</p>
-            )}
-            {resources.map((d) => (
-              <label className="checkbox-label" key={d.id}>
-                <input
-                  type="checkbox"
-                  checked={value.resource_ids.includes(d.id)}
-                  onChange={(e) =>
-                    setValue((v) => ({
-                      ...v,
-                      resource_ids: e.target.checked
-                        ? [...v.resource_ids, d.id]
-                        : v.resource_ids.filter((id) => id !== d.id),
-                    }))
-                  }
-                />
-                {d.title}
-              </label>
-            ))}
-          </fieldset>
+          <details className="workflow-secondary">
+            <summary>Individual lesson access — optional</summary>
+            <p>
+              Grant selected resources to this account. A complete workout
+              assigned to an athlete does not require these extra checkboxes.
+            </p>
+            <fieldset disabled={busy}>
+              <legend>Selected lessons</legend>
+              {!resources.length && (
+                <p>Upload and publish a protected workout in Content first.</p>
+              )}
+              {resources.map((d) => (
+                <label className="checkbox-label" key={d.id}>
+                  <input
+                    type="checkbox"
+                    checked={value.resource_ids.includes(d.id)}
+                    onChange={(e) =>
+                      setValue((v) => ({
+                        ...v,
+                        resource_ids: e.target.checked
+                          ? [...v.resource_ids, d.id]
+                          : v.resource_ids.filter((id) => id !== d.id),
+                      }))
+                    }
+                  />
+                  {d.title}
+                </label>
+              ))}
+            </fieldset>
+          </details>
           <p className="member-fineprint">
             Athletes only see assigned drills that match their age, position and
             experience. Public demo samples stay separate.

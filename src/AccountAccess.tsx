@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { LockKeyhole, ShieldCheck } from "lucide-react";
-import { Modal, Notice, Tag } from "./components";
+import { Modal, Notice } from "./components";
 import {
   ROLES,
   ROLE_LABELS,
@@ -20,6 +20,15 @@ export function AccountAccess({
   manage?: boolean;
 }) {
   const role = shared.role;
+  if (manage)
+    return role === "owner" && shared.service && shared.session ? (
+      <section
+        className="panel member-panel account-access"
+        aria-label="Account level"
+      >
+        <AccessManager key={shared.session.user.id} shared={shared} />
+      </section>
+    ) : null;
   return (
     <section
       className="panel member-panel account-access"
@@ -37,28 +46,8 @@ export function AccountAccess({
           ? ROLE_DETAILS[role]
           : "Finish your adult profile setup. Staff access is assigned by an Owner."}
       </p>
-      {role === "owner" && manage && (
-        <details className="role-help">
-          <summary>What each account level can do</summary>
-          <div className="access-level-grid">
-            {ROLES.map((level) => (
-              <div
-                key={level}
-                className={
-                  role === level ? "access-level selected" : "access-level"
-                }
-              >
-                <strong>{ROLE_LABELS[level]}</strong>
-                <p>{ROLE_DETAILS[level]}</p>
-              </div>
-            ))}
-          </div>
-        </details>
-      )}
       <p className="member-fineprint">
-        {manage
-          ? "Account roles control permissions. They do not start a membership or unlock private family profiles."
-          : "Your account role is separate from membership access."}
+        Your account role is separate from membership access.
       </p>
       {role === "owner" && !manage && (
         <a className="text-button" href="#access">
@@ -66,15 +55,13 @@ export function AccountAccess({
           Manage team access
         </a>
       )}
-      {role === "owner" && manage && shared.service && shared.session && (
-        <AccessManager key={shared.session.user.id} shared={shared} />
-      )}
     </section>
   );
 }
 function AccessManager({ shared }: { shared: SharedState }) {
   const client = shared.service!.client;
   const [rows, setRows] = useState<AccessMember[]>([]);
+  const [directoryView, setDirectoryView] = useState<"staff" | "all">("staff");
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [busy, setBusy] = useState(false);
@@ -124,12 +111,30 @@ function AccessManager({ shared }: { shared: SharedState }) {
   }
   return (
     <div className="access-manager" aria-busy={loading || busy}>
-      <h3>Account access</h3>
+      <h2>People & roles</h2>
       <p>
         Only Owners can assign these levels. People must verify their email and
         finish adult setup before their level can change. Your own Owner access
         is protected.
       </p>
+      <div
+        className="workflow-segments"
+        role="group"
+        aria-label="People directory view"
+      >
+        <button
+          aria-pressed={directoryView === "staff"}
+          onClick={() => setDirectoryView("staff")}
+        >
+          Staff
+        </button>
+        <button
+          aria-pressed={directoryView === "all"}
+          onClick={() => setDirectoryView("all")}
+        >
+          All accounts
+        </button>
+      </div>
       <form
         className="access-search"
         onSubmit={(e) => {
@@ -180,73 +185,94 @@ function AccessManager({ shared }: { shared: SharedState }) {
           {loading ? "Loading accounts…" : "Updating account directory…"}
         </p>
       )}
-      {!loading && !busy && !error && !rows.length && (
-        <p>No matching accounts. Try another email or search again.</p>
-      )}
+      {!loading &&
+        !busy &&
+        !error &&
+        !rows.filter(
+          (m) =>
+            directoryView === "all" ||
+            ["owner", "manager", "coach"].includes(m.role || ""),
+        ).length && (
+          <p>
+            {directoryView === "staff"
+              ? "No staff accounts match. Choose All accounts to manage a customer’s role."
+              : "No matching accounts. Try another email or search again."}
+          </p>
+        )}
       <div className="access-directory">
-        {rows.map((member) => {
-          const self = member.user_id === shared.session?.user.id;
-          const choice = choices[member.user_id] || member.role || "athlete";
-          return (
-            <article className="access-person" key={member.user_id}>
-              <div>
-                <strong>{member.email}</strong>
-                <p>
-                  <Tag>
-                    {member.role ? ROLE_LABELS[member.role] : "Setup pending"}
-                  </Tag>
-                  {self && " · You"}
-                </p>
-                {(!member.email_verified || !member.adult_setup) && !self && (
-                  <small>
-                    Email verification and adult account setup required.
-                  </small>
-                )}
-              </div>
-              <label>
-                Account level for {member.email}
-                <select
-                  aria-label={`Account level for ${member.email}`}
-                  disabled={
-                    busy ||
-                    self ||
-                    !member.email_verified ||
-                    !member.adult_setup
-                  }
-                  value={choice}
-                  onChange={(e) =>
-                    setChoices((old) => ({
-                      ...old,
-                      [member.user_id]: e.target.value as AccountRole,
-                    }))
-                  }
-                >
-                  {ROLES.map((level) => (
-                    <option value={level} key={level}>
-                      {ROLE_LABELS[level]}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <button
-                className="button secondary"
-                disabled={
-                  busy ||
-                  self ||
-                  !member.email_verified ||
-                  !member.adult_setup ||
-                  member.role === choice
-                }
-                onClick={() => {
-                  setError("");
-                  setPending({ member, role: choice });
-                }}
-              >
-                Review access change
-              </button>
-            </article>
-          );
-        })}
+        {rows
+          .filter(
+            (m) =>
+              directoryView === "all" ||
+              ["owner", "manager", "coach"].includes(m.role || ""),
+          )
+          .map((member) => {
+            const self = member.user_id === shared.session?.user.id;
+            const choice = choices[member.user_id] || member.role || "athlete";
+            return (
+              <details className="access-person" key={member.user_id}>
+                <summary>
+                  <span>
+                    <strong>{member.email}</strong>
+                    <small>
+                      {member.role ? ROLE_LABELS[member.role] : "Setup pending"}
+                      {self ? " · You" : ""}
+                    </small>
+                  </span>
+                  <small>Manage access</small>
+                </summary>
+                <div className="access-person-fields">
+                  {(!member.email_verified || !member.adult_setup) && !self && (
+                    <p>
+                      Email verification and adult setup are required before a
+                      role change.
+                    </p>
+                  )}
+                  <label>
+                    Account level for {member.email}
+                    <select
+                      aria-label={`Account level for ${member.email}`}
+                      disabled={
+                        busy ||
+                        self ||
+                        !member.email_verified ||
+                        !member.adult_setup
+                      }
+                      value={choice}
+                      onChange={(e) =>
+                        setChoices((old) => ({
+                          ...old,
+                          [member.user_id]: e.target.value as AccountRole,
+                        }))
+                      }
+                    >
+                      {ROLES.map((level) => (
+                        <option value={level} key={level}>
+                          {ROLE_LABELS[level]}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <button
+                    className="button secondary"
+                    disabled={
+                      busy ||
+                      self ||
+                      !member.email_verified ||
+                      !member.adult_setup ||
+                      member.role === choice
+                    }
+                    onClick={() => {
+                      setError("");
+                      setPending({ member, role: choice });
+                    }}
+                  >
+                    Review access change
+                  </button>
+                </div>
+              </details>
+            );
+          })}
       </div>
       <small>
         Up to 50 matching accounts. Use Invite staff for a new approved adult

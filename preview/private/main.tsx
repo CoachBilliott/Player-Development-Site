@@ -1,3 +1,11 @@
+import {
+  TrainingWorkspace,
+  AssignTrainingWorkspace,
+  IndividualTrainingAccess,
+  StaffDeliveryWorkspace,
+} from "../../src/StaffTraining";
+import { WorkoutBuilder } from "../../src/WorkoutBuilder";
+import { StaffSettingsWorkspace } from "../../src/Workspaces";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 import {
@@ -92,6 +100,18 @@ export function Preview() {
           <MemberAccountPage shared={shared} profiles />
         ) : page === "access" ? (
           <AccessWorkspace shared={shared} />
+        ) : page === "training" ? (
+          <TrainingWorkspace shared={shared} />
+        ) : page === "training-assign" ? (
+          <AssignTrainingWorkspace shared={shared} />
+        ) : page === "training-access" ? (
+          <IndividualTrainingAccess shared={shared} />
+        ) : page === "workout-builder" ? (
+          <WorkoutBuilder shared={shared} />
+        ) : page === "staff-settings" ? (
+          <StaffSettingsWorkspace shared={shared} />
+        ) : page === "staff-delivery" ? (
+          <StaffDeliveryWorkspace shared={shared} />
         ) : page === "interest" ? (
           <InterestWorkspace shared={shared} />
         ) : page === "workspace" && isStaff(role) ? (

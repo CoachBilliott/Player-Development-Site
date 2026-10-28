@@ -1,3 +1,4 @@
+import { openAssignment, editCurrentWorkout } from "./workoutFixture";
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import {
@@ -47,6 +48,7 @@ test("staff composes, reorders, previews and saves a protected workout; Owner as
   expect(backend.workouts.size).toBe(0);
   await save(page);
   expect([...backend.workouts.values()][0].resource_ids).toEqual(expected);
+  await openAssignment(page);
   await page.getByLabel("Assign to customer account").selectOption(accountId);
   await page.getByRole("button", { name: "Preview assignment" }).click();
   await page.getByRole("button", { name: "Keep current assignment" }).click();
@@ -195,6 +197,7 @@ test("ineligible and conflicting assignments keep existing access unchanged", as
   await fixture(context, backend);
   await build(page, 2);
   await save(page);
+  await openAssignment(page);
   await page.getByLabel("Assign to customer account").selectOption(accountId);
   backend.eligible = false;
   await page.getByRole("button", { name: "Preview assignment" }).click();
@@ -224,6 +227,7 @@ test("removing a template or current assignment requires confirmation", async ({
   await fixture(context, backend);
   await build(page, 2);
   await save(page);
+  await openAssignment(page);
   await page.getByLabel("Assign to customer account").selectOption(accountId);
   await page.getByRole("button", { name: "Preview assignment" }).click();
   await page
@@ -248,6 +252,7 @@ test("removing a template or current assignment requires confirmation", async ({
       { exact: true },
     ),
   ).toBeVisible();
+  await editCurrentWorkout(page);
   await page.getByRole("button", { name: "Remove saved workout" }).click();
   await page.getByRole("button", { name: "Keep saved workout" }).click();
   expect(backend.counts.removes).toBe(0);
@@ -304,6 +309,7 @@ test("editing a template does not silently replace an account assignment and uns
   await fixture(context, backend);
   await build(page, 2);
   await save(page);
+  await openAssignment(page);
   await page.getByLabel("Assign to customer account").selectOption(accountId);
   await page.getByRole("button", { name: "Preview assignment" }).click();
   await page
@@ -315,13 +321,17 @@ test("editing a template does not silently replace an account assignment and uns
       { exact: true },
     ),
   ).toBeVisible();
+  await editCurrentWorkout(page);
   await page.getByLabel("Workout name").fill("Revised complete practice");
-  await expect(page.getByLabel("Assign to customer account")).toBeDisabled();
+  await expect(
+    page.getByRole("link", { name: "Assign this workout", exact: true }),
+  ).toHaveCount(0);
   await save(page);
   expect(backend.profileAssignments.get(profileId)?.workout_title).toBe(
     "Fictional complete practice",
   );
   expect(backend.counts.assigns).toBe(1);
+  await openAssignment(page);
   await page.getByLabel("Assign to customer account").selectOption(accountId);
   await expect(
     page.getByRole("region", { name: "Assign complete workout" }),
@@ -343,23 +353,29 @@ test("editing a template does not silently replace an account assignment and uns
 });
 
 for (const role of ["owner", "manager", "coach"]) {
-  test(`${role} app starts directly in the focused staff home with working creation tools`, async ({
+  test(`${role} app uses the same three staff jobs and connected training tools`, async ({
     page,
     context,
   }) => {
     await fixture(context, state(), role);
     await page.goto("./?source=app#app");
     await expect(page.locator(".app-staff-home")).toBeVisible();
-    await expect(
-      page.getByRole("link", { name: "Open my training", exact: true }),
-    ).toHaveCount(0);
     const nav = page.getByRole("navigation", { name: "App navigation" });
+    await expect(nav.getByRole("link")).toHaveText([
+      "Athletes",
+      "Training",
+      "Staff",
+      "Account",
+    ]);
     await expect(
-      nav.getByRole("link", { name: "Overview", exact: true }),
+      nav.getByRole("link", { name: "Athletes", exact: true }),
     ).toHaveAttribute("aria-current", "page");
+    await nav.getByRole("link", { name: "Training", exact: true }).click();
+    await page.getByRole("link", { name: "New workout", exact: true }).click();
+    await expect(page.getByLabel("Workout name")).toBeVisible();
     await expect(
-      page.getByRole("link", { name: /^Team & access/ }),
-    ).toHaveCount(role === "owner" ? 1 : 0);
+      nav.getByRole("link", { name: "Training", exact: true }),
+    ).toHaveAttribute("aria-current", "page");
     for (const width of [320, 390, 768]) {
       await page.setViewportSize({ width, height: 850 });
       expect(
@@ -367,28 +383,11 @@ for (const role of ["owner", "manager", "coach"]) {
           () => document.documentElement.scrollWidth <= innerWidth,
         ),
       ).toBe(true);
-      const action = await page
-        .getByRole("link", { name: "Build a workout", exact: true })
-        .boundingBox();
-      expect(action!.height).toBeGreaterThanOrEqual(44);
-      expect(action!.y + action!.height).toBeLessThan(750);
     }
-    expect(
-      (
-        await new AxeBuilder({ page })
-          .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
-          .analyze()
-      ).violations,
-    ).toEqual([]);
+    await nav.getByRole("link", { name: "Training", exact: true }).click();
     await page
-      .getByRole("link", { name: "Build a workout", exact: true })
+      .getByRole("link", { name: "Upload a lesson", exact: true })
       .click();
-    await expect(page.getByLabel("Workout name")).toBeVisible();
-    await expect(
-      nav.getByRole("link", { name: "Content", exact: true }),
-    ).toHaveAttribute("aria-current", "page");
-    await page.goto("./?source=app#workspace");
-    await page.getByRole("link", { name: "Upload a drill" }).click();
     await page.setViewportSize({ width: 390, height: 850 });
     await expect(
       page.getByRole("heading", { name: "Coach content studio" }),
@@ -404,10 +403,14 @@ for (const role of ["owner", "manager", "coach"]) {
     await expect(
       page.getByRole("button", { name: "Refresh shared library" }),
     ).toBeVisible();
+    expect(
+      (
+        await new AxeBuilder({ page })
+          .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+          .analyze()
+      ).violations,
+    ).toEqual([]);
     await page.reload();
-    await expect(
-      page.getByRole("heading", { name: "Coach content studio" }),
-    ).toBeVisible();
     await expect(page.locator(".publishing-settings")).not.toHaveAttribute(
       "open",
     );

@@ -1,3 +1,4 @@
+import { openAssignment } from "./workoutFixture";
 import { test, expect } from "@playwright/test";
 import {
   fixture,
@@ -37,6 +38,7 @@ test("Owner assigns distinct sibling plans; parent completion, selection and his
   await fixture(context, backend);
   await page.goto("./?source=app#workout-builder");
   await page.getByRole("button", { name: /Fictional footwork plan/ }).click();
+  await openAssignment(page);
   await page.getByLabel("Assign to customer account").selectOption(accountId);
   await expect(
     page.getByRole("button", { name: "Preview assignment" }),
@@ -52,8 +54,12 @@ test("Owner assigns distinct sibling plans; parent completion, selection and his
     .dblclick();
   await expect(page.getByRole("dialog")).toHaveCount(0);
   await page
+    .getByRole("button", { name: "Choose a different workout" })
+    .click();
+  await page
     .getByRole("button", { name: /Fictional ball skills plan/ })
     .click();
+  await openAssignment(page);
   await page.getByLabel("Assign to customer account").selectOption(accountId);
   await page.getByLabel("Assign to athlete").selectOption(sibling);
   await page.getByRole("button", { name: "Preview assignment" }).click();

@@ -219,8 +219,17 @@ export function Modal({
   const ref = useRef<HTMLDialogElement>(null);
   useEffect(() => {
     const d = ref.current;
+    const previous =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
     d?.showModal();
-    return () => d?.close();
+    return () => {
+      d?.close();
+      requestAnimationFrame(() => {
+        if (previous?.isConnected) previous.focus({ preventScroll: true });
+      });
+    };
   }, []);
   return (
     <dialog

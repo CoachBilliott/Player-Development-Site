@@ -89,6 +89,8 @@ export function MobileTabs({
       ? House
       : Dumbbell,
     coach: BookOpen,
+    training: BookOpen,
+    "staff-settings": ShieldCheck,
     "video-reviews": Video,
     "member-library": BookOpen,
     "app-workouts": BookOpen,
@@ -102,17 +104,22 @@ export function MobileTabs({
         const Icon = icons[route];
         const active =
           page === route ||
-          (route === "coach" &&
-            ["workout-builder", "content-review"].includes(page)) ||
+          (route === "training" &&
+            [
+              "coach",
+              "workout-builder",
+              "content-review",
+              "training-assign",
+              "training-access",
+              "member-library",
+            ].includes(page)) ||
           (route === "app" && page === "home") ||
           (route === "workspace" &&
             ["app", "home", "interest"].includes(page) &&
             shared.signedIn) ||
-          (route === "account" &&
-            ["access", "launch", "profiles"].includes(page)) ||
-          (route === "coach" &&
-            page === "member-library" &&
-            ["owner", "manager", "coach"].includes(shared.role || "")) ||
+          (route === "staff-settings" &&
+            ["access", "launch", "staff-delivery"].includes(page)) ||
+          (route === "account" && page === "profiles") ||
           (route === "app-workouts" && page === "member-library");
         return (
           <a

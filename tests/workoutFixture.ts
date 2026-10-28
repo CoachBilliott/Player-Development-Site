@@ -436,3 +436,24 @@ async function save(page: import("@playwright/test").Page) {
 
 export { state, fixture, build, save, uid, staffId, accountId, profileId };
 export type { Row, State };
+
+export async function openAssignment(page: import("@playwright/test").Page) {
+  const link = page.getByRole("link", {
+    name: "Assign this workout",
+    exact: true,
+  });
+  if (await link.isVisible()) await link.click();
+  await expect(page.getByLabel("Assign to customer account")).toBeVisible();
+}
+export async function editCurrentWorkout(
+  page: import("@playwright/test").Page,
+) {
+  await page
+    .getByRole("link", { name: "Back to Training", exact: true })
+    .click();
+  await page
+    .getByRole("link", { name: "Edit workout", exact: true })
+    .first()
+    .click();
+  await expect(page.getByLabel("Workout name")).toBeVisible();
+}

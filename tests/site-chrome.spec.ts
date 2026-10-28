@@ -85,9 +85,9 @@ for (const role of [
         .click();
     await expect(page).toHaveURL(/#workspace$/);
     const titles = {
-      owner: "Your platform. Your playbook.",
-      manager: "Keep the team moving.",
-      coach: "Build the next great practice.",
+      owner: "Athletes.",
+      manager: "Athletes.",
+      coach: "Your athletes.",
       parent: "Today’s training.",
       athlete: "Today’s training.",
     };

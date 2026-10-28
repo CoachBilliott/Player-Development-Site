@@ -153,7 +153,7 @@ test("Owner delivery settings and manual queue are explicit, scoped and refresh-
 }, info) => {
   await staffFixture(context, staffState());
   const { counts, d } = await notifications(context);
-  await page.goto("./?source=app#workspace");
+  await page.goto("./?source=app#staff-delivery");
   const panel = page.getByRole("region", { name: "Delivery monitoring" });
   await expect(panel).toContainText("Manual checks only.");
   await expect(panel).toContainText("TEST weekly training");
@@ -224,7 +224,7 @@ test("Coach has no configuration authority; parent sees private read/unread inbo
 }, info) => {
   await staffFixture(context, staffState(), "coach", coachA);
   await notifications(context, "coach");
-  await page.goto("./?source=app#workspace");
+  await page.goto("./?source=app#staff-delivery");
   const panel = page.getByRole("region", { name: "Delivery monitoring" });
   await expect(panel).toContainText("Manual checks only");
   await expect(

@@ -178,9 +178,9 @@ test("Owner can separately assign workouts and optional review access without ch
   context,
 }) => {
   const backend = await fixture(context, "owner");
-  await page.goto("./?source=app#access");
+  await page.goto("./?source=app#training-access");
   await page
-    .getByRole("button", { name: "Training access", exact: true })
+    .getByText("Individual lesson access — optional", { exact: true })
     .click();
   const panel = page.getByRole("region", {
     name: "Workout and video package access",

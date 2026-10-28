@@ -212,6 +212,7 @@ export async function sharedSignIn(page: import("@playwright/test").Page) {
   await page.getByRole("button", { name: "Sign in securely" }).click();
   await expect(page.getByLabel("Account email")).toHaveCount(0);
   await page.goto("./#coach");
+  await page.getByText("Publishing options", { exact: true }).click();
 }
 
 export async function openLocalStudio(page: Page) {
@@ -221,4 +222,11 @@ export async function openLocalStudio(page: Page) {
   await sharedSignIn(page);
   await page.getByRole("button", { name: "This browser", exact: true }).click();
   await page.getByRole("button", { name: "Switch destination" }).click();
+}
+
+export async function sharedSignOut(page: import("@playwright/test").Page) {
+  await page.goto("./#account");
+  await page
+    .getByRole("button", { name: /^Sign out( of this browser)?$/ })
+    .click();
 }
