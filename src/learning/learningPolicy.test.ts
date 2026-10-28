@@ -732,3 +732,94 @@ it("linked athletes respect independent-recording permission and guardian practi
     /changed/i,
   );
 });
+it("group gradebook uses server scores, includes waiting work, and scopes each staff role", async () => {
+  const rid = await release();
+  await as(parent);
+  await db.query("select public.learning_save_attempt($1,$2,$3,$4,true,0)", [
+    attempt,
+    rid,
+    quizVersion,
+    { sample_1: 0, sample_2: 0, sample_3: "Fictional response" },
+  ]);
+  await as(coach);
+  await db.query("select public.learning_grade_written($1,$2,$3,0)", [
+    attempt,
+    { sample_3: 1.5 },
+    "Fictional feedback",
+  ]);
+  await as();
+  await db.query(
+    "select public.learning_save_cohort($1,'Gradebook scope',$2)",
+    [id(70), [profile, sibling]],
+  );
+  const rows = (await r("select public.learning_group_results($1) r", [
+    id(70),
+  ])) as { profile_id: string; quiz_attempts: unknown[] }[];
+  expect(rows).toHaveLength(2);
+  expect(rows.find((row) => row.profile_id === profile)?.quiz_attempts).toEqual(
+    [
+      expect.objectContaining({
+        state: "graded",
+        objective_points: 2,
+        written_points: 1.5,
+        total_points: 4,
+      }),
+    ],
+  );
+  await as(manager);
+  expect(
+    await r("select public.learning_group_results($1) r", [id(70)]),
+  ).toHaveLength(2);
+  await as(coach);
+  expect(
+    await r("select public.learning_group_results($1) r", [id(70)]),
+  ).toEqual([expect.objectContaining({ profile_id: profile })]);
+  await as(otherCoach);
+  expect(
+    await r("select public.learning_group_results($1) r", [id(70)]),
+  ).toEqual([]);
+  await as(parent);
+  await blocked("select public.learning_group_results($1)", [id(70)]);
+});
+it("one failed enrollment rolls back its own release without blocking others or overstating successes", async () => {
+  await setup();
+  const brokenPlan = id(80),
+    firstWeek = id(81),
+    brokenEnrollment = id(83);
+  await as();
+  await db.query(
+    "select public.learning_create_plan($1,'Isolated failure plan',2,'{private_test}','{}','{}')",
+    [brokenPlan],
+  );
+  await db.query(
+    "select public.learning_save_week($1,$2,1,'Ready first week','{}',$3)",
+    [firstWeek, brokenPlan, [quizVersion]],
+  );
+  await db.query("select public.learning_approve_week($1)", [firstWeek]);
+  await db.query(
+    "select public.learning_set_access($1,'private_test',now()-interval '1 day',now()+interval '1 year','Synthetic failure test',false)",
+    [sibling],
+  );
+  await db.query("select public.learning_enroll($1,$2,$3,true)", [
+    brokenEnrollment,
+    sibling,
+    brokenPlan,
+  ]);
+  await as("", "postgres");
+  // Force a downstream insert error to exercise per-athlete transaction rollback.
+  await db.exec(`create function public.test_learning_release_failure() returns trigger language plpgsql as $$begin raise exception 'Synthetic release failure';end$$;
+  create trigger synthetic_release_failure before insert on public.learning_releases for each row when (new.enrollment_id='${brokenEnrollment}') execute function public.test_learning_release_failure();`);
+  await db.exec(
+    "update public.learning_settings set scheduler_enabled=true,notices_enabled=true;update public.learning_enrollments set next_release_at=now()-interval '1 minute'",
+  );
+  const outcome = await r("select public.learning_tick(now(),false) r");
+  expect(outcome).toMatchObject({ releases: 1, failed_enrollments: 1 });
+  expect(
+    await r("select count(*)::integer r from public.learning_releases"),
+  ).toBe(1);
+  expect(
+    await r(
+      "select count(*)::integer r from public.learning_audit where action='release_tick_failed'",
+    ),
+  ).toBe(1);
+});

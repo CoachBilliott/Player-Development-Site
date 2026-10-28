@@ -398,12 +398,13 @@ $$;
 -- Late invocation releases ONE week; it never dumps a backlog on an athlete.
 create function public.learning_tick(at_time timestamptz default now(),dry_run boolean default true) returns jsonb
 language plpgsql security definer set search_path='' as $$
-declare e public.learning_enrollments;w uuid;seq integer;count_release integer:=0;count_reminder integer:=0;count_low integer:=0;ready integer;next_no integer;last_r public.learning_releases;local_now timestamp;due timestamp;settings public.learning_settings;cat text;failed integer:=0;
+declare e public.learning_enrollments;w uuid;seq integer;count_release integer:=0;count_reminder integer:=0;count_low integer:=0;ready integer;next_no integer;last_r public.learning_releases;local_now timestamp;due timestamp;settings public.learning_settings;cat text;failed integer:=0;prior_release integer;prior_reminder integer;prior_low integer;
 begin
  select * into settings from public.learning_settings;
  if not settings.enabled or (not dry_run and not settings.scheduler_enabled) then return jsonb_build_object('disabled',true);end if;
  local_now:=at_time at time zone 'America/Chicago';
- for e in select * from public.learning_enrollments where state in ('active','finished') order by id for update skip locked loop begin
+ for e in select * from public.learning_enrollments where state in ('active','finished') order by id for update skip locked loop
+  prior_release:=count_release;prior_reminder:=count_reminder;prior_low:=count_low;begin
   if not public.learning_eligible(e.profile_id,e.plan_id,at_time) or (not settings.youth_enabled and exists(select 1 from public.player_profiles p where p.id=e.profile_id and (p.age_group<>'18+' or exists(select 1 from public.family_minor_profiles m where m.profile_id=p.id)))) then continue;end if;
   if e.state='active' and e.next_release_at<=at_time then
    w:=public.learning_selected_week(e.id,e.next_week);
@@ -438,6 +439,7 @@ begin
    end if;
   elsif not dry_run then update public.learning_notices set resolved_at=at_time where profile_id=e.profile_id and category in ('no_content','low_content') and resolved_at is null;end if;
  exception when others then
+  count_release:=prior_release;count_reminder:=prior_reminder;count_low:=prior_low;
   failed:=failed+1;
   if not dry_run then
    insert into public.learning_audit(action,target,detail) values('release_tick_failed',e.id,jsonb_build_object('sqlstate',sqlstate));

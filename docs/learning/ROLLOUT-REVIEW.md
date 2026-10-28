@@ -49,3 +49,32 @@ Turn off frontend learning flag and backend scheduler/notices first; preserve ex
 - Google Sheets preparation is CSV export/upload, not live sync. No native Google Sheet has been created by this task.
 - Placeholder walkthrough has no football demonstration media. Its clock and grading are explicitly browser-local simulations; real scoring/access logic is separately tested in PostgreSQL.
 - No finished age/position curriculum, qualified coaching review, payment integration or real customer device acceptance is claimed.
+
+## Verified hosted discovery (read-only, October 28)
+
+The production project `iilbulpqbuknhdpmtrvm` has **no learning schema, no installed pg_cron extension, and no cron job catalog**. Management API branch listing returned an empty list. No separate authorized hosted rehearsal target is configured in this task. This was metadata-only inspection; no extension, branch, migration or job was created.
+
+The exact additional approvals therefore need to be staged:
+
+1. **Rehearsal target:** identify an already-owned empty nonproduction Supabase project, or approve creating an empty rehearsal target in the Repformed organization. No production user data copied, no paid plan/resource created without a separate price decision. Stage synthetic adults and staff identities only, with no outgoing mail. Apply the production baseline (001–012,015–018) then019/020; test real Auth claims and Storage policies. Library interface behavior and app routes alone do not establish hosted access safety.
+2. **Production schema/security:** approve019’s private learning records/RPC grants and erasure integration plus020’s released-media read scope and retained-original DELETE/UPDATE restriction. Retention currently has no automatic expiry/cleanup and can retain originals after plans end; accept or revise that policy first. Confirm a usable provider backup/restore point before applying. Keep youth and scheduler off. No new account roles, public quiz keys, video-review quotas or billing.
+3. **Adult website feature:** after rehearsal, approve the coordinated PR12→PR13 release with real authentication and `learningPlansEnabled`; enable the backend learning flag for the existing adult/private boundary. Eligibility is manual verification, not a payment event. Use a bounded existing/synthetic adult acceptance record only if separately included in the test approval; do not fabricate enrollments as real purchases.
+4. **Standing automation:** because pg_cron is absent, explicitly approve enabling Supabase Cron and creating the single named job `repformed-weekly-learning`, running `select public.learning_tick(now(),false)` every minute (`* * * * *`). The function handles Sunday00:00 and configurable Friday17:00 America/Chicago; UTC cron does not hard-code a DST offset. Enable scheduler/in-app notices only after a reviewed zero-error dry-run and staged retry/DST tests. No new sending key, email/push, historical backfill or extra recipient is part of this action. Exact physical midnight execution has normal scheduler latency; actual availability is recorded separately from the scheduled timestamp.
+
+Rollback: disable scheduler/notices and unschedule that named job, disable frontend/backend learning access, return to the known production frontend. Preserve new history tables and retained originals. Do not disable an unrelated job, drop shared extensions or remove storage retention policies as an automatic rollback. Permission-policy rollback needs an explicit reviewed script and backup plan.
+
+## Dependency and remaining product gaps
+
+PR13 is based on `ux/staff-workflows` at2f38796 (PR12), rather than main. Intended order after approval is PR12 first, then rebase/retarget PR13 onto that main and rerun the combined checks before PR13 merge/deploy. Neither draft is currently authorized for production publication of this second workflow pass.
+
+The new system supports groups and scoped group grades, Friday in-app reminders, ready-content notices and shared mobile-compatible screens in source. Remaining gaps include:
+
+- Existing service-roster summary/next-action logic still describes legacy manual workout assignments. It does not yet summarize weekly enrollment/current release/capacity, and its legacy Assign training action can coexist with the new plan pane. Resolve this before calling the whole staff workflow coherent in production.
+- Global bank capacity notices currently lack an athlete-name/action drilldown; athlete-specific notices have context inside that athlete. Finish the actionable staff queue before operational reliance.
+- Friday clock/ready-week threshold are global settings; package/client delivery rules from the existing monitor need a rehearsal comparison, not an assumption that they automatically configure this new system.
+- Cursor pagination/load testing, standing scheduler, hosted Storage/Auth rehearsal, staff missing-content email wiring, billing entitlements, final retention/expiry/refund policy, actual curriculum and native-device acceptance remain unfinished.
+- Home/Contact future-plan wording is aligned without claiming availability; the historical partner guide/screenshots and all legacy help/manual controls are not yet rewritten into a complete weekly-plan handbook. Public interest/auth remain intact. No native TestFlight update is implied.
+
+These are explicit remaining requirements, not claims that passing source tests makes a paying youth launch ready.
+
+Backup metadata inspection returned zero listed backups, PITR disabled and WAL archiving enabled. This does **not** establish an available restore point or exclude a separately held manual backup. Verify a usable restore procedure before production schema changes; do not assume WAL-enabled means the project can currently restore to any chosen time.
