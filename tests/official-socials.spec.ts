@@ -55,11 +55,11 @@ test("homepage copy stays concise while licensed imagery credits remain reachabl
   await expect(page.locator("footer")).not.toContainText(
     /scholarship|outcomes guaranteed|qualified coaching review/i,
   );
-  await expect(
-    page.getByText("Public signup and junior enrollment are not open yet.", {
-      exact: false,
-    }),
-  ).toBeVisible();
+  const availability = page.locator(".hero .home-availability");
+  await expect(availability).toBeVisible();
+  await expect(availability).toContainText("Prelaunch.");
+  await expect(availability).toContainText("Membership enrollment is not open");
+  await expect(page.locator('.hero a[href="#demo"]')).toHaveCount(0);
   await page
     .locator("footer")
     .getByRole("link", { name: "Credits & licenses" })
