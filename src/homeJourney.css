@@ -270,11 +270,7 @@
   color: var(--brand-gold);
   background: #c7a45c12;
 }
-.social-x-glyph {
-  font:
-    500 23px/1 system-ui,
-    sans-serif;
-}
+
 .experience .website-footer .footer-bottom {
   align-items: center;
   gap: 20px;

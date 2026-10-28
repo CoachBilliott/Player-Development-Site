@@ -35,6 +35,13 @@ six obsolete headline assertions; their text expectations were corrected while
 preserving routing/access assertions. Final aggregate CI must be checked at the
 latest PR head before release. Chromium phone emulation is not physical iOS QA.
 
+Aggregate CI at ac343ba found two Contact accessibility failures from a visible
+Unicode X glyph conflicting with its ASCII accessible label. The glyph is now a
+decorative SVG, keeping the platform's X label and original URL. No accessibility
+rule was disabled. All 28 affected Contact, official-social and five-role
+header/footer browser cases passed after the fix. The successor commit needs its
+own aggregate CI result; ac343ba remains a failed historical run.
+
 Isolated homepage preview uses disabled backend/account configuration and an
 explicit preview notice. Its deployment/verification receipt is separate from a
 production release. No production merge/deployment is implied by this document.

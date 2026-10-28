@@ -17,9 +17,22 @@ function SocialGlyph({ platform }: { platform: string }) {
   if (platform === "YouTube") return <Youtube size={20} aria-hidden="true" />;
   if (platform === "TikTok") return <Music2 size={20} aria-hidden="true" />;
   return (
-    <span className="social-x-glyph" aria-hidden="true">
-      𝕏
-    </span>
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path
+        d="M5 4h4l10 16h-4L5 4Z"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinejoin="round"
+      />
+      <path d="m19 4-14 16" stroke="currentColor" strokeWidth="1.6" />
+    </svg>
   );
 }
 export function SocialLinks({ compact = false }: { compact?: boolean } = {}) {
