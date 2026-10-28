@@ -139,7 +139,7 @@ export function MobileStaffHome({ shared }: { shared: SharedState }) {
               <ShieldCheck size={22} />
               <span>
                 <strong>Accounts & training access</strong>
-                <small>Manage roles, workouts and pilot access.</small>
+                <small>Manage roles, workouts and account access.</small>
               </span>
               <ChevronRight size={18} />
             </a>
@@ -147,7 +147,7 @@ export function MobileStaffHome({ shared }: { shared: SharedState }) {
         </div>
       </section>
       <details className="app-pilot-details">
-        <summary>About this private pilot</summary>
+        <summary>Current access and service limits</summary>
         <p>
           Use original or licensed sample content and approved adult accounts.
           Training awaits qualified review. Payments and real junior enrollment

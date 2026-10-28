@@ -64,8 +64,8 @@ test("device reduced motion automatically shows a real still with no motion butt
       "1",
     );
   await page
-    .getByRole("main")
-    .getByRole("link", { name: "Try the demo", exact: true })
+    .locator("footer")
+    .getByRole("link", { name: "Fictional preview", exact: true })
     .click();
   await page.getByRole("button", { name: "Solo athlete", exact: true }).click();
   await page
@@ -113,8 +113,8 @@ test("unavailable hero videos retain a real poster and never block the website o
     }),
   ).toHaveCount(0);
   await page
-    .getByRole("main")
-    .getByRole("link", { name: "Try the demo", exact: true })
+    .locator("footer")
+    .getByRole("link", { name: "Fictional preview", exact: true })
     .click();
   await expect(
     page.getByRole("heading", { name: "See how your training works." }),

@@ -13,7 +13,7 @@ test("four future proposals distinguish cadence, price and review terms without 
   await page.goto("./#membership");
   await expect(
     page.getByRole("region", { name: "Current availability" }),
-  ).toContainText("Youth enrollment and paid packages are not open");
+  ).toContainText("Interest is open. Enrollment is not.");
   const names = [
     "Foundation",
     "Fundamentals",
@@ -155,7 +155,7 @@ test("availability is above the fold and packages fit narrow screens with access
   await page.goto("./#home");
   await expect(page.locator(".home-availability")).toBeInViewport();
   await expect(page.locator(".home-availability")).toContainText(
-    "Youth enrollment and paid packages are not open",
+    "Membership enrollment is not open",
   );
   await page.goto("./#membership");
   if (info.project.name === "phone")

@@ -1,8 +1,6 @@
 import { ArrowDown, ArrowRight, ArrowUpRight, ShieldCheck } from "lucide-react";
 import { AthleteScene } from "./AthleteScene";
 import { Reveal } from "./Experience";
-import { Tag } from "./components";
-import { SPORTS } from "./model";
 import { PACKAGE_PROPOSALS } from "./packageProposals";
 import { useMotion } from "./motion";
 
@@ -16,7 +14,7 @@ export function Home() {
         <AthleteScene />
         <div className="hero-copy">
           <div className="sport-tag">
-            <span /> FOOTBALL · IN DEVELOPMENT
+            <span /> FOOTBALL · PLAYER DEVELOPMENT
           </div>
           <h1 tabIndex={-1}>
             Know the game.
@@ -29,19 +27,18 @@ export function Home() {
             athletes.
           </p>
           <p className="home-availability">
-            In development with a private adult pilot. Youth enrollment and paid
-            packages are not open.
+            Prelaunch. Membership enrollment is not open; explore the plans and
+            express interest.
           </p>
           <div className="actions">
             <a className="button" href="#membership">
-              See proposed packages <ArrowUpRight size={20} />
+              Explore packages <ArrowUpRight size={20} />
             </a>
-            <a className="text-button" href="#demo">
-              Try the demo <ArrowRight size={18} />
+            <a className="text-button" href="?interest=1#membership">
+              Express interest <ArrowRight size={18} />
             </a>
           </div>
-          <div className="hero-demo-note">
-            <span>Free fictional demo. No account needed.</span>
+          <div className="hero-how-link">
             <button
               className="text-button"
               onClick={() =>
@@ -81,9 +78,7 @@ export function Home() {
         >
           <div className="section-heading">
             <div>
-              <span className="eyebrow">
-                FOUR PROPOSED PACKAGES · ONE PLATFORM
-              </span>
+              <span className="eyebrow">FOUR WAYS TO BUILD YOUR GAME</span>
               <h2 id="package-path-title">
                 Learn first.
                 <br />
@@ -119,9 +114,11 @@ export function Home() {
             ))}
           </ol>
           <div className="home-package-path-footer">
-            <span>Features and prices are proposals under review.</span>
+            <span>
+              Prelaunch package plans. Features and pricing remain under review.
+            </span>
             <a className="text-button" href="#membership">
-              Compare packages & proposed prices <ArrowRight size={18} />
+              Compare package plans <ArrowRight size={18} />
             </a>
           </div>
         </section>
@@ -134,7 +131,7 @@ export function Home() {
         >
           <div className="section-heading">
             <div>
-              <span className="eyebrow">THE PLANNED EXPERIENCE</span>
+              <span className="eyebrow">BUILT AROUND THE PLAYER</span>
               <h2 id="platform-title">
                 Know what
                 <br />
@@ -165,13 +162,11 @@ export function Home() {
                   in view.
                 </h3>
                 <p>
-                  The planned parent dashboard brings lessons, practice history
-                  and athlete permissions together, so parents can support the
-                  routine.
+                  Our parent-managed approach connects lessons, practice history
+                  and athlete permissions, keeping support close to the routine.
                 </p>
                 <span className="path-detail">
-                  <ShieldCheck size={16} /> Planned parent management · youth
-                  enrollment closed
+                  <ShieldCheck size={16} /> Parent-managed experience
                 </span>
               </div>
             </article>
@@ -191,12 +186,11 @@ export function Home() {
                   <br />a purpose.
                 </h3>
                 <p>
-                  Fundamental and position packages propose clear practice steps
-                  and coaching cues. Elite adds written feedback on selected
-                  drills.
+                  Fundamental and position plans pair clear practice steps and
+                  coaching cues. Elite adds written feedback on selected drills.
                 </p>
                 <span className="path-detail">
-                  Proposed progression by age, position and experience.
+                  Progression designed around age, position and experience.
                 </span>
               </div>
             </article>
@@ -207,15 +201,15 @@ export function Home() {
       <Reveal className="practice-section">
         <section id="how-it-works" className="page how-section">
           <div className="practice-intro">
-            <span className="eyebrow">THE PROPOSED WEEKLY RHYTHM</span>
+            <span className="eyebrow">YOUR WEEK, WITH PURPOSE</span>
             <h2>A week with a clear next step.</h2>
             <p>
-              Learning leads into practice. Drill packages propose Sunday
-              loading, so the week starts with a plan. The schedule is still
-              being validated.
+              Understand the lesson. Follow the practice steps. Reflect on the
+              work. Drill-package plans use Sunday loading to give the week a
+              clear starting point.
             </p>
-            <a className="text-button" href="#demo">
-              Step inside the demo <ArrowUpRight size={19} />
+            <a className="text-button" href="#membership">
+              Find the right package <ArrowUpRight size={19} />
             </a>
           </div>
           <div className="practice-steps">
@@ -223,7 +217,7 @@ export function Home() {
               {
                 n: "01",
                 title: "Learn the why",
-                text: "Foundation proposes two football-IQ videos and short quizzes each week. No drills.",
+                text: "The Foundation plan pairs two football-IQ videos and short quizzes each week. No drills.",
               },
               {
                 n: "02",
@@ -233,7 +227,7 @@ export function Home() {
               {
                 n: "03",
                 title: "Bring the work back",
-                text: "Keep a record of participation. Elite proposes two selected video reviews per month, with written next-practice feedback.",
+                text: "Keep a record of participation. The Elite plan adds two selected video reviews per month, with written next-practice feedback.",
               },
             ].map((step) => (
               <article className="practice-step" key={step.n}>
@@ -248,72 +242,50 @@ export function Home() {
         </section>
       </Reveal>
 
-      <Reveal className="sport-programs-section">
-        <section className="page sport-programs" aria-labelledby="sports-title">
-          <div className="section-heading">
-            <div>
-              <span className="eyebrow">THE STARTING LINE</span>
-              <h2 id="sports-title">
-                Football first.
-                <br />
-                Development always.
-              </h2>
-            </div>
+      <Reveal>
+        <section
+          id="about-repformed"
+          className="page home-about"
+          aria-labelledby="about-repformed-title"
+        >
+          <img
+            src={`${media}football-field.jpg`}
+            alt=""
+            loading="lazy"
+            width={1280}
+            height={720}
+          />
+          <div>
+            <span className="eyebrow">ABOUT REPFORMED</span>
+            <h2 id="about-repformed-title">
+              Understanding first.
+              <br />
+              Purpose in every rep.
+            </h2>
             <p>
-              Football is our focus today. More sports are on the horizon. We’ll
-              announce what’s next when it’s ready.
+              Repformed is building an online football learning and training
+              platform for families and adult athletes. Our approach connects
+              understanding the game with clear practice instructions and
+              support around the player.
             </p>
-          </div>
-          <div className="sport-program-grid">
-            {SPORTS.filter((sport) => sport.available).map((sport, i) => (
-              <article
-                key={sport.id}
-                className="sport-program available"
-                aria-label={`${sport.name} program`}
-              >
-                <img
-                  className="football-program-image"
-                  src={`${media}football-field.jpg`}
-                  alt=""
-                  loading="lazy"
-                  width={1280}
-                  height={720}
-                />
-                <div className="sport-program-top">
-                  <span className="sport-program-index">0{i + 1}</span>
-                  <Tag>DEMO AVAILABLE</Tag>
-                </div>
-                <div className="sport-program-content">
-                  <h3>{sport.name}</h3>
-                  <p>
-                    Preview a fictional, noncontact guided session. Full package
-                    content is still in development.
-                  </p>
-                  <a className="button" href="#demo">
-                    Try the football demo <ArrowUpRight size={19} />
-                  </a>
-                </div>
-              </article>
-            ))}
-            <article
-              className="sport-program future"
-              aria-label="Future sports"
-            >
-              <div className="sport-program-top">
-                <span className="sport-program-index">THE NEXT CHAPTER</span>
-                <Tag>COMING LATER</Tag>
-              </div>
-              <div className="sport-program-content">
-                <h3>More sports ahead.</h3>
-                <p>
-                  The work doesn’t stop with one sport. We’re building toward
-                  more ways to train, with future sports to be announced.
-                </p>
-                <span className="sport-future-note">
-                  Future offerings · Details to be announced
-                </span>
-              </div>
-            </article>
+            <ul>
+              <li>
+                <strong>Learn the why.</strong> Give each lesson a clear
+                purpose.
+              </li>
+              <li>
+                <strong>Make practice clear.</strong> Steps, equipment and
+                coaching cues in one place.
+              </li>
+              <li>
+                <strong>Keep support close.</strong> Parent-managed experiences
+                and individual adult training.
+              </li>
+            </ul>
+            <p className="home-sport-note">
+              Football is our first focus. Additional sports will be announced
+              as programs develop.
+            </p>
           </div>
         </section>
       </Reveal>
@@ -322,7 +294,7 @@ export function Home() {
         <section className="home-finish" aria-labelledby="finish-title">
           <div className="page finish-inner">
             <div>
-              <span className="eyebrow">HELP SHAPE WHAT’S NEXT.</span>
+              <span className="eyebrow">YOUR NEXT STEP</span>
               <h2 id="finish-title">
                 Find your
                 <br />
@@ -331,22 +303,18 @@ export function Home() {
             </div>
             <div className="finish-actions">
               <p>
-                Tell us which proposal fits. Choose a package and email your
-                interest from your mail app. Enrollment remains closed.
+                Tell us which package fits, or choose “Not sure yet.” No account
+                or payment is needed to express interest.
               </p>
               <a className="button" href="?interest=1#membership">
                 Express interest <ArrowUpRight size={20} />
               </a>
               <a className="text-button" href="#membership">
-                See proposed packages <ArrowRight size={17} />
+                Explore packages <ArrowRight size={17} />
               </a>
             </div>
           </div>
         </section>
-        <div className="page home-disclaimer">
-          Public signup and junior enrollment are not open yet. Explore the demo
-          with fictional profiles.
-        </div>
       </Reveal>
     </main>
   );

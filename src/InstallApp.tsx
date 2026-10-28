@@ -18,11 +18,11 @@ export function InstallApp({ app }: { app: PwaState }) {
         <Tag>YOUR PRACTICE, WITH YOU</Tag>
         <h1 tabIndex={-1}>Add it to your phone.</h1>
         <p>
-          Open the mobile training experience from your home screen. Use your
-          approved account or explore the fictional sample demo.
+          Open your Repformed account from your home screen. Account access is
+          by invitation while programs prepare for launch.
         </p>
         <a className="button" href="?source=app#app">
-          Open the app preview <ArrowRight size={18} />
+          Open the member app <ArrowRight size={18} />
         </a>
       </div>
       <section className="panel install-status">
@@ -90,23 +90,23 @@ export function InstallApp({ app }: { app: PwaState }) {
         <p role="status" className="app-cache-status">
           {app.offlineReady ? (
             <>
-              <Check size={18} /> Demo screens are ready for offline use on this
-              browser.
+              <Check size={18} /> Saved app screens are ready for offline use on
+              this browser.
             </>
           ) : (
             "Open the published website online first and allow offline setup to finish."
           )}
         </p>
         <p>
-          After setup, built-in sample sessions can reopen without a connection.
-          Shared content, new uploads, sign-in and app updates need internet
-          access. Media may not be available offline.
+          Sign-in, private profiles, new training, uploads and updates need an
+          internet connection. Saved fictional previews can reopen offline;
+          media may not be available without a connection.
         </p>
         <Notice>
-          Progress and demo uploads stay in this browser. Installing the app
-          does not create an account or sync data with your partner. Browser and
-          home-screen storage may differ on some devices. Keep this a
-          fictional-data test.
+          Installing does not create an account or start a subscription.
+          Approved account records use the private account service; fictional
+          preview progress stays on this device. Browser and home-screen storage
+          may differ on some devices.
         </Notice>
         {app.waiting && (
           <div className="success">
@@ -130,8 +130,8 @@ export function InstallApp({ app }: { app: PwaState }) {
         </button>
         {app.message && <p role="status">{app.message}</p>}
       </section>
-      <a href="#onboarding" className="button">
-        Try a sample player
+      <a href="#account" className="button">
+        Log in to your account
         <ArrowRight size={18} />
       </a>
       {confirmUpdate && (
@@ -140,8 +140,9 @@ export function InstallApp({ app }: { app: PwaState }) {
           onClose={() => setConfirmUpdate(false)}
         >
           <p>
-            Saved demo progress stays in this browser. Unsaved coach drafts will
-            be lost. Finish or save your work before updating.
+            Finish or save your work before updating. Unsaved device work may be
+            lost when the app reloads. Saved fictional preview progress stays on
+            this device.
           </p>
           <div className="actions">
             <button className="button" onClick={() => app.update()}>

@@ -39,23 +39,22 @@ export function Membership({
   return (
     <main className="page memberships proposed-memberships">
       <div className="page-intro centered">
-        <Tag>PROPOSALS · FEEDBACK WELCOME</Tag>
+        <Tag>PRELAUNCH PACKAGE PLANS</Tag>
         <h1 tabIndex={-1}>A path for the next step.</h1>
         <p>
-          Four proposed ways to learn and train with Repformed. Help us shape
-          what comes next.
+          Four ways to build football understanding and purposeful practice.
+          Find your starting point.
         </p>
       </div>
       <section
         className="membership-availability"
         aria-label="Current availability"
       >
-        <strong>In development · private adult pilot</strong>
+        <strong>Interest is open. Enrollment is not.</strong>
         <p>
-          Youth enrollment and paid packages are not open. The features and
-          prices below are future proposals being validated, not active offers.
-          Annual prices and terms remain under review. No launch date is
-          promised.
+          These are prelaunch package plans, not active offers. Features, prices
+          and annual terms remain under review. No payments or reservations are
+          taken, and no launch date is promised.
         </p>
         <button className="text-button" onClick={focusInterest}>
           Share your interest <ArrowRight size={17} />
@@ -69,7 +68,7 @@ export function Membership({
             key={p.id}
           >
             <div className="proposal-top">
-              <Tag>PROPOSED PACKAGE</Tag>
+              <Tag>PACKAGE PLAN</Tag>
               <span>0{i + 1}</span>
             </div>
             <h2 id={`package-${p.id}`}>{p.name}</h2>
@@ -104,9 +103,8 @@ export function Membership({
           schedule. Foundation includes football-IQ learning, not drills.
         </p>
         <p>
-          Current private-pilot access follows its separate instructions and
-          limits. These proposed packages do not change current uploads,
-          services or billing.
+          Existing invited accounts follow their current access and review
+          limits. <a href="#contact">Questions about current access?</a>
         </p>
       </section>
       <section
@@ -200,7 +198,7 @@ export function Membership({
       </section>
       <div className="centered">
         <a className="button secondary" href="#demo">
-          Try the fictional sample demo <ArrowRight size={18} />
+          Optional fictional preview <ArrowRight size={18} />
         </a>
       </div>
     </main>
