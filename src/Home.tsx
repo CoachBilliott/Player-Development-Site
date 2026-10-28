@@ -3,6 +3,7 @@ import { AthleteScene } from "./AthleteScene";
 import { Reveal } from "./Experience";
 import { Tag } from "./components";
 import { SPORTS } from "./model";
+import { PACKAGE_PROPOSALS } from "./packageProposals";
 import { useMotion } from "./motion";
 
 const media = `${import.meta.env.BASE_URL}media/`;
@@ -10,7 +11,7 @@ const media = `${import.meta.env.BASE_URL}media/`;
 export function Home() {
   const { enabled } = useMotion();
   return (
-    <main className="home">
+    <main className="home home-package-journey">
       <section className="hero">
         <AthleteScene />
         <div className="hero-copy">
@@ -18,22 +19,29 @@ export function Home() {
             <span /> FOOTBALL · IN DEVELOPMENT
           </div>
           <h1 tabIndex={-1}>
-            Your game.
+            Know the game.
             <br />
-            <span className="electric-text">Your next rep.</span>
+            <span className="electric-text">Own your rep.</span>
           </h1>
           <p className="hero-description">
-            We’re building football learning and guided practice around the
-            athlete’s age, position, experience and goals.
+            Football IQ. Purposeful practice. A clearer next step. We’re
+            building a learning and training path for families and adult
+            athletes.
           </p>
           <p className="home-availability">
             In development with a private adult pilot. Youth enrollment and paid
             packages are not open.
           </p>
           <div className="actions">
-            <a className="button" href="#demo">
-              Try the demo <ArrowUpRight size={20} />
+            <a className="button" href="#membership">
+              See proposed packages <ArrowUpRight size={20} />
             </a>
+            <a className="text-button" href="#demo">
+              Try the demo <ArrowRight size={18} />
+            </a>
+          </div>
+          <div className="hero-demo-note">
+            <span>Free fictional demo. No account needed.</span>
             <button
               className="text-button"
               onClick={() =>
@@ -45,10 +53,6 @@ export function Home() {
               See how it works <ArrowDown size={17} />
             </button>
           </div>
-          <p className="hero-demo-note">
-            Free fictional demo. No account needed.
-            <a href="#membership">See proposed packages</a>
-          </p>
         </div>
         <div className="hero-edition" aria-hidden="true">
           <span>REPFORMED</span>
@@ -57,16 +61,71 @@ export function Home() {
       </section>
 
       <div className="training-principles" aria-label="The training approach">
-        {["Find your focus.", "Put in the practice.", "Own your routine."].map(
-          (text, i) => (
-            <div key={text}>
-              <span>0{i + 1}</span>
-              <p>{text}</p>
-              <ArrowUpRight size={24} aria-hidden="true" />
-            </div>
-          ),
-        )}
+        {[
+          "Understand the game.",
+          "Practise with purpose.",
+          "Keep the next step clear.",
+        ].map((text, i) => (
+          <div key={text}>
+            <span>0{i + 1}</span>
+            <p>{text}</p>
+            <ArrowUpRight size={24} aria-hidden="true" />
+          </div>
+        ))}
       </div>
+
+      <Reveal>
+        <section
+          className="page home-package-path"
+          aria-labelledby="package-path-title"
+        >
+          <div className="section-heading">
+            <div>
+              <span className="eyebrow">
+                FOUR PROPOSED PACKAGES · ONE PLATFORM
+              </span>
+              <h2 id="package-path-title">
+                Learn first.
+                <br />
+                Build from there.
+              </h2>
+            </div>
+            <p>
+              Start with understanding the game. Add guided practice, position
+              focus or closer coaching support as the athlete’s needs change.
+            </p>
+          </div>
+          <ol className="home-package-ladder">
+            {PACKAGE_PROPOSALS.map((p, i) => (
+              <li key={p.id}>
+                <span className="package-step-number" aria-hidden="true">
+                  0{i + 1}
+                </span>
+                <h3>{p.name}</h3>
+                <p>{p.focus}</p>
+                <strong>{p.cadence}</strong>
+                {p.id === "position-development" && (
+                  <small>
+                    Position work replaces or adapts the two drills.
+                  </small>
+                )}
+                {p.id === "elite-coaching" && (
+                  <small>
+                    Written feedback · up to three minutes of footage per
+                    review.
+                  </small>
+                )}
+              </li>
+            ))}
+          </ol>
+          <div className="home-package-path-footer">
+            <span>Features and prices are proposals under review.</span>
+            <a className="text-button" href="#membership">
+              Compare packages & proposed prices <ArrowRight size={18} />
+            </a>
+          </div>
+        </section>
+      </Reveal>
 
       <Reveal className="athlete-paths-section">
         <section
@@ -75,16 +134,17 @@ export function Home() {
         >
           <div className="section-heading">
             <div>
-              <span className="eyebrow">PERSONALIZED FOOTBALL TRAINING</span>
+              <span className="eyebrow">THE PLANNED EXPERIENCE</span>
               <h2 id="platform-title">
-                One platform.
+                Know what
                 <br />
-                Every athlete.
+                they’re learning.
               </h2>
             </div>
             <p>
-              Training starts with the player. A clear plan, guided practice and
-              a record of the work keep the next step in focus.
+              See what the athlete is learning, what to practise and where to
+              help. Parent-managed and individual adult accounts use the same
+              platform.
             </p>
           </div>
           <div className="path-grid">
@@ -100,14 +160,14 @@ export function Home() {
               <span className="path-tag">SUPPORT AROUND THE ATHLETE</span>
               <div className="path-copy">
                 <h3>
-                  Support.
+                  Keep the week
                   <br />
-                  At every step.
+                  in view.
                 </h3>
                 <p>
-                  The planned family experience gives parents control of athlete
-                  permissions and practice reports. Adult athletes manage their
-                  own routine within the same platform.
+                  The planned parent dashboard brings lessons, practice history
+                  and athlete permissions together, so parents can support the
+                  routine.
                 </p>
                 <span className="path-detail">
                   <ShieldCheck size={16} /> Planned parent management · youth
@@ -127,23 +187,19 @@ export function Home() {
               <span className="path-tag">TRAINING THAT FITS THE PLAYER</span>
               <div className="path-copy">
                 <h3>
-                  A plan.
-                  <br />A purpose.
+                  Give the work
+                  <br />a purpose.
                 </h3>
                 <p>
-                  Follow guided workouts with short lessons, clear practice
-                  steps and coaching cues matched to the player.
+                  Fundamental and position packages propose clear practice steps
+                  and coaching cues. Elite adds written feedback on selected
+                  drills.
                 </p>
                 <span className="path-detail">
-                  Age, position, experience and goals shape the session.
+                  Proposed progression by age, position and experience.
                 </span>
               </div>
             </article>
-          </div>
-          <div className="path-bottom">
-            <a className="button" href="#demo">
-              Explore the training demo <ArrowRight size={18} />
-            </a>
           </div>
         </section>
       </Reveal>
@@ -151,11 +207,12 @@ export function Home() {
       <Reveal className="practice-section">
         <section id="how-it-works" className="page how-section">
           <div className="practice-intro">
-            <span className="eyebrow">LESS GUESSWORK. MORE PURPOSE.</span>
-            <h2>A clear plan. Purposeful practice.</h2>
+            <span className="eyebrow">THE PROPOSED WEEKLY RHYTHM</span>
+            <h2>A week with a clear next step.</h2>
             <p>
-              Open your session. Know what to work on. Take it one drill at a
-              time.
+              Learning leads into practice. Drill packages propose Sunday
+              loading, so the week starts with a plan. The schedule is still
+              being validated.
             </p>
             <a className="text-button" href="#demo">
               Step inside the demo <ArrowUpRight size={19} />
@@ -165,18 +222,18 @@ export function Home() {
             {[
               {
                 n: "01",
-                title: "Choose your player",
-                text: "Age, position, experience and goals give each sample player a starting point.",
+                title: "Learn the why",
+                text: "Foundation proposes two football-IQ videos and short quizzes each week. No drills.",
               },
               {
                 n: "02",
-                title: "Follow your session",
-                text: "Short lessons, clear practice steps and coaching cues guide the next drill.",
+                title: "Put it into practice",
+                text: "Fundamentals adds two drill videos a week. Position Development adapts those assignments to one primary position.",
               },
               {
                 n: "03",
-                title: "Record your practice",
-                text: "Build a history of participation. Parents can review reports; completion is not proof of improved ability.",
+                title: "Bring the work back",
+                text: "Keep a record of participation. Elite proposes two selected video reviews per month, with written next-practice feedback.",
               },
             ].map((step) => (
               <article className="practice-step" key={step.n}>
@@ -229,8 +286,8 @@ export function Home() {
                 <div className="sport-program-content">
                   <h3>{sport.name}</h3>
                   <p>
-                    Explore noncontact football sample practice matched to the
-                    player. Football is the first program in the demo.
+                    Preview a fictional, noncontact guided session. Full package
+                    content is still in development.
                   </p>
                   <a className="button" href="#demo">
                     Try the football demo <ArrowUpRight size={19} />
@@ -265,20 +322,23 @@ export function Home() {
         <section className="home-finish" aria-labelledby="finish-title">
           <div className="page finish-inner">
             <div>
-              <span className="eyebrow">MAKE ROOM FOR THE WORK.</span>
+              <span className="eyebrow">HELP SHAPE WHAT’S NEXT.</span>
               <h2 id="finish-title">
-                The next rep
+                Find your
                 <br />
-                starts with you.
+                starting point.
               </h2>
             </div>
             <div className="finish-actions">
-              <p>See the plan. Try the practice. Find your starting point.</p>
-              <a className="button" href="#demo">
-                Explore the free demo <ArrowUpRight size={20} />
+              <p>
+                Tell us which proposal fits. Choose a package and email your
+                interest from your mail app. Enrollment remains closed.
+              </p>
+              <a className="button" href="?interest=1#membership">
+                Express interest <ArrowUpRight size={20} />
               </a>
               <a className="text-button" href="#membership">
-                Explore proposed packages <ArrowRight size={17} />
+                See proposed packages <ArrowRight size={17} />
               </a>
             </div>
           </div>

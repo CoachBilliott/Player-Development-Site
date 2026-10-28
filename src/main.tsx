@@ -10,6 +10,7 @@ import "./theme.css";
 import "./editorial.css";
 import "./mobile.css";
 import "./repformed.css";
+import "./homeJourney.css";
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <App />
