@@ -64,7 +64,7 @@ test("unanswered questions hand off to the real inbox without claiming delivery"
     dialog.getByRole("link", { name: "Email the team" }),
   ).toHaveAttribute("href", /^mailto:Repformed@gmail.com\?subject=/);
   await dialog.getByRole("button", { name: "Show all questions" }).click();
-  await expect(dialog.getByRole("status")).toHaveText("9 answers available");
+  await expect(dialog.getByRole("status")).toHaveText("10 answers available");
   await dialog
     .getByRole("button", { name: "How do I sign up or log in?" })
     .click();

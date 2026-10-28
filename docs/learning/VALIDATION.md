@@ -24,3 +24,8 @@ Artifacts/logs are under `/workspace/.player-development-setup/learning-*` and i
 Added direct group-gradebook role/score coverage and a forced downstream release failure. The latter found that PL/pgSQL counters survived the failed athlete's subtransaction and could overstate successful releases. Counters now restore on that rollback; another athlete's successful release remains committed. Focused core:39 passed (19 PostgreSQL,12 import,8 schedule); full unit/database:414 passed. Lint/type checks passed. No production change. Final aggregate/browser/offline/preview checks must be terminal on the final PR13 head; consult its GitHub checks rather than treating earlier overlapping totals as additional tests.
 
 The existing GitHub Actions workflow now uploads `learning-review-evidence` containing the two CSV templates and six fictional learning screenshots after browser checks. This is a GitHub artifact, not a Library attachment. No Library publishing tool is exposed in this task, so no Library IDs have been invented. The isolated preview is frontend05a7ef5; the later counter fix changes backend logic/tests and evidence packaging, not that frontend.
+
+
+## Aggregate follow-up
+
+CI40762299736 at05a7ef5 completed with358 browser passes and4 failures: desktop/phone expectations for the intentionally replaced Sunday wording and the FAQ count (9→10). Those two exact assertions are updated without removing coverage. The intermediate6bbf57e run was superseded by this correction. Local compiled app/offline suite passed8 checks. Final CI must run all362 website,8 app/offline and12 preview checks together on the final head; no interrupted or earlier overlapping counts are summed.

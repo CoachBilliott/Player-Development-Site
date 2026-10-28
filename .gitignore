@@ -37,4 +37,4 @@ __pycache__/
 test-results-private-preview/
 
 # Isolated learning integration traces, never product data.
-test-results-learning-integration/
+test-results-learning-*/
