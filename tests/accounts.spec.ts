@@ -1598,7 +1598,9 @@ test("staff app navigation stays on authorized content tools rather than member 
   ).toBeVisible();
   await expect(page.locator(".app-athlete-picker")).toHaveCount(0);
   await page.goto("./#home");
-  await expect(page.getByRole("heading", { name: /Your game/ })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: /Know the game/ }),
+  ).toBeVisible();
   await expect(
     page.getByRole("navigation", { name: "App navigation" }),
   ).toHaveCount(0);

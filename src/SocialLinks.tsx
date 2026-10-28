@@ -1,10 +1,41 @@
 import { useEffect, useState } from "react";
-import { ArrowUpRight } from "lucide-react";
+import {
+  ArrowUpRight,
+  Facebook,
+  Instagram,
+  Music2,
+  Youtube,
+} from "lucide-react";
 import { nativeApp } from "./mobile";
 import { validSocialLinks, type SocialLink } from "./socialConfig";
 import "./social-links.css";
 
-export function SocialLinks() {
+function SocialGlyph({ platform }: { platform: string }) {
+  if (platform === "Instagram")
+    return <Instagram size={20} aria-hidden="true" />;
+  if (platform === "Facebook") return <Facebook size={20} aria-hidden="true" />;
+  if (platform === "YouTube") return <Youtube size={20} aria-hidden="true" />;
+  if (platform === "TikTok") return <Music2 size={20} aria-hidden="true" />;
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path
+        d="M5 4h4l10 16h-4L5 4Z"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinejoin="round"
+      />
+      <path d="m19 4-14 16" stroke="currentColor" strokeWidth="1.6" />
+    </svg>
+  );
+}
+export function SocialLinks({ compact = false }: { compact?: boolean } = {}) {
   const [links, setLinks] = useState<SocialLink[]>([]);
   const [error, setError] = useState("");
   useEffect(() => {
@@ -25,7 +56,9 @@ export function SocialLinks() {
   }, []);
   if (!links.length) return null;
   return (
-    <div className="social-links-block">
+    <div
+      className={`social-links-block ${compact ? "social-links-compact" : ""}`}
+    >
       <nav className="social-links" aria-label="Official social accounts">
         {links.map((link) => (
           <a
@@ -34,6 +67,7 @@ export function SocialLinks() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label={`${link.platform} (opens outside Repformed)`}
+            title={link.platform}
             onClick={(event) => {
               if (!nativeApp()) return;
               event.preventDefault();
@@ -50,7 +84,13 @@ export function SocialLinks() {
                 );
             }}
           >
-            {link.platform} <ArrowUpRight size={16} aria-hidden="true" />
+            {compact ? (
+              <SocialGlyph platform={link.platform} />
+            ) : (
+              <>
+                {link.platform} <ArrowUpRight size={16} aria-hidden="true" />
+              </>
+            )}
           </a>
         ))}
       </nav>

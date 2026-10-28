@@ -54,7 +54,7 @@ test("homepage is responsive and sample demo is obvious", async ({
   page.on("pageerror", (e) => errors.push(e.message));
   await page.goto("./");
   await expect(
-    page.getByRole("heading", { name: /Your game/i, level: 1 }),
+    page.getByRole("heading", { name: /Know the game/i, level: 1 }),
   ).toBeVisible();
   await expect(page.locator(".hero .button")).toBeInViewport();
   await expect(page.locator(".hero .sport-tag")).toHaveText(
@@ -85,7 +85,7 @@ test("homepage is responsive and sample demo is obvious", async ({
   await expect(page.getByText(/\bbasketball\b|\bsoccer\b/i)).toHaveCount(0);
   await page.getByRole("button", { name: "See how it works" }).click();
   await expect(
-    page.getByRole("heading", { name: "A clear plan. Purposeful practice." }),
+    page.getByRole("heading", { name: "A week with a clear next step." }),
   ).toBeInViewport();
   const images = page.locator(".path-card > img, .football-program-image");
   await expect(images).toHaveCount(3);

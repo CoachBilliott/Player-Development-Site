@@ -378,34 +378,17 @@ export default function App() {
           <MobileHeader demo={demoPage} signedIn={shared.signedIn} />
         ) : (
           <>
-            <div
-              className="demo-strip"
-              role="region"
-              aria-label="Platform status"
-            >
-              <span className="live-dot" />{" "}
-              {privatePage
-                ? "PRIVATE WORKSPACE"
-                : demoPage
-                  ? "SAMPLE-DATA DEMO"
-                  : "REPFORMED"}{" "}
-              <span className="strip-divider">/</span>
-              <span>
-                {privatePage
-                  ? "Private adult & parent-managed profiles"
-                  : demoPage
-                    ? "Fictional profiles · No account required"
-                    : "In development · Private adult pilot"}
-              </span>
-              <span className="strip-note">
-                {privatePage
-                  ? "Your private workspace"
-                  : demoPage
-                    ? "No account needed"
-                    : "Youth enrollment closed"}{" "}
-                <ArrowUpRight size={13} />
-              </span>
-            </div>
+            {demoPage && (
+              <div
+                className="demo-strip"
+                role="region"
+                aria-label="Platform status"
+              >
+                <span className="live-dot" /> SAMPLE-DATA DEMO{" "}
+                <span className="strip-divider">/</span>
+                <span>Fictional profiles · No account required</span>
+              </div>
+            )}
             <header className="header">
               <div className="header-inner">
                 <Logo />
@@ -426,7 +409,7 @@ export default function App() {
                     className="header-account"
                     href={shared.signedIn ? "#workspace" : "#account"}
                   >
-                    {shared.signedIn ? "My workspace" : "Log in"}{" "}
+                    {shared.signedIn ? "Dashboard" : "Log in"}{" "}
                     <ArrowUpRight size={17} />
                   </a>
                   <button
@@ -443,10 +426,16 @@ export default function App() {
                 <nav className="mobile-nav" aria-label="Mobile navigation">
                   {nav.map(([id, label]) => (
                     <a key={id} href={`#${id}`}>
-                      {label}
+                      {id === "workspace" ? "Dashboard" : label}
                       <ArrowUpRight size={18} />
                     </a>
                   ))}
+                  {shared.signedIn &&
+                    !nav.some(([id]) => id === "workspace") && (
+                      <a href="#workspace">
+                        Dashboard <ArrowUpRight size={18} />
+                      </a>
+                    )}
                   {!nav.some(([id]) => id === "account") && (
                     <a href="#account">
                       {shared.signedIn ? "Account settings" : "Log in"}{" "}
@@ -613,34 +602,51 @@ export default function App() {
         {mobile ? (
           <MobileTabs shared={shared} page={page} />
         ) : (
-          <footer>
+          <footer className="website-footer">
             <div className="footer-inner">
-              <Logo />
-              <p>A clear plan. A purposeful practice.</p>
-              <div>
-                <a href="#membership">
-                  Proposed packages <ArrowUpRight size={14} />
-                </a>
-                <a href="#home">About Repformed</a>
-                <a href="#contact">Contact</a>
-                <QuickHelp />
-                <a href={shared.signedIn ? "#workspace" : "#account"}>
-                  {shared.signedIn ? "My workspace" : "Log in"}
-                </a>
-                <a href="#demo">Try the demo</a>
-                <a href="#install">
-                  Get the app <ArrowUpRight size={14} />
-                </a>
+              <div className="footer-brand">
+                <Logo />
+                <p>
+                  Learn the game.
+                  <br />
+                  Build purposeful practice.
+                </p>
               </div>
+              <nav className="footer-nav" aria-label="Footer navigation">
+                <div className="footer-group">
+                  <h2>Explore</h2>
+                  <a href="#home">About Repformed</a>
+                  <a href="#membership">Proposed packages</a>
+                  <a href="#demo">Try the demo</a>
+                </div>
+                <div className="footer-group">
+                  <h2>Help & access</h2>
+                  <a href="#contact">Contact</a>
+                  <QuickHelp />
+                  <a href={shared.signedIn ? "#workspace" : "#account"}>
+                    {shared.signedIn ? "Dashboard" : "Log in"}
+                  </a>
+                  <a href="#install">App & installation</a>
+                </div>
+              </nav>
             </div>
-            <SocialLinks />
+            <div className="footer-follow">
+              <span>Follow Repformed</span>
+              <SocialLinks compact />
+            </div>
             <div className="footer-bottom">
-              <span>
-                © {new Date().getFullYear()} Repformed · Athlete development
-              </span>
-              <a href={`${import.meta.env.BASE_URL}credits.html`}>
-                Credits & licenses
-              </a>
+              <span>© {new Date().getFullYear()} Repformed</span>
+              <nav
+                className="footer-legal"
+                aria-label="Account help and credits"
+              >
+                <a href={`${import.meta.env.BASE_URL}account-help.html`}>
+                  Account & privacy help
+                </a>
+                <a href={`${import.meta.env.BASE_URL}credits.html`}>
+                  Credits & licenses
+                </a>
+              </nav>
             </div>
           </footer>
         )}

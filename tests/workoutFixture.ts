@@ -67,6 +67,7 @@ async function fixture(
   backend: State,
   role = "owner",
   actorId?: string,
+  seedOnce = false,
 ) {
   const id = actorId || (role === "parent" ? accountId : staffId);
   const user = {
@@ -86,18 +87,25 @@ async function fixture(
     Buffer.from(JSON.stringify(v)).toString("base64url");
   const token = `${encode({ alg: "HS256", typ: "JWT" })}.${encode({ sub: id, role: "authenticated", aud: "authenticated", exp: Math.floor(Date.now() / 1000) + 3600 })}.fictional-signature`;
   await context.addInitScript(
-    (session) =>
+    ({ session, once }) => {
+      const marker = "repformed.test-session-seeded";
+      if (once && sessionStorage.getItem(marker)) return;
       localStorage.setItem(
         "sb-separate-demo-auth-token",
         JSON.stringify(session),
-      ),
+      );
+      if (once) sessionStorage.setItem(marker, "1");
+    },
     {
-      access_token: token,
-      refresh_token: "fictional-refresh",
-      expires_at: Math.floor(Date.now() / 1000) + 3600,
-      expires_in: 3600,
-      token_type: "bearer",
-      user,
+      once: seedOnce,
+      session: {
+        access_token: token,
+        refresh_token: "fictional-refresh",
+        expires_at: Math.floor(Date.now() / 1000) + 3600,
+        expires_in: 3600,
+        token_type: "bearer",
+        user,
+      },
     },
   );
   await context.route("**/content-config.json", (r) =>

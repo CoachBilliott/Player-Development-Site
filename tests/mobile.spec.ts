@@ -68,7 +68,9 @@ test("app navigation and forms fit small phones while the normal website stays i
     .click();
   await expect(page).toHaveURL(/source=app#account$/);
   await page.goto("./#home");
-  await expect(page.getByRole("heading", { name: /Your game/ })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: /Know the game/ }),
+  ).toBeVisible();
   await expect(
     page.getByRole("navigation", { name: "App navigation" }),
   ).toHaveCount(0);

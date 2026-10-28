@@ -28,7 +28,9 @@ test("the public website has one customer demo entry, with parent and solo journ
   if (info.project.name === "phone")
     await page.setViewportSize({ width: 320, height: 800 });
   await page.goto("./#home");
-  await expect(page.getByRole("heading", { name: /Your game/ })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: /Know the game/ }),
+  ).toBeVisible();
   const header = page.getByRole("banner");
   await expect(
     header.getByRole("link", { name: "Try the demo", exact: true }),
