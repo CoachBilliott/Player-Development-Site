@@ -88,8 +88,8 @@ for (const role of [
       owner: "Your platform. Your playbook.",
       manager: "Keep the team moving.",
       coach: "Build the next great practice.",
-      parent: "Your family. Their next step.",
-      athlete: "Your training. Your next step.",
+      parent: "Today’s training.",
+      athlete: "Today’s training.",
     };
     await expect(
       page.getByRole("heading", { name: titles[role], level: 1 }),
@@ -97,8 +97,11 @@ for (const role of [
     await page.goto("./#account");
     await page.getByRole("button", { name: /^Sign out/ }).click();
     await expect(
-      header.getByRole("link", { name: "Log in", exact: true }),
+      page.getByRole("button", { name: "Sign in securely", exact: true }),
     ).toBeVisible();
+    await expect(
+      page.getByRole("navigation", { name: "Workspace navigation" }),
+    ).toHaveCount(0);
     await page.goto("./#home");
     await page.reload();
     await expect(

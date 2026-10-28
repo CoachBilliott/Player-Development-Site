@@ -1,0 +1,39 @@
+.private-preview-controls {
+  max-width: 1240px;
+  margin: auto;
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  border-bottom: 1px solid #c7a45c55;
+  font-size: 12px;
+  color: #bfc1b8;
+}
+.private-preview-controls strong {
+  color: #e3c987;
+  letter-spacing: 0.08em;
+  font-size: 11px;
+}
+.private-preview-controls p {
+  margin-top: 6px;
+  line-height: 1.6;
+}
+.private-preview-controls label {
+  display: grid;
+  gap: 6px;
+  min-width: 180px;
+}
+.private-preview-controls select {
+  font-size: 14px;
+  min-height: 44px;
+}
+@media (max-width: 650px) {
+  .private-preview-controls {
+    padding: 14px 20px;
+    display: block;
+  }
+  .private-preview-controls label {
+    margin-top: 12px;
+  }
+}

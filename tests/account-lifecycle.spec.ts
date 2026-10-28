@@ -184,6 +184,7 @@ async function account(page: import("@playwright/test").Page, role = "owner") {
     .getByRole("navigation", { name: "App navigation" })
     .getByRole("link", { name: "Account", exact: true })
     .click();
+  await page.getByText("Manage account closure", { exact: true }).click();
 }
 test("Owner reviews an invitation, canceling is harmless, repeated confirmation sends one request", async ({
   page,
@@ -191,6 +192,7 @@ test("Owner reviews an invitation, canceling is harmless, repeated confirmation 
 }) => {
   const data = await lifecycle(context);
   await account(page);
+  await page.goto("./?source=app&accessSection=invites#access");
   await page.getByLabel("Adult invitation email").fill("partner@example.test");
   await page.getByLabel("Invited account level").selectOption("coach");
   await expect(
@@ -213,12 +215,11 @@ test("Owner reviews an invitation, canceling is harmless, repeated confirmation 
   expect(data.sent).toBe(1);
   await page.reload();
   await expect(
-    page.getByRole("heading", { name: "Your platform. Your playbook." }),
+    page.getByRole("heading", { name: "Team & access." }),
   ).toBeVisible();
-  await page
-    .getByRole("navigation", { name: "App navigation" })
-    .getByRole("link", { name: "Account", exact: true })
-    .click();
+  await expect(
+    page.getByRole("button", { name: "Invite staff", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
   await expect(
     page.getByText("Awaiting recipient", { exact: true }),
   ).toBeVisible();
@@ -243,6 +244,7 @@ test("email service failure does not pretend delivery succeeded", async ({
   const data = await lifecycle(context);
   data.deliveryFailure = true;
   await account(page);
+  await page.goto("./?source=app&accessSection=invites#access");
   await page.getByLabel("Adult invitation email").fill("partner@example.test");
   await page
     .getByRole("button", { name: "Review invitation", exact: true })
@@ -285,7 +287,7 @@ test("an invited Coach accepts exactly the invited access without choosing Paren
     .getByRole("link", { name: "Account", exact: true })
     .click();
   await expect(
-    page.getByRole("heading", { name: "Your Coach account." }),
+    page.getByRole("heading", { name: "Account settings." }),
   ).toBeVisible();
   expect(data.accepts).toBe(1);
 });
@@ -436,6 +438,7 @@ test("invitation and account controls fit phones and pass WCAG checks", async ({
 }) => {
   await lifecycle(context);
   await account(page);
+  await page.goto("./?source=app&accessSection=invites#access");
   await page
     .getByLabel("Adult invitation email")
     .fill("fictional-partner-with-a-long-email@example.test");

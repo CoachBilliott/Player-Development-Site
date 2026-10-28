@@ -106,9 +106,10 @@ export function MobileTabs({
             ["workout-builder", "content-review"].includes(page)) ||
           (route === "app" && page === "home") ||
           (route === "workspace" &&
-            ["app", "home"].includes(page) &&
+            ["app", "home", "interest"].includes(page) &&
             shared.signedIn) ||
-          (route === "account" && ["access", "launch"].includes(page)) ||
+          (route === "account" &&
+            ["access", "launch", "profiles"].includes(page)) ||
           (route === "coach" &&
             page === "member-library" &&
             ["owner", "manager", "coach"].includes(shared.role || "")) ||

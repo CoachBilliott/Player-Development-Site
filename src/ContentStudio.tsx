@@ -5,14 +5,13 @@ import { Notice } from "./components";
 import type { SharedState } from "./useSharedContent";
 import { ROLE_LABELS } from "./roles";
 import { appSurface } from "./mobile";
+import { PrivateAccessMessage } from "./PrivateShell";
 
 type Props = ComponentProps<typeof Admin> & { shared: SharedState };
 export function ContentStudio({ shared, ...local }: Props) {
   const [selectedScope, setScope] = useState<"local" | "shared" | null>(null);
   const scope = selectedScope ?? "shared";
   const [nextScope, setNextScope] = useState<"local" | "shared" | null>(null);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [editorBusy, setEditorBusy] = useState(false);
@@ -175,74 +174,18 @@ export function ContentStudio({ shared, ...local }: Props) {
           )}
         </main>
       ) : !shared.coach ? (
-        <main className="page narrow">
-          <div className="page-intro">
-            <LockKeyhole size={26} />
-            <h1 tabIndex={-1}>Coach sign-in</h1>
-            <p>
-              Owners, Managers and Coaches can upload shared sample resources.
-              Use the same account as Member access; no second login is needed
-              if you are already signed in with staff access.
-            </p>
-          </div>
-          <form
-            className="panel studio"
-            onSubmit={(event) => {
-              event.preventDefault();
-              if (busy) return;
-              setBusy(true);
-              setError("");
-              void shared
-                .signIn(email, password)
-                .then(() => setPassword(""))
-                .catch((e: Error) => setError(e.message))
-                .finally(() => setBusy(false));
-            }}
-          >
-            <label>
-              Coach email
-              <input
-                type="email"
-                autoComplete="username"
-                value={email}
-                required
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </label>
-            <label>
-              Password
-              <input
-                type="password"
-                autoComplete="current-password"
-                value={password}
-                required
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </label>
-            <button className="button" disabled={busy}>
-              {busy ? "Signing in…" : "Sign in to publish"}
-            </button>
-            {(error || shared.error) && (
-              <p className="form-error" role="alert">
-                {error || shared.error}
-              </p>
-            )}
-            <p>
-              Accounts are provisioned by the project owner. This is not player
-              registration.
-            </p>
-          </form>
-          {shared.signedIn && (
-            <button
-              className="text-button"
-              onClick={() =>
-                void shared.signOut().catch((e: Error) => setError(e.message))
-              }
-            >
-              Sign out
-            </button>
-          )}
-        </main>
+        <PrivateAccessMessage
+          signedIn={shared.signedIn}
+          title={
+            shared.signedIn
+              ? "Staff content access required."
+              : "Log in to open the content studio."
+          }
+        >
+          {shared.signedIn
+            ? "Your account does not have publishing access. An Owner can assign staff roles; signing in again will not change your permissions."
+            : "Use your Repformed account. Owners, Managers and Coaches use the same login as everyone else."}
+        </PrivateAccessMessage>
       ) : (
         <>
           <Admin

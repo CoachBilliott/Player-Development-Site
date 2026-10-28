@@ -57,7 +57,6 @@ export function MobileStaffHome({ shared }: { shared: SharedState }) {
           enabled
           monitoring={shared.deliveryMonitoringEnabled}
           operationalEmails={shared.staffNotificationEmailsEnabled}
-          interestInbox={Boolean(shared.interestEndpoint)}
         />
       )}
       {!shared.staffRosterEnabled && (
@@ -98,6 +97,16 @@ export function MobileStaffHome({ shared }: { shared: SharedState }) {
           <span>FOOTBALL</span>
         </div>
         <div className="app-tool-list">
+          {shared.interestEndpoint && role !== "coach" && (
+            <a href="#interest">
+              <ShieldCheck size={22} />
+              <span>
+                <strong>Package interest</strong>
+                <small>Adult requests and launch-email preferences.</small>
+              </span>
+              <ChevronRight size={18} />
+            </a>
+          )}
           <a href="#member-library">
             <BookOpen size={22} />
             <span>
@@ -138,8 +147,8 @@ export function MobileStaffHome({ shared }: { shared: SharedState }) {
             <a href="#access">
               <ShieldCheck size={22} />
               <span>
-                <strong>Accounts & training access</strong>
-                <small>Manage roles, workouts and account access.</small>
+                <strong>Team & access</strong>
+                <small>Account roles, invitations and training access.</small>
               </span>
               <ChevronRight size={18} />
             </a>

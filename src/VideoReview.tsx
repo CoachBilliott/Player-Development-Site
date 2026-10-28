@@ -1,3 +1,4 @@
+import { PrivateAccessMessage } from "./PrivateShell";
 import { ServiceDesk } from "./ServiceDesk";
 import { GroupedReviewPanel, GroupedCoachReviews } from "./GroupedReviews";
 import { ReviewServices, SERVICE_LABELS, reviewDate } from "./reviewServices";
@@ -642,16 +643,17 @@ export function AthleteVideoReview({
 export function CoachVideoReviews({ shared }: { shared: SharedState }) {
   if (!shared.signedIn || !shared.service || !isStaff(shared.role))
     return (
-      <main className="page narrow">
-        <h1>Coach access required.</h1>
-        <a className="button" href="#account">
-          Log in
-        </a>
-      </main>
+      <PrivateAccessMessage
+        signedIn={shared.signedIn}
+        title="Coach access required."
+      >
+        Only authorized staff can open private review queues. Your account level
+        determines the tools available.
+      </PrivateAccessMessage>
     );
   return (
     <CoachQueue
-      key={shared.session!.user.id}
+      key={`${shared.session!.user.id}:${shared.role}`}
       client={shared.service.client}
       tracking={shared.serviceTrackingEnabled}
       manager={shared.role === "owner" || shared.role === "manager"}
@@ -675,6 +677,7 @@ function CoachQueue({
 }) {
   const service = useMemo(() => new VideoReviews(client), [client]);
   const [rows, setRows] = useState<VideoReview[]>([]),
+    [loadedVersion, setLoadedVersion] = useState(-1),
     [error, setError] = useState(""),
     [busy, setBusy] = useState(false),
     [message, setMessage] = useState("");
@@ -687,7 +690,11 @@ function CoachQueue({
     void service
       .queue()
       .then((v) => {
-        if (active) setRows(v);
+        if (active) {
+          setRows(v);
+          setLoadedVersion(queueVersion);
+          setError("");
+        }
       })
       .catch((e: Error) => {
         if (active) setError(e.message);
@@ -735,14 +742,20 @@ function CoachQueue({
       </div>
       <button
         className="button secondary"
-        disabled={busy}
-        onClick={() => setQueueVersion((v) => v + 1)}
+        disabled={busy || (!error && loadedVersion !== queueVersion)}
+        onClick={() => {
+          setError("");
+          setQueueVersion((v) => v + 1);
+        }}
       >
         <RefreshCw size={17} /> Refresh reviews
       </button>
       {error && <p role="alert">{error}</p>}
       {message && <p role="status">{message}</p>}
-      {!rows.length && !error && (
+      {!error && loadedVersion !== queueVersion && (
+        <p role="status">Loading your assigned videos…</p>
+      )}
+      {!rows.length && !error && loadedVersion === queueVersion && (
         <section className="panel review-card">
           <h2>
             {tracking && manager

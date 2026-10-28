@@ -11,10 +11,14 @@ import {
   type AccessMember,
 } from "./roles";
 import type { SharedState } from "./useSharedContent";
-import { OwnerAccountInvitations } from "./AccountInvitations";
 
-export function AccountAccess({ shared }: { shared: SharedState }) {
-  const [open, setOpen] = useState(false);
+export function AccountAccess({
+  shared,
+  manage = false,
+}: {
+  shared: SharedState;
+  manage?: boolean;
+}) {
   const role = shared.role;
   return (
     <section
@@ -31,46 +35,39 @@ export function AccountAccess({ shared }: { shared: SharedState }) {
       <p>
         {role
           ? ROLE_DETAILS[role]
-          : "Choose Parent or Athlete below. Staff access is assigned by an Owner."}
+          : "Finish your adult profile setup. Staff access is assigned by an Owner."}
       </p>
-      {role === "owner" && (
-        <div className="access-level-grid">
-          {ROLES.map((level) => (
-            <div
-              key={level}
-              className={
-                role === level ? "access-level selected" : "access-level"
-              }
-            >
-              <strong>{ROLE_LABELS[level]}</strong>
-              <p>{ROLE_DETAILS[level]}</p>
-            </div>
-          ))}
-        </div>
+      {role === "owner" && manage && (
+        <details className="role-help">
+          <summary>What each account level can do</summary>
+          <div className="access-level-grid">
+            {ROLES.map((level) => (
+              <div
+                key={level}
+                className={
+                  role === level ? "access-level selected" : "access-level"
+                }
+              >
+                <strong>{ROLE_LABELS[level]}</strong>
+                <p>{ROLE_DETAILS[level]}</p>
+              </div>
+            ))}
+          </div>
+        </details>
       )}
       <p className="member-fineprint">
-        These levels control permissions. Membership packages and payments
-        remain separate and are not active. Private player details stay with the
-        profile owner.
+        {manage
+          ? "Account roles control permissions. They do not start a membership or unlock private family profiles."
+          : "Your account role is separate from membership access."}
       </p>
-      {role === "owner" && (
-        <button
-          className="button secondary"
-          onClick={() => setOpen(!open)}
-          aria-expanded={open}
-        >
+      {role === "owner" && !manage && (
+        <a className="text-button" href="#access">
           <LockKeyhole size={17} />
-          {open ? "Close access management" : "Manage account access"}
-        </button>
+          Manage team access
+        </a>
       )}
-      {role === "owner" && open && shared.service && shared.session && (
+      {role === "owner" && manage && shared.service && shared.session && (
         <AccessManager key={shared.session.user.id} shared={shared} />
-      )}
-      {role === "owner" && shared.accountLifecycleEnabled && (
-        <OwnerAccountInvitations
-          key={shared.session?.user.id}
-          shared={shared}
-        />
       )}
     </section>
   );
@@ -78,6 +75,7 @@ export function AccountAccess({ shared }: { shared: SharedState }) {
 function AccessManager({ shared }: { shared: SharedState }) {
   const client = shared.service!.client;
   const [rows, setRows] = useState<AccessMember[]>([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -92,10 +90,16 @@ function AccessManager({ shared }: { shared: SharedState }) {
     let stopped = false;
     void listAccess(client, "")
       .then((data) => {
-        if (!stopped) setRows(data);
+        if (!stopped) {
+          setRows(data);
+          setLoading(false);
+        }
       })
       .catch((e: Error) => {
-        if (!stopped) setError(e.message);
+        if (!stopped) {
+          setError(e.message);
+          setLoading(false);
+        }
       });
     return () => {
       stopped = true;
@@ -119,7 +123,7 @@ function AccessManager({ shared }: { shared: SharedState }) {
     }
   }
   return (
-    <div className="access-manager">
+    <div className="access-manager" aria-busy={loading || busy}>
       <h3>Account access</h3>
       <p>
         Only Owners can assign these levels. People must verify their email and
@@ -157,10 +161,13 @@ function AccessManager({ shared }: { shared: SharedState }) {
         </p>
       )}
       {message && <p role="status">{message}</p>}
-      {!rows.length && (
-        <p>
-          No matching accounts loaded. Search or retry to refresh the directory.
+      {(loading || busy) && (
+        <p role="status">
+          {loading ? "Loading accounts…" : "Updating account directory…"}
         </p>
+      )}
+      {!loading && !busy && !error && !rows.length && (
+        <p>No matching accounts. Try another email or search again.</p>
       )}
       <div className="access-directory">
         {rows.map((member) => {
@@ -228,8 +235,8 @@ function AccessManager({ shared }: { shared: SharedState }) {
         })}
       </div>
       <small>
-        Up to 50 matching accounts. Invitations and public enrollment remain
-        closed during this pilot.
+        Up to 50 matching accounts. Use Invite staff for a new approved adult
+        account. Public enrollment remains closed.
       </small>
       {pending && (
         <Modal

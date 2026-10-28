@@ -1,4 +1,4 @@
-import { type BrowserContext, type Page } from "@playwright/test";
+import { expect, type BrowserContext, type Page } from "@playwright/test";
 export type Row = {
   id: string;
   content: Record<string, unknown>;
@@ -42,6 +42,8 @@ export async function mockProject(
         enabled: true,
         url: "https://separate-demo.supabase.co",
         publishableKey: "sb_publishable_fixture_only",
+        membersEnabled: true,
+        membersSignupEnabled: false,
       },
     }),
   );
@@ -202,12 +204,14 @@ export async function mockProject(
   });
 }
 export async function sharedSignIn(page: import("@playwright/test").Page) {
-  await page.goto("./#coach");
-  await page.getByLabel("Coach email").fill("coach@example.test");
+  await page.goto("./#account");
+  await page.getByLabel("Account email").fill("coach@example.test");
   await page
     .getByLabel("Password", { exact: true })
     .fill("fictional-demo-password");
-  await page.getByRole("button", { name: "Sign in to publish" }).click();
+  await page.getByRole("button", { name: "Sign in securely" }).click();
+  await expect(page.getByLabel("Account email")).toHaveCount(0);
+  await page.goto("./#coach");
 }
 
 export async function openLocalStudio(page: Page) {

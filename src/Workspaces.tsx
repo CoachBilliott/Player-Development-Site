@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ArrowRight,
   BookOpen,
@@ -17,6 +17,9 @@ import { AccountAccess } from "./AccountAccess";
 import { ReleaseSchedulePreview } from "./ReleaseSchedulePreview";
 import { StaffServiceDashboard } from "./StaffServiceDashboard";
 import type { Drill } from "./model";
+import { OwnerAccountInvitations } from "./AccountInvitations";
+import { InterestInbox } from "./InterestInbox";
+import { PrivateAccessMessage } from "./PrivateShell";
 
 const descriptions = {
   owner:
@@ -65,24 +68,26 @@ function StaffDashboard({
   return (
     <main className={`page workspace-page workspace-${role}`}>
       <div className="workspace-hero">
-        <Tag>PRIVATE WORKSPACE · {ROLE_LABELS[role]}</Tag>
+        <Tag>{ROLE_LABELS[role]} · FOOTBALL</Tag>
         <h1 tabIndex={-1}>
-          {role === "owner"
-            ? "Your platform. Your playbook."
-            : role === "manager"
-              ? "Keep the team moving."
-              : "Build the next great practice."}
+          {shared.staffRosterEnabled
+            ? role === "coach"
+              ? "Your athletes."
+              : "Client service."
+            : role === "owner"
+              ? "Your platform. Your playbook."
+              : role === "manager"
+                ? "Keep the team moving."
+                : "Build the next great practice."}
         </h1>
         <p>{descriptions[role]}</p>
         <div className="actions">
           <a className="button" href={root}>
             Upload a workout <FileUp size={18} />
           </a>
-          {
-            <a className="button secondary" href="#account">
-              Account settings & sign-out
-            </a>
-          }
+          <a className="button secondary" href="#workout-builder">
+            Build a workout
+          </a>
         </div>
       </div>
       <StaffServiceDashboard
@@ -93,112 +98,116 @@ function StaffDashboard({
         enabled={shared.staffRosterEnabled}
         monitoring={shared.deliveryMonitoringEnabled}
         operationalEmails={shared.staffNotificationEmailsEnabled}
-        interestInbox={Boolean(shared.interestEndpoint)}
       />
-      <div className="workspace-metrics">
-        <div>
-          <strong>{pending ? "…" : resources.length}</strong>
-          <span>
-            {role === "coach"
-              ? "Your training resources"
-              : "Accessible training resources"}
-          </span>
+      <details className="workspace-content-tools">
+        <summary>Content tools & resources</summary>
+        <div className="workspace-metrics">
+          <div>
+            <strong>{pending ? "…" : resources.length}</strong>
+            <span>
+              {role === "coach"
+                ? "Your training resources"
+                : "Accessible training resources"}
+            </span>
+          </div>
+          <div>
+            <strong>
+              {pending
+                ? "…"
+                : resources.filter((d) => d.visibility === "member_only")
+                    .length}
+            </strong>
+            <span>Protected for staff review</span>
+          </div>
         </div>
-        <div>
-          <strong>
-            {pending
-              ? "…"
-              : resources.filter((d) => d.visibility === "member_only").length}
-          </strong>
-          <span>Protected for staff review</span>
-        </div>
-        <div>
-          <strong>Not active</strong>
-          <span>Subscriptions & payments</span>
-        </div>
-      </div>
-      <div className="workspace-actions">
-        <WorkspaceLink
-          href="#workout-builder"
-          title={
-            role === "owner" ? "Build & assign workouts" : "Build workouts"
-          }
-          icon="library"
-        >
-          Arrange protected drills into a complete ordered session, preview it
-          and save it for Owner assignment.
-        </WorkspaceLink>
-        <WorkspaceLink
-          href={root}
-          title={
-            role === "coach" ? "Your content studio" : "Upload & manage content"
-          }
-        >
-          Choose a file, add instructions and audience, then preview before
-          publishing.
-        </WorkspaceLink>
-        {role === "owner" ? (
+        <div className="workspace-actions">
           <WorkspaceLink
-            href="#access"
-            title="Staff & account access"
-            icon="access"
-          >
-            Assign the five account levels. Owners see the athlete nickname and
-            training audience needed to choose a plan; family controls stay
-            private.
-          </WorkspaceLink>
-        ) : (
-          <WorkspaceLink
-            href="#member-library"
+            href="#workout-builder"
             title={
-              role === "manager"
-                ? "Team content library"
-                : "Your content library"
+              role === "owner" ? "Build & assign workouts" : "Build workouts"
             }
             icon="library"
           >
-            {role === "manager"
-              ? "Review resources across the team."
-              : "Edit your own resources and keep instructions up to date."}
+            Arrange protected drills into a complete ordered session, preview it
+            and save it for Owner assignment.
           </WorkspaceLink>
-        )}
-        <WorkspaceLink
-          href="#video-reviews"
-          title="Athlete video reviews"
-          icon="library"
-        >
-          Watch private drill submissions and send coaching feedback for
-          accounts assigned to you.
-        </WorkspaceLink>
-        <WorkspaceLink href="#launch" title="Launch readiness" icon="library">
-          See what is still needed for packages, payments, reviewed training and
-          junior enrollment.
-        </WorkspaceLink>
-      </div>
-      <section className="panel workspace-section">
-        <h2>
-          {role === "coach" ? "Your publishing checklist" : "Content overview"}
-        </h2>
-        <p>
-          New uploads default to protected staff review. Choose Public demo
-          sample only for content you intend to share for free.
-        </p>
-        <ol className="workspace-checklist">
-          <li>
-            <Check size={18} /> Choose original or licensed sample media.
-          </li>
-          <li>
-            <Check size={18} /> Match age, position, experience and skill.
-          </li>
-          <li>
-            <Check size={18} /> Check visibility and preview before publishing.
-          </li>
-        </ol>
-        <p className="member-fineprint">
-          No revenue figures, member totals or coaching outcomes are invented.
-          Counts above come from the resources this view can access.
-        </p>
-      </section>
+          <WorkspaceLink
+            href={root}
+            title={
+              role === "coach"
+                ? "Your content studio"
+                : "Upload & manage content"
+            }
+          >
+            Choose a file, add instructions and audience, then preview before
+            publishing.
+          </WorkspaceLink>
+          {role === "owner" ? (
+            <WorkspaceLink
+              href="#access"
+              title="Team & account access"
+              icon="access"
+            >
+              Assign the five account levels. Owners see the athlete nickname
+              and training audience needed to choose a plan; family controls
+              stay private.
+            </WorkspaceLink>
+          ) : (
+            <WorkspaceLink
+              href="#member-library"
+              title={
+                role === "manager"
+                  ? "Team content library"
+                  : "Your content library"
+              }
+              icon="library"
+            >
+              {role === "manager"
+                ? "Review resources across the team."
+                : "Edit your own resources and keep instructions up to date."}
+            </WorkspaceLink>
+          )}
+          <WorkspaceLink
+            href="#video-reviews"
+            title="Athlete video reviews"
+            icon="library"
+          >
+            Watch private drill submissions and send coaching feedback for
+            accounts assigned to you.
+          </WorkspaceLink>
+          <WorkspaceLink href="#launch" title="Launch readiness" icon="library">
+            See what is still needed for packages, payments, reviewed training
+            and junior enrollment.
+          </WorkspaceLink>
+        </div>
+        <section className="panel workspace-section">
+          <h2>
+            {role === "coach"
+              ? "Your publishing checklist"
+              : "Content overview"}
+          </h2>
+          <p>
+            New uploads default to protected staff review. Choose Public demo
+            sample only for content you intend to share for free.
+          </p>
+          <ol className="workspace-checklist">
+            <li>
+              <Check size={18} /> Choose original or licensed sample media.
+            </li>
+            <li>
+              <Check size={18} /> Match age, position, experience and skill.
+            </li>
+            <li>
+              <Check size={18} /> Check visibility and preview before
+              publishing.
+            </li>
+          </ol>
+          <p className="member-fineprint">
+            No revenue figures, member totals or coaching outcomes are invented.
+            Counts above come from the resources this view can access.
+          </p>
+        </section>
+      </details>
     </main>
   );
 }
@@ -249,21 +258,108 @@ export function Workspace({ shared }: { shared: SharedState }) {
   return <MemberAccountPage shared={shared} workspace />;
 }
 export function AccessWorkspace({ shared }: { shared: SharedState }) {
+  const readSection = () => {
+    const value = new URLSearchParams(location.search).get("accessSection");
+    return value === "invites" || value === "training" ? value : "roles";
+  };
+  const [section, setSection] = useState(readSection);
+  useEffect(() => {
+    const back = () => setSection(readSection());
+    window.addEventListener("popstate", back);
+    return () => window.removeEventListener("popstate", back);
+  }, []);
+  const selected =
+    section === "invites" && !shared.accountLifecycleEnabled
+      ? "roles"
+      : section;
   if (shared.role !== "owner")
-    return <Gate title="Owner access is required." />;
+    return (
+      <PrivateAccessMessage
+        signedIn={shared.signedIn}
+        title="Owner access is required."
+      >
+        Account roles and training entitlements are managed by an Owner. Athlete
+        coach assignments are available to Owners and Managers in Client
+        service.
+      </PrivateAccessMessage>
+    );
   return (
     <main className="page workspace-page">
       <div className="workspace-hero">
-        <Tag>PRIVATE · OWNER</Tag>
-        <h1 tabIndex={-1}>The right access. For every role.</h1>
+        <Tag>OWNER ADMINISTRATION</Tag>
+        <h1 tabIndex={-1}>Team & access.</h1>
         <p>
-          Assign levels to verified existing adult accounts. Staff access does
-          not unlock private family profiles.
+          Manage account roles, invitations and training access in separate
+          steps. Your personal sign-in settings stay in Account.
         </p>
       </div>
-      <AccountAccess shared={shared} />
-      {shared.service && (
+      <div
+        className="workspace-tabs"
+        role="group"
+        aria-label="Team access sections"
+      >
+        {[
+          ["roles", "Accounts & roles"],
+          ...(shared.accountLifecycleEnabled
+            ? [["invites", "Invite staff"]]
+            : []),
+          ["training", "Training access"],
+        ].map(([id, label]) => (
+          <button
+            key={id}
+            aria-pressed={selected === id}
+            onClick={() => {
+              setSection(id as typeof section);
+              const u = new URL(location.href);
+              u.searchParams.set("accessSection", id);
+              history.pushState({ repformedAccessSection: id }, "", u);
+            }}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+      {selected === "roles" && <AccountAccess shared={shared} manage />}
+      {selected === "invites" && shared.accountLifecycleEnabled && (
+        <OwnerAccountInvitations
+          key={shared.session?.user.id}
+          shared={shared}
+        />
+      )}
+      {selected === "training" && shared.service && (
         <TrainingAccess key={shared.session?.user.id} shared={shared} />
+      )}
+    </main>
+  );
+}
+export function InterestWorkspace({ shared }: { shared: SharedState }) {
+  if (!shared.signedIn || !shared.accessReady || shared.accessError)
+    return <MemberAccountPage shared={shared} />;
+  if (shared.role !== "owner" && shared.role !== "manager")
+    return (
+      <PrivateAccessMessage signedIn title="Staff interest inbox.">
+        Only Owners and Managers can view adult interest requests. Your own
+        dashboard remains available.
+      </PrivateAccessMessage>
+    );
+  return (
+    <main className="page workspace-page">
+      <div className="workspace-hero">
+        <Tag>OWNER & MANAGER WORKSPACE</Tag>
+        <h1 tabIndex={-1}>Package interest.</h1>
+        <p>
+          Review adult requests and their launch-email preference. Interest is
+          separate from enrollment and payment.
+        </p>
+      </div>
+      {shared.interestEndpoint && shared.service && shared.session ? (
+        <InterestInbox
+          key={shared.session.user.id}
+          client={shared.service.client}
+          actor={shared.session.user.id}
+        />
+      ) : (
+        <Notice>The interest inbox is not enabled for this connection.</Notice>
       )}
     </main>
   );

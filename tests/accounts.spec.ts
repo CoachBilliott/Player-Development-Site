@@ -488,7 +488,8 @@ async function signIn(
   email = "fictional-parent@example.test",
 ) {
   await page.goto("./#account");
-  await page.getByRole("button", { name: "Sign in", exact: true }).click();
+  const signInMode = page.getByRole("button", { name: "Sign in", exact: true });
+  if (await signInMode.isVisible()) await signInMode.click();
   await page.getByLabel(/^(Adult|Account) email$/).fill(email);
   await page
     .getByLabel("Password", { exact: true })
@@ -497,11 +498,18 @@ async function signIn(
   // Full-page navigation must wait for Auth to persist the successful session.
   // Otherwise the following goto can cancel the token request on slower workers.
   await expect(page.getByLabel(/^(Adult|Account) email$/)).toHaveCount(0);
+  // This suite exercises profile administration; login itself lands in training.
+  await page.goto("./#profiles");
+}
+async function signOut(page: import("@playwright/test").Page) {
+  await page.goto("./#account");
+  await page.getByRole("button", { name: "Sign out of this browser" }).click();
 }
 async function setup(
   page: import("@playwright/test").Page,
   kind: "parent" | "adult" = "parent",
 ) {
+  await page.goto("./#profiles");
   await page.getByLabel("Account type").selectOption(kind);
   await page.getByRole("checkbox").nth(0).check();
   await page.getByRole("checkbox").nth(1).check();
@@ -615,7 +623,7 @@ test("parent profiles support private create, edit, cancel, repeated clicks, ref
   await expect(
     otherTab.getByRole("button", { name: "Sign out of this browser" }),
   ).toBeVisible();
-  await page.getByRole("button", { name: "Sign out of this browser" }).click();
+  await signOut(page);
   await expect(
     page.getByRole("button", { name: "Sign in securely" }),
   ).toBeVisible();
@@ -645,7 +653,9 @@ test("signup verifies email, recovery updates a password and adult accounts cann
   // The real SDK created a PKCE verifier. Intercept only the service response,
   // then exercise the actual callback exchange and URL cleanup.
   await page.goto("./?code=fictional-verification-code");
-  await expect(page.getByLabel("Account type")).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Account settings.", exact: true }),
+  ).toBeVisible();
   await expect(page).not.toHaveURL(/code=/);
   await setup(page, "adult");
   await page.getByRole("button", { name: "Add your first player" }).click();
@@ -653,7 +663,7 @@ test("signup verifies email, recovery updates a password and adult accounts cann
     page.getByLabel("Age group", { exact: true }).locator("option"),
   ).toHaveText(["18+"]);
   await page.getByRole("button", { name: "Cancel changes" }).click();
-  await page.getByRole("button", { name: "Sign out of this browser" }).click();
+  await signOut(page);
   await page.getByRole("button", { name: "Forgot password?" }).click();
   await page
     .getByLabel(/^(Adult|Account) email$/)
@@ -690,13 +700,13 @@ test("failed saves preserve drafts; signout and switching accounts expose no pre
   await expect(
     page.getByRole("heading", { name: "Fictional Private", exact: true }),
   ).toBeVisible();
-  await page.getByRole("button", { name: "Sign out of this browser" }).click();
+  await signOut(page);
   await signIn(page, "fictional-adult@example.test");
   await setup(page, "adult");
   await expect(
     page.getByRole("heading", { name: "Fictional Private", exact: true }),
   ).toHaveCount(0);
-  await page.getByRole("button", { name: "Sign out of this browser" }).click();
+  await signOut(page);
   await signIn(page);
   await expect(
     page.getByRole("heading", { name: "Fictional Private", exact: true }),
@@ -832,15 +842,17 @@ test("private pilot accepts a verified email session, removes URL credentials an
     .getByLabel("New password", { exact: true })
     .fill("Fictional-owner8!");
   await page.getByRole("button", { name: "Save new password" }).click();
-  await expect(page.getByLabel("Account type")).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Account settings.", exact: true }),
+  ).toBeVisible();
   expect(backend.counts.password).toBe(1);
   await setup(page, "adult");
-  await page.getByRole("button", { name: "Sign out of this browser" }).click();
+  await signOut(page);
   await expect(
     page.getByRole("button", { name: "Create account", exact: true }),
   ).toHaveCount(0);
   await expect(
-    page.getByText("Private account pilot.", { exact: false }),
+    page.getByText("Invited accounts only.", { exact: false }),
   ).toBeVisible();
   await page.reload();
   await expect(
@@ -863,9 +875,7 @@ test("Owner manages five levels with protected self access, confirmation, cancel
   await expect(
     page.getByRole("heading", { name: "Owner", exact: true }),
   ).toBeVisible();
-  await page
-    .getByRole("button", { name: "Manage account access", exact: true })
-    .click();
+  await page.goto("./#access");
   await expect(
     page.getByLabel("Account level for fictional-parent@example.test", {
       exact: true,
@@ -898,9 +908,6 @@ test("Owner manages five levels with protected self access, confirmation, cancel
   expect(backend.counts.roleWrites).toBe(1);
   await expect(target).toHaveValue("manager");
   await page.reload();
-  await page
-    .getByRole("button", { name: "Manage account access", exact: true })
-    .click();
   await expect(target).toHaveValue("manager");
   await page.getByLabel("Find an account by email").fill("fictional-adult");
   await page.getByRole("button", { name: "Search accounts" }).click();
@@ -928,6 +935,7 @@ for (const role of ["manager", "coach", "parent", "athlete"] as const) {
     const backend = fixture(false, false, role);
     await backend.install(context);
     await signIn(page);
+    await page.goto("./#account");
     await expect(
       page.getByRole("heading", {
         name: role[0].toUpperCase() + role.slice(1),
@@ -970,6 +978,17 @@ test("a private family athlete joins with a parent code, reports practice withou
     .getByRole("button", { name: "Refresh profiles", exact: true })
     .click();
   const openParentWorkspace = async () => {
+    const detail = page.getByRole("region", {
+      name: "Athlete training and permissions",
+    });
+    const choose = page
+      .locator("article.private-player")
+      .filter({
+        has: page.getByRole("heading", { name: "Fictional Pat", exact: true }),
+      })
+      .getByRole("button", { name: "Workouts & permissions", exact: true });
+    await expect(detail.or(choose)).toBeVisible();
+    if (await detail.isVisible()) return;
     await page
       .locator("article.private-player")
       .filter({
@@ -988,7 +1007,7 @@ test("a private family athlete joins with a parent code, reports practice withou
     .click();
   const code = await page.getByLabel("One-time access code").inputValue();
   await page.getByRole("button", { name: "Close access code" }).click();
-  await page.getByRole("button", { name: "Sign out of this browser" }).click();
+  await signOut(page);
   await signIn(page, "fictional-adult@example.test");
   await page.getByLabel("Parent’s private athlete access code").fill(code);
   await page
@@ -997,10 +1016,11 @@ test("a private family athlete joins with a parent code, reports practice withou
   await page.goto("./#workspace");
   await expect(
     page.getByRole("heading", {
-      name: "Ready for your next practice?",
+      name: "Today’s training.",
       exact: true,
     }),
   ).toBeVisible();
+  await page.goto("./#profiles");
   await expect(
     page.getByRole("heading", { name: "Fictional Pat’s workouts" }),
   ).toBeVisible();
@@ -1035,7 +1055,7 @@ test("a private family athlete joins with a parent code, reports practice withou
   expect(
     await page.evaluate(() => JSON.stringify({ ...localStorage })),
   ).not.toContain("Fictional Pat");
-  await page.getByRole("button", { name: "Sign out of this browser" }).click();
+  await signOut(page);
   await signIn(page);
   await openParentWorkspace();
   await page
@@ -1059,7 +1079,7 @@ test("a private family athlete joins with a parent code, reports practice withou
   await page
     .getByRole("button", { name: "Remove athlete connection", exact: true })
     .click();
-  await page.getByRole("button", { name: "Sign out of this browser" }).click();
+  await signOut(page);
   await signIn(page, "fictional-adult@example.test");
   await expect(
     page.getByRole("heading", { name: "Your parent manages athlete access." }),
@@ -1100,7 +1120,7 @@ for (const [role, heading] of [
     await page.goto("./#access");
     if (role === "owner")
       await expect(
-        page.getByRole("button", { name: "Manage account access" }),
+        page.getByRole("group", { name: "Team access sections" }),
       ).toBeVisible();
     else
       await expect(
@@ -1146,7 +1166,7 @@ test("Parent and adult Athlete workspaces use private profiles; inactive members
   await page.goto("./#workspace");
   await expect(
     page.getByRole("heading", {
-      name: "Your family. Their next step.",
+      name: "Today’s training.",
       exact: true,
     }),
   ).toBeVisible();
@@ -1155,28 +1175,18 @@ test("Parent and adult Athlete workspaces use private profiles; inactive members
   );
   await page.goto("./#member-library");
   await expect(
-    page.getByRole("heading", { name: "Continue in your private workspace." }),
+    page.getByRole("heading", { name: "Your workouts.", exact: true }),
   ).toBeVisible();
-  await expect(
-    page.getByRole("link", { name: "Open My family", exact: true }),
-  ).toHaveAttribute("href", "#workspace");
-  await expect(
-    page.getByText("Packages and payments are not active.", { exact: false }),
-  ).toBeVisible();
-  await page.getByRole("link", { name: "Open My family", exact: true }).click();
-  await expect(
-    page.getByRole("heading", {
-      name: "Your family. Their next step.",
-      exact: true,
-    }),
-  ).toBeVisible();
+  await expect(page.getByText("Fictional Solo", { exact: true })).toHaveCount(
+    0,
+  );
   await page.goto("./#account");
-  await page.getByRole("button", { name: "Sign out of this browser" }).click();
+  await signOut(page);
   await signIn(page, "fictional-adult@example.test");
-  await page.goto("./#workspace");
+  await page.goto("./#app-workouts");
   await expect(
     page.getByRole("heading", {
-      name: "Your training. Your next step.",
+      name: "Your workouts.",
       exact: true,
     }),
   ).toBeVisible();
@@ -1190,9 +1200,6 @@ test("Parent and adult Athlete workspaces use private profiles; inactive members
     page.getByRole("button", { name: "Start workout", exact: true }),
   ).toBeVisible();
   await page.goto("./#member-library");
-  await page
-    .getByRole("link", { name: "Open My training", exact: true })
-    .click();
   await expect(
     page.getByRole("heading", {
       name: "Fictional Solo’s workouts",
@@ -1408,10 +1415,13 @@ test("member app separates Today, Workouts, Progress and Account and keeps famil
   await nav.getByRole("link", { name: "Account", exact: true }).click();
   await expect(
     page.getByRole("heading", {
-      name: "Your account. Your players.",
+      name: "Account settings.",
       exact: true,
     }),
   ).toBeVisible();
+  await page
+    .getByRole("link", { name: /Manage athletes & permissions/ })
+    .click();
   await expect(
     page.getByRole("button", { name: "Workouts & permissions" }).first(),
   ).toBeVisible();
@@ -1637,7 +1647,7 @@ for (const role of ["owner", "manager", "coach"] as const) {
     await signIn(page);
     await expect(
       page.getByRole("heading", {
-        name: `Your ${role[0].toUpperCase() + role.slice(1)} account.`,
+        name: "Account settings.",
         exact: true,
       }),
     ).toBeVisible();
@@ -1648,7 +1658,9 @@ for (const role of ["owner", "manager", "coach"] as const) {
       page.getByRole("button", { name: "Finish account setup", exact: true }),
     ).toHaveCount(0);
     await expect(
-      page.getByRole("link", { name: "Upload & manage content", exact: true }),
+      page
+        .getByRole("navigation", { name: "Workspace navigation" })
+        .getByRole("link", { name: "Content", exact: true }),
     ).toBeVisible();
     await page.goto("./?source=app#workspace");
     const nav = page.getByRole("navigation", { name: "App navigation" });
@@ -1658,7 +1670,7 @@ for (const role of ["owner", "manager", "coach"] as const) {
     await nav.getByRole("link", { name: "Account", exact: true }).click();
     await expect(
       page.getByRole("heading", {
-        name: `Your ${role[0].toUpperCase() + role.slice(1)} account.`,
+        name: "Account settings.",
         exact: true,
       }),
     ).toBeVisible();
@@ -1727,7 +1739,7 @@ test("Owner password setup finishes on the staff account without creating a Pare
     .getByRole("button", { name: "Save new password", exact: true })
     .click();
   await expect(
-    page.getByRole("heading", { name: "Your Owner account.", exact: true }),
+    page.getByRole("heading", { name: "Account settings.", exact: true }),
   ).toBeVisible();
   await expect(page.getByLabel("Account type", { exact: true })).toHaveCount(0);
   expect(backend.accounts.size).toBe(0);
@@ -1741,7 +1753,7 @@ test("Owner password setup finishes on the staff account without creating a Pare
     .getByRole("button", { name: "Cancel password change", exact: true })
     .click();
   await expect(
-    page.getByRole("heading", { name: "Your Owner account.", exact: true }),
+    page.getByRole("heading", { name: "Account settings.", exact: true }),
   ).toBeVisible();
 });
 
@@ -1775,7 +1787,7 @@ test("failed role checks never fall back to customer setup and can be retried", 
     .getByRole("button", { name: "Retry account access", exact: true })
     .dblclick();
   await expect(
-    page.getByRole("heading", { name: "Your Owner account.", exact: true }),
+    page.getByRole("heading", { name: "Account settings.", exact: true }),
   ).toBeVisible();
   expect(backend.accounts.size).toBe(0);
 });

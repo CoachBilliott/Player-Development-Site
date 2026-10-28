@@ -105,7 +105,7 @@ test("configured shared publishing saves, edits across visitors, and removes a s
   ).toHaveCount(0);
   await page.getByRole("button", { name: "Sign out", exact: true }).click();
   await expect(
-    page.getByRole("heading", { name: "Coach sign-in" }),
+    page.getByRole("heading", { name: "Log in to open the content studio." }),
   ).toBeVisible();
   await visitor.close();
 });
@@ -116,9 +116,10 @@ test("signed-in accounts without coach membership never receive publishing contr
 }) => {
   await mockProject(context, new Map(), false);
   await sharedSignIn(page);
-  await expect(page.getByRole("alert")).toContainText(
-    "not approved to publish",
-  );
+  await expect(
+    page.getByRole("heading", { name: "Staff content access required." }),
+  ).toBeVisible();
+  await expect(page.getByLabel("Password", { exact: true })).toHaveCount(0);
   await expect(
     page.getByRole("button", { name: /Save shared draft/ }),
   ).toHaveCount(0);
@@ -135,7 +136,10 @@ test("staff publishing requires sign-in and allows authorized staff to cancel lo
   await mockProject(context, rows);
   await page.goto("./#coach");
   await expect(
-    page.getByRole("heading", { name: "Coach sign-in", exact: true }),
+    page.getByRole("heading", {
+      name: "Log in to open the content studio.",
+      exact: true,
+    }),
   ).toBeVisible();
   await expect(
     page.getByLabel("Choose a video or file", { exact: true }),

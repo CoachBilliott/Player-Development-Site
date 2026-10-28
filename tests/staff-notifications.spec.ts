@@ -12,7 +12,11 @@ import {
 import { fixture, state, uid, staffId } from "./workoutFixture";
 import type { StaffMailState } from "../src/staffNotifications";
 
-async function alerts(context: BrowserContext, role = "owner") {
+async function alerts(
+  context: BrowserContext,
+  role = "owner",
+  rosterEnabled = true,
+) {
   const roster = staffState();
   if (role === "parent") await fixture(context, state(), role);
   else
@@ -30,7 +34,7 @@ async function alerts(context: BrowserContext, role = "owner") {
         publishableKey: "sb_publishable_fixture_only",
         membersEnabled: true,
         membersSignupEnabled: false,
-        staffRosterEnabled: true,
+        staffRosterEnabled: rosterEnabled,
         staffNotificationEmailsEnabled: true,
         interestIntakeEnabled: true,
       },
@@ -82,9 +86,12 @@ async function alerts(context: BrowserContext, role = "owner") {
   };
   const calls = {
     reads: 0,
+    interestReads: 0,
     preferences: 0,
     provider: 0,
     readFailure: false,
+    interestFailure: false,
+    interestDelay: 0,
     writeFailure: false,
   };
   await context.route("https://api.resend.com/**", (r) => {
@@ -117,10 +124,21 @@ async function alerts(context: BrowserContext, role = "owner") {
         },
       });
     }
-    if (name === "interest_staff_inbox")
+    if (name === "interest_staff_inbox") {
+      calls.interestReads++;
+      if (calls.interestDelay)
+        await new Promise((resolve) =>
+          setTimeout(resolve, calls.interestDelay),
+        );
+      if (calls.interestFailure)
+        return r.fulfill({
+          status: 503,
+          json: { message: "Fictional inbox unavailable" },
+        });
       return r.fulfill({
         json: role === "owner" || role === "manager" ? interestRows : [],
       });
+    }
     if (name === "set_staff_notification_opt_out") {
       calls.preferences++;
       return r.fulfill({
@@ -174,6 +192,54 @@ test("Owner status separates provider acceptance, uncertain outcomes and disable
   });
 });
 
+test("interest inbox works without roster rollout and separates loading, empty and retryable error", async ({
+  page,
+  context,
+}) => {
+  const data = await alerts(context, "owner", false);
+  data.interestRows.splice(0);
+  data.calls.interestDelay = 250;
+  await page.goto("./#interest");
+  const inbox = page.getByRole("region", {
+    name: "Private package interest inbox",
+  });
+  await expect(inbox.getByRole("status")).toHaveText(
+    "Loading interest requests…",
+  );
+  await expect(inbox.getByText("No interest requests recorded.")).toHaveCount(
+    0,
+  );
+  await expect(inbox).toContainText("No interest requests recorded.");
+  data.calls.interestFailure = true;
+  await inbox
+    .getByRole("button", { name: "Refresh interest requests" })
+    .click();
+  await expect(inbox.getByRole("alert")).toContainText("could not be loaded");
+  await expect(inbox.getByText("No interest requests recorded.")).toHaveCount(
+    0,
+  );
+  data.calls.interestFailure = false;
+  await inbox
+    .getByRole("button", { name: "Refresh interest requests" })
+    .click();
+  await expect(inbox).toContainText("No interest requests recorded.");
+  expect(data.calls.provider).toBe(0);
+});
+test("Coach direct interest URL is denied before a private inbox read", async ({
+  page,
+  context,
+}) => {
+  const data = await alerts(context, "coach");
+  await page.goto("./#interest");
+  await expect(
+    page.getByRole("heading", { name: "Staff interest inbox." }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("region", { name: "Private package interest inbox" }),
+  ).toHaveCount(0);
+  expect(data.calls.interestReads).toBe(0);
+});
+
 test("Manager sees the shared inbox status and private interest without recipient-edit controls", async ({
   page,
   context,
@@ -191,6 +257,7 @@ test("Manager sees the shared inbox status and private interest without recipien
   const inbox = page.getByRole("region", {
     name: "Private package interest inbox",
   });
+  await page.goto("./?source=app#interest");
   await expect(inbox).toContainText("fictional-adult@example.test");
   await expect(inbox).toContainText("Waiting for safe retry");
   await page.reload();
@@ -226,7 +293,7 @@ test("private interest distinguishes unrecorded, unchecked and earlier affirmati
   context,
 }) => {
   const data = await alerts(context);
-  await page.goto("./?source=app#workspace");
+  await page.goto("./?source=app#interest");
   const inbox = page.getByRole("region", {
     name: "Private package interest inbox",
   });
