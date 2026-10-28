@@ -62,7 +62,11 @@ export function MobileHeader({
       <Logo href={signedIn ? "#workspace" : "#app"} />
       <div className="app-header-tools">
         <span className="app-build-label">
-          {demo ? "SAMPLE DEMO" : "PRIVATE PILOT"}
+          {demo
+            ? "SAMPLE DEMO"
+            : signedIn
+              ? "PRIVATE ACCOUNT"
+              : "ACCOUNT ACCESS"}
         </span>
         <a href="#app-help" className="app-help-shortcut" aria-label="App help">
           <CircleHelp size={21} />
@@ -158,8 +162,8 @@ export function MobileWelcome({ signedIn }: { signedIn: boolean }) {
           </p>
         </div>
         <p className="app-pilot-note">
-          Invite-only adult pilot. Real junior enrollment and payments are not
-          open. Training activities await qualified review.
+          Account access is by invitation. Youth enrollment and paid memberships
+          are not open. Training activities await qualified review.
         </p>
       </section>
     </main>
@@ -169,7 +173,7 @@ export function MobileHelp({ app }: { app: PwaState }) {
   return (
     <main className="page app-help">
       <div className="page-intro">
-        <Tag>REPFORMED · TEST BUILD 0.1.0</Tag>
+        <Tag>REPFORMED · APP HELP</Tag>
         <h1 tabIndex={-1}>Your app, explained.</h1>
         <p>
           {nativeApp()
@@ -187,9 +191,9 @@ export function MobileHelp({ app }: { app: PwaState }) {
           their authorized content tools.
         </p>
         <p>
-          The website explains programs, future packages and how to join. Both
-          use the same private account service. The public demo stays on the
-          website.
+          The website explains planned programs, packages and how to express
+          interest. Both use the same private account service. The public demo
+          stays on the website.
         </p>
         <WebsiteLink path="#membership">
           View website membership information
@@ -208,7 +212,7 @@ export function MobileHelp({ app }: { app: PwaState }) {
         </p>
         <p>
           {nativeApp()
-            ? "Sign-in sessions use the iOS Keychain. Private player profiles and media are not saved in the demo cache."
+            ? "Sign-in sessions use the iOS Keychain. Private player profiles and media are not saved in the public offline cache."
             : "Private profiles stay separate from fictional demo data. Installing does not create an account or start a subscription."}
         </p>
         <a href="#account" className="button secondary">
@@ -254,21 +258,24 @@ export function MobileHelp({ app }: { app: PwaState }) {
           Open account setup & deletion help <ArrowRight size={17} />
         </WebsiteLink>
       </section>
-      <section className="panel">
-        <h2>Try the complete phone test.</h2>
-        <p>
-          Follow one original adult clip from upload and staff approval through
-          workout assignment, saved practice and optional review on both
-          iPhones.
-        </p>
-        <WebsiteLink path="phone-test.html">
-          Open the two-phone test guide <ArrowRight size={17} />
-        </WebsiteLink>
-        <WebsiteLink path="phone-test.pdf">Open printable PDF</WebsiteLink>
-      </section>
+      {nativeApp() && (
+        <details className="panel">
+          <summary>TestFlight testing resources</summary>
+          <p>
+            Use the adult acceptance guide when testing an invited account. Keep
+            real child information out of testing.
+          </p>
+          <WebsiteLink path="phone-test.html">
+            Open the two-phone test guide <ArrowRight size={17} />
+          </WebsiteLink>
+          <WebsiteLink path="phone-test.pdf">Open printable PDF</WebsiteLink>
+        </details>
+      )}
       <section className="panel">
         <h2>
-          {nativeApp() ? "About this iOS test build" : "Installation & updates"}
+          {nativeApp()
+            ? "About this TestFlight build"
+            : "Installation & updates"}
         </h2>
         {nativeApp() ? (
           <p>

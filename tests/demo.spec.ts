@@ -58,36 +58,27 @@ test("homepage is responsive and sample demo is obvious", async ({
   ).toBeVisible();
   await expect(page.locator(".hero .button")).toBeInViewport();
   await expect(page.locator(".hero .sport-tag")).toHaveText(
-    "FOOTBALL · IN DEVELOPMENT",
+    "FOOTBALL · PLAYER DEVELOPMENT",
   );
   await expect(page.locator(".hero .stadium-surface")).toHaveCount(0);
-  const football = page.getByRole("article", {
-    name: "American football program",
+  const approach = page.getByRole("region", {
+    name: /Understanding first\.\s*Purpose in every rep\./,
   });
+  await expect(approach).toContainText(
+    "Repformed is building an online football learning and training platform",
+  );
+  await expect(approach).toContainText(
+    "Additional sports will be announced as programs develop",
+  );
   await expect(
-    football.getByText("DEMO AVAILABLE", { exact: true }),
-  ).toBeVisible();
-  await expect(
-    football.getByRole("link", { name: "Try the football demo", exact: true }),
-  ).toHaveAttribute("href", "#demo");
-  const upcoming = page.getByRole("article", {
-    name: "Future sports",
-    exact: true,
-  });
-  await expect(
-    upcoming.getByText("COMING LATER", { exact: true }),
-  ).toBeVisible();
-  await expect(
-    upcoming.getByRole("heading", { name: "More sports ahead." }),
-  ).toBeVisible();
-  await expect(upcoming.getByRole("link")).toHaveCount(0);
-  await expect(upcoming.getByRole("button")).toHaveCount(0);
+    page.getByRole("article", { name: "Future sports", exact: true }),
+  ).toHaveCount(0);
   await expect(page.getByText(/\bbasketball\b|\bsoccer\b/i)).toHaveCount(0);
   await page.getByRole("button", { name: "See how it works" }).click();
   await expect(
     page.getByRole("heading", { name: "A week with a clear next step." }),
   ).toBeInViewport();
-  const images = page.locator(".path-card > img, .football-program-image");
+  const images = page.locator(".path-card > img, .home-about > img");
   await expect(images).toHaveCount(3);
   for (const image of await images.all()) {
     await image.scrollIntoViewIfNeeded();
@@ -102,8 +93,8 @@ test("homepage is responsive and sample demo is obvious", async ({
   expect(
     photoSources.every((src) => !/training-poster|practice-detail/.test(src)),
   ).toBe(true);
-  for (const link of await page.locator('.home a[href="#demo"]').all())
-    await expect(link).toHaveAttribute("href", "#demo");
+  await expect(page.locator('.home a[href="#demo"]')).toHaveCount(0);
+  await expect(page.locator('footer a[href="#demo"]')).toHaveCount(1);
   const accessibility = await new AxeBuilder({ page })
     .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
     .analyze();
@@ -111,8 +102,8 @@ test("homepage is responsive and sample demo is obvious", async ({
   await page.evaluate(() => window.scrollTo(0, 0));
   await expect(
     page
-      .getByRole("main")
-      .getByRole("link", { name: "Try the demo", exact: true }),
+      .locator("footer")
+      .getByRole("link", { name: "Fictional preview", exact: true }),
   ).toBeVisible();
   await expect(page.locator("body")).toHaveJSProperty(
     "scrollWidth",
@@ -491,9 +482,7 @@ test("corrupted data falls back safely and future memberships have no checkout",
   );
   await page.goto("./#membership");
   await expect(page.getByText("Not available to purchase")).toHaveCount(4);
-  await expect(page.getByText("PROPOSED PACKAGE", { exact: true })).toHaveCount(
-    4,
-  );
+  await expect(page.getByText("PACKAGE PLAN", { exact: true })).toHaveCount(4);
   await expect(
     page.getByRole("button", { name: /buy|pay|checkout/i }),
   ).toHaveCount(0);

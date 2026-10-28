@@ -32,9 +32,7 @@ test("the public website has one customer demo entry, with parent and solo journ
     page.getByRole("heading", { name: /Know the game/ }),
   ).toBeVisible();
   const header = page.getByRole("banner");
-  await expect(
-    header.getByRole("link", { name: "Try the demo", exact: true }),
-  ).toHaveCount(0);
+  await expect(header.locator('a[href="#demo"]')).toHaveCount(0);
   await expect(
     header.getByRole("link", { name: "Log in", exact: true }),
   ).toBeVisible();
@@ -45,7 +43,11 @@ test("the public website has one customer demo entry, with parent and solo journ
     .getByRole("link", { name: "REPFORMED ATHLETE DEVELOPMENT", exact: true })
     .click();
   await expect(page).toHaveURL(/#home$/);
-  const buttons = page.getByRole("link", { name: "Try the demo", exact: true });
+  const buttons = page.getByRole("link", {
+    name: "Fictional preview",
+    exact: true,
+  });
+  await expect(buttons).toHaveCount(1);
   for (let i = 0; i < (await buttons.count()); i++)
     await expect(buttons.nth(i)).toHaveAttribute("href", "#demo");
   await expect(
@@ -63,8 +65,8 @@ test("the public website has one customer demo entry, with parent and solo journ
     fullPage: true,
   });
   await page
-    .getByRole("main")
-    .getByRole("link", { name: "Try the demo", exact: true })
+    .locator("footer")
+    .getByRole("link", { name: "Fictional preview", exact: true })
     .click();
   await expect(page).toHaveURL(/#demo$/);
   await expect(

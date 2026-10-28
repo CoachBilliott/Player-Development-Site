@@ -36,10 +36,10 @@ test("home connects the four shared package stages to learning, practice and par
     "Written feedback · up to three minutes of footage per review",
   );
   await expect(page.locator(".practice-intro")).toContainText(
-    "Drill packages propose Sunday loading",
+    "Drill-package plans use Sunday loading",
   );
   await expect(page.locator(".athlete-paths")).toContainText(
-    "parent dashboard brings lessons, practice history and athlete permissions together",
+    "parent-managed approach connects lessons, practice history and athlete permissions",
   );
   await expect(
     page.getByRole("button", { name: /buy|checkout|enroll|subscribe/i }),
@@ -55,13 +55,14 @@ test("hero compares proposals while express interest opens and focuses the exist
   await page.goto("./#home");
   const primary = page
     .locator(".hero")
-    .getByRole("link", { name: "See proposed packages" });
+    .getByRole("link", { name: "Explore packages" });
   await expect(primary).toBeInViewport();
   await primary.click();
   await expect(page).toHaveURL(/#membership$/);
   await expect(page.getByRole("article")).toHaveCount(4);
   await page.goto("./#home");
   await page
+    .locator(".hero")
     .getByRole("link", { name: "Express interest", exact: true })
     .click();
   const interest = page.getByRole("heading", {
@@ -112,7 +113,7 @@ test("home is readable on narrow screens, accessible, honest about availability 
   await page.goto("./#home");
   await expect(page.locator(".home-availability")).toBeInViewport();
   await expect(page.locator(".home-availability")).toContainText(
-    "Youth enrollment and paid packages are not open",
+    "Membership enrollment is not open",
   );
   const widths = info.project.name === "phone" ? [320, 390] : [768, 1440];
   for (const width of widths) {
@@ -141,8 +142,8 @@ test("home is readable on narrow screens, accessible, honest about availability 
     fullPage: true,
   });
   await page
-    .locator(".hero")
-    .getByRole("link", { name: "Try the demo", exact: true })
+    .locator("footer")
+    .getByRole("link", { name: "Fictional preview", exact: true })
     .click();
   await expect(page).toHaveURL(/#demo$/);
   await expect(

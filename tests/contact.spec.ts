@@ -116,7 +116,9 @@ test("Contact fits phones and passes automated accessibility checks with expande
     .getByText("How do private video reviews work?", { exact: true })
     .click();
   await expect(
-    page.getByText("The target is 48 consecutive hours", { exact: false }),
+    page.getByText("The current pilot target is 48 consecutive hours", {
+      exact: false,
+    }),
   ).toBeVisible();
   expect(
     await page.evaluate(
