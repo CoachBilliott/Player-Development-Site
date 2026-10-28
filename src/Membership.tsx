@@ -1,13 +1,36 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowRight, Copy, Mail } from "lucide-react";
 import { Tag, CheckLine } from "./components";
 import { CONTACT_EMAIL } from "./contactContent";
 import { PACKAGE_PROPOSALS, packageInterestLink } from "./packageProposals";
 import "./memberships.css";
 
+function focusInterest() {
+  document.getElementById("interest-title")?.focus({ preventScroll: true });
+  document
+    .getElementById("package-interest")
+    ?.scrollIntoView({ block: "start" });
+}
+
 export function Membership() {
   const [interest, setInterest] = useState("undecided"),
     [copy, setCopy] = useState("");
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    if (url.searchParams.get("interest") !== "1") return;
+    let second: number | undefined;
+    const first = requestAnimationFrame(() => {
+      second = requestAnimationFrame(() => {
+        focusInterest();
+        url.searchParams.delete("interest");
+        history.replaceState(history.state, "", url);
+      });
+    });
+    return () => {
+      cancelAnimationFrame(first);
+      if (second !== undefined) cancelAnimationFrame(second);
+    };
+  }, []);
   return (
     <main className="page memberships proposed-memberships">
       <div className="page-intro centered">
@@ -29,16 +52,7 @@ export function Membership() {
           Annual prices and terms remain under review. No launch date is
           promised.
         </p>
-        <button
-          className="text-button"
-          onClick={() => {
-            const target = document.getElementById("interest-title");
-            target?.focus({ preventScroll: true });
-            document
-              .getElementById("package-interest")
-              ?.scrollIntoView({ block: "start" });
-          }}
-        >
+        <button className="text-button" onClick={focusInterest}>
           Share your interest <ArrowRight size={17} />
         </button>
       </section>
