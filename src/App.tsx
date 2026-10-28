@@ -77,8 +77,10 @@ import {
   AccessWorkspace,
   WorkspaceLibrary,
   LaunchReadiness,
+  InterestWorkspace,
 } from "./Workspaces";
 import { navigationFor, isDemoPage } from "./views";
+import { PrivateHeader, PrivateFooter } from "./PrivateShell";
 const safeHash = () => {
   const value = window.location.hash.slice(1);
   if (appSurface() && isDemoPage(value)) {
@@ -126,6 +128,8 @@ const safeHash = () => {
     "contact",
     "install",
     "account",
+    "profiles",
+    "interest",
     "family-demo",
     "demo",
     "workspace",
@@ -358,24 +362,31 @@ export default function App() {
     ((page === "today" || page === "session" || page === "progress") &&
       !profile);
   const nav = navigationFor(page, shared.role);
-  const privatePage =
-    [
-      "workspace",
-      "account",
-      "access",
-      "member-library",
-      "launch",
-      "workout-builder",
-      "content-review",
-      "video-reviews",
-    ].includes(page) ||
-    (page === "coach" && shared.signedIn);
+  const privatePage = [
+    "workspace",
+    "account",
+    "profiles",
+    "interest",
+    "app-workouts",
+    "app-progress",
+    "access",
+    "member-library",
+    "launch",
+    "workout-builder",
+    "content-review",
+    "video-reviews",
+    "coach",
+  ].includes(page);
   const demoPage = isDemoPage(page);
   return (
     <MotionShell>
-      <div className={mobile ? "mobile-layout" : "website-layout"}>
+      <div
+        className={`${mobile ? "mobile-layout" : "website-layout"}${privatePage ? " is-private" : ""}`}
+      >
         {mobile ? (
           <MobileHeader demo={demoPage} signedIn={shared.signedIn} />
+        ) : privatePage ? (
+          <PrivateHeader shared={shared} page={page} />
         ) : (
           <>
             {demoPage && (
@@ -494,11 +505,12 @@ export default function App() {
               <MobileWelcome signedIn={shared.signedIn} />
             ) : page === "app-help" || (nativeApp() && page === "install") ? (
               <MobileHelp app={app} />
-            ) : (mobile &&
+            ) : (page === "workspace" && !isStaff(shared.role)) ||
+              (mobile &&
                 ["workspace", "app", "home"].includes(page) &&
                 !isStaff(shared.role)) ||
               ["app-workouts", "app-progress"].includes(page) ||
-              (mobile && page === "member-library" && !isStaff(shared.role)) ? (
+              (page === "member-library" && !isStaff(shared.role)) ? (
               <MobileTraining
                 shared={shared}
                 screen={
@@ -519,6 +531,10 @@ export default function App() {
               <CoachVideoReviews shared={shared} />
             ) : page === "access" ? (
               <AccessWorkspace shared={shared} />
+            ) : page === "interest" ? (
+              <InterestWorkspace shared={shared} />
+            ) : page === "profiles" ? (
+              <MemberAccountPage shared={shared} profiles />
             ) : page === "member-library" ? (
               <WorkspaceLibrary
                 key={`${shared.session?.user.id}-${shared.role}`}
@@ -601,6 +617,8 @@ export default function App() {
         </div>
         {mobile ? (
           <MobileTabs shared={shared} page={page} />
+        ) : privatePage ? (
+          <PrivateFooter />
         ) : (
           <footer className="website-footer">
             <div className="footer-inner">

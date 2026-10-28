@@ -251,6 +251,10 @@ test("Owner can open the exact requesting account without searching or retyping"
     .getByRole("dialog")
     .getByRole("link", { name: "Open Account access" })
     .click();
+  await expect(page).toHaveURL(/accessSection=training#access$/);
+  await expect(
+    page.getByRole("button", { name: "Training access", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
   await expect(page.getByLabel("Customer account")).toHaveValue(userId);
   await expect(
     page.getByLabel("Enable the optional video review feature"),

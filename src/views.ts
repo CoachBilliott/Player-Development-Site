@@ -22,6 +22,9 @@ export function navigationFor(
     [
       "workspace",
       "account",
+      "profiles",
+      "interest",
+      "content-review",
       "access",
       "member-library",
       "launch",

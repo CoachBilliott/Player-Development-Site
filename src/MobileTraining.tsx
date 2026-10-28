@@ -151,11 +151,11 @@ function ConnectedTraining({ shared, screen, selection, onSelect }: Props) {
           </h2>
           <p>
             {snapshot.guardianManaged
-              ? "Use Account to check your family connection. Ask your parent to review access; there is no independent adult setup for a guardian-managed account."
-              : "Open Account to finish setup or manage your private profiles."}
+              ? "Use Profiles to check your family connection. Ask your parent to review access; there is no independent adult setup for a guardian-managed account."
+              : "Open Profiles to finish setup or manage your private profiles."}
           </p>
-          <a className="button" href="#account">
-            Open account <ArrowRight size={17} />
+          <a className="button" href="#profiles">
+            Open profiles <ArrowRight size={17} />
           </a>
           <Notice>
             The adult pilot is invite-only. Real junior enrollment and paid
@@ -216,7 +216,7 @@ function ConnectedTraining({ shared, screen, selection, onSelect }: Props) {
             )}
             {screen === "today" && (
               <a
-                href="#account"
+                href="#profiles"
                 className="app-profile-link"
                 aria-label="Athlete profile and permissions"
               >
@@ -224,7 +224,7 @@ function ConnectedTraining({ shared, screen, selection, onSelect }: Props) {
               </a>
             )}
             {screen !== "today" && (
-              <a className="text-button" href="#account">
+              <a className="text-button" href="#profiles">
                 {parent
                   ? "Manage athletes & permissions"
                   : "Profile & account settings"}{" "}

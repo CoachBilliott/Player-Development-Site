@@ -36,6 +36,7 @@ export function InterestInbox({
 }) {
   const [snapshot, setSnapshot] = useState<{
       actor: string;
+      attempt: number;
       rows: z.infer<typeof schema>;
     } | null>(null),
     [error, setError] = useState(""),
@@ -51,7 +52,7 @@ export function InterestInbox({
           );
         const rows = schema.parse(data);
         if (active) {
-          setSnapshot({ actor, rows });
+          setSnapshot({ actor, rows, attempt: refresh });
           setError("");
         }
       } catch {
@@ -66,8 +67,15 @@ export function InterestInbox({
     };
   }, [client, actor, refresh]);
   const rows = snapshot?.actor === actor ? snapshot.rows : null;
+  const loading =
+    !error &&
+    (!snapshot || snapshot.actor !== actor || snapshot.attempt !== refresh);
   return (
-    <section className="panel" aria-label="Private package interest inbox">
+    <section
+      className="panel"
+      aria-label="Private package interest inbox"
+      aria-busy={loading}
+    >
       <h2>Package interest</h2>
       <p>
         Adult interest only—not accounts, enrollment or purchases. Most recent
@@ -76,11 +84,16 @@ export function InterestInbox({
       </p>
       <button
         className="button secondary"
-        onClick={() => setRefresh((v) => v + 1)}
+        disabled={loading}
+        onClick={() => {
+          setError("");
+          setRefresh((v) => v + 1);
+        }}
       >
         Refresh interest requests
       </button>
       {error && <p role="alert">{error}</p>}
+      {loading && <p role="status">Loading interest requests…</p>}
       {rows &&
         (!rows.length ? (
           <p>No interest requests recorded.</p>

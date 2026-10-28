@@ -1,6 +1,8 @@
 node_modules/
 dist/
 dist-staff-preview/
+dist-private-preview/
+preview/private/public/
 .vite/
 playwright-report/
 test-results/

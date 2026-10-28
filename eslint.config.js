@@ -8,6 +8,7 @@ export default tseslint.config(
     ignores: [
       "dist",
       "dist-staff-preview",
+      "dist-private-preview",
       "node_modules",
       "playwright-report",
       "playwright-report-app",

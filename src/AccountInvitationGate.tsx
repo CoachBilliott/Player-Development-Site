@@ -196,6 +196,7 @@ export function AccountInvitationGate({
                 .then(async () => {
                   await shared.refreshAccess();
                   setInvite(null);
+                  window.location.hash = "workspace";
                 })
                 .catch((e: Error) => setError(e.message))
                 .finally(() => {

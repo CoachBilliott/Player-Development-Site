@@ -11,6 +11,8 @@ import {
   Plus,
   ShieldCheck,
   Users,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { AGES, GOALS, LEVELS, POSITIONS } from "./model";
 import {
@@ -22,7 +24,7 @@ import {
 } from "./accounts";
 import { Modal, Notice, Tag } from "./components";
 import type { SharedState } from "./useSharedContent";
-import { isStaff, ROLE_LABELS } from "./roles";
+import { isStaff } from "./roles";
 import { AccountAccess } from "./AccountAccess";
 import { FamilyTraining } from "./family";
 import { AthleteTraining } from "./FamilyTraining";
@@ -31,13 +33,35 @@ import { WebsiteLink } from "./MobileApp";
 import { AccountClosure } from "./AccountClosure";
 import "./accountLifecycle.css";
 import { ContentInbox } from "./DeliveryWorkspace";
+import { PersonalSettings } from "./PersonalSettings";
 
+function authMode(
+  signupEnabled: boolean,
+): "signin" | "signup" | "recover" | "verify" {
+  const value = new URLSearchParams(location.search).get("authAction");
+  return value === "recover" ||
+    value === "verify" ||
+    (value === "signup" && signupEnabled)
+    ? value
+    : "signin";
+}
+
+function focusProfileChoice(id: string) {
+  requestAnimationFrame(() => {
+    const button = document.querySelector<HTMLElement>(
+      `[data-profile-training="${id}"]`,
+    );
+    (button || document.querySelector<HTMLElement>("main h1"))?.focus();
+  });
+}
 export function MemberAccountPage({
   shared,
   workspace = false,
+  profiles = false,
 }: {
   shared: SharedState;
   workspace?: boolean;
+  profiles?: boolean;
 }) {
   if (shared.loading)
     return (
@@ -95,6 +119,7 @@ export function MemberAccountPage({
       shared={shared}
       service={new Accounts(shared.service.client)}
       workspace={workspace}
+      profiles={profiles}
     />
   );
 }
@@ -129,23 +154,28 @@ function ConnectedAccount({
   shared,
   service,
   workspace,
+  profiles,
 }: {
   shared: SharedState;
   service: Accounts;
   workspace: boolean;
+  profiles: boolean;
 }) {
   const client = service.client;
   const [familyService] = useState(() => new FamilyTraining(client));
   const [trainingPlayer, setTrainingPlayer] = useState<PrivatePlayer | null>(
     null,
   );
+  const profileReturnId = useRef("");
+  const profileRegion = useRef<HTMLElement | null>(null);
   const [guardianManaged, setGuardianManaged] = useState(false);
   const [joinCode, setJoinCode] = useState("");
   const [mode, setMode] = useState<"signin" | "signup" | "recover" | "verify">(
-    "signin",
+    () => authMode(shared.signupEnabled),
   );
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [adult, setAdult] = useState(false);
   const [privacy, setPrivacy] = useState(false);
   const [kind, setKind] = useState<"parent" | "adult">("parent");
@@ -182,7 +212,8 @@ function ConnectedAccount({
       !userId ||
       !shared.accessReady ||
       shared.accessError ||
-      isStaff(shared.role)
+      isStaff(shared.role) ||
+      (!workspace && !profiles)
     )
       return;
     let stopped = false;
@@ -195,6 +226,17 @@ function ConnectedAccount({
           setGuardianManaged(result.guardianManaged);
           setUnder18Enabled(result.under18Enabled);
           setLoaded(true);
+          if (profiles) {
+            const target = new URLSearchParams(location.search).get(
+              "playerProfile",
+            );
+            const selected =
+              result.players.find(
+                (p) => p.id === target && p.owner_id === userId,
+              ) || null;
+            profileReturnId.current = selected?.id || "";
+            setTrainingPlayer(selected);
+          }
         }
       })
       .catch((e: Error) => {
@@ -206,7 +248,15 @@ function ConnectedAccount({
     return () => {
       stopped = true;
     };
-  }, [client, userId, shared.accessReady, shared.accessError, shared.role]);
+  }, [
+    client,
+    userId,
+    shared.accessReady,
+    shared.accessError,
+    shared.role,
+    workspace,
+    profiles,
+  ]);
   async function act(action: () => Promise<void>) {
     if (lock.current) return;
     lock.current = true;
@@ -238,9 +288,64 @@ function ConnectedAccount({
   }
   const linkedPlayer = players.find((p) => p.owner_id !== userId);
   const ownedPlayers = players.filter((p) => p.owner_id === userId);
+  useEffect(() => {
+    const back = () => {
+      if (!userId && !lock.current) {
+        setMode(authMode(shared.signupEnabled));
+        setPassword("");
+        setShowPassword(false);
+        setError("");
+        setMessage("");
+        requestAnimationFrame(() =>
+          document.querySelector<HTMLElement>(".auth-page h1")?.focus(),
+        );
+      }
+      if (profiles) {
+        const target = new URLSearchParams(location.search).get(
+          "playerProfile",
+        );
+        const selected =
+          players.find((p) => p.id === target && p.owner_id === userId) || null;
+        setTrainingPlayer(selected);
+        if (!selected) focusProfileChoice(profileReturnId.current);
+        else requestAnimationFrame(() => profileRegion.current?.focus());
+      }
+    };
+    window.addEventListener("popstate", back);
+    return () => window.removeEventListener("popstate", back);
+  }, [players, profiles, userId, shared.signupEnabled]);
+  function openProfile(player: PrivatePlayer) {
+    profileReturnId.current = player.id;
+    const u = new URL(location.href);
+    u.searchParams.set("playerProfile", player.id);
+    history.pushState({ repformedProfileDetail: true }, "", u);
+    setTrainingPlayer(player);
+    requestAnimationFrame(() => profileRegion.current?.focus());
+  }
+  function closeProfile() {
+    if (history.state?.repformedProfileDetail) {
+      history.back();
+      return;
+    }
+    const u = new URL(location.href);
+    u.searchParams.delete("playerProfile");
+    history.replaceState(null, "", u);
+    setTrainingPlayer(null);
+    focusProfileChoice(profileReturnId.current);
+  }
   function switchMode(next: typeof mode) {
+    if (next !== mode) {
+      const u = new URL(location.href);
+      if (next === "signin") u.searchParams.delete("authAction");
+      else u.searchParams.set("authAction", next);
+      history.pushState({ repformedAuthMode: next }, "", u);
+    }
     setMode(next);
     setPassword("");
+    setShowPassword(false);
+    requestAnimationFrame(() =>
+      document.querySelector<HTMLElement>(".auth-page h1")?.focus(),
+    );
     setError("");
     setMessage("");
   }
@@ -311,6 +416,7 @@ function ConnectedAccount({
             "Sign-in failed. Check your email, verification and password, then try again.",
           );
         setPassword("");
+        if (!recovery) window.location.hash = "workspace";
       }
     });
   }
@@ -350,6 +456,7 @@ function ConnectedAccount({
         shared={shared}
         busy={busy}
         error={error}
+        message={message}
         onSignOut={() => void act(shared.signOut)}
         onChangePassword={() => {
           const url = new URL(window.location.href);
@@ -359,9 +466,25 @@ function ConnectedAccount({
         }}
       />
     );
+  if (userId && !recovery && !workspace && !profiles)
+    return (
+      <PersonalSettings
+        shared={shared}
+        busy={busy}
+        error={error}
+        message={message}
+        onSignOut={() => void act(shared.signOut)}
+        onChangePassword={() => {
+          const url = new URL(location.href);
+          url.searchParams.set("flow", "recovery");
+          history.replaceState(null, "", url);
+          setRecovery(true);
+        }}
+      />
+    );
   return (
     <main
-      className={`page member-page ${workspace ? "workspace-page" : ""} ${workspace && linkedPlayer?.age_group !== "18+" && linkedPlayer ? "junior-workspace" : ""}`}
+      className={`page member-page ${!userId ? "auth-page" : ""} ${workspace ? "workspace-page" : ""} ${workspace && linkedPlayer?.age_group !== "18+" && linkedPlayer ? "junior-workspace" : ""}`}
     >
       {shared.connectionError && (
         <p className="form-error member-feedback" role="alert">
@@ -375,18 +498,29 @@ function ConnectedAccount({
           </a>
         )}
         <Tag>
-          <LockKeyhole size={14} /> PRIVATE MEMBER SPACE
+          <LockKeyhole size={14} />{" "}
+          {userId ? "PRIVATE PROFILES" : "ACCOUNT ACCESS"}
         </Tag>
         <h1 tabIndex={-1}>
-          {workspace && userId
-            ? shared.role === "parent"
-              ? "Your family. Their next step."
-              : linkedPlayer && linkedPlayer.age_group !== "18+"
-                ? "Ready for your next practice?"
-                : "Your training. Your next step."
-            : userId
-              ? "Your account. Your players."
-              : "A clear start. A private account."}
+          {recovery && userId
+            ? "Reset your password."
+            : workspace && userId
+              ? shared.role === "parent"
+                ? "Your family. Their next step."
+                : linkedPlayer && linkedPlayer.age_group !== "18+"
+                  ? "Ready for your next practice?"
+                  : "Your training. Your next step."
+              : userId
+                ? shared.role === "parent"
+                  ? "Your family profiles."
+                  : "Your athlete profile."
+                : mode === "recover"
+                  ? "Reset your password."
+                  : mode === "verify"
+                    ? "Verify your email."
+                    : mode === "signup"
+                      ? "Create your account."
+                      : "Welcome back."}
         </h1>
         <p>
           {workspace && userId
@@ -395,7 +529,7 @@ function ConnectedAccount({
               : "One individual profile. Your own plan and honest practice history."
             : userId
               ? "Your household’s profiles stay separate from the public demo."
-              : "An adult account is the starting point. No credit card or subscription required."}
+              : "One account for your training and your team."}
         </p>
       </div>
       {error && (
@@ -416,7 +550,7 @@ function ConnectedAccount({
       {userId && !recovery && workspace && shared.deliveryMonitoringEnabled && (
         <ContentInbox key={userId} client={client} actor={userId} />
       )}
-      {userId && !recovery && !workspace && (
+      {userId && !recovery && !workspace && !profiles && (
         <>
           <a className="button workspace-entry" href="#workspace">
             Open my workspace <ArrowRight size={18} />
@@ -472,49 +606,40 @@ function ConnectedAccount({
         <div className="member-layout">
           <section className="panel member-panel">
             {!shared.signupEnabled && (
-              <Notice>
-                Private account pilot. Public registration is not open yet. Use
-                the activation email sent to you, or sign in with an existing
-                account. Adult profiles only while parental-consent setup is
-                completed.
-              </Notice>
+              <p className="auth-availability">
+                Invited accounts only. Public registration is not open yet.
+              </p>
             )}
-            <div
-              className="scene-tabs"
-              role="group"
-              aria-label="Account access"
-            >
-              <button
-                disabled={busy}
-                aria-pressed={mode === "signin"}
-                onClick={() => switchMode("signin")}
+            {shared.signupEnabled && (
+              <div
+                className="scene-tabs"
+                role="group"
+                aria-label="Account access"
               >
-                Sign in
-              </button>
-              {shared.signupEnabled &&
-                (appSurface() ? (
-                  <WebsiteLink path="#account">
-                    Set up account on website
-                  </WebsiteLink>
-                ) : (
-                  <button
-                    disabled={busy}
-                    aria-pressed={mode === "signup"}
-                    onClick={() => switchMode("signup")}
-                  >
-                    Create account
-                  </button>
-                ))}
-            </div>
-            <h2>
-              {mode === "signup"
-                ? "Start with the adult."
-                : mode === "verify"
-                  ? "Verify your email."
-                  : mode === "recover"
-                    ? "Reset your password."
-                    : "Welcome back."}
-            </h2>
+                <button
+                  disabled={busy}
+                  aria-pressed={mode === "signin"}
+                  onClick={() => switchMode("signin")}
+                >
+                  Sign in
+                </button>
+                {shared.signupEnabled &&
+                  (appSurface() ? (
+                    <WebsiteLink path="#account">
+                      Set up account on website
+                    </WebsiteLink>
+                  ) : (
+                    <button
+                      disabled={busy}
+                      aria-pressed={mode === "signup"}
+                      onClick={() => switchMode("signup")}
+                    >
+                      Create account
+                    </button>
+                  ))}
+              </div>
+            )}
+            <h2 className="account-sr-only">Account access form</h2>
             <form
               className="member-form"
               onSubmit={(event) => void authenticate(event)}
@@ -534,23 +659,41 @@ function ConnectedAccount({
                 {(mode === "signin" || mode === "signup") && (
                   <label>
                     Password
-                    <input
-                      type="password"
-                      aria-label="Password"
-                      aria-describedby={
-                        mode === "signup" ? "signup-password-help" : undefined
-                      }
-                      autoComplete={
-                        mode === "signup" ? "new-password" : "current-password"
-                      }
-                      minLength={
-                        mode === "signup" ? PASSWORD_MIN_LENGTH : undefined
-                      }
-                      maxLength={128}
-                      required
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                    />
+                    <span className="password-control">
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        aria-label="Password"
+                        aria-describedby={
+                          mode === "signup" ? "signup-password-help" : undefined
+                        }
+                        autoComplete={
+                          mode === "signup"
+                            ? "new-password"
+                            : "current-password"
+                        }
+                        minLength={
+                          mode === "signup" ? PASSWORD_MIN_LENGTH : undefined
+                        }
+                        maxLength={128}
+                        required
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                      />
+                      <button
+                        type="button"
+                        aria-label={
+                          showPassword ? "Hide password" : "Show password"
+                        }
+                        aria-pressed={showPassword}
+                        onClick={() => setShowPassword((v) => !v)}
+                      >
+                        {showPassword ? (
+                          <EyeOff size={19} />
+                        ) : (
+                          <Eye size={19} />
+                        )}
+                      </button>
+                    </span>
                     {mode === "signup" && (
                       <small id="signup-password-help">
                         {PASSWORD_REQUIREMENTS} Never use a child’s email for
@@ -572,10 +715,7 @@ function ConnectedAccount({
                   </label>
                 )}
                 <p className="member-fineprint">
-                  Your email is used for login and account recovery. The login
-                  session is stored in this browser; player details are
-                  retrieved from the private database. Sign out on shared
-                  devices.{" "}
+                  Your private account stays separate from the public demo.{" "}
                   <button
                     className="text-button"
                     type="button"
@@ -598,7 +738,7 @@ function ConnectedAccount({
                 </button>
                 {mode === "signin" &&
                   (appSurface() ? (
-                    <WebsiteLink path="#account">
+                    <WebsiteLink path="?authAction=recover#account">
                       Reset password on website
                     </WebsiteLink>
                   ) : (
@@ -612,7 +752,7 @@ function ConnectedAccount({
                   ))}
                 {mode === "signin" &&
                   (appSurface() ? (
-                    <WebsiteLink path="#account">
+                    <WebsiteLink path="?authAction=verify#account">
                       Verify email on website
                     </WebsiteLink>
                   ) : (
@@ -636,7 +776,19 @@ function ConnectedAccount({
               </fieldset>
             </form>
           </section>
-          <AccountPrinciples />
+          {mode === "signup" ? (
+            <AccountPrinciples />
+          ) : (
+            <details className="auth-secondary">
+              <summary>New to Repformed?</summary>
+              <p>
+                Account access is currently by invitation.{" "}
+                <a href="#membership">Explore packages and express interest</a>{" "}
+                without creating an account.
+              </p>
+              <a href="#contact">Need help with an invitation?</a>
+            </details>
+          )}
         </div>
       ) : recovery ? (
         <section className="panel member-panel account-narrow">
@@ -706,18 +858,21 @@ function ConnectedAccount({
         </section>
       ) : trainingPlayer ? (
         <>
-          <button
-            className="button secondary"
-            onClick={() => setTrainingPlayer(null)}
-          >
+          <button className="button secondary" onClick={closeProfile}>
             Back to athlete profiles
           </button>
-          <AthleteTraining
-            key={trainingPlayer.id}
-            player={trainingPlayer}
-            service={familyService}
-            client={client}
-          />
+          <section
+            ref={profileRegion}
+            tabIndex={-1}
+            aria-label="Athlete training and permissions"
+          >
+            <AthleteTraining
+              key={trainingPlayer.id}
+              player={trainingPlayer}
+              service={familyService}
+              client={client}
+            />
+          </section>
         </>
       ) : linkedPlayer ? (
         <>
@@ -941,7 +1096,8 @@ function ConnectedAccount({
                     <button
                       className="button"
                       disabled={busy}
-                      onClick={() => setTrainingPlayer(player)}
+                      onClick={() => openProfile(player)}
+                      data-profile-training={player.id}
                     >
                       Workouts &amp; permissions
                     </button>
@@ -1010,10 +1166,10 @@ function ConnectedAccount({
           </div>
         </>
       )}
-      {userId && !workspace && shared.accountLifecycleEnabled && (
+      {userId && !workspace && !profiles && shared.accountLifecycleEnabled && (
         <AccountClosure key={userId} shared={shared} />
       )}
-      {userId && (
+      {userId && !profiles && (
         <div className="member-signout">
           <button
             className="button secondary"
@@ -1335,71 +1491,25 @@ function StaffAccount({
   shared,
   busy,
   error,
+  message,
   onSignOut,
   onChangePassword,
 }: {
   shared: SharedState;
   busy: boolean;
   error: string;
+  message: string;
   onSignOut: () => void;
   onChangePassword: () => void;
 }) {
-  const role = shared.role!;
   return (
-    <main className="page narrow staff-account">
-      <div className="page-intro">
-        <Tag>PRIVATE · STAFF ACCOUNT</Tag>
-        <h1 tabIndex={-1}>Your {ROLE_LABELS[role]} account.</h1>
-        <p>Manage Repformed with your assigned staff permissions.</p>
-      </div>
-      <section className="panel member-panel">
-        <h2>Signed in</h2>
-        <p className="staff-account-email">{shared.session?.user.email}</p>
-        <div className="actions">
-          <a className="button" href="#workspace">
-            Open my workspace <ArrowRight size={18} />
-          </a>
-          <a className="button secondary" href="#coach">
-            Upload & manage content
-          </a>
-          <a className="button secondary" href="#video-reviews">
-            Video reviews
-          </a>
-          {role === "owner" && (
-            <a className="button secondary" href="#access">
-              Workouts & account access
-            </a>
-          )}
-        </div>
-      </section>
-      <AccountAccess shared={shared} />
-      <section className="panel member-panel">
-        <h2>Sign-in settings</h2>
-        <div className="actions">
-          <button
-            className="button secondary"
-            disabled={busy}
-            onClick={onChangePassword}
-          >
-            Change password
-          </button>
-          <button
-            className="button secondary"
-            disabled={busy}
-            onClick={onSignOut}
-          >
-            {appSurface() ? "Sign out" : "Sign out of this browser"}
-          </button>
-        </div>
-        {error && (
-          <p role="alert" className="form-error">
-            {error}
-          </p>
-        )}
-      </section>
-      {shared.accountLifecycleEnabled && (
-        <AccountClosure key={shared.session?.user.id} shared={shared} />
-      )}
-    </main>
+    <PersonalSettings
+      shared={shared}
+      busy={busy}
+      error={error}
+      message={message}
+      onSignOut={onSignOut}
+      onChangePassword={onChangePassword}
+    />
   );
 }
