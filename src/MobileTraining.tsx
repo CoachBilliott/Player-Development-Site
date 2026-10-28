@@ -137,7 +137,14 @@ function ConnectedTraining({ shared, screen, selection, onSelect }: Props) {
             Training athlete
             <select
               value={player.id}
-              onChange={(e) => onSelect({ userId, playerId: e.target.value })}
+              onChange={(e) => {
+                try {
+                  sessionStorage.setItem(selectionKey, e.target.value);
+                } catch {
+                  /* Keep current in-memory selection when browser storage is unavailable. */
+                }
+                onSelect({ userId, playerId: e.target.value });
+              }}
             >
               {eligible.map((p) => (
                 <option key={p.id} value={p.id}>
@@ -152,6 +159,13 @@ function ConnectedTraining({ shared, screen, selection, onSelect }: Props) {
           api={learning}
           profile={player.id}
           actor={userId}
+          mode={
+            screen === "today"
+              ? "today"
+              : screen === "workouts"
+                ? "library"
+                : "progress"
+          }
         />
       </main>
     );

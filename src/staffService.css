@@ -510,3 +510,15 @@ dialog.modal:has(> .staff-detail) > h2 {
   border-top: 1px solid var(--line);
   padding: 12px 0 0;
 }
+
+.staff-roster-pages {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-block: 18px;
+}
+.staff-roster-pages span {
+  color: var(--muted, #b8bec4);
+}

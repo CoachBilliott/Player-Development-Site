@@ -24,12 +24,18 @@ export function LearningAthlete({
   actor,
   staff = false,
   owner = false,
+  onChanged,
+  task,
+  mode = "all",
 }: {
   api: LearningTransport;
   profile: string;
   actor: string;
   staff?: boolean;
   owner?: boolean;
+  onChanged?: () => void;
+  task?: { kind: "plan" | "grading"; request: number };
+  mode?: "all" | "today" | "library" | "progress";
 }) {
   const [data, setData] = useState<LearningAthleteData | null>(null),
     [error, setError] = useState(""),
@@ -57,11 +63,17 @@ export function LearningAthlete({
           setData(d);
           setError("");
           setSelected((old) =>
-            old
+            task?.kind === "grading"
               ? d.enrollments
                   .flatMap((e) => e.releases)
-                  .find((r) => r.id === old.id) || null
-              : null,
+                  .find((r) =>
+                    r.attempts.some((a) => a.state === "needs_grading"),
+                  ) || old
+              : old
+                ? d.enrollments
+                    .flatMap((e) => e.releases)
+                    .find((r) => r.id === old.id) || null
+                : null,
           );
         }
       })
@@ -71,7 +83,7 @@ export function LearningAthlete({
     return () => {
       live = false;
     };
-  }, [api, profile, refresh]);
+  }, [api, profile, refresh, task]);
   async function action(run: () => Promise<void>, message: string) {
     if (lock.current) return;
     lock.current = true;
@@ -81,6 +93,7 @@ export function LearningAthlete({
       await run();
       setStatus(message);
       setRefresh((n) => n + 1);
+      onChanged?.();
     } catch (e) {
       setError(
         e instanceof Error ? e.message : "The change was not saved. Retry.",
@@ -103,16 +116,35 @@ export function LearningAthlete({
   );
   return (
     <section className="learning-athlete" aria-label="Weekly learning plan">
+      <a
+        className="text-button"
+        href={`${import.meta.env.BASE_URL}weekly-learning-help.html`}
+      >
+        Weekly plan help
+      </a>
       <LearningInbox api={api} profile={profile} />
       {owner && (
         <PlanEligibility
           api={api}
           profile={profile}
-          onSaved={() => setRefresh((n) => n + 1)}
+          onSaved={() => {
+            setRefresh((n) => n + 1);
+            onChanged?.();
+          }}
         />
       )}
       <header>
-        <h2>{staff ? "Weekly plan" : "Your weekly plan"}</h2>
+        <h2 tabIndex={-1}>
+          {staff
+            ? "Weekly plan"
+            : mode === "today"
+              ? "This week’s plan"
+              : mode === "library"
+                ? "Released library"
+                : mode === "progress"
+                  ? "Progress & grades"
+                  : "Your weekly plan"}
+        </h2>
         <p>
           Sunday at midnight, Central time. Released weeks stay in the library
           while access is active.
@@ -174,7 +206,28 @@ export function LearningAthlete({
           )}
         </>
       )}
-      {data?.enrollments.map((e) => (
+      {mode === "progress" && data && (
+        <ProgressSummary
+          data={data}
+          onOpen={(r) => {
+            setSelected(r);
+            setActiveQuiz(null);
+          }}
+        />
+      )}
+      {mode === "today" && data && data.enrollments.length > 0 && !current && (
+        <p>
+          No running plan. Your released history is in{" "}
+          <a href="#app-workouts">Library</a> and{" "}
+          <a href="#app-progress">Progress</a>.
+        </p>
+      )}
+      {(mode === "progress"
+        ? []
+        : mode === "today"
+          ? data?.enrollments.filter((e) => e.id === current?.id)
+          : data?.enrollments
+      )?.map((e) => (
         <section key={e.id} className="learning-enrollment">
           <header>
             <h3>{e.title}</h3>
@@ -247,59 +300,64 @@ export function LearningAthlete({
               enrollment={e.id}
               plan={e.plan_id}
               nextWeek={e.next_week}
-              onSaved={() => setRefresh((n) => n + 1)}
+              onSaved={() => {
+                setRefresh((n) => n + 1);
+                onChanged?.();
+              }}
             />
           )}
           <div className="learning-release-list" aria-label="Released library">
-            {e.releases.map((r, index) => (
-              <article key={r.id}>
-                <div>
-                  <span>
-                    {index === 0 && e.state !== "ended"
-                      ? "CURRENT WEEK"
-                      : "LIBRARY"}{" "}
-                    ·{" "}
-                    {r.week_number === 0
-                      ? "Orientation"
-                      : `Week ${r.week_number}`}
-                  </span>
-                  <h4>{r.title}</h4>
-                  <p>
-                    Available {date(r.available_at)} Central ·{" "}
-                    {r.done
-                      ? "Work submitted / reported complete"
-                      : "Work remaining"}
-                  </p>
-                  {r.content_blocked && (
-                    <p>Content withdrawn by staff. History is retained.</p>
-                  )}
-                </div>
-                <button
-                  disabled={busy}
-                  onClick={() => {
-                    setSelected(r);
-                    setActiveQuiz(null);
-                  }}
-                >
-                  Open week
-                </button>
-                {owner && e.state !== "paused" && e.state !== "ended" && (
+            {(mode === "today" ? e.releases.slice(0, 1) : e.releases).map(
+              (r, index) => (
+                <article key={r.id}>
+                  <div>
+                    <span>
+                      {index === 0 && e.state !== "ended"
+                        ? "CURRENT WEEK"
+                        : "LIBRARY"}{" "}
+                      ·{" "}
+                      {r.week_number === 0
+                        ? "Orientation"
+                        : `Week ${r.week_number}`}
+                    </span>
+                    <h4>{r.title}</h4>
+                    <p>
+                      Available {date(r.available_at)} Central ·{" "}
+                      {r.done
+                        ? "Work submitted / reported complete"
+                        : "Work remaining"}
+                    </p>
+                    {r.content_blocked && (
+                      <p>Content withdrawn by staff. History is retained.</p>
+                    )}
+                  </div>
                   <button
-                    disabled={busy || !e.access_active || r.content_blocked}
-                    onClick={() =>
-                      setConfirmation({
-                        id: e.id,
-                        version: e.version,
-                        action: "repeat",
-                        release: r.id,
-                      })
-                    }
+                    disabled={busy}
+                    onClick={() => {
+                      setSelected(r);
+                      setActiveQuiz(null);
+                    }}
                   >
-                    Repeat this week
+                    Open week
                   </button>
-                )}
-              </article>
-            ))}
+                  {owner && e.state !== "paused" && e.state !== "ended" && (
+                    <button
+                      disabled={busy || !e.access_active || r.content_blocked}
+                      onClick={() =>
+                        setConfirmation({
+                          id: e.id,
+                          version: e.version,
+                          action: "repeat",
+                          release: r.id,
+                        })
+                      }
+                    >
+                      Repeat this week
+                    </button>
+                  )}
+                </article>
+              ),
+            )}
           </div>
         </section>
       ))}
@@ -357,7 +415,10 @@ export function LearningAthlete({
                 )
                 .at(-1)}
               onClose={() => setActiveQuiz(null)}
-              onSaved={() => setRefresh((n) => n + 1)}
+              onSaved={() => {
+                setRefresh((n) => n + 1);
+                onChanged?.();
+              }}
             />
           ) : (
             <>
@@ -464,7 +525,10 @@ export function LearningAthlete({
                         quiz={q}
                         api={api}
                         staff={staff}
-                        onSaved={() => setRefresh((n) => n + 1)}
+                        onSaved={() => {
+                          setRefresh((n) => n + 1);
+                          onChanged?.();
+                        }}
                       />
                     ))}
                 </article>
@@ -675,5 +739,67 @@ function AttemptHistory({
       )}
       {error && <p role="alert">{error}</p>}
     </details>
+  );
+}
+
+function ProgressSummary({
+  data,
+  onOpen,
+}: {
+  data: LearningAthleteData;
+  onOpen: (release: LearningRelease) => void;
+}) {
+  const releases = data.enrollments.flatMap((e) => e.releases),
+    attempts = releases.flatMap((r) => r.attempts),
+    submitted = attempts.filter((a) => a.submitted_at),
+    pending = attempts.filter((a) => a.state === "needs_grading");
+  return (
+    <section aria-label="Learning progress">
+      <p>
+        {releases.filter((r) => r.done).length} of {releases.length} released
+        weeks submitted / reported complete · {submitted.length} quiz
+        submissions · {pending.length} awaiting written grading
+      </p>
+      <p>
+        These records track participation and quiz results, not athletic
+        ability.
+      </p>
+      {!releases.length && <p>No released learning history yet.</p>}
+      {releases.map((r) => (
+        <article key={r.id} className="learning-quiz-card">
+          <h3>{r.title}</h3>
+          {!r.attempts.length && <p>No quiz attempts observed.</p>}
+          {r.attempts.map((a) => {
+            const q = r.quizzes.find((q) => q.id === a.quiz_version_id);
+            const marks = a.grades.at(-1)?.points || {};
+            const score =
+              (a.objective_points || 0) +
+              Object.values(marks).reduce((n, v) => n + v, 0);
+            return (
+              <p key={a.id}>
+                {q?.title || "Assigned quiz"}:{" "}
+                {a.state === "draft"
+                  ? "Draft saved"
+                  : a.state === "needs_grading"
+                    ? "Submitted · awaiting written grade"
+                    : `${score} / ${q?.total_points ?? "—"}`}
+              </p>
+            );
+          })}
+          {r.completion_reviews.filter((c) => c.status === "pending_parent")
+            .length > 0 && (
+            <p>
+              Practice reports awaiting parent review:{" "}
+              {
+                r.completion_reviews.filter(
+                  (c) => c.status === "pending_parent",
+                ).length
+              }
+            </p>
+          )}
+          <button onClick={() => onOpen(r)}>Open history for {r.title}</button>
+        </article>
+      ))}
+    </section>
   );
 }

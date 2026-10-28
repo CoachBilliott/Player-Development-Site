@@ -2,14 +2,19 @@ import { useRef, useState } from "react";
 import { parseQuizCsv, type QuizImport, type ImportIssue } from "./quizImport";
 export function QuizImportPanel({
   onPublish,
+  existingQuizzes = [],
 }: {
+  existingQuizzes?: { id: string; title: string; latestRevision: number }[];
   onPublish: (
     title: string,
     quiz: QuizImport,
     operationId: string,
+    targetQuiz?: string,
   ) => Promise<void>;
 }) {
   const [title, setTitle] = useState("");
+  const [targetQuiz, setTargetQuiz] = useState("");
+  const saving = useRef(false);
   const [quiz, setQuiz] = useState<QuizImport | null>(null);
   const [issues, setIssues] = useState<ImportIssue[]>([]);
   const [busy, setBusy] = useState(false);
@@ -51,14 +56,20 @@ export function QuizImportPanel({
     }
   }
   async function publish() {
-    if (!quiz || busy) return;
+    if (!quiz || saving.current) return;
+    saving.current = true;
     setBusy(true);
     setMessage("");
     try {
-      await onPublish(title.trim(), quiz, operation.current);
+      await onPublish(
+        title.trim(),
+        quiz,
+        operation.current,
+        targetQuiz || undefined,
+      );
       setMessage("Quiz version saved. Add it to a plan week when ready.");
       setQuiz(null);
-      setTitle("");
+      if (!targetQuiz) setTitle("");
     } catch (error) {
       setMessage(
         error instanceof Error
@@ -66,6 +77,7 @@ export function QuizImportPanel({
           : "The quiz was not saved. Retry with the same import.",
       );
     } finally {
+      saving.current = false;
       setBusy(false);
     }
   }
@@ -85,11 +97,38 @@ export function QuizImportPanel({
         </a>
       </div>
       <label>
+        Save as
+        <select
+          value={targetQuiz}
+          disabled={busy}
+          onChange={(e) => {
+            const chosen = existingQuizzes.find((q) => q.id === e.target.value);
+            setTargetQuiz(e.target.value);
+            setTitle(chosen?.title || "");
+            setMessage("");
+            operation.current = crypto.randomUUID();
+          }}
+        >
+          <option value="">New quiz</option>
+          {existingQuizzes.map((q) => (
+            <option key={q.id} value={q.id}>
+              New version of {q.title} · latest {q.latestRevision}
+            </option>
+          ))}
+        </select>
+      </label>
+      {targetQuiz && (
+        <p>
+          Earlier assignments, attempts and grades stay on their original
+          version. Add the new version to future plan weeks explicitly.
+        </p>
+      )}
+      <label>
         Quiz title
         <input
           value={title}
           maxLength={160}
-          disabled={busy}
+          disabled={busy || !!targetQuiz}
           onChange={(e) => setTitle(e.target.value)}
         />
       </label>

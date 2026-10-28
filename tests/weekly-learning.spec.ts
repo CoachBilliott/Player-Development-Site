@@ -4,10 +4,21 @@ import { staffFixture, staffState, athleteA } from "./staffServiceFixture";
 import {
   learningSimulation,
   sampleProfiles,
+  rosterProfiles,
 } from "../preview/private/learningSimulation";
+import { learningBridge } from "../preview/private/learningBridge";
+import type { StaffAthlete } from "../src/staffService";
+import { serviceRows, serviceState } from "../src/staffServiceView";
 import type { BrowserContext } from "@playwright/test";
 async function connect(context: BrowserContext, role: "owner" | "parent") {
   const sim = learningSimulation(role);
+  const bridge = learningBridge(sim, role);
+  const roster = staffState();
+  const alias = new Map(
+    roster.rows
+      .filter((r) => r.athlete_id)
+      .map((r, i) => [r.athlete_id!, rosterProfiles[i].id]),
+  );
   const calls: { name: string; body: Record<string, unknown> }[] = [];
   await context.route("**/content-config.json", (r) =>
     r.fulfill({
@@ -22,6 +33,76 @@ async function connect(context: BrowserContext, role: "owner" | "parent") {
       },
     }),
   );
+  async function enriched() {
+    const rows: StaffAthlete[] = [];
+    for (const row of roster.rows) {
+      if (!row.athlete_id) {
+        rows.push(row);
+        continue;
+      }
+      const value = await bridge.rpc("staff_athlete_service", {
+        target_profile: alias.get(row.athlete_id),
+      });
+      if (value.error) continue;
+      rows.push({
+        ...row,
+        learning: (value.data as unknown as StaffAthlete).learning,
+        next_action: (value.data as unknown as StaffAthlete).next_action,
+      });
+    }
+    return rows;
+  }
+  await context.route("**/rest/v1/rpc/staff_athlete_service", async (r) => {
+    const body = r.request().postDataJSON();
+    const rows = await enriched();
+    const row = rows.find((row) => row.athlete_id === body.target_profile);
+    return r.fulfill(
+      row
+        ? { json: row }
+        : { status: 403, json: { message: "Outside service roster" } },
+    );
+  });
+  await context.route(
+    "**/rest/v1/rpc/staff_learning_roster_page",
+    async (r) => {
+      const body = r.request().postDataJSON();
+      calls.push({ name: "staff_learning_roster_page", body });
+      if (role === "parent")
+        return r.fulfill({
+          status: 403,
+          json: { message: "Staff access required" },
+        });
+      const all = await enriched();
+      const filtered = serviceRows(
+        all,
+        String(body.search_text || ""),
+        String(body.status_filter || "all"),
+      );
+      return r.fulfill({
+        json: {
+          source: "account_backend",
+          scope: "all_repformed_clients",
+          rows: filtered,
+          coaches: [],
+          page: {
+            total: all.length,
+            matched: filtered.length,
+            athletes: all.length,
+            clients: 2,
+            counts: {
+              overdue: all.filter((r) => serviceState(r) === "overdue").length,
+              attention: all.filter((r) => serviceState(r) === "attention")
+                .length,
+              ready: all.filter((r) => serviceState(r) === "ready").length,
+            },
+            ages: ["18+"],
+            positions: ["Quarterback", "Defensive back"],
+            next_cursor: null,
+          },
+        },
+      });
+    },
+  );
   await context.route("**/rest/v1/rpc/learning_*", async (r) => {
     const name = new URL(r.request().url()).pathname.split("/").at(-1)!;
     const body = r.request().postDataJSON() as Record<string, unknown>;
@@ -29,9 +110,21 @@ async function connect(context: BrowserContext, role: "owner" | "parent") {
     try {
       let data: unknown;
       if (name === "learning_catalog") data = await sim.api.catalog();
-      else if (name === "learning_inbox") data = await sim.api.inbox();
-      else if (name === "learning_athlete") {
-        const d = await sim.api.athlete(sampleProfiles[0].id);
+      else if (name === "learning_inbox") {
+        data = (await sim.api.inbox()).map((n) => {
+          const real = [...alias].find(([, id]) => id === n.profile_id)?.[0];
+          return {
+            ...n,
+            profile_id: real || n.profile_id,
+            athlete_name:
+              roster.rows.find((row) => row.athlete_id === real)
+                ?.athlete_name || n.athlete_name,
+          };
+        });
+      } else if (name === "learning_athlete") {
+        const d = await sim.api.athlete(
+          alias.get(String(body.target_profile)) || sampleProfiles[0].id,
+        );
         for (const e of d.enrollments)
           for (const rel of e.releases)
             for (const a of rel.attempts) a.actor_id = accountId;
@@ -45,8 +138,11 @@ async function connect(context: BrowserContext, role: "owner" | "parent") {
           !!body.submit,
           Number(body.expected_version),
         );
-      else if (name === "learning_import_quiz") data = "simulated-save";
-      else throw Error("Unconnected synthetic endpoint: " + name);
+      else if (name === "learning_import_quiz") {
+        const result = await bridge.rpc(name, body);
+        if (result.error) throw Error(result.error.message);
+        data = result.data;
+      } else throw Error("Unconnected synthetic endpoint: " + name);
       await r.fulfill({ json: data });
     } catch (e) {
       await r.fulfill({
@@ -121,4 +217,60 @@ test("enabled household training uses selected profile and server draft endpoint
   await expect(
     page.getByRole("button", { name: "Grade written answers" }),
   ).toHaveCount(0);
+});
+test("server-backed group choices settle and do not refetch on checkbox changes", async ({
+  page,
+  context,
+}) => {
+  await staffFixture(context, staffState(), "owner");
+  const calls = await connect(context, "owner");
+  await page.goto("./#workspace");
+  await page
+    .getByRole("navigation", { name: "Workspace navigation" })
+    .getByRole("link", { name: "Training", exact: true })
+    .click();
+  await page.getByRole("button", { name: "Weekly plans & quizzes" }).click();
+  await page.getByRole("button", { name: "Groups", exact: true }).click();
+  await page.getByText("Create or edit a group", { exact: true }).click();
+  const picker = page.locator(".learning-roster-picker");
+  const choices = picker.getByRole("checkbox");
+  await expect(choices.first()).toBeVisible();
+  const count = calls.filter(
+    (c) => c.name === "staff_learning_roster_page",
+  ).length;
+  await choices.first().check();
+  await expect(picker).toContainText("1 selected across all pages");
+  await page
+    .getByRole("button", { name: "Cancel group edits", exact: true })
+    .click();
+  await expect(picker).toContainText("0 selected across all pages");
+  expect(
+    calls.filter((c) => c.name === "staff_learning_roster_page").length,
+  ).toBe(count);
+});
+test("weekly member navigation separates current week, library and recorded grades", async ({
+  page,
+  context,
+}) => {
+  await fixture(context, state(), "parent");
+  await connect(context, "parent");
+  await page.goto("./#workspace");
+  await expect(
+    page.getByRole("heading", { name: "This week’s plan", exact: true }),
+  ).toBeVisible();
+  const nav = page.getByRole("navigation", { name: "Workspace navigation" });
+  await nav.getByRole("link", { name: "Library", exact: true }).click();
+  await expect(
+    page.getByRole("heading", { name: "Released library", exact: true }),
+  ).toBeVisible();
+  await nav.getByRole("link", { name: "Progress", exact: true }).click();
+  await expect(
+    page.getByRole("heading", { name: "Progress & grades", exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("region", { name: "Learning progress" }),
+  ).toContainText("No quiz attempts observed.");
+  await expect(
+    page.getByRole("link", { name: "Weekly plan help", exact: true }),
+  ).toHaveAttribute("href", "/weekly-learning-help.html");
 });

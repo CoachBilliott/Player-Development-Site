@@ -1,24 +1,46 @@
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { StaffLearning } from "../../src/learning/StaffLearning";
 import { LearningAthlete } from "../../src/learning/LearningAthlete";
+import { StaffServiceDashboard } from "../../src/StaffServiceDashboard";
+import { StaffService, type RosterCursor } from "../../src/staffService";
 import {
   learningSimulation,
   sampleActor,
   sampleProfiles,
+  rosterProfiles,
+  type SimulationRole,
 } from "./learningSimulation";
+import { learningBridge } from "./learningBridge";
 export function LearningDemo() {
-  const [role, setRole] = useState<
-      "owner" | "parent" | "coach" | "other_coach"
-    >("owner"),
+  const [role, setRole] = useState<SimulationRole>("owner"),
     [profile, setProfile] = useState(sampleProfiles[0].id),
-    [view, setView] = useState<"athlete" | "bank">("athlete"),
+    [view, setView] = useState<"athlete" | "bank" | "roster">("roster"),
     [revision, setRevision] = useState(0);
   const [simulation, setSimulation] = useState(() =>
     learningSimulation("owner"),
   );
-  function update() {
-    setRevision((n) => n + 1);
-  }
+  const client = useMemo(
+    () => learningBridge(simulation, role),
+    [simulation, role],
+  );
+  const staffApi = useMemo(() => new StaffService(client), [client]);
+  const loadProfiles = useCallback(
+    async (query: string, cursor: RosterCursor | null) => {
+      const page = await staffApi.page(
+        { query, filter: "all", age: "", position: "", coach: "" },
+        cursor,
+        25,
+      );
+      return {
+        rows: page.rows
+          .filter((row) => row.athlete_id)
+          .map((row) => ({ id: row.athlete_id!, name: row.athlete_name! })),
+        next_cursor: page.page!.next_cursor,
+      };
+    },
+    [staffApi],
+  );
+  const staff = role !== "parent";
   return (
     <main className="page staff-workflow">
       <header className="workflow-intro">
@@ -39,13 +61,15 @@ export function LearningDemo() {
           <select
             value={role}
             onChange={(e) => {
-              const next = e.target.value as typeof role;
+              const next = e.target.value as SimulationRole;
               setSimulation(learningSimulation(next, simulation.export()));
               setRole(next);
-              setView("athlete");
+              setProfile(sampleProfiles[0].id);
+              setView(next === "parent" ? "athlete" : "roster");
             }}
           >
             <option value="owner">Owner</option>
+            <option value="manager">Manager</option>
             <option value="coach">Assigned coach</option>
             <option value="other_coach">Unassigned coach</option>
             <option value="parent">Parent / household</option>
@@ -53,24 +77,41 @@ export function LearningDemo() {
         </label>
         <label>
           Sample athlete
-          <select value={profile} onChange={(e) => setProfile(e.target.value)}>
-            {sampleProfiles.map((p) => (
+          <select
+            value={profile}
+            onChange={(e) => {
+              setProfile(e.target.value);
+              setView("athlete");
+            }}
+          >
+            {(role === "parent"
+              ? sampleProfiles
+              : role === "coach"
+                ? rosterProfiles.filter(
+                    (p) =>
+                      simulation.export().assignments[p.id] === sampleActor,
+                  )
+                : role === "other_coach"
+                  ? []
+                  : rosterProfiles
+            ).map((p) => (
               <option key={p.id} value={p.id}>
                 {p.name}
               </option>
             ))}
           </select>
         </label>
-        {role === "owner" && (
+        {staff && (
           <>
-            <button onClick={() => setView("athlete")}>Athlete plan</button>
+            <button onClick={() => setView("roster")}>Athlete roster</button>
             <button onClick={() => setView("bank")}>Training bank</button>
           </>
         )}
+        <button onClick={() => setView("athlete")}>Athlete plan</button>
         <button
           onClick={() => {
             simulation.sunday();
-            update();
+            setRevision((n) => n + 1);
           }}
         >
           Simulate next Sunday release
@@ -78,7 +119,7 @@ export function LearningDemo() {
         <button
           onClick={() => {
             simulation.friday();
-            update();
+            setRevision((n) => n + 1);
           }}
         >
           Simulate Friday reminder
@@ -97,16 +138,30 @@ export function LearningDemo() {
           <StaffLearning
             api={simulation.api}
             resources={[]}
-            profiles={sampleProfiles}
+            profiles={rosterProfiles}
+            loadProfiles={loadProfiles}
+            onOpenAthlete={(id) => {
+              setProfile(id);
+              setView("athlete");
+            }}
             owner={role === "owner"}
-            approver={role === "owner"}
+            approver={role === "owner" || role === "manager"}
+          />
+        ) : view === "roster" && staff ? (
+          <StaffServiceDashboard
+            client={client}
+            role={role === "other_coach" ? "coach" : role}
+            actor={sampleActor}
+            enabled
+            learningEnabled
+            preview
           />
         ) : (
           <LearningAthlete
             api={simulation.api}
             profile={profile}
             actor={sampleActor}
-            staff={role !== "parent"}
+            staff={staff}
             owner={role === "owner"}
           />
         )}

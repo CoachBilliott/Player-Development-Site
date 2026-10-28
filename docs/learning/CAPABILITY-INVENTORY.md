@@ -5,16 +5,16 @@ verified against the content schemas, staff roster RPC, assignment RPCs, uploade
 and all existing SQL migrations. Package descriptions are proposals, not evidence
 of a built capability.
 
-| Area             | Existing persistent capability                                                       | Missing at this baseline                                                                        |
-| ---------------- | ------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------- |
-| Content          | Protected video/image/PDF/text attachments, instructions, audience and review stages | Dedicated quiz-upload, submission and grade tracking; upload format still awaiting confirmation |
-| Quizzes          | Proposed package copy only                                                           | Quiz-file versions, submissions, authorized grading, attempts and gradebook                     |
-| Athlete training | Owner-assigned saved workout, per-athlete overrides, siblings kept separate          | Multiweek enrollment and automatic progression                                                  |
-| Progress         | Practice/resume/completion records, parent approval, private review history          | Week checklists, quiz grades and complete released-week library                                 |
-| Groups           | Multiple clips in a review request; not a cohort                                     | Cohort membership, group enrollment and group weekly publishing                                 |
-| Delivery         | Manual monitoring/rules and private notices                                          | Verified live Sunday publisher and Friday reminder scheduler                                    |
-| Scale            | Scoped roster, client-side search and service-status filters                         | Server pagination; current RPC aggregates the full roster with per-athlete detail               |
-| Billing          | Proposed packages and manual training permissions                                    | Verified paid package entitlement/renewal integration                                           |
+| Area             | Existing persistent capability                                                       | Missing at this baseline                                                                              |
+| ---------------- | ------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
+| Content          | Protected video/image/PDF/text attachments, instructions, audience and review stages | Dedicated quiz-upload, submission and grade tracking; format subsequently selected: Google Sheets CSV |
+| Quizzes          | Proposed package copy only                                                           | Quiz-file versions, submissions, authorized grading, attempts and gradebook                           |
+| Athlete training | Owner-assigned saved workout, per-athlete overrides, siblings kept separate          | Multiweek enrollment and automatic progression                                                        |
+| Progress         | Practice/resume/completion records, parent approval, private review history          | Week checklists, quiz grades and complete released-week library                                       |
+| Groups           | Multiple clips in a review request; not a cohort                                     | Cohort membership, group enrollment and group weekly publishing                                       |
+| Delivery         | Manual monitoring/rules and private notices                                          | Verified live Sunday publisher and Friday reminder scheduler                                          |
+| Scale            | Scoped roster, client-side search and service-status filters                         | Server pagination; current RPC aggregates the full roster with per-athlete detail                     |
+| Billing          | Proposed packages and manual training permissions                                    | Verified paid package entitlement/renewal integration                                                 |
 
 Generic PDF/text upload is not quiz import and cannot collect or grade answers.
 The drill schema has lesson/steps/cue fields, no question/answer/score fields.
@@ -41,14 +41,14 @@ are monitoring defaults, not paid enrollment or automatic content distribution.
 - Preserve current role scope: Owners/Managers can see client service; Coaches
   only assigned athletes. New enrollment/publishing authority is proposed
   Owner-only to preserve existing training-assignment permissions until reviewed.
-- Quiz grades are stored by authorized server operations; learners cannot supply trusted scores. Quiz uploads reference stable versions. No quiz-building/question-authoring tool is requested. Athletes must take quizzes in Repformed on web/app. A documented structured import template and validation/review may be prepared, with protected server scoring for multiple-choice/true-false and coach review for written responses. A sample-specific PDF/Word conversion or other importer remains pending; arbitrary uploaded documents do not imply automatic grading.
+- Quiz grades are stored by authorized server operations; learners cannot supply trusted scores. Quiz uploads reference stable versions. No quiz-building/question-authoring tool is requested. Athletes must take quizzes in Repformed on web/app. A documented structured import template and validation/review may be prepared, with protected server scoring for multiple-choice/true-false and coach review for written responses. Google Sheets CSV is the selected format; arbitrary PDF/Word documents are not supported quiz imports.
 
 ## Coherent implementation stages
 
 1. Finish athlete-context assignment UI using existing profile RPCs. Do not
    require selecting the same customer/athlete again. Keep individual account
    permissions separate. Add filters using existing authorized roster metadata.
-2. Prepare additive learning-plan/enrollment/release, generic submission/grade history (format handling pending), cohort and
+2. Prepare additive learning-plan/enrollment/release, submission/grade history using the selected CSV contract, cohort and
    notice schema with explicit RLS and server operations. Rehearse with synthetic
    adults only. No production schema application in this stage.
 3. Build shared staff upload/plan management and athlete/guardian current-week/library/grade
@@ -73,7 +73,8 @@ Content snapshot retention/private media permissions require review before live
 activation. New junior enrollment stays closed pending actual guardian safeguards
 and consent acceptance. No claim of qualified coaching review is made by code.
 
-
 ## Source increment, October 28 (not production)
 
-The weekly-learning branch adds draft migrations 019/020, server-side import/scoring/attempt history, athlete-specific enrollment, immutable week releases, group enrollment, configurable Friday in-app reminders, staff-only content capacity notices, and a fictional interactive walkthrough. This does not change the production inventory above. The importer contract is in [QUIZ-GOOGLE-SHEETS.md](QUIZ-GOOGLE-SHEETS.md). No quiz-writing studio or Google account connection is needed. Production migration/security/storage/scheduler approval and hosted/device acceptance remain required.
+The weekly-learning branch adds draft migrations 019/020/021, server-side import/scoring/attempt history, athlete-specific enrollment, immutable week releases, group enrollment, configurable Friday in-app reminders, staff-only content capacity notices, and a fictional interactive walkthrough. This does not change the production inventory above. The importer contract is in [QUIZ-GOOGLE-SHEETS.md](QUIZ-GOOGLE-SHEETS.md). No quiz-writing studio or Google account connection is needed. Production migration/security/storage/scheduler approval and hosted/device acceptance remain required.
+
+Follow-up source now includes weekly roster summaries and next actions, server keyset paging, actionable athlete notices, saved group edits/new-only enrollment, quiz re-import version selection, distinct Today/Library/Progress views and a weekly help guide. These replace the earlier source-only UI gaps; hosted activation and production inventory remain unchanged.

@@ -52,6 +52,7 @@ beforeAll(async () => {
     "018-public-interest-and-shared-inbox.sql",
     "019-weekly-learning.sql",
     "020-learning-media-retention.sql",
+    "021-learning-service-workflows.sql",
   ];
   for (const file of files)
     await db.exec(
@@ -882,4 +883,304 @@ it("Friday notices follow current work, parent permission and active access rath
   expect(await r("select public.learning_inbox() r")).toEqual([]);
   await as(coach);
   expect(await r("select public.learning_inbox() r")).toEqual([]);
+});
+it("weekly service summary replaces legacy workout assumptions without widening staff scope", async () => {
+  const rid = await release();
+  await as();
+  const first = await r("select public.staff_athlete_service($1) r", [profile]);
+  expect(first).toMatchObject({
+    workout_id: null,
+    learning: {
+      status: "needs_content",
+      title: "Fictional weekly plan",
+      current_week: 1,
+    },
+    next_action: "Prepare the next week",
+  });
+  await db.query(
+    "select public.learning_save_week($1,$2,2,'Ready next week','{}',$3)",
+    [id(32), plan, [quizVersion]],
+  );
+  await db.query("select public.learning_approve_week($1)", [id(32)]);
+  expect(
+    await r("select public.staff_athlete_service($1) r", [profile]),
+  ).toMatchObject({
+    learning: { status: "ready", ready_weeks: 1, current_release_id: rid },
+    next_action: "View weekly training",
+  });
+  await as(manager);
+  expect(
+    await r("select public.staff_athlete_service($1) r", [profile]),
+  ).toMatchObject({ learning: { status: "ready" } });
+  await as(coach);
+  expect(
+    await r("select public.staff_athlete_service($1) r", [profile]),
+  ).toMatchObject({ learning: { status: "ready" } });
+  await as(otherCoach);
+  await blocked(
+    "select public.staff_athlete_service($1)",
+    [profile],
+    /outside your service roster/i,
+  );
+  await as(parent);
+  await blocked("select public.staff_learning_roster_page()");
+});
+it("server pagination stays bounded, deterministic, searchable and scoped across many athletes", async () => {
+  await as("", "postgres");
+  await db.query(
+    "insert into public.player_profiles(id,owner_id,nickname,age_group,position,experience,goal) select ('91000000-0000-4000-8000-'||lpad(n::text,12,'0'))::uuid,$1,'Fictional paging athlete '||n,'18+','Quarterback','New to the game','Footwork' from generate_series(1001,1150) n",
+    [parent],
+  );
+  await db.query(
+    "insert into public.athlete_service_coaches(profile_id,coach_id) select id,case when right(id::text,1)::integer%2=0 then $1::uuid else $2::uuid end from public.player_profiles where nickname like 'Fictional paging%'",
+    [coach, otherCoach],
+  );
+  await as();
+  let cursor: unknown = null;
+  const found: string[] = [];
+  for (let page = 0; page < 12; page++) {
+    const result = (await r(
+      "select public.staff_learning_roster_page('','all','','','',$1,17) r",
+      [cursor],
+    )) as {
+      rows: { athlete_id: string }[];
+      page: { next_cursor: unknown; total: number };
+    };
+    expect(result.rows.length).toBeLessThanOrEqual(17);
+    expect(result.page.total).toBe(153);
+    found.push(...result.rows.map((row) => row.athlete_id));
+    cursor = result.page.next_cursor;
+    if (!cursor) break;
+  }
+  expect(found).toHaveLength(153);
+  expect(new Set(found).size).toBe(153);
+  const searched = (await r(
+    "select public.staff_learning_roster_page('PAGING 1001','all','','','',null,25) r",
+  )) as { rows: { athlete_id: string }[] };
+  expect(searched.rows).toHaveLength(1);
+  expect(searched.rows[0].athlete_id).toBe(id(1001));
+  await as(coach);
+  const scoped = (await r("select public.staff_learning_roster_page() r")) as {
+    page: { total: number };
+    rows: { athlete_id: string }[];
+  };
+  expect(scoped.page.total).toBe(76);
+  expect(
+    scoped.rows.every(
+      (row) => row.athlete_id !== sibling && row.athlete_id !== otherProfile,
+    ),
+  ).toBe(true);
+  await blocked(
+    "select public.staff_learning_roster_page('','all','','','',null,null)",
+    [],
+    /valid roster|page size/i,
+  );
+  await as();
+  await db.query("select public.assign_athlete_service_coach($1,$2,1)", [
+    profile,
+    otherCoach,
+  ]);
+  await as(coach);
+  expect(
+    (
+      (await r("select public.staff_learning_roster_page() r")) as {
+        page: { total: number };
+      }
+    ).page.total,
+  ).toBe(75);
+}, 30000);
+it("paged search normalizes accents and includes pending-profile clients only for administrators", async () => {
+  await as("", "postgres");
+  await db.query(
+    "update public.player_profiles set nickname='Fictional José' where id=$1",
+    [profile],
+  );
+  await db.query(
+    "insert into auth.users(id,email,email_confirmed_at) values($1,'fictional-pending@example.test',now())",
+    [id(7)],
+  );
+  await db.query(
+    "insert into public.account_roles(user_id,role) values($1,'parent')",
+    [id(7)],
+  );
+  await db.query(
+    "insert into public.member_accounts(user_id,account_type,adult_confirmed_at,privacy_acknowledged_at) values($1,'parent',now(),now())",
+    [id(7)],
+  );
+  await as();
+  expect(
+    (
+      (await r("select public.staff_learning_roster_page('jose') r")) as {
+        rows: unknown[];
+      }
+    ).rows,
+  ).toHaveLength(1);
+  expect(
+    (
+      (await r(
+        "select public.staff_learning_roster_page('fictional-pending') r",
+      )) as { rows: { athlete_id: unknown }[] }
+    ).rows,
+  ).toEqual([expect.objectContaining({ athlete_id: null })]);
+  await as(coach);
+  expect(
+    (
+      (await r(
+        "select public.staff_learning_roster_page('fictional-pending') r",
+      )) as { rows: unknown[] }
+    ).rows,
+  ).toEqual([]);
+});
+it("quiz authors can review later revisions without exposing any keys to another coach or household", async () => {
+  await as(coach);
+  await db.query("select public.learning_import_quiz($1,$2,$3,$4)", [
+    quizVersion,
+    quiz,
+    "Fictional authored quiz",
+    payload,
+  ]);
+  await as();
+  await db.query("select public.learning_import_quiz($1,$2,$3,$4)", [
+    id(22),
+    quiz,
+    "Fictional authored quiz",
+    payload,
+  ]);
+  await as(coach);
+  expect(
+    ((await r("select public.learning_catalog() r")) as { quizzes: unknown[] })
+      .quizzes,
+  ).toHaveLength(2);
+  await as(otherCoach);
+  expect(
+    ((await r("select public.learning_catalog() r")) as { quizzes: unknown[] })
+      .quizzes,
+  ).toEqual([]);
+  await as(parent);
+  await blocked("select public.learning_catalog()");
+});
+it("a growing group enrolls only new members and keeps existing progress, pauses and grades", async () => {
+  const rid = await release();
+  await as();
+  await db.query("select public.learning_save_cohort($1,'Growing cohort',$2)", [
+    id(70),
+    [profile, sibling],
+  ]);
+  let preview = await r(
+    "select public.learning_group_enrollment_preview($1,$2) r",
+    [id(70), plan],
+  );
+  expect(preview).toMatchObject({
+    new_count: 0,
+    kept_count: 1,
+    blocked_count: 1,
+  });
+  await db.query(
+    "select public.learning_set_access($1,'private_test',now()-interval '1 day',now()+interval '1 year','Synthetic newcomer',false)",
+    [sibling],
+  );
+  preview = await r(
+    "select public.learning_group_enrollment_preview($1,$2) r",
+    [id(70), plan],
+  );
+  expect(preview).toMatchObject({
+    new_count: 1,
+    kept_count: 1,
+    blocked_count: 0,
+  });
+  expect(
+    await r("select public.learning_enroll_cohort($1,$2,$3) r", [
+      id(70),
+      plan,
+      id(71),
+    ]),
+  ).toBe(1);
+  expect(
+    await r("select public.learning_enroll_cohort($1,$2,$3) r", [
+      id(70),
+      plan,
+      id(71),
+    ]),
+  ).toBe(1);
+  await as("", "postgres");
+  expect(
+    await r(
+      "select count(*)::integer r from public.learning_releases where enrollment_id=$1",
+      [enrollment],
+    ),
+  ).toBe(1);
+  expect(
+    await r(
+      "select id r from public.learning_releases where enrollment_id=$1",
+      [enrollment],
+    ),
+  ).toBe(rid);
+  expect(
+    await r("select next_week r from public.learning_enrollments where id=$1", [
+      enrollment,
+    ]),
+  ).toBe(2);
+  await as(coach);
+  await blocked("select public.learning_group_enrollment_preview($1,$2)", [
+    id(70),
+    plan,
+  ]);
+});
+it("notices carry only scoped athlete context and point to the actual next release", async () => {
+  await release();
+  await as(coach);
+  const rows = (await r("select public.learning_inbox() r")) as {
+    athlete_name: string;
+    next_due_at: string;
+  }[];
+  expect(rows).toEqual([
+    expect.objectContaining({
+      athlete_name: "Fictional learner",
+      category: "no_content",
+      next_due_at: expect.any(String),
+    }),
+  ]);
+  await as(otherCoach);
+  expect(await r("select public.learning_inbox() r")).toEqual([]);
+});
+it("rollback flags stop learning and scheduler access without erasing progress or changing legacy service scope", async () => {
+  const rid = await release();
+  await as(parent);
+  await db.query("select public.learning_save_attempt($1,$2,$3,$4,true,0)", [
+    attempt,
+    rid,
+    quizVersion,
+    { sample_1: 0, sample_2: 0, sample_3: "Synthetic recovery response" },
+  ]);
+  await as(coach);
+  await db.query("select public.learning_grade_written($1,$2,$3,0)", [
+    attempt,
+    { sample_3: 2 },
+    "Synthetic retained feedback",
+  ]);
+  await as("", "postgres");
+  await db.exec(
+    "update public.learning_settings set enabled=false,scheduler_enabled=false,notices_enabled=false",
+  );
+  expect(await r("select public.learning_tick(now(),false) r")).toMatchObject({
+    disabled: true,
+  });
+  expect(
+    await r("select count(*)::integer r from public.learning_releases"),
+  ).toBe(1);
+  expect(
+    await r("select count(*)::integer r from public.learning_quiz_attempts"),
+  ).toBe(1);
+  expect(
+    await r("select count(*)::integer r from public.learning_quiz_grades"),
+  ).toBe(1);
+  await as(parent);
+  await blocked("select public.learning_athlete($1)", [profile]);
+  expect(await r("select public.can_view_athlete($1) r", [profile])).toBe(true);
+  await as();
+  const legacy = (await r("select public.staff_athlete_service($1) r", [
+    profile,
+  ])) as Record<string, unknown>;
+  expect(legacy.athlete_id).toBe(profile);
+  expect(legacy).not.toHaveProperty("learning");
 });

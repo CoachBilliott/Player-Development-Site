@@ -108,7 +108,9 @@ export function PrivateHeader({
               href={`#${route}`}
               aria-current={active(route) ? "page" : undefined}
             >
-              {label}
+              {shared.learningPlansEnabled && route === "app-workouts"
+                ? "Library"
+                : label}
             </a>
           ))}
         </nav>

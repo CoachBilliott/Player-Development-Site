@@ -9,6 +9,10 @@ for (const path of [
   "brand/repformed-mark.svg",
   "account-help.html",
   "credits.html",
+  "weekly-learning-help.html",
+  "social-links.css",
+  "social-links.js",
+  "social-links.json",
   "templates/repformed-quiz-blank.csv",
   "templates/repformed-quiz-example.csv",
 ])

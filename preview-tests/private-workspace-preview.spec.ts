@@ -226,13 +226,11 @@ test("Google Sheets upload validates before saving a quiz version", async ({
   await page
     .getByLabel("Quiz title", { exact: true })
     .fill("Fictional imported quiz");
-  await page
-    .getByLabel("CSV file")
-    .setInputFiles({
-      name: "bad.csv",
-      mimeType: "text/csv",
-      buffer: Buffer.from("wrong,headers\ninvalid,file"),
-    });
+  await page.getByLabel("CSV file").setInputFiles({
+    name: "bad.csv",
+    mimeType: "text/csv",
+    buffer: Buffer.from("wrong,headers\ninvalid,file"),
+  });
   await expect(page.getByRole("alert")).toContainText("Nothing was published");
   await expect(
     page.getByRole("button", { name: "Save quiz version" }),
@@ -282,6 +280,7 @@ test("household saves quiz draft, submits inside site, coach grades, and history
   );
   await page.getByRole("button", { name: "Back to this week" }).click();
   await page.getByLabel("Sample role").selectOption("coach");
+  await page.getByRole("button", { name: "Athlete plan", exact: true }).click();
   await page.getByRole("button", { name: "Open week", exact: true }).click();
   await page
     .getByText("Submitted · awaiting written grade", { exact: false })
@@ -317,6 +316,7 @@ test("household saves quiz draft, submits inside site, coach grades, and history
     fullPage: true,
   });
   await page.getByLabel("Sample role").selectOption("other_coach");
+  await page.getByRole("button", { name: "Athlete plan", exact: true }).click();
   await expect(page.getByRole("alert")).toContainText(
     "outside this fictional role",
   );
@@ -352,4 +352,221 @@ test("Friday notices and reset work without external requests or phone overflow"
     path: `artifacts/private-workspace/learning-athlete-${info.project.name}.png`,
     fullPage: true,
   });
+});
+
+test("weekly roster uses current plans, real paging controls and actionable athlete alerts", async ({
+  page,
+}, info) => {
+  await page.goto("./#weekly-demo");
+  const roster = page
+    .getByRole("region", { name: "Client service dashboard" })
+    .or(page.locator('section[aria-label="Client service dashboard"]'));
+  await roster
+    .getByRole("searchbox", { name: "Search athletes or clients" })
+    .fill("Avery");
+  await expect(
+    roster.getByText("Fictional two-week pathway", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    roster.getByText("No training assigned", { exact: true }),
+  ).toHaveCount(0);
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  await page.screenshot({
+    path: `artifacts/private-workspace/learning-roster-${info.project.name}.png`,
+    fullPage: true,
+  });
+  await roster
+    .getByRole("button", { name: "View weekly plan for Fictional Avery" })
+    .click();
+  const detail = page.getByRole("dialog");
+  await expect(
+    detail.getByRole("heading", { name: "Weekly plan", exact: true }),
+  ).toBeVisible();
+  await expect(
+    detail.getByRole("button", { name: "Assign training", exact: true }),
+  ).toHaveCount(0);
+  await detail.getByRole("button", { name: "Pause plan", exact: true }).click();
+  await detail
+    .getByRole("button", { name: "Confirm change", exact: true })
+    .click();
+  await expect(
+    detail.getByRole("heading", { name: "Review paused plan", exact: true }),
+  ).toBeVisible();
+  await detail
+    .getByRole("button", { name: "Back to athletes", exact: true })
+    .click();
+  await roster
+    .getByRole("button", { name: "Clear filters", exact: true })
+    .click();
+  await expect(
+    roster.getByRole("button", { name: "Next page", exact: true }),
+  ).toBeEnabled();
+  await roster.getByRole("button", { name: "Next page", exact: true }).click();
+  await expect(
+    roster.getByRole("navigation", { name: "Athlete roster pages" }),
+  ).toContainText("Page 2");
+  await roster
+    .getByRole("button", { name: "Previous page", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Training bank", exact: true })
+    .click();
+  await page
+    .getByRole("link", { name: "Open Fictional Jordan", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "Weekly plan", exact: true }),
+  ).toBeVisible();
+  await page.screenshot({
+    path: `artifacts/private-workspace/learning-alert-drilldown-${info.project.name}.png`,
+    fullPage: true,
+  });
+  await page.getByLabel("Sample role").selectOption("coach");
+  await expect(page.locator(".staff-service-table")).toContainText(
+    "Fictional Avery",
+  );
+  await expect(page.locator(".staff-service-table")).not.toContainText(
+    "Fictional Jordan",
+  );
+});
+test("Google Sheets re-import creates version two while a released quiz keeps version one", async ({
+  page,
+}) => {
+  await page.goto("./#weekly-demo");
+  await page
+    .getByRole("button", { name: "Training bank", exact: true })
+    .click();
+  await page.getByRole("button", { name: "Quiz uploads", exact: true }).click();
+  await page
+    .getByRole("combobox", { name: "Save as", exact: true })
+    .selectOption({ label: "New version of Fictional format quiz · latest 1" });
+  await expect(page.getByLabel("Quiz title", { exact: true })).toBeDisabled();
+  const csv = (
+    await readFile("public/templates/repformed-quiz-example.csv", "utf8")
+  ).replace(
+    "Which marker says START?",
+    "Version two: which marker says START?",
+  );
+  await page.getByLabel("CSV file").setInputFiles({
+    name: "version-two.csv",
+    mimeType: "text/csv",
+    buffer: Buffer.from(csv),
+  });
+  await page
+    .getByRole("button", { name: "Save quiz version", exact: true })
+    .click();
+  await expect(
+    page.getByText("Fictional format quiz · version 2 · 4 points", {
+      exact: true,
+    }),
+  ).toBeVisible();
+  await page.getByLabel("Sample role").selectOption("parent");
+  await page.getByRole("button", { name: "Open week", exact: true }).click();
+  await page.getByRole("button", { name: "Take quiz", exact: true }).click();
+  await expect(
+    page.getByText("1. Which marker says START?", { exact: false }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Version two: which marker says START?", { exact: false }),
+  ).toHaveCount(0);
+});
+test("groups retain selections across pages and enroll only new members", async ({
+  page,
+}, info) => {
+  await page.goto("./#weekly-demo");
+  await page
+    .getByRole("button", { name: "Training bank", exact: true })
+    .click();
+  await page.getByRole("button", { name: "Groups", exact: true }).click();
+  await page.getByText("Create or edit a group", { exact: true }).click();
+  await page
+    .getByLabel("Group name", { exact: true })
+    .fill("Fictional growing group");
+  const picker = page.locator(".learning-roster-picker");
+  await picker
+    .getByRole("searchbox", { name: "Find athletes", exact: true })
+    .fill("Avery");
+  await picker
+    .getByRole("checkbox", { name: "Fictional Avery", exact: true })
+    .check();
+  await picker
+    .getByRole("searchbox", { name: "Find athletes", exact: true })
+    .fill("");
+  await expect(
+    picker.getByRole("button", { name: "Next athletes" }),
+  ).toBeEnabled();
+  await picker.getByRole("button", { name: "Next athletes" }).click();
+  await expect(
+    picker.getByRole("navigation", { name: "Group athlete pages" }),
+  ).toContainText("Page 2");
+  await picker
+    .getByRole("checkbox", { name: "Fictional Athlete 026", exact: true })
+    .check();
+  await expect(
+    picker.getByText("2 selected across all pages · maximum 500"),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Save group", exact: true }).click();
+  await page
+    .getByRole("combobox", { name: "Group", exact: true })
+    .selectOption({ label: "Fictional growing group · 2 athletes" });
+  await page
+    .getByRole("combobox", { name: "Plan", exact: true })
+    .selectOption({ label: "Fictional two-week pathway" });
+  await page
+    .getByRole("button", { name: "Review group enrollment", exact: true })
+    .click();
+  const confirm = page
+    .getByRole("region", { name: "Confirm group enrollment" })
+    .or(page.locator('section[aria-label="Confirm group enrollment"]'));
+  await expect(confirm).toContainText(
+    "1 new enrollments · 1 existing matching plans kept · 0 need attention",
+  );
+  await confirm
+    .getByRole("button", { name: "Confirm group enrollment", exact: true })
+    .click();
+  await expect(
+    page.getByText(
+      "Group enrollment saved. Existing matching plans and histories were kept.",
+      { exact: true },
+    ),
+  ).toBeVisible();
+  await page.screenshot({
+    path: `artifacts/private-workspace/learning-group-${info.project.name}.png`,
+    fullPage: true,
+  });
+  await page
+    .getByLabel("Sample athlete")
+    .selectOption({ label: "Fictional Avery" });
+  await expect(page.getByText("Next release:", { exact: false })).toContainText(
+    "Week 2",
+  );
+});
+test("weekly guide has usable chapters, downloadable templates, contact and all five socials", async ({
+  page,
+}) => {
+  const response = await page.goto("./weekly-learning-help.html");
+  expect(response?.status()).toBe(200);
+  await expect(
+    page.getByRole("heading", {
+      level: 1,
+      name: "Your week. Your library. Your progress.",
+    }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "blank CSV template", exact: true }),
+  ).toHaveAttribute("download", "");
+  await expect(
+    page.getByRole("link", { name: "Repformed@gmail.com", exact: true }),
+  ).toHaveAttribute("href", "mailto:Repformed@gmail.com");
+  await expect(
+    page
+      .getByRole("navigation", { name: "Official social accounts" })
+      .getByRole("link"),
+  ).toHaveCount(5);
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth + 1,
+    ),
+  ).toBe(true);
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 });

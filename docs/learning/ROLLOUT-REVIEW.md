@@ -29,9 +29,19 @@ Existing approved original lesson files referenced by learning snapshots are ret
 
 No new bucket, quota increase, automatic deletion or retention cleanup. Approved snapshots can retain files after a template changes; retention duration/cost/withdrawal policy must be accepted before rollout. Disabling the learning UI does not silently delete retained media. Withdrawal blocks new learning reads, while already-issued signed links may remain usable until their five-minute expiry. Existing public sample links have their existing separate public visibility; do not claim retraction erases all copies.
 
+## Draft 021: roster and group workflow permissions
+
+No new tables, raw-table grants, role grants, email connection or scheduler activation. This additive migration depends on019/020 and the existing015 service functions; it does not require grouped-review013/014.
+
+- Adds a guarded weekly summary and keyset-paged staff roster RPC. Owners/Managers retain the existing all-client service metadata scope, including adult client contact labels. Coaches receive only assigned athlete rows and existing necessary client context. Search/status/age/position/coach filters run server-side; details are bounded to a page (default25, maximum100). Counts/facets still inspect the scoped candidate set, so153 synthetic rows establish correctness, not production load capacity.
+- Renames and revokes direct caller access to the prior service-detail function, then wraps it with weekly summary/next-action fields. With the backend learning flag off it returns the legacy response. The internal summary/search helpers are not granted to authenticated callers.
+- Extends already-authorized staff catalog/inbox responses with immutable quiz-version choices, scoped group member names, and actionable athlete/due context. Athlete learner payloads do not gain answer keys.
+- Adds Owner-only group-enrollment preview. Group edits/enrollment serialize together; each member is locked before eligibility/conflict recheck. Applying a plan keeps existing matching enrollments, progress, pauses and grades; only new eligible members enroll. A different running plan blocks the whole operation. Operation IDs deduplicate retries. No automatic overwrite or implicit eligibility grant.
+- Adds indexes only for enrollment/history, attempts, notices and group membership. No storage quota/retention change beyond the separately reviewed020 policy.
+
 ## Minimum staged activation gates
 
-1. Complete source/browser/backend regression and review 019/020 together against an isolated hosted rehearsal, including Storage behavior and real Auth role claims. PGlite is local PostgreSQL rehearsal, not hosted Supabase/Storage acceptance.
+1. Complete source/browser/backend regression and review 019/020/021 together against an isolated hosted rehearsal, including Storage behavior and real Auth role claims. PGlite is local PostgreSQL rehearsal, not hosted Supabase/Storage acceptance.
 2. Obtain exact approval for the above new learning-data permissions, storage retention/read policies, and account-erasure integration. Apply additive migrations with backup/restore and rollback receipt. Do not apply grouped review 013/014 as an unrelated dependency.
 3. Enable source `learningPlansEnabled` and backend learning flag only for approved adult test access. Keep youth, scheduler and notices off initially. Use fictional adults and test content, no real minor data. Do not create or change staff roles to test.
 4. Test manually: correct sibling, cross-household/coach denial, immutable history, protected answer keys, upload/read/withdraw, save/resume, grading, expiry/revocation, pause/resume/repeat, group atomicity, account erasure. Coaching must review actual training independently.
@@ -43,12 +53,11 @@ No new bucket, quota increase, automatic deletion or retention cleanup. Approved
 
 Turn off frontend learning flag and backend scheduler/notices first; preserve existing manual workouts/intake/auth. Do not drop learning/history tables or delete retained objects as an automatic rollback. Revert frontend to last known production artifact. Permission-policy rollback must be explicit and tested; removing 020 would expose retained originals to existing staff deletion rules. Keep backup and migration ledger. No production rollback has been performed or needed by this source-only work.
 
-## Known limits / follow-up acceptance
+## Implemented workflow follow-up (unpublished)
 
-- Main service roster still uses the existing full scoped backend response, then client search/filters. Group writes are capped at 500; server cursor pagination is not yet implemented. Do not claim tested large-scale capacity.
-- Google Sheets preparation is CSV export/upload, not live sync. No native Google Sheet has been created by this task.
-- Placeholder walkthrough has no football demonstration media. Its clock and grading are explicitly browser-local simulations; real scoring/access logic is separately tested in PostgreSQL.
-- No finished age/position curriculum, qualified coaching review, payment integration or real customer device acceptance is claimed.
+The main roster now summarizes weekly enrollment/current release/readiness and routes next actions into the same athlete. Legacy manual workout assignment remains under an explicit advanced disclosure, not the primary weekly workflow. Group selection supports server-paged search, cross-page selection, saved-group edits and a preview separating new enrollments from existing progress. Quiz re-import selects an existing quiz and appends a version; previously released attempts retain their original version. Named low-content notices open the athlete. Today, Library and Progress have distinct shared web/app views, and the updated weekly guide links the CSV templates and contact/social destinations.
+
+Google Sheets preparation is CSV export/upload, not live sync. No native Google Sheet was created by this task. Fictional preview media are labeled placeholders, browser-local grades are simulation, and real scoring/access logic is separately tested in PostgreSQL. No finished curriculum, qualified coaching review, billing integration or real-device acceptance is claimed.
 
 ## Verified hosted discovery (read-only, October 28)
 
@@ -56,8 +65,8 @@ The production project `iilbulpqbuknhdpmtrvm` has **no learning schema, no insta
 
 The exact additional approvals therefore need to be staged:
 
-1. **Rehearsal target:** identify an already-owned empty nonproduction Supabase project, or approve creating an empty rehearsal target in the Repformed organization. No production user data copied, no paid plan/resource created without a separate price decision. Stage synthetic adults and staff identities only, with no outgoing mail. Apply the production baseline (001–012,015–018) then019/020; test real Auth claims and Storage policies. Library interface behavior and app routes alone do not establish hosted access safety.
-2. **Production schema/security:** approve019’s private learning records/RPC grants and erasure integration plus020’s released-media read scope and retained-original DELETE/UPDATE restriction. Retention currently has no automatic expiry/cleanup and can retain originals after plans end; accept or revise that policy first. Confirm a usable provider backup/restore point before applying. Keep youth and scheduler off. No new account roles, public quiz keys, video-review quotas or billing.
+1. **Rehearsal target:** identify an already-owned empty nonproduction Supabase project, or approve creating an empty rehearsal target in the Repformed organization. No production user data copied, no paid plan/resource created without a separate price decision. Stage synthetic adults and staff identities only, with no outgoing mail. Apply the production baseline (001–012,015–018) then019/020/021; test real Auth claims and Storage policies. Library interface behavior and app routes alone do not establish hosted access safety.
+2. **Production schema/security:** approve019’s private learning records/RPC grants and erasure integration plus020’s released-media read scope and retained-original DELETE/UPDATE restriction, and021’s guarded roster/summary/group-preview RPCs and service-wrapper change. Retention currently has no automatic expiry/cleanup and can retain originals after plans end; accept or revise that policy first. Confirm a usable provider backup/restore point before applying. Keep youth and scheduler off. No new account roles, public quiz keys, video-review quotas or billing.
 3. **Adult website feature:** after rehearsal, approve the coordinated PR12→PR13 release with real authentication and `learningPlansEnabled`; enable the backend learning flag for the existing adult/private boundary. Eligibility is manual verification, not a payment event. Use a bounded existing/synthetic adult acceptance record only if separately included in the test approval; do not fabricate enrollments as real purchases.
 4. **Standing automation:** because pg_cron is absent, explicitly approve enabling Supabase Cron and creating the single named job `repformed-weekly-learning`, running `select public.learning_tick(now(),false)` every minute (`* * * * *`). The function handles Sunday00:00 and configurable Friday17:00 America/Chicago; UTC cron does not hard-code a DST offset. Enable scheduler/in-app notices only after a reviewed zero-error dry-run and staged retry/DST tests. No new sending key, email/push, historical backfill or extra recipient is part of this action. Exact physical midnight execution has normal scheduler latency; actual availability is recorded separately from the scheduled timestamp.
 
@@ -67,14 +76,15 @@ Rollback: disable scheduler/notices and unschedule that named job, disable front
 
 PR13 is based on `ux/staff-workflows` at2f38796 (PR12), rather than main. Intended order after approval is PR12 first, then rebase/retarget PR13 onto that main and rerun the combined checks before PR13 merge/deploy. Neither draft is currently authorized for production publication of this second workflow pass.
 
-The new system supports groups and scoped group grades, Friday in-app reminders, ready-content notices and shared mobile-compatible screens in source. Remaining gaps include:
+The source supports groups and scoped group grades, Friday in-app reminders, ready-content notices, paged roster, athlete-context weekly actions and shared mobile-compatible screens. Remaining operational gates:
 
-- Existing service-roster summary/next-action logic still describes legacy manual workout assignments. It does not yet summarize weekly enrollment/current release/capacity, and its legacy Assign training action can coexist with the new plan pane. Resolve this before calling the whole staff workflow coherent in production.
-- Global bank capacity notices currently lack an athlete-name/action drilldown; athlete-specific notices have context inside that athlete. Finish the actionable staff queue before operational reliance.
-- Friday clock/ready-week threshold are global settings; package/client delivery rules from the existing monitor need a rehearsal comparison, not an assumption that they automatically configure this new system.
-- Cursor pagination/load testing, standing scheduler, hosted Storage/Auth rehearsal, staff missing-content email wiring, billing entitlements, final retention/expiry/refund policy, actual curriculum and native-device acceptance remain unfinished.
-- Home/Contact future-plan wording is aligned without claiming availability; the historical partner guide/screenshots and all legacy help/manual controls are not yet rewritten into a complete weekly-plan handbook. Public interest/auth remain intact. No native TestFlight update is implied.
+- Friday time/ready-week threshold are global learning defaults; existing package/client monitoring rules do not automatically configure this new scheduler. Final per-package/client reminder policy remains a separate decision/integration.
+- Standing scheduler, hosted Storage/Auth rehearsal, staff missing-content email wiring, billing entitlements, final retention/expiry/refund policy, actual curriculum and physical native-device acceptance remain unfinished.
+- Source tests of153 synthetic roster rows are correctness coverage, not production scale/load evidence. Changes to a live roster between cursor pages can change sort position; refresh resets pagination. Selected group members remain explicit and capped500.
+- Public future-plan wording is truthful and the historical partner guide now prominently points to the conditional weekly-plan handbook. No public enrollment or native TestFlight update is implied.
 
-These are explicit remaining requirements, not claims that passing source tests makes a paying youth launch ready.
+These gates prevent claiming a paying youth launch is ready. No production mutation occurred in this source work.
 
 Backup metadata inspection returned zero listed backups, PITR disabled and WAL archiving enabled. This does **not** establish an available restore point or exclude a separately held manual backup. Verify a usable restore procedure before production schema changes; do not assume WAL-enabled means the project can currently restore to any chosen time.
+
+Read-only recovery preparation also captured the current service-detail/account-closure function definitions and training-media policy metadata under the task deliverables. That is a schema metadata snapshot, **not** a backup of customer data or a tested hosted restore point. Local flag-disable tests preserve recorded attempts/grades and the legacy service response; they do not prove provider recovery or real Storage behavior.

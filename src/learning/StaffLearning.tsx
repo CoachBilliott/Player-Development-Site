@@ -1,3 +1,5 @@
+import type { CohortPreview } from "./api";
+import { RosterPicker, type ProfileLoader } from "./RosterPicker";
 import { GroupResults } from "./GroupResults";
 import { LearningInbox } from "./LearningInbox";
 import { useEffect, useRef, useState } from "react";
@@ -6,16 +8,21 @@ import { QuizImportPanel } from "./QuizImportPanel";
 import { PACKAGE_PROPOSALS } from "../packageProposals";
 import "./learning.css";
 type Profile = { id: string; name: string };
+const EMPTY_PROFILES: Profile[] = [];
 export function StaffLearning({
   api,
   resources,
-  profiles = [],
+  profiles = EMPTY_PROFILES,
+  loadProfiles,
+  onOpenAthlete,
   owner = false,
   approver = false,
 }: {
   api: LearningTransport;
   resources: { id: string; title: string }[];
   profiles?: Profile[];
+  loadProfiles?: ProfileLoader;
+  onOpenAthlete?: (profile: string) => void;
   owner?: boolean;
   approver?: boolean;
 }) {
@@ -64,7 +71,13 @@ export function StaffLearning({
   return (
     <section className="learning-staff">
       <h2>Weekly plans & quizzes</h2>
-      <LearningInbox api={api} />
+      <a
+        className="text-button"
+        href={`${import.meta.env.BASE_URL}weekly-learning-help.html`}
+      >
+        Staff weekly-plan guide
+      </a>
+      <LearningInbox api={api} staff onOpenAthlete={onOpenAthlete} />
       {owner && catalog && (
         <LearningRules
           api={api}
@@ -104,8 +117,24 @@ export function StaffLearning({
       {catalog && tab === "quizzes" && (
         <>
           <QuizImportPanel
-            onPublish={async (title, q, operation) => {
-              await api.importQuiz(title, q, operation);
+            existingQuizzes={[
+              ...new Map(
+                catalog.quizzes.map((q) => [
+                  q.quiz_id,
+                  {
+                    id: q.quiz_id,
+                    title: q.title,
+                    latestRevision: Math.max(
+                      ...catalog.quizzes
+                        .filter((v) => v.quiz_id === q.quiz_id)
+                        .map((v) => v.revision),
+                    ),
+                  },
+                ]),
+              ).values(),
+            ]}
+            onPublish={async (title, q, operation, targetQuiz) => {
+              await api.importQuiz(title, q, operation, targetQuiz);
               setRefresh((n) => n + 1);
             }}
           />
@@ -139,6 +168,7 @@ export function StaffLearning({
           api={api}
           catalog={catalog}
           profiles={profiles}
+          loadProfiles={loadProfiles}
           owner={owner}
           busy={busy}
           action={action}
@@ -412,6 +442,7 @@ function GroupBank({
   api,
   catalog,
   profiles,
+  loadProfiles,
   owner,
   busy,
   action,
@@ -419,17 +450,21 @@ function GroupBank({
   api: LearningTransport;
   catalog: LearningCatalog;
   profiles: Profile[];
+  loadProfiles?: ProfileLoader;
   owner: boolean;
   busy: boolean;
   action: (run: () => Promise<void>, message: string) => Promise<void>;
 }) {
   const [title, setTitle] = useState(""),
     [selected, setSelected] = useState<string[]>([]),
-    [query, setQuery] = useState(""),
     [group, setGroup] = useState(""),
     [plan, setPlan] = useState(""),
-    [confirm, setConfirm] = useState(false);
-  const groupId = useRef(crypto.randomUUID()),
+    [confirm, setConfirm] = useState(false),
+    [editing, setEditing] = useState(""),
+    [preview, setPreview] = useState<CohortPreview | null>(null),
+    [reviewing, setReviewing] = useState(false),
+    [reviewError, setReviewError] = useState("");
+  const groupId = useRef<string>(crypto.randomUUID()),
     operation = useRef(crypto.randomUUID());
   return (
     <>
@@ -455,7 +490,30 @@ function GroupBank({
       {owner && (
         <>
           <details>
-            <summary>Create a group</summary>
+            <summary>Create or edit a group</summary>
+            <label>
+              Group to manage
+              <select
+                value={editing}
+                disabled={busy}
+                onChange={(e) => {
+                  const selected = catalog.cohorts.find(
+                    (c) => c.id === e.target.value,
+                  );
+                  setEditing(e.target.value);
+                  groupId.current = selected?.id || crypto.randomUUID();
+                  setTitle(selected?.title || "");
+                  setSelected(selected?.profiles || []);
+                }}
+              >
+                <option value="">New group</option>
+                {catalog.cohorts.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.title}
+                  </option>
+                ))}
+              </select>
+            </label>
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -464,7 +522,10 @@ function GroupBank({
                   groupId.current = crypto.randomUUID();
                   setTitle("");
                   setSelected([]);
-                }, "Group saved. No athlete was enrolled yet.");
+                  setEditing("");
+                  setPreview(null);
+                  setConfirm(false);
+                }, "Group saved. Existing athlete enrollments are unchanged.");
               }}
             >
               <label>
@@ -477,44 +538,49 @@ function GroupBank({
                   onChange={(e) => setTitle(e.target.value)}
                 />
               </label>
-              <label>
-                Find athletes
-                <input
-                  type="search"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                />
-              </label>
-              <fieldset disabled={busy}>
-                <legend>Group athletes · {selected.length} selected</legend>
-                {profiles
-                  .filter((p) =>
-                    p.name.toLowerCase().includes(query.toLowerCase()),
-                  )
-                  .map((p) => (
-                    <label key={p.id}>
-                      <input
-                        type="checkbox"
-                        checked={selected.includes(p.id)}
-                        onChange={() =>
-                          setSelected((s) =>
-                            s.includes(p.id)
-                              ? s.filter((x) => x !== p.id)
-                              : [...s, p.id],
-                          )
-                        }
-                      />
-                      {p.name}
-                    </label>
-                  ))}
-              </fieldset>
+              <RosterPicker
+                profiles={profiles}
+                knownProfiles={
+                  catalog.cohorts.find((c) => c.id === editing)?.members ||
+                  profiles
+                }
+                loadProfiles={loadProfiles}
+                value={selected}
+                onChange={setSelected}
+                disabled={busy}
+              />
+              <p>Group edits stay on this screen until you save.</p>
               <button disabled={busy || !selected.length}>Save group</button>
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() => {
+                  setEditing("");
+                  setSelected([]);
+                  setTitle("");
+                  groupId.current = crypto.randomUUID();
+                }}
+              >
+                Cancel group edits
+              </button>
             </form>
           </details>
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              setConfirm(true);
+              if (reviewing) return;
+              setReviewing(true);
+              setReviewError("");
+              setConfirm(false);
+              operation.current = crypto.randomUUID();
+              void api
+                .previewCohort(group, plan)
+                .then((result) => {
+                  setPreview(result);
+                  setConfirm(true);
+                })
+                .catch((e) => setReviewError(e.message))
+                .finally(() => setReviewing(false));
             }}
           >
             <label>
@@ -522,7 +588,7 @@ function GroupBank({
               <select
                 required
                 value={group}
-                disabled={busy}
+                disabled={busy || reviewing}
                 onChange={(e) => {
                   setGroup(e.target.value);
                   operation.current = crypto.randomUUID();
@@ -542,7 +608,7 @@ function GroupBank({
               <select
                 required
                 value={plan}
-                disabled={busy}
+                disabled={busy || reviewing}
                 onChange={(e) => {
                   setPlan(e.target.value);
                   operation.current = crypto.randomUUID();
@@ -557,25 +623,64 @@ function GroupBank({
                 ))}
               </select>
             </label>
-            <button disabled={busy}>Review group enrollment</button>
+            <button disabled={busy || reviewing}>
+              {reviewing ? "Checking group…" : "Review group enrollment"}
+            </button>
           </form>
-          {confirm && (
+          {reviewError && <p role="alert">{reviewError}</p>}
+          {confirm && preview && (
             <section aria-label="Confirm group enrollment">
               <p>
-                Enroll{" "}
-                {catalog.cohorts.find((c) => c.id === group)?.profiles.length}{" "}
-                athletes into {catalog.plans.find((p) => p.id === plan)?.title}?
-                Everyone must have verified active eligibility and no running
-                plan. If any athlete is ineligible, nobody is enrolled. Current
-                plans are never overwritten.
+                {preview.new_count} new enrollments · {preview.kept_count}{" "}
+                existing matching plans kept · {preview.blocked_count} need
+                attention. Existing weeks, pauses and grades will not be reset.
               </p>
+              <ul>
+                {preview.members.map((member, i) => (
+                  <li key={i}>
+                    {member.name}:{" "}
+                    {member.state === "keep_existing"
+                      ? "Keep current plan"
+                      : member.state === "new_enrollment"
+                        ? "Start week 1"
+                        : member.state === "different_running_plan"
+                          ? "Different running plan — resolve in athlete profile"
+                          : member.state === "eligibility_needed"
+                            ? "Verify package eligibility"
+                            : "Unavailable"}
+                  </li>
+                ))}
+              </ul>
+              {preview.blocked_count > 0 && (
+                <p>
+                  Resolve the listed athletes first. No one will be enrolled
+                  while a conflict remains.
+                </p>
+              )}
+              {preview.new_count === 0 && preview.blocked_count === 0 && (
+                <p>
+                  Nothing new to enroll. Existing plans are already in place.
+                </p>
+              )}
               <button
-                disabled={busy}
+                disabled={
+                  busy || preview.blocked_count > 0 || preview.new_count === 0
+                }
                 onClick={() =>
                   void action(async () => {
-                    await api.enrollCohort(group, plan, operation.current);
+                    const count = await api.enrollCohort(
+                      group,
+                      plan,
+                      operation.current,
+                    );
                     setConfirm(false);
-                  }, "Group enrolled. Each athlete has a separate weekly sequence.")
+                    setPreview(null);
+                    setReviewError(
+                      count === 0
+                        ? "No new enrollments; existing matching plans were kept."
+                        : "",
+                    );
+                  }, "Group enrollment saved. Existing matching plans and histories were kept.")
                 }
               >
                 Confirm group enrollment

@@ -1,3 +1,4 @@
+import { trainingUrl } from "../staffNavigation";
 import { useEffect, useState } from "react";
 import type { LearningNotice, LearningTransport } from "./api";
 const labels = {
@@ -9,9 +10,13 @@ const labels = {
 export function LearningInbox({
   api,
   profile,
+  staff = false,
+  onOpenAthlete,
 }: {
   api: LearningTransport;
   profile?: string;
+  staff?: boolean;
+  onOpenAthlete?: (profile: string) => void;
 }) {
   const [notices, setNotices] = useState<LearningNotice[] | null>(null),
     [error, setError] = useState(""),
@@ -62,10 +67,36 @@ export function LearningInbox({
       {rows?.length === 0 && <p>No active plan notices.</p>}
       {rows?.map((n) => (
         <article key={n.id}>
+          {n.athlete_name && <strong>{n.athlete_name}</strong>}
           <p>
             {!n.read && <strong>Unread · </strong>}
             {labels[n.category]}
           </p>
+          {staff && (
+            <a
+              className="button secondary"
+              href={trainingUrl("workspace", { serviceAthlete: n.profile_id })}
+              onClick={(e) => {
+                if (onOpenAthlete) {
+                  e.preventDefault();
+                  onOpenAthlete(n.profile_id);
+                }
+              }}
+            >
+              Open {n.athlete_name || "affected athlete"}
+            </a>
+          )}
+          {staff && n.next_due_at && (
+            <p>
+              Next release:{" "}
+              {new Intl.DateTimeFormat("en-US", {
+                timeZone: "America/Chicago",
+                dateStyle: "medium",
+                timeStyle: "short",
+              }).format(new Date(n.next_due_at))}{" "}
+              Central
+            </p>
+          )}
           {!n.read && (
             <button disabled={!!busy} onClick={() => void read(n.id)}>
               Mark read

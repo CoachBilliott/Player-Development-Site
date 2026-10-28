@@ -11,7 +11,11 @@ export function appSurface() {
     Boolean((navigator as Navigator & { standalone?: boolean }).standalone)
   );
 }
-export function mobileNavigation(signedIn: boolean, role: AccountRole | null) {
+export function mobileNavigation(
+  signedIn: boolean,
+  role: AccountRole | null,
+  weekly = false,
+) {
   if (!signedIn)
     return [
       ["app", "Start"],
@@ -27,7 +31,7 @@ export function mobileNavigation(signedIn: boolean, role: AccountRole | null) {
     ] as const;
   return [
     ["workspace", "Today"],
-    ["app-workouts", "Workouts"],
+    ["app-workouts", weekly ? "Library" : "Workouts"],
     ["app-progress", "Progress"],
     ["account", "Account"],
   ] as const;

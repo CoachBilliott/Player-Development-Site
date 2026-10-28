@@ -138,6 +138,9 @@ export const catalogSchema = z.object({
       id: z.string(),
       title: z.string(),
       profiles: z.array(z.string()),
+      members: z
+        .array(z.object({ id: z.string(), name: z.string() }))
+        .default([]),
     }),
   ),
 });
@@ -155,6 +158,8 @@ export type SaveAttemptResult = {
 export const noticeSchema = z.object({
   id: z.string(),
   profile_id: z.string(),
+  athlete_name: z.string().optional(),
+  next_due_at: z.string().nullable().optional(),
   release_id: z.string().nullable(),
   category: z.enum([
     "content_ready",
@@ -185,6 +190,24 @@ export const groupResultSchema = z.array(
     ),
   }),
 );
+export const cohortPreviewSchema = z.object({
+  members: z.array(
+    z.object({
+      name: z.string(),
+      state: z.enum([
+        "unavailable",
+        "keep_existing",
+        "different_running_plan",
+        "eligibility_needed",
+        "new_enrollment",
+      ]),
+    }),
+  ),
+  new_count: z.number(),
+  kept_count: z.number(),
+  blocked_count: z.number(),
+});
+export type CohortPreview = z.infer<typeof cohortPreviewSchema>;
 export type LearningGroupResults = z.infer<typeof groupResultSchema>;
 export interface LearningTransport {
   groupResults(group: string): Promise<LearningGroupResults>;
@@ -194,7 +217,12 @@ export interface LearningTransport {
   readNotice(id: string): Promise<void>;
   catalog(): Promise<LearningCatalog>;
   athlete(profile: string): Promise<LearningAthleteData>;
-  importQuiz(title: string, data: QuizImport, operation: string): Promise<void>;
+  importQuiz(
+    title: string,
+    data: QuizImport,
+    operation: string,
+    targetQuiz?: string,
+  ): Promise<void>;
   createPlan(
     id: string,
     title: string,
@@ -228,7 +256,8 @@ export interface LearningTransport {
     revoke: boolean,
   ): Promise<void>;
   saveCohort(id: string, title: string, profiles: string[]): Promise<void>;
-  enrollCohort(group: string, plan: string, operation: string): Promise<void>;
+  previewCohort(group: string, plan: string): Promise<CohortPreview>;
+  enrollCohort(group: string, plan: string, operation: string): Promise<number>;
   saveAttempt(
     id: string,
     release: string,
@@ -253,11 +282,31 @@ export interface LearningTransport {
   media(path: string): Promise<string>;
 }
 export class LearningApi implements LearningTransport {
-  constructor(private client: SupabaseClient) {}
+  private pendingMutations = 0;
+  constructor(
+    private client: SupabaseClient,
+    private onMutation?: (busy: boolean) => void,
+  ) {}
   private async rpc(name: string, args: Record<string, unknown> = {}) {
-    const { data, error } = await this.client.rpc(name, args);
-    if (error) throw Error(error.message);
-    return data as unknown;
+    const mutation = ![
+      "learning_catalog",
+      "learning_athlete",
+      "learning_inbox",
+    ].includes(name);
+    if (mutation) {
+      this.pendingMutations++;
+      this.onMutation?.(true);
+    }
+    try {
+      const { data, error } = await this.client.rpc(name, args);
+      if (error) throw Error(error.message);
+      return data as unknown;
+    } finally {
+      if (mutation) {
+        this.pendingMutations--;
+        this.onMutation?.(this.pendingMutations > 0);
+      }
+    }
   }
   async groupResults(group: string) {
     return groupResultSchema.parse(
@@ -291,10 +340,15 @@ export class LearningApi implements LearningTransport {
       await this.rpc("learning_athlete", { target_profile: profile }),
     );
   }
-  async importQuiz(title: string, data: QuizImport, operation: string) {
+  async importQuiz(
+    title: string,
+    data: QuizImport,
+    operation: string,
+    targetQuiz?: string,
+  ) {
     await this.rpc("learning_import_quiz", {
       version_id: operation,
-      target_quiz: operation,
+      target_quiz: targetQuiz || operation,
       quiz_title: title,
       payload: data,
     });
@@ -381,12 +435,26 @@ export class LearningApi implements LearningTransport {
       profiles,
     });
   }
+  async previewCohort(group: string, plan: string) {
+    return cohortPreviewSchema.parse(
+      await this.rpc("learning_group_enrollment_preview", {
+        target_cohort: group,
+        target_plan: plan,
+      }),
+    );
+  }
   async enrollCohort(group: string, plan: string, operation: string) {
-    await this.rpc("learning_enroll_cohort", {
-      target_cohort: group,
-      target_plan: plan,
-      operation_id: operation,
-    });
+    return z
+      .number()
+      .int()
+      .nonnegative()
+      .parse(
+        await this.rpc("learning_enroll_cohort", {
+          target_cohort: group,
+          target_plan: plan,
+          operation_id: operation,
+        }),
+      );
   }
   async saveAttempt(
     id: string,

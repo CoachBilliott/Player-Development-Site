@@ -12,14 +12,27 @@ export const sampleProfiles = [
   { id: uid(1), name: "Fictional Avery" },
   { id: uid(2), name: "Fictional Jordan" },
 ];
+export const rosterProfiles = [
+  ...sampleProfiles,
+  ...Array.from({ length: 50 }, (_, i) => ({
+    id: uid(100 + i),
+    name: `Fictional Athlete ${String(i + 1).padStart(3, "0")}`,
+  })),
+];
+export type SimulationRole =
+  "owner" | "manager" | "parent" | "coach" | "other_coach";
 export const sampleActor = uid(5);
 const imported = parseQuizCsv(EXAMPLE_QUIZ_CSV).quiz!;
 export function learningSimulation(
-  role: "owner" | "parent" | "coach" | "other_coach",
+  role: SimulationRole,
   seed?: {
     catalog: LearningCatalog;
     learners: Record<string, LearningAthleteData>;
     notices: LearningNotice[];
+    access?: Record<string, { active: boolean; packageId: string }>;
+    overrides?: Record<string, string>;
+    assignments?: Record<string, string | null>;
+    coachVersions?: Record<string, number>;
   },
 ) {
   const catalog: LearningCatalog = seed?.catalog || {
@@ -104,9 +117,48 @@ export function learningSimulation(
         },
       ]),
     );
-  const notices: LearningNotice[] = seed?.notices || [];
+  for (const profile of rosterProfiles)
+    learners[profile.id] ||= {
+      can_submit: true,
+      is_guardian: true,
+      enrollments: [],
+    };
+  const access =
+    seed?.access ||
+    Object.fromEntries(
+      rosterProfiles.map((p) => [
+        p.id,
+        { active: true, packageId: "private_test" },
+      ]),
+    );
+  const overrides = seed?.overrides || {};
+  const assignments =
+    seed?.assignments ||
+    Object.fromEntries(
+      rosterProfiles.map((p, i) => [
+        p.id,
+        i === 0 ? sampleActor : i === 1 ? uid(6) : null,
+      ]),
+    );
+  const coachVersions =
+    seed?.coachVersions ||
+    Object.fromEntries(
+      rosterProfiles.map((p) => [p.id, assignments[p.id] ? 1 : 0]),
+    );
+  const notices: LearningNotice[] =
+    seed?.notices ||
+    sampleProfiles.map((p) => ({
+      id: crypto.randomUUID(),
+      profile_id: p.id,
+      athlete_name: p.name,
+      next_due_at: "2026-11-01T05:00:00Z",
+      release_id: null,
+      category: "low_content" as const,
+      created_at: "2026-10-28T19:00:00Z",
+      read: false,
+    }));
   function staff() {
-    if (role === "parent" || role === "other_coach")
+    if (role === "parent")
       throw Error("This fictional role has no authoring access.");
   }
   function owner() {
@@ -115,8 +167,10 @@ export function learningSimulation(
   }
   function allowed(profile: string) {
     if (
+      !rosterProfiles.some((p) => p.id === profile) ||
+      (role === "parent" && !sampleProfiles.some((p) => p.id === profile)) ||
       role === "other_coach" ||
-      (role === "coach" && profile !== sampleProfiles[0].id)
+      (role === "coach" && assignments[profile] !== sampleActor)
     )
       throw Error("Athlete is outside this fictional role’s scope.");
   }
@@ -142,34 +196,84 @@ export function learningSimulation(
       const c = catalog.cohorts.find((c) => c.id === group);
       if (!c) throw Error("Group unavailable.");
       return c.profiles
-        .filter((p) => role === "owner" || p === sampleProfiles[0].id)
-        .map((p) => ({
-          profile_id: p,
-          name:
-            sampleProfiles.find((x) => x.id === p)?.name || "Fictional athlete",
-          releases:
-            learners[p]?.enrollments.flatMap((e) => e.releases).length || 0,
-          completed_weeks:
-            learners[p]?.enrollments
-              .flatMap((e) => e.releases)
-              .filter((r) => r.done).length || 0,
-          quiz_attempts: [],
-        }));
+        .filter((p) => {
+          try {
+            allowed(p);
+            return true;
+          } catch {
+            return false;
+          }
+        })
+        .map((p) => {
+          const releases =
+            learners[p]?.enrollments.flatMap((e) => e.releases) || [];
+          return {
+            profile_id: p,
+            name:
+              rosterProfiles.find((x) => x.id === p)?.name ||
+              "Fictional athlete",
+            releases: releases.length,
+            completed_weeks: releases.filter((r) => r.done).length,
+            quiz_attempts: releases.flatMap((r) =>
+              r.attempts.map((a) => ({
+                quiz:
+                  r.quizzes.find((q) => q.id === a.quiz_version_id)?.title ||
+                  "Assigned quiz",
+                week_number: r.week_number,
+                state: a.state,
+                submitted_at: a.submitted_at,
+                objective_points: a.objective_points,
+                total_points:
+                  r.quizzes.find((q) => q.id === a.quiz_version_id)
+                    ?.total_points || 0,
+                written_points: Object.values(
+                  a.grades.at(-1)?.points || {},
+                ).reduce((n, v) => n + v, 0),
+              })),
+            ),
+          };
+        });
     },
     async configureRules(time, threshold) {
       owner();
       catalog.rules = { friday_time: time, low_ready_weeks: threshold };
     },
-    async override() {
-      throw Error(
-        "Individual week overrides are not connected in this fictional adapter.",
-      );
+    async override(id, week, version) {
+      owner();
+      const e = Object.values(learners)
+        .flatMap((d) => d.enrollments)
+        .find((e) => e.id === id);
+      const w = catalog.plans
+        .find((p) => p.id === e?.plan_id)
+        ?.weeks_content.find(
+          (w) => w.id === version && w.week_number === week && w.ready,
+        );
+      if (!e || !w || week < e.next_week)
+        throw Error("Choose an approved future week.");
+      overrides[id + ":" + week] = version;
     },
     async inbox() {
       return structuredClone(
         notices.filter((n) => {
           try {
             allowed(n.profile_id);
+            if (!access[n.profile_id]?.active) return false;
+            const current = learners[n.profile_id]?.enrollments.find((e) =>
+              ["active", "paused", "finished"].includes(e.state),
+            );
+            if (
+              n.category === "friday_incomplete" &&
+              (!current ||
+                current.state === "paused" ||
+                current.releases[0]?.id !== n.release_id ||
+                current.releases[0]?.done)
+            )
+              return false;
+            if (
+              ["no_content", "low_content"].includes(n.category) &&
+              current?.state !== "active"
+            )
+              return false;
             return role === "parent"
               ? !["no_content", "low_content"].includes(n.category)
               : ["no_content", "low_content"].includes(n.category);
@@ -187,12 +291,20 @@ export function learningSimulation(
     },
     async catalog() {
       staff();
+      if (role === "other_coach")
+        return {
+          rules: structuredClone(catalog.rules),
+          plans: [],
+          quizzes: [],
+          cohorts: [],
+        };
       const c = structuredClone(catalog);
       if (role === "coach")
         c.cohorts = c.cohorts
           .map((g) => ({
             ...g,
-            profiles: g.profiles.filter((p) => p === sampleProfiles[0].id),
+            profiles: g.profiles.filter((p) => assignments[p] === sampleActor),
+            members: g.members.filter((p) => assignments[p.id] === sampleActor),
           }))
           .filter((g) => g.profiles.length);
       return c;
@@ -208,14 +320,21 @@ export function learningSimulation(
       );
       return data;
     },
-    async importQuiz(title, data, operation) {
+    async importQuiz(title, data, operation, targetQuiz) {
       staff();
       if (catalog.quizzes.some((q) => q.id === operation)) return;
       catalog.quizzes.push({
         id: operation,
-        quiz_id: operation,
+        quiz_id: targetQuiz || operation,
         title,
-        revision: 1,
+        revision:
+          1 +
+          Math.max(
+            0,
+            ...catalog.quizzes
+              .filter((q) => q.quiz_id === targetQuiz)
+              .map((q) => q.revision),
+          ),
         questions: data.questions,
         keys: data.keys,
         total_points: data.totalPoints,
@@ -254,7 +373,8 @@ export function learningSimulation(
       });
     },
     async approveWeek(id) {
-      owner();
+      if (role !== "owner" && role !== "manager")
+        throw Error("Owner or Manager approval is required.");
       const w = catalog.plans
         .flatMap((p) => p.weeks_content)
         .find((w) => w.id === id);
@@ -273,6 +393,12 @@ export function learningSimulation(
         throw Error("End the current fictional plan first.");
       const p = catalog.plans.find((p) => p.id === planId);
       if (!p) throw Error("Plan unavailable.");
+      if (
+        !access[profile]?.active ||
+        (p.package_ids.length &&
+          !p.package_ids.includes(access[profile].packageId))
+      )
+        throw Error("Verified package eligibility is required.");
       learners[profile] ||= {
         can_submit: true,
         is_guardian: true,
@@ -315,30 +441,85 @@ export function learningSimulation(
       }
       e.version++;
     },
-    async setAccess() {
-      throw Error(
-        "Real package eligibility changes are not connected in this preview.",
-      );
+    async setAccess(profile, packageId, _start, _end, _reason, revoke) {
+      owner();
+      allowed(profile);
+      access[profile] = { active: !revoke, packageId };
+      for (const e of learners[profile].enrollments) e.access_active = !revoke;
     },
     async saveCohort(id, title, profiles) {
       owner();
-      catalog.cohorts.push({ id, title, profiles });
+      for (const p of profiles) allowed(p);
+      const value = {
+        id,
+        title,
+        profiles,
+        members: profiles.map((id) => ({
+          id,
+          name: rosterProfiles.find((p) => p.id === id)!.name,
+        })),
+      };
+      const old = catalog.cohorts.findIndex((c) => c.id === id);
+      if (old >= 0) catalog.cohorts[old] = value;
+      else catalog.cohorts.push(value);
     },
-    async enrollCohort(group, plan, operation) {
+    async previewCohort(group, plan) {
       owner();
-      const c = catalog.cohorts.find((c) => c.id === group);
-      if (!c) throw Error("Group unavailable.");
-      if (
-        c.profiles.some((p) =>
-          learners[p]?.enrollments.some((e) =>
-            ["active", "paused"].includes(e.state),
-          ),
-        )
-      )
-        throw Error(
-          "A selected athlete already has a running plan. Nobody was enrolled.",
+      const c = catalog.cohorts.find((c) => c.id === group),
+        p = catalog.plans.find((p) => p.id === plan);
+      if (!c || !p) throw Error("Choose group and plan.");
+      const members = c.profiles.map((id) => {
+        const e = learners[id]?.enrollments.find((e) =>
+          ["active", "paused", "finished"].includes(e.state),
         );
-      for (const p of c.profiles) await api.enroll(operation + p, p, plan);
+        const state =
+          e?.plan_id === plan
+            ? "keep_existing"
+            : e && ["active", "paused"].includes(e.state)
+              ? "different_running_plan"
+              : !access[id]?.active ||
+                  (p.package_ids.length &&
+                    !p.package_ids.includes(access[id].packageId))
+                ? "eligibility_needed"
+                : "new_enrollment";
+        return {
+          name: rosterProfiles.find((p) => p.id === id)!.name,
+          state: state as
+            | "keep_existing"
+            | "different_running_plan"
+            | "eligibility_needed"
+            | "new_enrollment",
+        };
+      });
+      return {
+        members,
+        new_count: members.filter((m) => m.state === "new_enrollment").length,
+        kept_count: members.filter((m) => m.state === "keep_existing").length,
+        blocked_count: members.filter(
+          (m) => !["new_enrollment", "keep_existing"].includes(m.state),
+        ).length,
+      };
+    },
+    async enrollCohort(group, plan) {
+      owner();
+      const preview = await api.previewCohort(group, plan);
+      if (preview.blocked_count)
+        throw Error(
+          "Resolve eligibility or running-plan conflicts; nobody was enrolled.",
+        );
+      const c = catalog.cohorts.find((c) => c.id === group)!;
+      let count = 0;
+      for (const p of c.profiles) {
+        if (
+          learners[p]?.enrollments.find((e) =>
+            ["active", "paused", "finished"].includes(e.state),
+          )?.plan_id === plan
+        )
+          continue;
+        await api.enroll(crypto.randomUUID(), p, plan);
+        count++;
+      }
+      return count;
     },
     async saveAttempt(id, releaseId, quizId, answers, submit, version) {
       if (role !== "parent")
@@ -378,7 +559,16 @@ export function learningSimulation(
         grades: [],
       };
       release.attempts = release.attempts.filter((a) => a.id !== id).concat(a);
-      if (submit) release.done = true;
+      if (submit)
+        release.done =
+          release.quizzes.every((q) =>
+            release.attempts.some(
+              (a) => a.quiz_version_id === q.id && a.submitted_at !== null,
+            ),
+          ) &&
+          release.resources.every((r) =>
+            release.completed_items.includes(r.id),
+          );
       return { id, state, version: a.version, objective_points: points };
     },
     async grade(id, marks, feedback, revision) {
@@ -415,24 +605,68 @@ export function learningSimulation(
   };
   return {
     api,
-    export: () => structuredClone({ catalog, learners, notices }),
+    export: () =>
+      structuredClone({
+        catalog,
+        learners,
+        notices,
+        access,
+        overrides,
+        assignments,
+        coachVersions,
+      }),
+    assignCoach(profile: string, coach: string | null, version: number) {
+      if (role !== "owner" && role !== "manager")
+        throw Error("Owner or Manager access required.");
+      allowed(profile);
+      if (coachVersions[profile] !== version) {
+        if (
+          coachVersions[profile] === version + 1 &&
+          assignments[profile] === coach
+        )
+          return;
+        throw Error("Coach assignment changed. Refresh.");
+      }
+      assignments[profile] = coach;
+      coachVersions[profile]++;
+    },
     sunday() {
       for (const [profile, d] of Object.entries(learners))
         for (const e of d.enrollments) {
-          if (e.state !== "active") continue;
+          if (
+            e.state !== "active" ||
+            !e.access_active ||
+            !access[profile]?.active
+          )
+            continue;
           const p = catalog.plans.find((p) => p.id === e.plan_id)!;
           const w = p.weeks_content
-            .filter((w) => w.week_number === e.next_week && w.ready)
+            .filter(
+              (w) =>
+                w.week_number === e.next_week &&
+                w.ready &&
+                (!overrides[e.id + ":" + e.next_week] ||
+                  w.id === overrides[e.id + ":" + e.next_week]),
+            )
+            .sort((a, b) => a.revision - b.revision)
             .at(-1);
           if (!w) {
-            notices.push({
-              id: crypto.randomUUID(),
-              profile_id: profile,
-              release_id: null,
-              category: "no_content",
-              created_at: "2026-11-01T05:00:00Z",
-              read: false,
-            });
+            if (
+              !notices.some(
+                (n) => n.profile_id === profile && n.category === "no_content",
+              )
+            )
+              notices.push({
+                id: crypto.randomUUID(),
+                profile_id: profile,
+                athlete_name: rosterProfiles.find((p) => p.id === profile)
+                  ?.name,
+                next_due_at: e.next_release_at,
+                release_id: null,
+                category: "no_content",
+                created_at: "2026-11-01T05:00:00Z",
+                read: false,
+              });
             continue;
           }
           e.releases.unshift({
