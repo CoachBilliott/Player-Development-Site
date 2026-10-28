@@ -105,6 +105,7 @@ test("configured shared publishing saves, edits across visitors, and removes a s
     partner.getByRole("button", { name: /Updated shared paper practice/ }),
   ).toHaveCount(0);
   await sharedSignOut(page);
+  await page.goto("./#coach");
   await expect(
     page.getByRole("heading", { name: "Log in to open the content studio." }),
   ).toBeVisible();

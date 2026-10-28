@@ -342,8 +342,9 @@ export function AssignTrainingWorkspace({ shared }: { shared: SharedState }) {
   if (shared.role !== "owner")
     return (
       <PrivateAccessMessage signedIn title="An Owner assigns workouts.">
-        You can prepare lessons and workouts in Training. Coach-to-athlete
-        responsibility stays in Athletes.
+        {isStaff(shared.role)
+          ? "You can prepare lessons and workouts in Training. Coach-to-athlete responsibility stays in Athletes."
+          : "Your assigned practice is in Today. Contact the team if training is missing."}
       </PrivateAccessMessage>
     );
   return <ChooseAssignment key={shared.session!.user.id} shared={shared} />;

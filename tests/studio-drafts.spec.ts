@@ -133,6 +133,7 @@ test("incomplete drafts can be saved, removal can be canceled, and sign-out clea
   await page.getByRole("button", { name: "Continue saved draft" }).click();
   await expect(page.getByLabel("Step-by-step instructions")).toHaveValue("");
   await sharedSignOut(page);
+  await page.goto("./#coach");
   await expect(
     page.getByRole("heading", { name: "Log in to open the content studio." }),
   ).toBeVisible();

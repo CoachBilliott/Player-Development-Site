@@ -197,3 +197,39 @@ test("athlete service keeps assignment context and uncommon settings out of the 
   await expect(page.getByRole("dialog")).toBeVisible();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 });
+
+for (const role of ["parent", "athlete"] as const)
+  test(`${role} cannot open staff training, assignments or people through copied URLs`, async ({
+    page,
+    context,
+  }) => {
+    const backend = state();
+    sampleWorkout(backend);
+    await fixture(context, backend, role);
+    let bankReads = 0,
+      directoryReads = 0;
+    await context.route("**/rest/v1/training_workouts**", (r) => {
+      bankReads++;
+      return r.fallback();
+    });
+    await context.route("**/rest/v1/rpc/list_account_access", (r) => {
+      directoryReads++;
+      return r.fallback();
+    });
+    await page.goto("./#training");
+    await expect(
+      page.getByRole("heading", { name: "Staff access is required." }),
+    ).toBeVisible();
+    await page.goto("./#training-assign");
+    await expect(
+      page.getByRole("heading", { name: "An Owner assigns workouts." }),
+    ).toBeVisible();
+    await page.goto("./#staff-settings");
+    await expect(
+      page.getByRole("heading", { name: "Staff access is required." }),
+    ).toBeVisible();
+    await expect(page.getByLabel("Find an account by email")).toHaveCount(0);
+    expect(bankReads).toBe(0);
+    expect(directoryReads).toBe(0);
+    expect(backend.counts.assigns).toBe(0);
+  });

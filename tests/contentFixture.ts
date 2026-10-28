@@ -212,7 +212,16 @@ export async function sharedSignIn(page: import("@playwright/test").Page) {
   await page.getByRole("button", { name: "Sign in securely" }).click();
   await expect(page.getByLabel("Account email")).toHaveCount(0);
   await page.goto("./#coach");
-  await page.getByText("Publishing options", { exact: true }).click();
+  const settings = page.locator(".publishing-settings");
+  await expect(
+    settings.or(
+      page.getByRole("heading", {
+        name: "Staff content access required.",
+        exact: true,
+      }),
+    ),
+  ).toBeVisible();
+  if (await settings.isVisible()) await settings.locator("summary").click();
 }
 
 export async function openLocalStudio(page: Page) {
