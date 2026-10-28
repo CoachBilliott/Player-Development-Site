@@ -1,7 +1,13 @@
+import { staffOperationalCases } from "./staffOperationalCases";
+import { interestPolicyCases } from "./interestPolicyCases";
 import { PGlite } from "@electric-sql/pglite";
 import { readFileSync } from "node:fs";
 import { beforeAll, afterAll, beforeEach, afterEach, it, expect } from "vitest";
-export function deliveryPolicyCases(grouped: boolean) {
+export function deliveryPolicyCases(
+  grouped: boolean,
+  staffNotifications = false,
+  interestIntake = false,
+) {
   let db: PGlite;
   const id = (n: number) =>
     `90000000-0000-4000-8000-${String(n).padStart(12, "0")}`;
@@ -56,6 +62,10 @@ export function deliveryPolicyCases(grouped: boolean) {
       "014-grouped-review-fulfillment.sql",
       "015-staff-client-service-dashboard.sql",
       "016-delivery-monitoring-and-inbox.sql",
+      ...(staffNotifications
+        ? ["017-staff-operational-notifications.sql"]
+        : []),
+      ...(interestIntake ? ["018-public-interest-and-shared-inbox.sql"] : []),
     ].filter((file) => grouped || !/^(013|014)-/.test(file)))
       await db.exec(
         readFileSync(new URL("../../backend/" + file, import.meta.url), "utf8"),
@@ -698,4 +708,24 @@ export function deliveryPolicyCases(grouped: boolean) {
     await as(parent);
     await blocked("select public.delivery_staff_queue()", [], /Staff access/);
   });
+  if (staffNotifications)
+    (interestIntake ? interestPolicyCases : staffOperationalCases)({
+      db: () => db,
+      as,
+      id,
+      owner,
+      manager,
+      coach,
+      parent,
+      otherParent,
+      profile,
+      sibling,
+      first,
+      configure,
+      workout,
+      assignWorkout,
+      plan,
+      media,
+      notices,
+    });
 }

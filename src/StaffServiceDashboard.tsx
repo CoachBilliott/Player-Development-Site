@@ -1,3 +1,5 @@
+import { StaffNotificationPanel } from "./StaffNotificationPanel";
+import { InterestInbox } from "./InterestInbox";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import {
@@ -35,6 +37,8 @@ export function StaffServiceDashboard({
   actor,
   enabled,
   monitoring = false,
+  operationalEmails = false,
+  interestInbox = false,
   preview = false,
 }: {
   client: SupabaseClient;
@@ -42,6 +46,8 @@ export function StaffServiceDashboard({
   actor: string;
   enabled: boolean;
   monitoring?: boolean;
+  operationalEmails?: boolean;
+  interestInbox?: boolean;
   preview?: boolean;
 }) {
   const api = useMemo(() => new StaffService(client), [client]);
@@ -399,6 +405,20 @@ export function StaffServiceDashboard({
             </details>
           )}
         </>
+      )}
+      {operationalEmails && (
+        <StaffNotificationPanel
+          key={`staff-email:${actor}:${role}`}
+          client={client}
+          actor={actor}
+        />
+      )}
+      {interestInbox && (role === "owner" || role === "manager") && (
+        <InterestInbox
+          key={`interest:${actor}:${role}`}
+          client={client}
+          actor={actor}
+        />
       )}
       {monitoring && data && (
         <DeliveryMonitor

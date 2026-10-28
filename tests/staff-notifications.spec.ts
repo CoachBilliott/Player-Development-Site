@@ -1,0 +1,299 @@
+import { test, expect, type BrowserContext } from "@playwright/test";
+import AxeBuilder from "@axe-core/playwright";
+import { mkdir } from "node:fs/promises";
+import {
+  staffFixture,
+  staffState,
+  athleteA,
+  athleteB,
+  coachA,
+  coachB,
+} from "./staffServiceFixture";
+import { fixture, state, uid, staffId } from "./workoutFixture";
+import type { StaffMailState } from "../src/staffNotifications";
+
+async function alerts(context: BrowserContext, role = "owner") {
+  const roster = staffState();
+  if (role === "parent") await fixture(context, state(), role);
+  else
+    await staffFixture(
+      context,
+      roster,
+      role,
+      role === "coach" ? coachA : staffId,
+    );
+  await context.route("**/content-config.json", (r) =>
+    r.fulfill({
+      json: {
+        enabled: true,
+        url: "https://separate-demo.supabase.co",
+        publishableKey: "sb_publishable_fixture_only",
+        membersEnabled: true,
+        membersSignupEnabled: false,
+        staffRosterEnabled: true,
+        staffNotificationEmailsEnabled: true,
+        interestIntakeEnabled: true,
+      },
+    }),
+  );
+  const now = new Date().toISOString();
+  const interestRows: Array<Record<string, unknown>> = [
+    {
+      id: uid(240),
+      adult_name: "Fictional Adult",
+      email: "fictional-adult@example.test",
+      package_interest: "undecided",
+      created_at: now,
+      email_state: "retry",
+    },
+  ];
+  const snapshot: StaffMailState = {
+    email_enabled: false,
+    inapp_observation_enabled: false,
+    signup_status: "interest_submission",
+    routing_mode: "shared_inbox",
+    recipient_label: "Repformed@gmail.com",
+    jobs: [
+      {
+        id: uid(230),
+        profile_id: athleteA,
+        athlete_name: "Fictional Jordan",
+        kind: "review_overdue",
+        state: "accepted",
+        attempts: 1,
+        due_at: now,
+        updated_at: now,
+        code: null,
+        provider_id: "TEST-provider-reference",
+      },
+      {
+        id: uid(231),
+        profile_id: athleteB,
+        athlete_name: "Fictional Avery",
+        kind: "training_overdue",
+        state: "uncertain",
+        attempts: 2,
+        due_at: now,
+        updated_at: now,
+        code: "reconcile_required",
+        provider_id: null,
+      },
+    ],
+  };
+  const calls = {
+    reads: 0,
+    preferences: 0,
+    provider: 0,
+    readFailure: false,
+    writeFailure: false,
+  };
+  await context.route("https://api.resend.com/**", (r) => {
+    calls.provider++;
+    return r.abort();
+  });
+  await context.route("**/rest/v1/rpc/**", async (r) => {
+    const name = new URL(r.request().url()).pathname.split("/").pop();
+    if (name === "staff_notification_workspace") {
+      calls.reads++;
+      if (calls.readFailure)
+        return r.fulfill({
+          status: 503,
+          json: { message: "TEST status unavailable" },
+        });
+      const allowed = new Set(
+        roster.rows
+          .filter((a) => role !== "coach" || a.coach_id === coachA)
+          .map((a) => a.athlete_id),
+      );
+      return r.fulfill({
+        json: {
+          ...snapshot,
+          jobs: snapshot.jobs
+            .filter((j) => allowed.has(j.profile_id))
+            .map((j) => ({
+              ...j,
+              provider_id: role === "coach" ? null : j.provider_id,
+            })),
+        },
+      });
+    }
+    if (name === "interest_staff_inbox")
+      return r.fulfill({
+        json: role === "owner" || role === "manager" ? interestRows : [],
+      });
+    if (name === "set_staff_notification_opt_out") {
+      calls.preferences++;
+      return r.fulfill({
+        status: 403,
+        json: { message: "Shared inbox routing is fixed" },
+      });
+    }
+    return r.fallback();
+  });
+  return { snapshot, calls, roster, interestRows };
+}
+
+test("Owner status separates provider acceptance, uncertain outcomes and disabled capabilities", async ({
+  page,
+  context,
+}, info) => {
+  const data = await alerts(context);
+  await page.goto("./?source=app#workspace");
+  const panel = page.getByRole("region", {
+    name: "Staff operational email status",
+  });
+  await expect(panel).toContainText("Staff email dispatch disabled");
+  await expect(panel).toContainText(
+    "Provider accepted · inbox delivery not confirmed",
+  );
+  await expect(panel).toContainText(
+    "Outcome uncertain · reconcile before resending",
+  );
+  await expect(panel).toContainText("saved adult interest submissions only");
+  await expect(panel).toContainText("Automatic in-app observation disabled");
+  await expect(panel).toContainText("TEST-provider-reference");
+  await expect(panel.getByRole("textbox")).toHaveCount(0);
+  await expect(panel.getByRole("button")).toHaveCount(1);
+  expect(data.calls.provider).toBe(0);
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+  expect(
+    (
+      await new AxeBuilder({ page })
+        .include('[aria-label="Staff operational email status"]')
+        .analyze()
+    ).violations,
+  ).toEqual([]);
+  await mkdir("artifacts/staff-notifications", { recursive: true });
+  await panel.screenshot({
+    path: `artifacts/staff-notifications/status-${info.project.name}.png`,
+    style: ".app-header,.app-tabs{visibility:hidden !important}",
+  });
+});
+
+test("Manager sees the shared inbox status and private interest without recipient-edit controls", async ({
+  page,
+  context,
+}) => {
+  const data = await alerts(context, "manager");
+  await page.goto("./?source=app#workspace");
+  const panel = page.getByRole("region", {
+    name: "Staff operational email status",
+  });
+  await expect(panel).toContainText("Repformed@gmail.com");
+  await expect(panel).toContainText(
+    "Owner/Manager email routing is not active",
+  );
+  await expect(panel.getByRole("button")).toHaveCount(1);
+  const inbox = page.getByRole("region", {
+    name: "Private package interest inbox",
+  });
+  await expect(inbox).toContainText("fictional-adult@example.test");
+  await expect(inbox).toContainText("Waiting for safe retry");
+  await page.reload();
+  await expect(inbox).toContainText("fictional-adult@example.test");
+  expect(data.calls.preferences).toBe(0);
+  expect(data.calls.provider).toBe(0);
+});
+
+test("Coach renders only scoped jobs and clears revoked assignment results on refresh", async ({
+  page,
+  context,
+}) => {
+  const data = await alerts(context, "coach");
+  await page.goto("./?source=app#workspace");
+  const panel = page.getByRole("region", {
+    name: "Staff operational email status",
+  });
+  await expect(panel).toContainText("Fictional Jordan");
+  await expect(panel).not.toContainText("Fictional Avery");
+  await expect(panel).not.toContainText("TEST-provider-reference");
+  await expect(
+    page.getByRole("region", { name: "Private package interest inbox" }),
+  ).toHaveCount(0);
+  data.roster.rows.find((r) => r.athlete_id === athleteA)!.coach_id = coachB;
+  await panel
+    .getByRole("button", { name: "Refresh staff email status" })
+    .click();
+  await expect(panel).toContainText("No operational email attempts recorded");
+  await expect(panel).not.toContainText("Fictional Jordan");
+});
+test("private interest distinguishes unrecorded, unchecked and earlier affirmative launch choices", async ({
+  page,
+  context,
+}) => {
+  const data = await alerts(context);
+  await page.goto("./?source=app#workspace");
+  const inbox = page.getByRole("region", {
+    name: "Private package interest inbox",
+  });
+  await expect(inbox).toContainText("not recorded on this submission");
+  await expect(
+    inbox.getByText("Launch preference record", { exact: true }),
+  ).toHaveCount(0);
+  Object.assign(data.interestRows[0], {
+    launch_choice: false,
+    launch_choice_at: "2026-10-28T10:00:00Z",
+    launch_notice_version: "repformed-launch-notice-v1",
+    launch_requested_at: "2026-10-27T10:00:00Z",
+    launch_requested_version: "repformed-launch-notice-v1",
+  });
+  await inbox
+    .getByRole("button", { name: "Refresh interest requests" })
+    .click();
+  await expect(inbox).toContainText("not requested on this submission");
+  await inbox.locator("summary").click();
+  await expect(inbox).toContainText(
+    "A separate affirmative request was recorded",
+  );
+  await expect(inbox).toContainText("does not erase that history");
+  await expect(inbox).toContainText("Email ownership is not verified");
+  await expect(inbox).toContainText("No launch announcement is sent");
+  expect(data.calls.provider).toBe(0);
+});
+
+test("Status read failures are retryable and do not retain stale job data", async ({
+  page,
+  context,
+}) => {
+  const data = await alerts(context);
+  await page.goto("./?source=app#workspace");
+  const panel = page.getByRole("region", {
+    name: "Staff operational email status",
+  });
+  await expect(panel).toContainText("Fictional Jordan");
+  data.calls.readFailure = true;
+  await panel
+    .getByRole("button", { name: "Refresh staff email status" })
+    .click();
+  await expect(panel.getByRole("alert")).toContainText(
+    "TEST status unavailable",
+  );
+  await expect(panel).not.toContainText("Fictional Jordan");
+  data.calls.readFailure = false;
+  await panel
+    .getByRole("button", { name: "Refresh staff email status" })
+    .click();
+  await expect(panel).toContainText("Fictional Jordan");
+  expect(data.calls.preferences).toBe(0);
+  expect(data.calls.provider).toBe(0);
+});
+
+test("Parent workspace never loads the staff email projection even with its UI feature flag enabled", async ({
+  page,
+  context,
+}) => {
+  const data = await alerts(context, "parent");
+  await page.goto("./?source=app#workspace");
+  await expect(
+    page.getByRole("heading", { name: "Today’s training.", exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("region", { name: "Staff operational email status" }),
+  ).toHaveCount(0);
+  expect(data.calls.reads).toBe(0);
+  expect(data.calls.preferences).toBe(0);
+});

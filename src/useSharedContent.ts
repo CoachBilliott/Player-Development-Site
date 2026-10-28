@@ -12,8 +12,11 @@ import { isStaff, type AccountRole } from "./roles";
 import { clearStaffDrafts } from "./staffDrafts";
 
 export function useSharedContent() {
+  const [interestEndpoint, setInterestEndpoint] = useState<string | null>(null);
   const [serviceTrackingEnabled, setServiceTrackingEnabled] = useState(false);
   const [staffRosterEnabled, setStaffRosterEnabled] = useState(false);
+  const [staffNotificationEmailsEnabled, setStaffNotificationEmailsEnabled] =
+    useState(false);
   const [deliveryMonitoringEnabled, setDeliveryMonitoringEnabled] =
     useState(false);
   const [accountLifecycleEnabled, setAccountLifecycleEnabled] = useState(false);
@@ -54,12 +57,19 @@ export function useSharedContent() {
         const raw = await response.json();
         const config = parseSharedConfig(raw);
         if (!config || stopped) return;
+        if (raw.interestIntakeEnabled === true)
+          setInterestEndpoint(
+            new URL("/functions/v1/interest-intake", config.url).href,
+          );
         const connection = await connectSharedContent(config);
         if (stopped) return;
         setService(connection);
         setAccountLifecycleEnabled(raw.accountLifecycleEnabled === true);
         setServiceTrackingEnabled(raw.serviceTrackingEnabled === true);
         setStaffRosterEnabled(raw.staffRosterEnabled === true);
+        setStaffNotificationEmailsEnabled(
+          raw.staffNotificationEmailsEnabled === true,
+        );
         setDeliveryMonitoringEnabled(raw.deliveryMonitoringEnabled === true);
         setMembersEnabled(raw.membersEnabled === true);
         setSignupEnabled(raw.membersSignupEnabled !== false);
@@ -214,10 +224,12 @@ export function useSharedContent() {
     }
   }
   return {
+    interestEndpoint,
     service,
     accountLifecycleEnabled,
     serviceTrackingEnabled,
     staffRosterEnabled,
+    staffNotificationEmailsEnabled,
     deliveryMonitoringEnabled,
     accountNotice,
     setAccountNotice,
