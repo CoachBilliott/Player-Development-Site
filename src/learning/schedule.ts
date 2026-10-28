@@ -1,4 +1,13 @@
 export const LEARNING_ZONE = "America/Chicago";
+export function learningDate(value?: string | null) {
+  return value
+    ? new Intl.DateTimeFormat("en-US", {
+        timeZone: LEARNING_ZONE,
+        dateStyle: "medium",
+        timeStyle: "short",
+      }).format(new Date(value))
+    : "Not observed";
+}
 export const LEARNING_DEFAULTS = {
   releaseDay: 0,
   releaseTime: "00:00",

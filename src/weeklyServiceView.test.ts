@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import { learningDate } from "./learning/schedule";
 import type { StaffAthlete } from "./staffService";
 import {
   serviceState,
@@ -31,6 +32,11 @@ const row = (
   },
 });
 describe("weekly service presentation", () => {
+  it("displays Sunday midnight in Chicago on both sides of the DST change, regardless of browser zone", () => {
+    expect(learningDate("2026-11-01T05:00:00Z")).toBe("Nov 1, 2026, 12:00 AM");
+    expect(learningDate("2026-11-08T06:00:00Z")).toBe("Nov 8, 2026, 12:00 AM");
+    expect(learningDate(null)).toBe("Not observed");
+  });
   it("treats a ready weekly enrollment as ready even without a legacy saved workout", () => {
     expect(serviceState(row("ready"))).toBe("ready");
     expect(serviceAction(row("ready"), "owner")).toBe("View weekly plan");

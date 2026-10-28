@@ -20,10 +20,10 @@ Implemented on top of251:
 
 Completed local checks on this pass:
 
-- 425 unit/database checks,39 files; includes27 isolated PostgreSQL learning-policy tests,12 import tests,8 schedule/DST tests and3 weekly-service presentation tests.
+- 426 unit/database checks,39 files; includes27 isolated PostgreSQL learning-policy tests,12 import tests,8 schedule/DST tests and4 weekly-service presentation tests.
 - 11 Python checks; lint, types, Deno Edge Function checks and production build pass.
 - 8 enabled-feature app-route checks across desktop/phone cover selected athlete, no trusted client grade, current/library/progress navigation and stable server-backed group picker. These use synthetic fixtures, not live Auth.
-- 20 isolated desktop/phone preview checks passed before the last roster screenshot/accessibility assertion; the final complete preview rerun and full website/app suites are recorded below when terminal. No uncompleted run is a pass.
+- 20 isolated desktop/phone preview checks passed including roster/help accessibility, screenshot capture and explicit midnight display assertion. Full website/app and final CI results are recorded in the PR checks/task receipt when terminal. No uncompleted run is a pass.
 
 The group-picker refresh-loop regression was fixed by keeping default profile arrays stable; selecting/canceling group choices does not refetch the server page. An added route check initially expected a relative help URL while the Vite development base correctly rendered an absolute-root path; corrected exact URL assertions passed without weakening navigation coverage.
 
@@ -36,3 +36,5 @@ The walkthrough uses real UI components with a browser-local fake transport, exp
 Read-only hosted inventory at21:35UTC found production only, zero branches, no learning schema or pg_cron, zero listed provider backups, PITR off and WAL on. A schema-function/policy metadata snapshot is saved outside the repository, but is not a customer-data backup or tested restore point. No target was provisioned or modified. Hosted real Auth/Storage/restore rehearsal remains required before permission migration; see the rollout review for exact staged approval.
 
 Public browser QA from this worker is limited by the known Cloudflare1010 client restriction; no bypass or redundant requests are used. Cloudflare deployment metadata and local browser checks can verify preview provenance/isolation; independent public QA is separate. Installed iPhone build13 remains unchanged; compiled app/offline tests are not physical-device acceptance. No payment integration, finished curriculum, qualified coaching approval or public youth readiness is claimed.
+
+Visual review found a roster-only date formatting defect: the source instant was correct but the browser-local formatter was labeled Central. Weekly roster dates now explicitly use America/Chicago; tests pin midnight immediately before and after the November DST change. Other legacy review dates keep their existing browser-local semantics. See [ACCEPTANCE-MATRIX.md](ACCEPTANCE-MATRIX.md) for the cross-site route/role map.

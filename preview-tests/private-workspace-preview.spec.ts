@@ -370,6 +370,7 @@ test("weekly roster uses current plans, real paging controls and actionable athl
   await expect(
     roster.getByText("No training assigned", { exact: true }),
   ).toHaveCount(0);
+  await expect(roster).toContainText("Next: Nov 1, 2026, 12:00 AM Central");
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
   await page.screenshot({
     path: `artifacts/private-workspace/learning-roster-${info.project.name}.png`,

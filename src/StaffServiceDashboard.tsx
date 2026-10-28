@@ -1,5 +1,6 @@
 import { LearningAthlete } from "./learning/LearningAthlete";
 import { LearningApi } from "./learning/api";
+import { learningDate } from "./learning/schedule";
 import { StaffLink } from "./StaffLinks";
 import { AthleteTrainingAssignment } from "./AthleteTrainingAssignment";
 import { StaffNotificationPanel } from "./StaffNotificationPanel";
@@ -574,7 +575,7 @@ export function StaffServiceDashboard({
                             </small>
                             {r.learning.next_release_at && (
                               <small>
-                                Next: {observed(r.learning.next_release_at)}{" "}
+                                Next: {learningDate(r.learning.next_release_at)}{" "}
                                 Central
                               </small>
                             )}
@@ -1020,7 +1021,7 @@ export function StaffServiceDashboard({
                   </p>
                   <p>
                     {current.learning
-                      ? `Weekly scheduled: ${observed(current.learning.scheduled_at)}. Actually available: ${observed(current.learning.available_at)}. Most recent work reported: ${observed(current.learning.last_reported_at)}. Participation is not a technique assessment.`
+                      ? `Times in Central: weekly scheduled: ${learningDate(current.learning.scheduled_at)}. Actually available: ${learningDate(current.learning.available_at)}. Most recent work reported: ${learningDate(current.learning.last_reported_at)}. Participation is not a technique assessment.`
                       : "Scheduled release: not active. First available timestamp: not recorded. Completion is reported participation, not a technique assessment."}
                   </p>
                 </details>
