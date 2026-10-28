@@ -56,6 +56,7 @@ export function MobileStaffHome({ shared }: { shared: SharedState }) {
           role={role}
           enabled
           monitoring={shared.deliveryMonitoringEnabled}
+          operationalEmails={shared.staffNotificationEmailsEnabled}
         />
       )}
       {!shared.staffRosterEnabled && (

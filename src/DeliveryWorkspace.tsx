@@ -155,7 +155,6 @@ function RuleFields({
         [
           ["notify_training", "Training-ready in-app notice"],
           ["notify_reviews", "Review-ready in-app notice"],
-          ["email_requested", "Request email later (sender disabled)"],
         ] as const
       ).map(([key, label]) =>
         field(

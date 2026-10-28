@@ -92,6 +92,7 @@ function StaffDashboard({
         role={role}
         enabled={shared.staffRosterEnabled}
         monitoring={shared.deliveryMonitoringEnabled}
+        operationalEmails={shared.staffNotificationEmailsEnabled}
       />
       <div className="workspace-metrics">
         <div>
