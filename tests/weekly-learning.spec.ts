@@ -167,10 +167,13 @@ test("enabled Owner plan opens inside selected athlete, preserves account contex
   await expect(
     page.getByRole("heading", { name: "Weekly plan", exact: true }),
   ).toBeVisible();
-  expect(
-    calls.filter((c) => c.name === "learning_athlete").at(-1)?.body
-      .target_profile,
-  ).toBe(athleteA);
+  await expect
+    .poll(
+      () =>
+        calls.filter((c) => c.name === "learning_athlete").at(-1)?.body
+          .target_profile,
+    )
+    .toBe(athleteA);
   await page.getByRole("button", { name: "Back to athletes" }).click();
   await page
     .getByRole("navigation", { name: "Workspace navigation" })
