@@ -355,3 +355,84 @@ button.workflow-bank-row {
   max-width: 1120px;
   padding-bottom: 0;
 }
+.athlete-assignment-panel {
+  margin: 24px 0;
+  padding: 22px;
+  border: 1px solid #9b8049;
+  border-radius: 12px;
+  background: #20221f;
+}
+.athlete-assignment-panel > header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 18px;
+}
+.athlete-assignment-panel h3 {
+  font-size: 24px;
+  margin: 8px 0 16px;
+}
+.athlete-assignment-panel .workflow-search {
+  margin: 18px 0;
+}
+.athlete-assignment-panel .workout-assignment {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.athlete-assignment-panel .workflow-bank-row {
+  padding: 16px;
+  border-color: #55584d;
+}
+.inline-assignment-confirm {
+  margin: 22px 0 10px;
+  padding: 20px;
+  border: 2px solid #c7a45c;
+  border-radius: 10px;
+  background: #181818;
+}
+.inline-assignment-confirm .actions {
+  gap: 12px;
+}
+.staff-more-filters {
+  margin: 12px 0;
+  border-bottom: 1px solid #414438;
+  padding-bottom: 8px;
+}
+.staff-more-filters summary {
+  cursor: pointer;
+  min-height: 44px;
+  font-size: 14px;
+  color: #c6cabb;
+}
+.staff-more-filters label {
+  display: grid;
+  gap: 8px;
+  font-size: 13px;
+  flex: 1;
+}
+.staff-more-filters select {
+  min-height: 48px;
+  color: #faf5ea;
+  background: #20221f;
+  border: 1px solid #55584d;
+  border-radius: 8px;
+  padding: 10px;
+  font: inherit;
+}
+@media (max-width: 700px) {
+  .athlete-assignment-panel {
+    padding: 18px 14px;
+  }
+  .athlete-assignment-panel > header {
+    flex-direction: column;
+    gap: 0;
+  }
+  .inline-assignment-confirm {
+    padding: 16px 12px;
+  }
+  .staff-more-filters .staff-service-tools {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+}

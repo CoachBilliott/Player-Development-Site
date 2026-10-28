@@ -271,6 +271,7 @@ function Builder({ shared }: { shared: SharedState }) {
               <li key={w.id}>
                 <button
                   className="builder-workout-choice"
+                  data-workout-id={w.id}
                   aria-pressed={id === w.id}
                   disabled={busy}
                   onClick={() => (dirty ? setPending(w) : open(w))}
@@ -503,21 +504,15 @@ function Builder({ shared }: { shared: SharedState }) {
             <div className="workflow-assignment-entry">
               <h2>Ready to use this practice?</h2>
               <p>
-                Assign the saved workout in a separate step. Existing athlete
-                plans keep their current version until you confirm a
-                replacement.
+                Open an athlete’s record to assign this saved workout. Saving a
+                template does not replace anyone’s current plan.
               </p>
-              {dirty ? (
-                <p>Save or discard your edits before assigning.</p>
-              ) : (
-                <StaffLink
-                  route="training-assign"
-                  values={{ trainingWorkout: selected.id }}
-                  className="button"
-                >
-                  Assign this workout <ArrowRight size={18} />
-                </StaffLink>
-              )}
+              <StaffLink route="workspace" className="button">
+                {new URLSearchParams(location.search).has("serviceAthlete")
+                  ? "Return to athlete"
+                  : "Choose an athlete"}
+                <ArrowRight size={18} />
+              </StaffLink>
             </div>
           )}
         </section>
@@ -749,19 +744,33 @@ export function AssignWorkout({
   service,
   workout,
   dirty,
+  fixedTarget,
+  embedded = false,
+  onSaved,
+  onBusyChange,
 }: {
   service: Workouts;
   workout: SavedWorkout;
   dirty: boolean;
+  fixedTarget?: { account: string; profile: string };
+  embedded?: boolean;
+  onSaved?: () => void;
+  onBusyChange?: (busy: boolean) => void;
 }) {
   const [members, setMembers] = useState<AccessMember[]>([]),
     [account, setAccount] = useState(
-      () => new URLSearchParams(location.search).get("trainingAccount") || "",
+      () =>
+        fixedTarget?.account ||
+        new URLSearchParams(location.search).get("trainingAccount") ||
+        "",
     ),
     [profiles, setProfiles] = useState<AssignmentProfile[]>([]),
     [profilesLoaded, setProfilesLoaded] = useState(false),
     [profile, setProfile] = useState(
-      () => new URLSearchParams(location.search).get("trainingAthlete") || "",
+      () =>
+        fixedTarget?.profile ||
+        new URLSearchParams(location.search).get("trainingAthlete") ||
+        "",
     ),
     [assignment, setAssignment] = useState<WorkoutAssignment | null>(null);
   const [busy, setBusy] = useState(false),
@@ -770,8 +779,12 @@ export function AssignWorkout({
     [confirm, setConfirm] = useState<"assign" | "remove" | null>(null),
     [retry, setRetry] = useState(0);
   const lock = useRef(false);
+  const fixedProfile = fixedTarget?.profile || "",
+    fixed = !!fixedTarget;
+  const Confirmation = embedded ? InlineAssignmentConfirmation : Modal;
   useEffect(() => {
     let active = true;
+    if (fixed) return;
     void listAccess(service.client, "")
       .then((rows) => {
         if (active) setMembers(rows);
@@ -782,7 +795,7 @@ export function AssignWorkout({
     return () => {
       active = false;
     };
-  }, [service]);
+  }, [service, fixed]);
   useEffect(() => {
     let active = true;
     if (account)
@@ -792,13 +805,22 @@ export function AssignWorkout({
           if (!active) return;
           setProfiles(rows);
           setProfilesLoaded(true);
-          setProfile((current) =>
-            rows.some((p) => p.id === current)
-              ? current
-              : rows.length === 1
-                ? rows[0].id
-                : "",
-          );
+          if (fixedProfile) {
+            setProfile(
+              rows.some((p) => p.id === fixedProfile) ? fixedProfile : "",
+            );
+            if (!rows.some((p) => p.id === fixedProfile))
+              setError(
+                "This athlete is no longer available in the selected account. Reload the athlete record.",
+              );
+          } else
+            setProfile((current) =>
+              rows.some((p) => p.id === current)
+                ? current
+                : rows.length === 1
+                  ? rows[0].id
+                  : "",
+            );
         })
         .catch((e: Error) => {
           if (active) setError(e.message);
@@ -806,7 +828,7 @@ export function AssignWorkout({
     return () => {
       active = false;
     };
-  }, [account, service, retry]);
+  }, [account, service, retry, fixedProfile]);
   useEffect(() => {
     let active = true;
     if (account && profile)
@@ -826,6 +848,7 @@ export function AssignWorkout({
     if (lock.current) return;
     lock.current = true;
     setBusy(true);
+    onBusyChange?.(true);
     setError("");
     setMessage("");
     try {
@@ -837,6 +860,7 @@ export function AssignWorkout({
     } finally {
       lock.current = false;
       setBusy(false);
+      onBusyChange?.(false);
     }
   }
   return (
@@ -844,52 +868,66 @@ export function AssignWorkout({
       className="workout-assignment"
       aria-label="Assign complete workout"
     >
-      <h2>Assign this workout</h2>
-      <p>
-        Choose the athlete who will follow this workout. Siblings can have
-        different plans. Every drill must match the selected athlete. This does
-        not change video-review permissions or start a subscription.
-      </p>
+      {!fixed && (
+        <>
+          <h2>Assign this workout</h2>
+          <p>
+            Choose the athlete who will follow this workout. Siblings can have
+            different plans. Every drill must match the selected athlete. This
+            does not change video-review permissions or start a subscription.
+          </p>
+        </>
+      )}
       {dirty && (
         <Notice>
           Save or discard your template edits before assigning. Assignment uses
           the saved version.
         </Notice>
       )}
-      <label>
-        Assign to customer account
-        <select
-          value={account}
-          disabled={busy || dirty}
-          onChange={(e) => {
-            setAssignment(null);
-            setProfiles([]);
-            setProfilesLoaded(false);
-            setProfile("");
-            setConfirm(null);
-            setError("");
-            setMessage("");
-            setAccount(e.target.value);
-          }}
-        >
-          <option value="">Choose a verified customer</option>
-          {members
-            .filter(
-              (m) => m.email_verified && m.adult_setup && !isStaff(m.role),
-            )
-            .map((m) => (
-              <option key={m.user_id} value={m.user_id}>
-                {m.email}
-              </option>
-            ))}
-        </select>
-      </label>
-      {account && profiles.length > 0 && (
+      {!fixed && (
+        <label>
+          Assign to customer account
+          <select
+            value={account}
+            disabled={
+              busy ||
+              dirty ||
+              (fixed && (!profilesLoaded || profile !== fixedProfile))
+            }
+            onChange={(e) => {
+              setAssignment(null);
+              setProfiles([]);
+              setProfilesLoaded(false);
+              setProfile("");
+              setConfirm(null);
+              setError("");
+              setMessage("");
+              setAccount(e.target.value);
+            }}
+          >
+            <option value="">Choose a verified customer</option>
+            {members
+              .filter(
+                (m) => m.email_verified && m.adult_setup && !isStaff(m.role),
+              )
+              .map((m) => (
+                <option key={m.user_id} value={m.user_id}>
+                  {m.email}
+                </option>
+              ))}
+          </select>
+        </label>
+      )}
+      {!fixed && account && profiles.length > 0 && (
         <label>
           Assign to athlete
           <select
             value={profile}
-            disabled={busy || dirty}
+            disabled={
+              busy ||
+              dirty ||
+              (fixed && (!profilesLoaded || profile !== fixedProfile))
+            }
             onChange={(e) => {
               setProfile(e.target.value);
               setAssignment(null);
@@ -930,10 +968,24 @@ export function AssignWorkout({
           <div className="actions">
             <button
               className="button"
-              disabled={busy || dirty}
+              disabled={
+                busy ||
+                dirty ||
+                (fixed && (!profilesLoaded || profile !== fixedProfile))
+              }
               onClick={() =>
                 void act(async () => {
-                  if (!(await service.preview(workout, account, profile)))
+                  if (fixed && (!profilesLoaded || profile !== fixedProfile))
+                    throw new Error(
+                      "Reload this athlete before assigning. No account-wide fallback will be used.",
+                    );
+                  if (
+                    !(await service.preview(
+                      workout,
+                      account,
+                      fixed ? fixedProfile : profile,
+                    ))
+                  )
                     throw new Error(
                       "No eligible athlete matches every drill for this selection. Existing training access is unchanged.",
                     );
@@ -946,7 +998,11 @@ export function AssignWorkout({
             {assignment.workout_id && (
               <button
                 className="text-button"
-                disabled={busy || dirty}
+                disabled={
+                  busy ||
+                  dirty ||
+                  (fixed && (!profilesLoaded || profile !== fixedProfile))
+                }
                 onClick={() => setConfirm("remove")}
               >
                 Remove current assignment
@@ -979,7 +1035,7 @@ export function AssignWorkout({
         </p>
       )}
       {confirm && assignment && (
-        <Modal
+        <Confirmation
           title={
             confirm === "assign"
               ? "Assign this complete workout?"
@@ -1013,17 +1069,22 @@ export function AssignWorkout({
           <div className="actions">
             <button
               className="button"
-              disabled={busy || dirty}
+              disabled={
+                busy ||
+                dirty ||
+                (fixed && (!profilesLoaded || profile !== fixedProfile))
+              }
               onClick={() =>
                 void act(async () => {
                   const result = await service.assign(
                     confirm === "assign" ? workout : null,
                     account,
                     assignment.version,
-                    profile,
+                    fixed ? fixedProfile : profile,
                   );
                   setAssignment(result);
                   setConfirm(null);
+                  onSaved?.();
                   setMessage(
                     result.workout_id
                       ? "Complete workout assigned. The athlete can refresh training to begin."
@@ -1046,8 +1107,51 @@ export function AssignWorkout({
               Keep current assignment
             </button>
           </div>
-        </Modal>
+        </Confirmation>
       )}
+    </section>
+  );
+}
+
+function InlineAssignmentConfirmation({
+  title,
+  onClose,
+  children,
+}: {
+  title: string;
+  onClose: () => void;
+  children: React.ReactNode;
+}) {
+  const ref = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const previous =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
+    ref.current?.focus();
+    return () => {
+      requestAnimationFrame(() => {
+        if (previous?.isConnected) previous.focus({ preventScroll: true });
+      });
+    };
+  }, []);
+  return (
+    <section
+      ref={ref}
+      role="region"
+      aria-label={title}
+      tabIndex={-1}
+      className="inline-assignment-confirm"
+      onKeyDown={(e) => {
+        if (e.key === "Escape") {
+          e.preventDefault();
+          e.stopPropagation();
+          onClose();
+        }
+      }}
+    >
+      <h3>{title}</h3>
+      {children}
     </section>
   );
 }

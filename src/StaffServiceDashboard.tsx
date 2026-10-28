@@ -1,4 +1,5 @@
 import { StaffLink } from "./StaffLinks";
+import { AthleteTrainingAssignment } from "./AthleteTrainingAssignment";
 import { StaffNotificationPanel } from "./StaffNotificationPanel";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
@@ -63,6 +64,12 @@ export function StaffServiceDashboard({
     [filter, setFilter] = useState("all"),
     [query, setQuery] = useState(""),
     [assignmentNotice, setAssignmentNotice] = useState("");
+  const [assigning, setAssigning] = useState(false),
+    [assignmentBusy, setAssignmentBusy] = useState(false);
+  const [ageFilter, setAgeFilter] = useState(""),
+    [positionFilter, setPositionFilter] = useState(""),
+    [coachFilter, setCoachFilter] = useState("");
+  const assignButton = useRef<HTMLButtonElement>(null);
   const lock = useRef(false);
   const returnFocus = useRef<HTMLElement | null>(null);
   useEffect(() => {
@@ -115,6 +122,7 @@ export function StaffServiceDashboard({
   }, [api, target, attempt, actor, role, enabled]);
   useEffect(() => {
     function back() {
+      setAssigning(false);
       setCurrent(null);
       setDetailError("");
       setAssignmentNotice("");
@@ -124,6 +132,7 @@ export function StaffServiceDashboard({
     return () => window.removeEventListener("popstate", back);
   }, []);
   function open(id: string) {
+    setAssigning(false);
     returnFocus.current =
       document.activeElement instanceof HTMLElement
         ? document.activeElement
@@ -137,6 +146,7 @@ export function StaffServiceDashboard({
     history.pushState({ repformedServiceDetail: true }, "", u);
   }
   function close() {
+    setAssigning(false);
     if (history.state?.repformedServiceDetail) {
       history.back();
       return;
@@ -149,8 +159,24 @@ export function StaffServiceDashboard({
     u.searchParams.delete("serviceAthlete");
     history.replaceState(null, "", u);
   }
-  const rows = serviceRows(data?.rows || [], query, filter),
+  const scopedRows = (data?.rows || []).filter(
+    (r) =>
+      (!ageFilter || r.age_group === ageFilter) &&
+      (!positionFilter || r.position === positionFilter) &&
+      (!coachFilter ||
+        (coachFilter === "none" ? !r.coach_id : r.coach_id === coachFilter)),
+  );
+  const rows = serviceRows(scopedRows, query, filter),
     total = data?.rows.length || 0;
+  const coachChoices = [
+    ...new Map(
+      (data?.rows || []).flatMap((r) =>
+        r.coach_id
+          ? [[r.coach_id, r.coach_label || "Assigned coach"] as const]
+          : [],
+      ),
+    ).entries(),
+  ];
   const counts = {
     overdue: (data?.rows || []).filter((r) => serviceState(r) === "overdue")
       .length,
@@ -161,6 +187,9 @@ export function StaffServiceDashboard({
   function resetFilters() {
     setQuery("");
     setFilter("all");
+    setAgeFilter("");
+    setPositionFilter("");
+    setCoachFilter("");
   }
   if (!enabled)
     return (
@@ -287,7 +316,11 @@ export function StaffServiceDashboard({
                 <option value="unassigned">No service coach</option>
               </select>
             </label>
-            {(query || filter !== "all") && (
+            {(query ||
+              filter !== "all" ||
+              ageFilter ||
+              positionFilter ||
+              coachFilter) && (
               <button
                 className="text-button staff-clear"
                 onClick={resetFilters}
@@ -296,6 +329,69 @@ export function StaffServiceDashboard({
               </button>
             )}
           </div>
+          <details className="staff-more-filters">
+            <summary>Filter by age, position or coach</summary>
+            <div className="staff-service-tools">
+              <label>
+                Age group
+                <select
+                  aria-label="Age group"
+                  value={ageFilter}
+                  onChange={(e) => setAgeFilter(e.target.value)}
+                >
+                  <option value="">All age groups</option>
+                  {[
+                    ...new Set(
+                      data.rows
+                        .map((r) => r.age_group)
+                        .filter((x): x is string => !!x),
+                    ),
+                  ]
+                    .sort()
+                    .map((x) => (
+                      <option key={x}>{x}</option>
+                    ))}
+                </select>
+              </label>
+              <label>
+                Football position
+                <select
+                  aria-label="Football position"
+                  value={positionFilter}
+                  onChange={(e) => setPositionFilter(e.target.value)}
+                >
+                  <option value="">All positions</option>
+                  {[
+                    ...new Set(
+                      data.rows
+                        .map((r) => r.position)
+                        .filter((x): x is string => !!x),
+                    ),
+                  ]
+                    .sort()
+                    .map((x) => (
+                      <option key={x}>{x}</option>
+                    ))}
+                </select>
+              </label>
+              <label>
+                Responsible coach
+                <select
+                  aria-label="Responsible coach"
+                  value={coachFilter}
+                  onChange={(e) => setCoachFilter(e.target.value)}
+                >
+                  <option value="">All in your scope</option>
+                  <option value="none">No coach assigned</option>
+                  {coachChoices.map(([id, label]) => (
+                    <option key={id} value={id}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+          </details>
           <p className="staff-result-count" role="status">
             Showing {rows.length} of {total} records
             {query.trim() ? ` for “${query.trim()}”` : ""}
@@ -450,7 +546,7 @@ export function StaffServiceDashboard({
               : "Athlete service access"
           }
           onClose={() => {
-            if (!busy) close();
+            if (!busy && !assignmentBusy) close();
           }}
         >
           <div className="staff-detail">
@@ -469,6 +565,12 @@ export function StaffServiceDashboard({
                   </span>
                 </div>
                 <p className="staff-detail-client">{current.client_label}</p>
+                <p className="staff-detail-plan">
+                  Current training:{" "}
+                  <strong>
+                    {current.workout_title || "No workout assigned"}
+                  </strong>
+                </p>
                 <section
                   className="staff-next-step"
                   aria-label="Next service action"
@@ -477,22 +579,22 @@ export function StaffServiceDashboard({
                   <h3>{current.next_action}</h3>
                   <div className="actions">
                     {role === "owner" && current.athlete_id && (
-                      <StaffLink
-                        route="training-assign"
-                        values={{
-                          trainingAccount: current.client_id,
-                          trainingAthlete: current.athlete_id,
-                          trainingWorkout: "",
-                        }}
+                      <button
+                        ref={assignButton}
                         className="button"
+                        disabled={assignmentBusy}
+                        onClick={() => setAssigning(true)}
                       >
-                        Assign workout <ArrowRight size={16} />
-                      </StaffLink>
+                        Assign training <ArrowRight size={16} />
+                      </button>
                     )}
                     {(current.pending_reviews || 0) > 0 && (
-                      <a href="#video-reviews" className="button secondary">
+                      <StaffLink
+                        route="video-reviews"
+                        className="button secondary"
+                      >
                         Open review queue
-                      </a>
+                      </StaffLink>
                     )}
                   </div>
                   {preview && (
@@ -503,6 +605,33 @@ export function StaffServiceDashboard({
                     </p>
                   )}
                 </section>
+                {assignmentNotice && <p role="status">{assignmentNotice}</p>}
+                {assigning && current.athlete_id && role === "owner" && (
+                  <AthleteTrainingAssignment
+                    key={current.athlete_id}
+                    client={client}
+                    athlete={current}
+                    onBusyChange={setAssignmentBusy}
+                    onClose={() => {
+                      if (!assignmentBusy) {
+                        setAssigning(false);
+                        requestAnimationFrame(() =>
+                          assignButton.current?.focus(),
+                        );
+                      }
+                    }}
+                    onSaved={() => {
+                      setAssigning(false);
+                      setAssignmentNotice(
+                        "Workout assignment saved for this athlete. Sibling plans are unchanged.",
+                      );
+                      setAttempt((n) => n + 1);
+                      requestAnimationFrame(() =>
+                        assignButton.current?.focus(),
+                      );
+                    }}
+                  />
+                )}
                 {role !== "coach" ? (
                   <details
                     className="staff-detail-group"
@@ -517,7 +646,7 @@ export function StaffServiceDashboard({
                         Responsible service coach
                         <select
                           value={coach}
-                          disabled={busy}
+                          disabled={busy || assignmentBusy}
                           onChange={(e) => setCoach(e.target.value)}
                         >
                           <option value="">Unassigned</option>
@@ -565,9 +694,6 @@ export function StaffServiceDashboard({
                       >
                         Save service coach
                       </button>
-                      {assignmentNotice && (
-                        <p role="status">{assignmentNotice}</p>
-                      )}
                     </div>
                   </details>
                 ) : (
@@ -607,9 +733,9 @@ export function StaffServiceDashboard({
                     <p>No review tasks observed in your scope.</p>
                   )}
                   {!preview && (
-                    <a className="text-button" href="#video-reviews">
+                    <StaffLink route="video-reviews">
                       Open service desk & reviews <ArrowRight size={16} />
-                    </a>
+                    </StaffLink>
                   )}
                 </details>
                 <details
@@ -686,7 +812,7 @@ export function StaffServiceDashboard({
             <div className="staff-detail-footer">
               <button
                 className="button secondary"
-                disabled={busy}
+                disabled={busy || assignmentBusy}
                 onClick={close}
               >
                 Back to athletes

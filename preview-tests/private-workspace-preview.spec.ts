@@ -148,30 +148,48 @@ test("three staff journeys show real components but reject fictional assignment 
     fullPage: true,
   });
   await page
-    .getByRole("region", { name: "Reusable workouts" })
-    .getByRole("link", { name: "Assign workout", exact: true })
+    .getByRole("navigation", { name: "Workspace navigation" })
+    .getByRole("link", { name: "Athletes", exact: true })
     .click();
   await page
-    .getByLabel("Assign to customer account")
-    .selectOption("90000000-0000-4000-8000-000000000050");
-  await page
-    .getByLabel("Assign to athlete")
-    .selectOption("90000000-0000-4000-8000-000000000060");
-  await page.getByRole("button", { name: "Preview assignment" }).click();
-  await expect(page.getByRole("dialog")).toContainText(
+    .getByRole("button", { name: /Fictional Jordan/ })
+    .first()
+    .click();
+  const athlete = page.getByRole("dialog");
+  await athlete
+    .getByRole("button", { name: "Assign training", exact: true })
+    .click();
+  await athlete
+    .getByRole("button", { name: /Ready position & controlled steps/ })
+    .click();
+  await expect(page.getByLabel("Assign to customer account")).toHaveCount(0);
+  await expect(page.getByLabel("Assign to athlete")).toHaveCount(0);
+  await athlete
+    .getByRole("button", { name: "Preview assignment", exact: true })
+    .click();
+  const confirm = athlete.getByRole("region", {
+    name: "Assign this complete workout?",
+  });
+  await expect(confirm).toContainText(
     "This replaces only this athlete's current saved workout.",
   );
   await page.screenshot({
     path: `artifacts/staff-workflows/preview-confirm-${info.project.name}.png`,
     fullPage: true,
   });
-  await page
-    .getByRole("button", { name: "Confirm workout assignment" })
+  await confirm
+    .getByRole("button", { name: "Confirm workout assignment", exact: true })
     .click();
-  await expect(page.getByRole("dialog").getByRole("alert")).toContainText(
-    "not confirmed",
-  );
-  await page.getByRole("button", { name: "Keep current assignment" }).click();
+  await expect(confirm.getByRole("alert")).toContainText("not confirmed");
+  await confirm
+    .getByRole("button", { name: "Keep current assignment", exact: true })
+    .click();
+  await athlete
+    .getByRole("button", { name: "Cancel assignment", exact: true })
+    .click();
+  await athlete
+    .getByRole("button", { name: "Back to athletes", exact: true })
+    .click();
   await page
     .getByRole("navigation", { name: "Workspace navigation" })
     .getByRole("link", { name: "Staff & settings", exact: true })

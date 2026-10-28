@@ -23,7 +23,7 @@ function sampleWorkout(backend: ReturnType<typeof state>) {
   backend.workouts.set(w.id, w);
   return w;
 }
-test("training bank leads to one guarded whole-workout assignment, with cancellation and replacement confirmation", async ({
+test("legacy workout links retain guarded assignment, cancellation and replacement confirmation", async ({
   page,
   context,
 }, info) => {
@@ -41,10 +41,10 @@ test("training bank leads to one guarded whole-workout assignment, with cancella
     page.getByRole("heading", { name: "No workouts match." }),
   ).toBeVisible();
   await page.getByRole("button", { name: "Clear search", exact: true }).click();
-  await page.getByRole("link", { name: "Assign workout", exact: true }).click();
+  await page.goto(`./?trainingWorkout=${workout.id}#training-assign`);
   await expect(
     page.getByRole("heading", { name: "Who is this workout for?" }),
-  ).toBeFocused();
+  ).toBeVisible();
   await page.getByLabel("Assign to customer account").selectOption(accountId);
   await expect(page.getByLabel("Assign to athlete")).toHaveValue(profileId);
   await page.getByRole("button", { name: "Preview assignment" }).click();
@@ -178,23 +178,25 @@ test("athlete service keeps assignment context and uncommon settings out of the 
     .click();
   const assign = page
     .getByRole("dialog")
-    .getByRole("link", { name: "Assign workout", exact: true });
-  await expect(assign).toHaveAttribute(
-    "href",
-    new RegExp(`trainingAthlete=${athleteC}`),
+    .getByRole("button", { name: "Assign training", exact: true });
+  await assign.click();
+  await expect(
+    page.getByRole("heading", { name: "Assign training to Fictional Morgan" }),
+  ).toBeFocused();
+  await expect(page.getByLabel("Assign to customer account")).toHaveCount(0);
+  await expect(page.getByLabel("Assign to athlete")).toHaveCount(0);
+  await expect(page).toHaveURL(
+    new RegExp(`serviceAthlete=${athleteC}#workspace$`),
   );
   await mkdir("artifacts/staff-workflows", { recursive: true });
   await page.screenshot({
     path: `artifacts/staff-workflows/athlete-${info.project.name}.png`,
     fullPage: true,
   });
-  await assign.click();
-  await expect(
-    page.getByRole("heading", { name: "Choose a saved workout." }),
-  ).toBeVisible();
-  await page.goBack();
-  await expect(page).toHaveURL(/#workspace$/);
-  await expect(page.getByRole("dialog")).toBeVisible();
+  await page
+    .getByRole("button", { name: "Cancel assignment", exact: true })
+    .click();
+  await expect(assign).toBeFocused();
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 });
 

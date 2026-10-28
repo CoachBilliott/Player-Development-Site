@@ -236,15 +236,6 @@ function TrainingHome({ shared }: { shared: SharedState }) {
                   >
                     Edit workout
                   </StaffLink>
-                  {shared.role === "owner" && (
-                    <StaffLink
-                      route="training-assign"
-                      values={{ trainingWorkout: w.id }}
-                      className="button secondary"
-                    >
-                      Assign workout <ArrowRight size={16} />
-                    </StaffLink>
-                  )}
                 </div>
               </article>
             ))}
@@ -306,8 +297,8 @@ function TrainingHome({ shared }: { shared: SharedState }) {
       <details className="workflow-secondary">
         <summary>Assignment and publishing details</summary>
         <p>
-          A saved workout is assigned to one athlete at a time. Future uploads
-          and template edits do not update existing assignments automatically.
+          Open an athlete’s record to assign a saved workout. Future uploads and
+          template edits do not update existing assignments automatically.
           Package-based weekly delivery is not connected.
         </p>
         {shared.role === "owner" ? (
