@@ -29,3 +29,5 @@ The existing GitHub Actions workflow now uploads `learning-review-evidence` cont
 ## Aggregate follow-up
 
 CI40762299736 at05a7ef5 completed with358 browser passes and4 failures: desktop/phone expectations for the intentionally replaced Sunday wording and the FAQ count (9→10). Those two exact assertions are updated without removing coverage. The intermediate6bbf57e run was superseded by this correction. Local compiled app/offline suite passed8 checks. Final CI must run all362 website,8 app/offline and12 preview checks together on the final head; no interrupted or earlier overlapping counts are summed.
+
+Final reminder review adds current-week, active-access and independent-recording guards to in-app notice reads and stale-Friday cleanup. A linked athlete with recording paused receives no Friday nag; the authorized guardian retains the appropriate notice. Advancing weeks or losing access hides stale reminders. Focused core40 passed. This is a backend/test-only change; the isolated frontend preview remains05a7ef5. Final source is frozen for CI; no production flag changed.

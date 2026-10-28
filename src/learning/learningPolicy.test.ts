@@ -823,3 +823,63 @@ it("one failed enrollment rolls back its own release without blocking others or 
     ),
   ).toBe(1);
 });
+it("Friday notices follow current work, parent permission and active access rather than becoming stale nags", async () => {
+  const rid = await release();
+  const linked = id(7);
+  await as("", "postgres");
+  await db.query(
+    "insert into auth.users(id,email,email_confirmed_at) values($1,'fictional-notice-linked@example.test',now())",
+    [linked],
+  );
+  await db.query(
+    "insert into public.account_roles(user_id,role) values($1,'athlete')",
+    [linked],
+  );
+  await db.query(
+    "insert into public.family_athlete_links(profile_id,athlete_user_id) values($1,$2)",
+    [profile, linked],
+  );
+  await db.query(
+    "insert into public.family_athlete_controls(profile_id,self_recording_allowed) values($1,false)",
+    [profile],
+  );
+  await db.query(
+    "insert into public.learning_notices(event_key,profile_id,release_id,category,staff_only) values('synthetic-friday',$1,$2,'friday_incomplete',false)",
+    [profile, rid],
+  );
+  await as(parent);
+  expect(JSON.stringify(await r("select public.learning_inbox() r"))).toContain(
+    "friday_incomplete",
+  );
+  await as(linked);
+  expect(
+    JSON.stringify(await r("select public.learning_inbox() r")),
+  ).not.toContain("friday_incomplete");
+  await as("", "postgres");
+  await db.query(
+    "update public.family_athlete_controls set self_recording_allowed=true where profile_id=$1",
+    [profile],
+  );
+  await as(linked);
+  expect(JSON.stringify(await r("select public.learning_inbox() r"))).toContain(
+    "friday_incomplete",
+  );
+  await as("", "postgres");
+  await db.query(
+    "insert into public.learning_releases(enrollment_id,sequence,week_number,week_version_id,scheduled_at) values($1,2,1,$2,now())",
+    [enrollment, week],
+  );
+  await as(parent);
+  expect(
+    JSON.stringify(await r("select public.learning_inbox() r")),
+  ).not.toContain("friday_incomplete");
+  await as("", "postgres");
+  await db.query(
+    "update public.learning_access set revoked_at=now() where profile_id=$1",
+    [profile],
+  );
+  await as(parent);
+  expect(await r("select public.learning_inbox() r")).toEqual([]);
+  await as(coach);
+  expect(await r("select public.learning_inbox() r")).toEqual([]);
+});

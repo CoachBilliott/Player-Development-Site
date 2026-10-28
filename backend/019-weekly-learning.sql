@@ -447,7 +447,7 @@ begin
   end if;
  end;end loop;
  if not dry_run then
-  update public.learning_notices n set resolved_at=at_time where n.category='friday_incomplete' and n.resolved_at is null and public.learning_release_done(n.release_id);
+  update public.learning_notices n set resolved_at=at_time where n.category='friday_incomplete' and n.resolved_at is null and (public.learning_release_done(n.release_id) or not exists(select 1 from public.learning_releases r join public.learning_enrollments current_enrollment on current_enrollment.id=r.enrollment_id where r.id=n.release_id and current_enrollment.state in ('active','finished') and public.learning_eligible(current_enrollment.profile_id,current_enrollment.plan_id,at_time) and r.sequence=(select max(latest.sequence) from public.learning_releases latest where latest.enrollment_id=current_enrollment.id)));
  end if;
  return jsonb_build_object('dry_run',dry_run,'releases',count_release,'reminders',count_reminder,'low_content',count_low,'failed_enrollments',failed,'timezone','America/Chicago');
 end$$;
@@ -468,7 +468,8 @@ create function public.learning_catalog() returns jsonb language plpgsql stable 
 end$$;
 create function public.learning_inbox() returns jsonb language sql stable security definer set search_path='' as $$
  select coalesce(jsonb_agg(jsonb_build_object('id',n.id,'profile_id',n.profile_id,'release_id',n.release_id,'category',n.category,'created_at',n.created_at,'read',exists(select 1 from public.learning_notice_reads r where r.notice_id=n.id and r.user_id=auth.uid())) order by n.created_at desc),'[]')
- from public.learning_notices n where n.resolved_at is null and public.learning_profile_allowed(n.profile_id) and ((n.staff_only and public.staff_can_view_service_athlete(n.profile_id)) or (not n.staff_only and public.can_view_athlete(n.profile_id)))
+ from public.learning_notices n where n.resolved_at is null and public.learning_profile_allowed(n.profile_id) and ((n.staff_only and public.staff_can_view_service_athlete(n.profile_id) and exists(select 1 from public.learning_enrollments e where e.profile_id=n.profile_id and e.state='active' and public.learning_eligible(e.profile_id,e.plan_id,now())))
+ or (not n.staff_only and public.can_view_athlete(n.profile_id) and exists(select 1 from public.learning_releases r join public.learning_enrollments e on e.id=r.enrollment_id where r.id=n.release_id and public.learning_eligible(e.profile_id,e.plan_id,now()) and (n.category<>'friday_incomplete' or (e.state in ('active','finished') and public.learning_can_submit(e.profile_id) and r.sequence=(select max(latest.sequence) from public.learning_releases latest where latest.enrollment_id=e.id))))))
 $$;
 create function public.learning_read_notice(target_notice uuid) returns void language plpgsql security definer set search_path='' as $$begin
  if not exists(select 1 from jsonb_array_elements(public.learning_inbox()) x where x->>'id'=target_notice::text) then raise exception 'Notice is outside your scope.';end if;
