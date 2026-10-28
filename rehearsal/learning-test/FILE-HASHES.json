@@ -1,0 +1,30 @@
+{
+  "target": "ojcfrfpeftvngyluomex",
+  "source": "59ac534a47816b83473795aa372ba34298539dd0",
+  "files": {
+    "00-preflight-read-only.sql": {
+      "bytes": 594,
+      "sha256": "27f14921b10ab2ee0a3295d853d376caf9b9893bf910fc3e76d60f0f4b323da5"
+    },
+    "01-empty-test-atomic-install.sql": {
+      "bytes": 337934,
+      "sha256": "6a8d3e1d2015d49b8f9daa47a9b1bb0372ab88461a173910b0d0e9b4774afb3a"
+    },
+    "02-postflight-read-only.sql": {
+      "bytes": 1079,
+      "sha256": "f01ac1343414bdacbbdf988961bfc14acddb29adcaf34f58ff9546d672392562"
+    },
+    "AUTH-ACCEPTANCE.md": {
+      "bytes": 3562,
+      "sha256": "094ae2b005d0be22c229adc9c5f82ec06792e9607dd67a5bf11baef334a9ddc9"
+    },
+    "HANDOFF.md": {
+      "bytes": 3148,
+      "sha256": "52d3b3d37ffb54b3fd9fed27e8bbcdf869ca753f385f7c971957680cc1b7c5ed"
+    },
+    "SOURCE-MANIFEST.json": {
+      "bytes": 6569,
+      "sha256": "a31a09501622c7475bcda90e22e7ec50f3f61c6f8ce19737fe9edb048d9234f0"
+    }
+  }
+}

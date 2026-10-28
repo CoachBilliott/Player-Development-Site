@@ -1,0 +1,121 @@
+{
+  "target": "ojcfrfpeftvngyluomex",
+  "excluded": "iilbulpqbuknhdpmtrvm",
+  "source": "59ac534a47816b83473795aa372ba34298539dd0",
+  "files": [
+    {
+      "file": "001-shared-content.sql",
+      "sha256": "bd62bb90d1d291642122c04b13f2a1950d7af9de48ad6ae3d35d19de06e17a4e",
+      "bytes": 6356,
+      "raw_url": "https://raw.githubusercontent.com/repformed/Player-Development-Site/59ac534a47816b83473795aa372ba34298539dd0/backend/001-shared-content.sql"
+    },
+    {
+      "file": "002-private-profiles.sql",
+      "sha256": "a67eb9cf5844594e543338ec8cc78f891835cfc22c1bebfb6656c9a5f3f7d72c",
+      "bytes": 6549,
+      "raw_url": "https://raw.githubusercontent.com/repformed/Player-Development-Site/59ac534a47816b83473795aa372ba34298539dd0/backend/002-private-profiles.sql"
+    },
+    {
+      "file": "003-account-levels.sql",
+      "sha256": "604fe287c296bc758669512cd07acff2f6abd39a93b9c7eea223923bc94f76ee",
+      "bytes": 12150,
+      "raw_url": "https://raw.githubusercontent.com/repformed/Player-Development-Site/59ac534a47816b83473795aa372ba34298539dd0/backend/003-account-levels.sql"
+    },
+    {
+      "file": "004-family-athletes.sql",
+      "sha256": "a72bf8a70f981cbd1d54cb903e1d7f8baa852150088f139443d883135b8204e8",
+      "bytes": 25251,
+      "raw_url": "https://raw.githubusercontent.com/repformed/Player-Development-Site/59ac534a47816b83473795aa372ba34298539dd0/backend/004-family-athletes.sql"
+    },
+    {
+      "file": "005-content-audiences.sql",
+      "sha256": "59e5d261049dc29d1775dfffcf2d786b803dfd638858ad66c950f73178313630",
+      "bytes": 2251,
+      "raw_url": "https://raw.githubusercontent.com/repformed/Player-Development-Site/59ac534a47816b83473795aa372ba34298539dd0/backend/005-content-audiences.sql"
+    },
+    {
+      "file": "006-assigned-training-and-video-review.sql",
+      "sha256": "b057c3c6ebc5016438e4e441cc4cb80cdb32f75cf999d93ad978e8138803c83e",
+      "bytes": 20227,
+      "raw_url": "https://raw.githubusercontent.com/repformed/Player-Development-Site/59ac534a47816b83473795aa372ba34298539dd0/backend/006-assigned-training-and-video-review.sql"
+    },
+    {
+      "file": "007-training-assignment-cleanup.sql",
+      "sha256": "1ebaf9101052044f9548d0dfb07d7d9c334ff380079d7e5e3a66f2fbafb0e733",
+      "bytes": 1558,
+      "raw_url": "https://raw.githubusercontent.com/repformed/Player-Development-Site/59ac534a47816b83473795aa372ba34298539dd0/backend/007-training-assignment-cleanup.sql"
+    },
+    {
+      "file": "008-workout-builder.sql",
+      "sha256": "9d515e33b721cf117eaabaf247f9fc8e5ca54e5a6afac4dbcff3fe8c38b91448",
+      "bytes": 21348,
+      "raw_url": "https://raw.githubusercontent.com/repformed/Player-Development-Site/59ac534a47816b83473795aa372ba34298539dd0/backend/008-workout-builder.sql"
+    },
+    {
+      "file": "009-content-review-and-practice-resume.sql",
+      "sha256": "11886dfbf5d03631c038571d9cd3ef07a21687b854af9088ce007761fd6ed0a3",
+      "bytes": 16333,
+      "raw_url": "https://raw.githubusercontent.com/repformed/Player-Development-Site/59ac534a47816b83473795aa372ba34298539dd0/backend/009-content-review-and-practice-resume.sql"
+    },
+    {
+      "file": "010-account-invitations-and-closure.sql",
+      "sha256": "1c4173bf3e7f922a04e32a8bbd2cec5972b4d3d3c1a4afdccaea31e0112d92f0",
+      "bytes": 24664,
+      "raw_url": "https://raw.githubusercontent.com/repformed/Player-Development-Site/59ac534a47816b83473795aa372ba34298539dd0/backend/010-account-invitations-and-closure.sql"
+    },
+    {
+      "file": "011-review-service-tracking.sql",
+      "sha256": "f4880eb52c75be81819414390e1d0e01be4d9424b2b692f43dda182ac2174988",
+      "bytes": 15561,
+      "raw_url": "https://raw.githubusercontent.com/repformed/Player-Development-Site/59ac534a47816b83473795aa372ba34298539dd0/backend/011-review-service-tracking.sql"
+    },
+    {
+      "file": "012-per-athlete-workout-assignments.sql",
+      "sha256": "430bbc0731594162d28ac67ca62fb3986d47f852f7280ddccb02ba99cfc57fab",
+      "bytes": 23418,
+      "raw_url": "https://raw.githubusercontent.com/repformed/Player-Development-Site/59ac534a47816b83473795aa372ba34298539dd0/backend/012-per-athlete-workout-assignments.sql"
+    },
+    {
+      "file": "015-staff-client-service-dashboard.sql",
+      "sha256": "013534bc410896f071e784e91bde2f3c5c80f74c7395bd51879dddd8a323d5ff",
+      "bytes": 9456,
+      "raw_url": "https://raw.githubusercontent.com/repformed/Player-Development-Site/59ac534a47816b83473795aa372ba34298539dd0/backend/015-staff-client-service-dashboard.sql"
+    },
+    {
+      "file": "016-delivery-monitoring-and-inbox.sql",
+      "sha256": "48e60192cc29d04c1b52a62db089af9f4c783cd1a6022a2b429a3951e2eb276a",
+      "bytes": 28478,
+      "raw_url": "https://raw.githubusercontent.com/repformed/Player-Development-Site/59ac534a47816b83473795aa372ba34298539dd0/backend/016-delivery-monitoring-and-inbox.sql"
+    },
+    {
+      "file": "017-staff-operational-notifications.sql",
+      "sha256": "aad2e7784ec8676e0fe77c0e4fe6e01d05e331db29055bb6a2f9837345f3b6ed",
+      "bytes": 20007,
+      "raw_url": "https://raw.githubusercontent.com/repformed/Player-Development-Site/59ac534a47816b83473795aa372ba34298539dd0/backend/017-staff-operational-notifications.sql"
+    },
+    {
+      "file": "018-public-interest-and-shared-inbox.sql",
+      "sha256": "68793bda5c1f80964f852c7abd665075ca14a640cd456410edd542f7c9bb4a5f",
+      "bytes": 17091,
+      "raw_url": "https://raw.githubusercontent.com/repformed/Player-Development-Site/59ac534a47816b83473795aa372ba34298539dd0/backend/018-public-interest-and-shared-inbox.sql"
+    },
+    {
+      "file": "019-weekly-learning.sql",
+      "sha256": "25a88837586ee9cbed1914a3bf7235bdd934e4fba12577d3b07be0eb2df3657b",
+      "bytes": 58502,
+      "raw_url": "https://raw.githubusercontent.com/repformed/Player-Development-Site/59ac534a47816b83473795aa372ba34298539dd0/backend/019-weekly-learning.sql"
+    },
+    {
+      "file": "020-learning-media-retention.sql",
+      "sha256": "27d67b3c989136eef63b247e12a5a88a4a49d5d01383671288c2a43d956cdcd5",
+      "bytes": 1908,
+      "raw_url": "https://raw.githubusercontent.com/repformed/Player-Development-Site/59ac534a47816b83473795aa372ba34298539dd0/backend/020-learning-media-retention.sql"
+    },
+    {
+      "file": "021-learning-service-workflows.sql",
+      "sha256": "21fa42d9b70fe73ebf17dd77aa3e291b5ddf0a807c588b06a60b776401ff27f7",
+      "bytes": 21326,
+      "raw_url": "https://raw.githubusercontent.com/repformed/Player-Development-Site/59ac534a47816b83473795aa372ba34298539dd0/backend/021-learning-service-workflows.sql"
+    }
+  ]
+}
