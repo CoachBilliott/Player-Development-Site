@@ -1,30 +1,42 @@
-# Homepage aligned with proposed packages
+# Homepage and website navigation review
 
-Scope: public homepage, its metadata and styles, plus a one-time navigation hint
-that opens the existing package-interest section. No notification backend,
-migration, Auth, roles, payment or enrollment changes are included.
+The public homepage now explains Foundation → Fundamentals → Position Development
+→ Elite Coaching using the deployed proposal definitions. Foundation stays
+learning-only; position work adapts/replaces two drills; selected written reviews
+remain monthly. A compact progression, proposed weekly rhythm and parent
+visibility replace the workout-only introduction. No duplicate pricing table,
+finished curriculum, results, enrollment or launch date is promised.
 
-The homepage explains Foundation → Fundamentals → Position Development → Elite
-Coaching, reusing the deployed package definitions. Foundation stays learning-only;
-position work adapts/replaces two drills; selected reviews remain monthly, with
-written feedback. The planned weekly routine and parent visibility are explained
-without duplicating the full pricing table. Features/prices remain proposals.
+The hero compares proposals. Express interest opens the existing package page at
+its email controls with keyboard focus. Only the one-time navigation hint is
+consumed; other URL parameters survive. Interest remains the visitor's mail-app
+message, not captured signup, enrollment, payment or mailing-list registration.
 
-Primary hero action compares packages; the bottom Express interest action opens
-the existing package page at its email controls. It consumes only its own query
-hint, preserves other URL parameters and stores no visitor data. Email interest
-still uses the visitor's mail app and is not captured signup or enrollment.
+The public header says Log in when signed out, Dashboard when signed in. Both
+mobile navigation and footer agree, using the existing role-aware workspace gate.
+A small session-restoration guard prevents older asynchronous reads from
+undoing newer sign-out/account-switch events. No server roles or policies change.
+The universal status strip is removed; the fictional demo keeps its sample-data
+indicator. Relevant availability/guardian guidance stays in the appropriate flows.
 
-Approved black/gold branding, original licensed imagery/looping footage, OS
-reduced-motion behavior, fictional demo, Contact and all social links are retained.
-No new video/motion controls are added against the owner's existing preference.
+Footer navigation is grouped under Explore and Help & access, with five compact
+44px social targets, accessible platform names, Contact, account/privacy help and
+credits. App & installation describes the existing web-app installation page,
+without implying a public App Store download. Contact/help social displays retain
+their existing labelled-link variant. Approved black/gold assets, licensed images,
+looping footage and OS reduced-motion behavior are preserved.
 
-Validation checkpoint: lint/types/build and 303 unit/database tests passed.
-Affected desktop/phone browser validation is running. One hero-video reload case
-failed while the development server was reloading; a fresh-process rerun and
-final screenshots are required before release readiness. Full hosted CI follows.
-No deployment or public browser acceptance is claimed by this document.
+Local validation: lint, TypeScript, build and **307 unit/database tests passed**.
+All **14 new header/footer cases passed** on desktop and phone, covering five
+roles, restore/signout, mobile menus, wrapping, focus, social targets and axe.
+Earlier affected homepage/package/contact checks passed; a dev-reload motion
+failure passed all eight fresh-process motion cases. Initial hosted CI reported
+six obsolete headline assertions; their text expectations were corrected while
+preserving routing/access assertions. Final aggregate CI must be checked at the
+latest PR head before release. Chromium phone emulation is not physical iOS QA.
 
-Notification work is preserved separately at feature/staff-operational-alerts,
-bb3e838, including its explicit WIP validation record. Review-readiness branch
-37d08b3 is untouched. Neither is part of this homepage branch.
+Isolated homepage preview uses disabled backend/account configuration and an
+explicit preview notice. Its deployment/verification receipt is separate from a
+production release. No production merge/deployment is implied by this document.
+No backend migration, credential, billing, notification or native release is in
+scope. Staff notification WIP is preserved at bb3e838; review readiness at 37d08b3.

@@ -1,3 +1,4 @@
+import { createSessionRestoration } from "./sessionRestoration";
 import { useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
 import {
@@ -37,6 +38,9 @@ export function useSharedContent() {
   useEffect(() => {
     let stopped = false;
     let unsubscribe: (() => void) | undefined;
+    const restoration = createSessionRestoration<Session | null>((current) => {
+      if (!stopped) setSession(current);
+    });
     void (async () => {
       try {
         const response = await fetch(
@@ -84,13 +88,15 @@ export function useSharedContent() {
               });
             }
             previousUser = current?.user.id || "";
-            if (!stopped) setSession(current);
+            restoration.observe(current);
           },
         );
         unsubscribe = () => subscription.data.subscription.unsubscribe();
         await finishAuthRedirect(connection);
-        const current = await connection.client.auth.getSession();
-        if (!stopped) setSession(current.data.session);
+        await restoration.restore(async () => {
+          const current = await connection.client.auth.getSession();
+          return current.data.session;
+        });
       } catch (e) {
         if (!stopped)
           setConnectionError(
