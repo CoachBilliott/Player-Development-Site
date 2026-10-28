@@ -318,6 +318,9 @@ export function ServiceDesk({
               href="#access"
               className="text-button"
               onClick={() => {
+                const destination = new URL(location.href);
+                destination.searchParams.set("accessSection", "training");
+                history.replaceState(history.state, "", destination);
                 try {
                   sessionStorage.setItem(
                     "pd-service-access-target",

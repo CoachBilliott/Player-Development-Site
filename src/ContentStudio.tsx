@@ -6,6 +6,7 @@ import type { SharedState } from "./useSharedContent";
 import { ROLE_LABELS } from "./roles";
 import { appSurface } from "./mobile";
 import { PrivateAccessMessage } from "./PrivateShell";
+import { MemberAccountPage } from "./MemberAccount";
 
 type Props = ComponentProps<typeof Admin> & { shared: SharedState };
 export function ContentStudio({ shared, ...local }: Props) {
@@ -15,6 +16,8 @@ export function ContentStudio({ shared, ...local }: Props) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [editorBusy, setEditorBusy] = useState(false);
+  if (shared.signedIn && (!shared.accessReady || shared.accessError))
+    return <MemberAccountPage shared={shared} />;
   if (shared.loading && selectedScope === null)
     return (
       <main className="page narrow">

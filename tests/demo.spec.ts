@@ -526,9 +526,13 @@ test("all screens fit mobile and navigation is keyboard accessible", async ({
         name: "Private profiles are being connected.",
       }),
     ).toBeVisible();
+    await expect(page.getByLabel("Account email")).toHaveCount(0);
+    await expect(
+      page.getByRole("link", { name: "Account help", exact: true }),
+    ).toBeVisible();
     await expect(
       page.getByRole("button", { name: "Open navigation" }),
-    ).toBeVisible();
+    ).toHaveCount(0);
   }
 });
 

@@ -358,7 +358,7 @@ for (const role of ["owner", "manager", "coach"]) {
       nav.getByRole("link", { name: "Overview", exact: true }),
     ).toHaveAttribute("aria-current", "page");
     await expect(
-      page.getByRole("link", { name: "Accounts & training access" }),
+      page.getByRole("link", { name: /^Team & access/ }),
     ).toHaveCount(role === "owner" ? 1 : 0);
     for (const width of [320, 390, 768]) {
       await page.setViewportSize({ width, height: 850 });

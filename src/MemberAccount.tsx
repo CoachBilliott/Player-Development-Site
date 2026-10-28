@@ -46,6 +46,14 @@ function authMode(
     : "signin";
 }
 
+function focusProfileChoice(id: string) {
+  requestAnimationFrame(() => {
+    const button = document.querySelector<HTMLElement>(
+      `[data-profile-training="${id}"]`,
+    );
+    (button || document.querySelector<HTMLElement>("main h1"))?.focus();
+  });
+}
 export function MemberAccountPage({
   shared,
   workspace = false,
@@ -158,7 +166,7 @@ function ConnectedAccount({
   const [trainingPlayer, setTrainingPlayer] = useState<PrivatePlayer | null>(
     null,
   );
-  const profileFocus = useRef<HTMLElement | null>(null);
+  const profileReturnId = useRef("");
   const profileRegion = useRef<HTMLElement | null>(null);
   const [guardianManaged, setGuardianManaged] = useState(false);
   const [joinCode, setJoinCode] = useState("");
@@ -222,9 +230,12 @@ function ConnectedAccount({
             const target = new URLSearchParams(location.search).get(
               "playerProfile",
             );
-            setTrainingPlayer(
-              result.players.find((p) => p.id === target) || null,
-            );
+            const selected =
+              result.players.find(
+                (p) => p.id === target && p.owner_id === userId,
+              ) || null;
+            profileReturnId.current = selected?.id || "";
+            setTrainingPlayer(selected);
           }
         }
       })
@@ -293,18 +304,18 @@ function ConnectedAccount({
         const target = new URLSearchParams(location.search).get(
           "playerProfile",
         );
-        setTrainingPlayer(players.find((p) => p.id === target) || null);
-        if (!target) requestAnimationFrame(() => profileFocus.current?.focus());
+        const selected =
+          players.find((p) => p.id === target && p.owner_id === userId) || null;
+        setTrainingPlayer(selected);
+        if (!selected) focusProfileChoice(profileReturnId.current);
+        else requestAnimationFrame(() => profileRegion.current?.focus());
       }
     };
     window.addEventListener("popstate", back);
     return () => window.removeEventListener("popstate", back);
   }, [players, profiles, userId, shared.signupEnabled]);
   function openProfile(player: PrivatePlayer) {
-    profileFocus.current =
-      document.activeElement instanceof HTMLElement
-        ? document.activeElement
-        : null;
+    profileReturnId.current = player.id;
     const u = new URL(location.href);
     u.searchParams.set("playerProfile", player.id);
     history.pushState({ repformedProfileDetail: true }, "", u);
@@ -320,7 +331,7 @@ function ConnectedAccount({
     u.searchParams.delete("playerProfile");
     history.replaceState(null, "", u);
     setTrainingPlayer(null);
-    requestAnimationFrame(() => profileFocus.current?.focus());
+    focusProfileChoice(profileReturnId.current);
   }
   function switchMode(next: typeof mode) {
     if (next !== mode) {
@@ -1086,6 +1097,7 @@ function ConnectedAccount({
                       className="button"
                       disabled={busy}
                       onClick={() => openProfile(player)}
+                      data-profile-training={player.id}
                     >
                       Workouts &amp; permissions
                     </button>

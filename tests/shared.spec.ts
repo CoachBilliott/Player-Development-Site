@@ -229,7 +229,7 @@ test("protected uploads stay out of public demo pages and disappear immediately 
   await page.getByRole("button", { name: "Sign out", exact: true }).click();
   await page.goto("./#member-library");
   await expect(
-    page.getByRole("heading", { name: "Sign in to open your workspace." }),
+    page.getByRole("heading", { name: "Welcome back.", exact: true }),
   ).toBeVisible();
   await expect(
     page.getByText("Protected original practice", { exact: true }),

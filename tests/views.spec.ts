@@ -131,7 +131,7 @@ test("old staff preview links require real sign-in and public uploads have no an
     await page.goto("./#" + route);
     await expect(page).toHaveURL(/#workspace$/);
     await expect(
-      page.getByRole("heading", { name: "Sign in to open your workspace." }),
+      page.getByRole("heading", { name: "Welcome back.", exact: true }),
     ).toBeVisible();
     await expect(page.getByLabel(/Account level for/)).toHaveCount(0);
   }

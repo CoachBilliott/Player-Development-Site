@@ -168,6 +168,55 @@ test("Owner access directory is absent in settings and protected self access sta
     fullPage: true,
   });
 });
+test("Owner directory separates loading, failed reads and retry from an empty result", async ({
+  page,
+  context,
+}) => {
+  await staffFixture(context, staffState());
+  let failed = true;
+  let release: () => void = () => {};
+  const waiting = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  await context.route("**/rest/v1/rpc/list_account_access", async (route) => {
+    if (failed) {
+      await waiting;
+      return route.fulfill({
+        status: 503,
+        json: { message: "Directory temporarily unavailable" },
+      });
+    }
+    return route.fulfill({ json: [] });
+  });
+  await page.goto("./#access");
+  await expect(
+    page.getByRole("status").filter({ hasText: "Loading accounts…" }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("No matching accounts.", { exact: false }),
+  ).toHaveCount(0);
+  release();
+  await expect(page.getByRole("alert")).toContainText(
+    "Account access could not be loaded.",
+  );
+  await expect(
+    page.getByText("No matching accounts.", { exact: false }),
+  ).toHaveCount(0);
+  failed = false;
+  await page
+    .getByRole("button", { name: "Retry accounts", exact: true })
+    .click();
+  await expect(
+    page.getByText("No matching accounts. Try another email or search again.", {
+      exact: true,
+    }),
+  ).toBeVisible();
+  await expect(page.getByRole("alert")).toHaveCount(0);
+  await expect(
+    page.getByRole("button", { name: "Retry accounts", exact: true }),
+  ).toHaveCount(0);
+});
+
 test("parent training, family profiles and credentials have separate screens with canceled edits", async ({
   page,
   context,

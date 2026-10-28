@@ -498,6 +498,7 @@ async function signIn(
   // Full-page navigation must wait for Auth to persist the successful session.
   // Otherwise the following goto can cancel the token request on slower workers.
   await expect(page.getByLabel(/^(Adult|Account) email$/)).toHaveCount(0);
+  await expect(page).toHaveURL(/#workspace$/);
   // This suite exercises profile administration; login itself lands in training.
   await page.goto("./#profiles");
 }
@@ -1020,7 +1021,11 @@ test("a private family athlete joins with a parent code, reports practice withou
       exact: true,
     }),
   ).toBeVisible();
-  await page.goto("./#profiles");
+  // A copied profile-detail query must not switch a linked junior into an owned-profile view.
+  await page.goto(`./?playerProfile=${profile}#profiles`);
+  await expect(
+    page.getByRole("region", { name: "Athlete training and permissions" }),
+  ).toHaveCount(0);
   await expect(
     page.getByRole("heading", { name: "Fictional Pat’s workouts" }),
   ).toBeVisible();

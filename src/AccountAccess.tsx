@@ -156,9 +156,23 @@ function AccessManager({ shared }: { shared: SharedState }) {
         </button>
       </form>
       {error && !pending && (
-        <p className="form-error" role="alert">
-          {error}
-        </p>
+        <>
+          <p className="form-error" role="alert">
+            {error}
+          </p>
+          <button
+            className="button secondary"
+            disabled={busy}
+            onClick={() =>
+              void act(async () => {
+                setRows(await listAccess(client, search));
+                setChoices({});
+              })
+            }
+          >
+            Retry accounts
+          </button>
+        </>
       )}
       {message && <p role="status">{message}</p>}
       {(loading || busy) && (
