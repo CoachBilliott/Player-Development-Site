@@ -7,5 +7,7 @@
   "accountLifecycleEnabled": true,
   "serviceTrackingEnabled": true,
   "staffRosterEnabled": true,
-  "deliveryMonitoringEnabled": true
+  "deliveryMonitoringEnabled": true,
+  "interestIntakeEnabled": true,
+  "staffNotificationEmailsEnabled": true
 }
