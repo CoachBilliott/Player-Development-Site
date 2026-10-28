@@ -272,8 +272,10 @@ export function DeliveryMonitor({
     >
       <h2>Delivery & notifications</h2>
       <p>
-        <strong>Manual checks only.</strong> No scheduler, email sender or
-        device push is active. Overdue delivery alerts stay with staff.
+        <strong>Manual checks only.</strong> This queue does not run a
+        scheduler, send client emails or activate device push. Overdue delivery
+        alerts stay with staff; operational staff email attempts are tracked
+        separately.
       </p>
       {error && <p role="alert">{error}</p>}
       {message && <p role="status">{message}</p>}

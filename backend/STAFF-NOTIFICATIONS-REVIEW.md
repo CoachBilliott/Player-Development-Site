@@ -54,9 +54,25 @@ ledger. Do not treat a client signup as creating an athlete profile automaticall
   delivery, staff opt-out/fallback, grace periods, attempt/window limits, partial
   media, unconfigured signup, stale leases, malformed jobs, duplicate events,
   household isolation and mocked provider failures are covered.
+- Aggregate CI at source `0923759` passed: **339 unit/database/worker cases,
+  260 browser cases, 8 app/offline cases and 11 Python cases**, plus lint,
+  TypeScript, both Deno entry points and production build. Receipt:
+  https://github.com/CoachBilliott/Player-Development-Site/actions/runs/40624883189
+- The follow-up local UI pass passed **14 desktop/phone cases** (10 new staff
+  email panel cases plus 4 existing delivery/inbox cases). It checks status
+  distinctions, Owner/Manager results, assigned-Coach responses, refresh after
+  assignment removal, double-click locking, opt-out persistence, unavailable
+  status clearing stale jobs, failed preference saves, parent exclusion and
+  private read/unread inbox persistence. These mock SDK responses; real SQL
+  authorization is covered separately by the policy cases above. Mock filtering
+  is not evidence of hosted authorization or delivery.
+- Screenshots from that local synthetic pass are generated under
+  `artifacts/staff-notifications/status-{desktop,phone}.png`. They are review
+  artifacts, not a public deployment or actual staff/client records.
 - All SQL rehearsals use isolated PGlite synthetic adults; provider transports are
   mocked. No hosted migration, credentials, real email, scheduler or native
-  release ran. Full combined/browser validation and rollout docs remain next.
+  release ran. Latest follow-up aggregate status is attached to draft PR8;
+  don't substitute the earlier aggregate result for a later source revision.
 
 ## Minimum decisions and approvals before activation
 
@@ -65,6 +81,9 @@ ledger. Do not treat a client signup as creating an athlete profile automaticall
 2. Review/approve migration 017's private tables and new checked staff-read/opt-out
    RPCs plus service-role-only observe/prepare/claim/authorize/finish functions.
    Rehearse in an approved isolated hosted environment and arrange recovery.
+   Release the matched website source with `staffNotificationEmailsEnabled` only
+   after those RPCs are installed; the UI flag currently defaults off. This does
+   not enable transport or give browser users dispatch authority.
 3. Approve a **separate Resend Sending-access key restricted to repformed.com**,
    stored only in the Supabase server secret `REPFORMED_RESEND_API_KEY`. Never
    extract/reuse Auth SMTP credentials or put a key in chat, repo or browser.
