@@ -32,16 +32,27 @@ async function alerts(context: BrowserContext, role = "owner") {
         membersSignupEnabled: false,
         staffRosterEnabled: true,
         staffNotificationEmailsEnabled: true,
+        interestIntakeEnabled: true,
       },
     }),
   );
   const now = new Date().toISOString();
+  const interestRows: Array<Record<string, unknown>> = [
+    {
+      id: uid(240),
+      adult_name: "Fictional Adult",
+      email: "fictional-adult@example.test",
+      package_interest: "undecided",
+      created_at: now,
+      email_state: "retry",
+    },
+  ];
   const snapshot: StaffMailState = {
     email_enabled: false,
     inapp_observation_enabled: false,
-    signup_status: "unconfigured",
-    selected: true,
-    opted_out: false,
+    signup_status: "interest_submission",
+    routing_mode: "shared_inbox",
+    recipient_label: "Repformed@gmail.com",
     jobs: [
       {
         id: uid(230),
@@ -106,21 +117,20 @@ async function alerts(context: BrowserContext, role = "owner") {
         },
       });
     }
+    if (name === "interest_staff_inbox")
+      return r.fulfill({
+        json: role === "owner" || role === "manager" ? interestRows : [],
+      });
     if (name === "set_staff_notification_opt_out") {
       calls.preferences++;
-      // Keep the request in flight long enough to exercise the actual UI lock.
-      await new Promise((resolve) => setTimeout(resolve, 100));
-      if (calls.writeFailure)
-        return r.fulfill({
-          status: 503,
-          json: { message: "TEST preference not saved" },
-        });
-      snapshot.opted_out = r.request().postDataJSON().opt_out;
-      return r.fulfill({ json: null });
+      return r.fulfill({
+        status: 403,
+        json: { message: "Shared inbox routing is fixed" },
+      });
     }
     return r.fallback();
   });
-  return { snapshot, calls, roster };
+  return { snapshot, calls, roster, interestRows };
 }
 
 test("Owner status separates provider acceptance, uncertain outcomes and disabled capabilities", async ({
@@ -139,11 +149,11 @@ test("Owner status separates provider acceptance, uncertain outcomes and disable
   await expect(panel).toContainText(
     "Outcome uncertain · reconcile before resending",
   );
-  await expect(panel).toContainText("New-signup alerts are unconfigured");
+  await expect(panel).toContainText("saved adult interest submissions only");
   await expect(panel).toContainText("Automatic in-app observation disabled");
   await expect(panel).toContainText("TEST-provider-reference");
   await expect(panel.getByRole("textbox")).toHaveCount(0);
-  await expect(panel.getByRole("button")).toHaveCount(2);
+  await expect(panel.getByRole("button")).toHaveCount(1);
   expect(data.calls.provider).toBe(0);
   expect(
     await page.evaluate(
@@ -164,7 +174,7 @@ test("Owner status separates provider acceptance, uncertain outcomes and disable
   });
 });
 
-test("Manager preference is locked on repeated clicks and persists across refresh", async ({
+test("Manager sees the shared inbox status and private interest without recipient-edit controls", async ({
   page,
   context,
 }) => {
@@ -173,25 +183,19 @@ test("Manager preference is locked on repeated clicks and persists across refres
   const panel = page.getByRole("region", {
     name: "Staff operational email status",
   });
-  await expect(panel).toContainText("Fictional Avery");
-  await panel.getByRole("button", { name: "Pause my staff emails" }).dblclick();
-  await expect(panel.getByRole("status")).toContainText(
-    "No email was sent by this action",
+  await expect(panel).toContainText("Repformed@gmail.com");
+  await expect(panel).toContainText(
+    "Owner/Manager email routing is not active",
   );
-  await expect(
-    panel.getByRole("button", { name: "Resume my selected staff emails" }),
-  ).toBeVisible();
-  expect(data.calls.preferences).toBe(1);
-  expect(data.snapshot.opted_out).toBe(true);
+  await expect(panel.getByRole("button")).toHaveCount(1);
+  const inbox = page.getByRole("region", {
+    name: "Private package interest inbox",
+  });
+  await expect(inbox).toContainText("fictional-adult@example.test");
+  await expect(inbox).toContainText("Waiting for safe retry");
   await page.reload();
-  await expect(panel).toContainText("You have paused");
-  await panel
-    .getByRole("button", { name: "Resume my selected staff emails" })
-    .click();
-  await expect(
-    panel.getByRole("button", { name: "Pause my staff emails" }),
-  ).toBeVisible();
-  expect(data.calls.preferences).toBe(2);
+  await expect(inbox).toContainText("fictional-adult@example.test");
+  expect(data.calls.preferences).toBe(0);
   expect(data.calls.provider).toBe(0);
 });
 
@@ -207,6 +211,9 @@ test("Coach renders only scoped jobs and clears revoked assignment results on re
   await expect(panel).toContainText("Fictional Jordan");
   await expect(panel).not.toContainText("Fictional Avery");
   await expect(panel).not.toContainText("TEST-provider-reference");
+  await expect(
+    page.getByRole("region", { name: "Private package interest inbox" }),
+  ).toHaveCount(0);
   data.roster.rows.find((r) => r.athlete_id === athleteA)!.coach_id = coachB;
   await panel
     .getByRole("button", { name: "Refresh staff email status" })
@@ -214,8 +221,41 @@ test("Coach renders only scoped jobs and clears revoked assignment results on re
   await expect(panel).toContainText("No operational email attempts recorded");
   await expect(panel).not.toContainText("Fictional Jordan");
 });
+test("private interest distinguishes unrecorded, unchecked and earlier affirmative launch choices", async ({
+  page,
+  context,
+}) => {
+  const data = await alerts(context);
+  await page.goto("./?source=app#workspace");
+  const inbox = page.getByRole("region", {
+    name: "Private package interest inbox",
+  });
+  await expect(inbox).toContainText("not recorded on this submission");
+  await expect(
+    inbox.getByText("Launch preference record", { exact: true }),
+  ).toHaveCount(0);
+  Object.assign(data.interestRows[0], {
+    launch_choice: false,
+    launch_choice_at: "2026-10-28T10:00:00Z",
+    launch_notice_version: "repformed-launch-notice-v1",
+    launch_requested_at: "2026-10-27T10:00:00Z",
+    launch_requested_version: "repformed-launch-notice-v1",
+  });
+  await inbox
+    .getByRole("button", { name: "Refresh interest requests" })
+    .click();
+  await expect(inbox).toContainText("not requested on this submission");
+  await inbox.locator("summary").click();
+  await expect(inbox).toContainText(
+    "A separate affirmative request was recorded",
+  );
+  await expect(inbox).toContainText("does not erase that history");
+  await expect(inbox).toContainText("Email ownership is not verified");
+  await expect(inbox).toContainText("No launch announcement is sent");
+  expect(data.calls.provider).toBe(0);
+});
 
-test("Status and preference failures are honest, retryable and do not retain stale job data", async ({
+test("Status read failures are retryable and do not retain stale job data", async ({
   page,
   context,
 }) => {
@@ -225,13 +265,6 @@ test("Status and preference failures are honest, retryable and do not retain sta
     name: "Staff operational email status",
   });
   await expect(panel).toContainText("Fictional Jordan");
-  data.calls.writeFailure = true;
-  await panel.getByRole("button", { name: "Pause my staff emails" }).click();
-  await expect(panel.getByRole("alert")).toContainText(
-    "TEST preference not saved",
-  );
-  await expect(panel.getByRole("status")).toHaveCount(0);
-  expect(data.snapshot.opted_out).toBe(false);
   data.calls.readFailure = true;
   await panel
     .getByRole("button", { name: "Refresh staff email status" })
@@ -241,16 +274,11 @@ test("Status and preference failures are honest, retryable and do not retain sta
   );
   await expect(panel).not.toContainText("Fictional Jordan");
   data.calls.readFailure = false;
-  data.snapshot.selected = false;
   await panel
     .getByRole("button", { name: "Refresh staff email status" })
     .click();
-  await expect(panel).toContainText(
-    "No staff email recipient selection exists",
-  );
-  await expect(
-    panel.getByRole("button", { name: "Pause my staff emails" }),
-  ).toHaveCount(0);
+  await expect(panel).toContainText("Fictional Jordan");
+  expect(data.calls.preferences).toBe(0);
   expect(data.calls.provider).toBe(0);
 });
 

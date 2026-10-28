@@ -1,7 +1,7 @@
 /** Server-only operational mail. No client content-ready emails or signup trigger. */
 export type StaffJob = {
   id: string;
-  kind: "training_overdue" | "review_overdue";
+  kind: "training_overdue" | "review_overdue" | "interest_received";
   recipient_email: string;
   lease_token: string;
   idempotency_key: string;
@@ -23,16 +23,58 @@ export type StaffNotificationBackend = {
   ): Promise<void>;
 };
 export const STAFF_MAIL_FROM = "Repformed <notifications@repformed.com>";
+export const STAFF_MAIL_INBOX = "Repformed@gmail.com";
 export const STAFF_WORKSPACE = "https://repformed.com/#workspace";
+function validStaffJob(value: unknown): value is StaffJob {
+  if (!value || typeof value !== "object") return false;
+  const j = value as StaffJob;
+  const uuid =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  return (
+    ["training_overdue", "review_overdue", "interest_received"].includes(
+      j.kind,
+    ) &&
+    typeof j.id === "string" &&
+    uuid.test(j.id) &&
+    typeof j.lease_token === "string" &&
+    uuid.test(j.lease_token) &&
+    typeof j.recipient_email === "string" &&
+    j.recipient_email.toLowerCase() === STAFF_MAIL_INBOX.toLowerCase() &&
+    j.idempotency_key === `repformed-staff/${j.id}/v1`
+  );
+}
+/** Exactly one submitted-interest job; never prepares/drains other staff alerts. */
+export async function attemptInterestAlert(
+  id: string,
+  backend: Pick<StaffNotificationBackend, "authorize" | "finish"> & {
+    claimInterest(id: string): Promise<StaffJob | null>;
+  },
+  send: (job: StaffJob) => Promise<SendResult>,
+) {
+  const job = await backend.claimInterest(id);
+  if (!job) return;
+  if (!validStaffJob(job) || job.kind !== "interest_received")
+    throw new Error("Interest alert not confirmed.");
+  if (!(await backend.authorize(job))) {
+    await backend.finish(job, {
+      outcome: "suppressed",
+      code: "eligibility_changed",
+    });
+    return;
+  }
+  await backend.finish(job, await send(job));
+}
 export function staffEmail(job: StaffJob) {
   return {
     from: STAFF_MAIL_FROM,
     to: [job.recipient_email],
     subject:
-      job.kind === "training_overdue"
-        ? "Repformed: training delivery needs attention"
-        : "Repformed: a coaching review needs attention",
-    text: `A required ${job.kind === "training_overdue" ? "training delivery" : "coaching review"} has passed its target. Sign in to your staff workspace to check the current status and next action.\n\n${STAFF_WORKSPACE}\n\nThis operational alert contains no athlete details or media links. Staff email preferences are in your delivery workspace.`,
+      job.kind === "interest_received"
+        ? "Repformed: new package interest"
+        : job.kind === "training_overdue"
+          ? "Repformed: training delivery needs attention"
+          : "Repformed: a coaching review needs attention",
+    text: `${job.kind === "interest_received" ? "A new adult interest request is saved for staff review." : `A required ${job.kind === "training_overdue" ? "training delivery" : "coaching review"} has passed its target.`} Sign in to your staff workspace to check the current status and next action.\n\n${STAFF_WORKSPACE}\n\nThis operational alert contains no contact details, athlete information or media links. Alerts currently route only to the Repformed business inbox.`,
   };
 }
 /** Transport is injected in tests. Provider acceptance is NOT inbox delivery. */
@@ -41,6 +83,8 @@ export function resendStaffSender(
   transport: typeof fetch = fetch,
 ) {
   return async (job: StaffJob): Promise<SendResult> => {
+    if (job.recipient_email.toLowerCase() !== STAFF_MAIL_INBOX.toLowerCase())
+      return { outcome: "failed", code: "recipient_policy" };
     try {
       const response = await transport("https://api.resend.com/emails", {
         method: "POST",
@@ -150,7 +194,7 @@ export function staffNotificationHandler(options: {
         return json(200, {
           inapp_observed: inapp,
           email: "disabled",
-          signup: "unconfigured",
+          signup: "interest_submission",
           external_sends: 0,
         });
       const prepared = await options.backend.prepare(limit);
@@ -158,20 +202,7 @@ export function staffNotificationHandler(options: {
       if (
         !Array.isArray(jobs) ||
         jobs.length > limit ||
-        jobs.some(
-          (job) =>
-            !job ||
-            !["training_overdue", "review_overdue"].includes(job.kind) ||
-            !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-              job.id,
-            ) ||
-            !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
-              job.lease_token,
-            ) ||
-            typeof job.recipient_email !== "string" ||
-            !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(job.recipient_email) ||
-            job.idempotency_key !== `repformed-staff/${job.id}/v1`,
-        )
+        jobs.some((job) => !validStaffJob(job))
       )
         throw new Error();
       let accepted = 0,
@@ -199,7 +230,7 @@ export function staffNotificationHandler(options: {
         provider_accepted: accepted,
         pending_or_failed: failed,
         suppressed,
-        signup: "unconfigured",
+        signup: "interest_submission",
         delivery_confirmed: false,
       });
     } catch {

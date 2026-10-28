@@ -1,3 +1,5 @@
+> Current business scope is updated in [INTEREST-ACTIVATION-REVIEW.md](INTEREST-ACTIVATION-REVIEW.md). Draft018 supersedes personal/coach email routing and the undefined-signup gate below. Do not activate draft017 alone. Earlier validation below describes the previous checkpoint, not final intake readiness.
+
 # Staff operational notifications — unpublished source review
 
 Current direction: client training/review updates stay **in-app only**. Required

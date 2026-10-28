@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import {
   StaffNotifications,
@@ -18,10 +18,7 @@ export function StaffNotificationPanel({
       value: StaffMailState;
     } | null>(null),
     [error, setError] = useState(""),
-    [message, setMessage] = useState(""),
-    [attempt, setAttempt] = useState(0),
-    [busy, setBusy] = useState(false);
-  const lock = useRef(false);
+    [attempt, setAttempt] = useState(0);
   const state = loaded?.actor === actor ? loaded.value : null;
   useEffect(() => {
     let active = true;
@@ -52,13 +49,11 @@ export function StaffNotificationPanel({
       </p>
       <button
         className="button secondary"
-        disabled={busy}
         onClick={() => setAttempt((v) => v + 1)}
       >
         Refresh staff email status
       </button>
       {error && <p role="alert">{error}</p>}
-      {message && <p role="status">{message}</p>}
       {state && (
         <>
           <p>
@@ -72,9 +67,9 @@ export function StaffNotificationPanel({
             reminders are enabled.
           </p>
           <p>
-            New-signup alerts are unconfigured. Interest email, accepted
-            invitations and paid enrollment are different events; no signup
-            trigger is active.
+            New-signup alerts mean saved adult interest submissions only.
+            Current recipient: <strong>{state.recipient_label}</strong>.
+            Owner/Manager email routing is not active.
           </p>
           <p>
             {state.inapp_observation_enabled
@@ -82,47 +77,6 @@ export function StaffNotificationPanel({
               : "Automatic in-app observation disabled; existing manual checks remain available."}{" "}
             This does not activate a scheduler or device push.
           </p>
-          {state.selected ? (
-            <>
-              <p>
-                {state.opted_out
-                  ? "You have paused your operational staff emails."
-                  : "You are a selected staff recipient, subject to current role and athlete assignments."}
-              </p>
-              <button
-                className="button secondary"
-                disabled={busy}
-                onClick={async () => {
-                  if (lock.current) return;
-                  lock.current = true;
-                  setBusy(true);
-                  setError("");
-                  setMessage("");
-                  try {
-                    await api.optOut(!state.opted_out);
-                    setMessage(
-                      "Staff email preference saved. No email was sent by this action.",
-                    );
-                    setAttempt((v) => v + 1);
-                  } catch (e) {
-                    setError((e as Error).message);
-                  } finally {
-                    lock.current = false;
-                    setBusy(false);
-                  }
-                }}
-              >
-                {state.opted_out
-                  ? "Resume my selected staff emails"
-                  : "Pause my staff emails"}
-              </button>
-            </>
-          ) : (
-            <p>
-              No staff email recipient selection exists for your account. No
-              email address is collected here.
-            </p>
-          )}
           <h3>Delivery attempts in your scope</h3>
           {!state.jobs.length ? (
             <p>
@@ -134,9 +88,11 @@ export function StaffNotificationPanel({
               {state.jobs.map((j) => (
                 <li key={j.id}>
                   <strong>
-                    {j.kind === "training_overdue"
-                      ? "Overdue training delivery"
-                      : "Overdue coaching review"}{" "}
+                    {j.kind === "interest_received"
+                      ? "New package interest"
+                      : j.kind === "training_overdue"
+                        ? "Overdue training delivery"
+                        : "Overdue coaching review"}{" "}
                     · {j.athlete_name}
                   </strong>
                   <p>

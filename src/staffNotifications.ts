@@ -3,14 +3,14 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 export const staffMailSchema = z.object({
   email_enabled: z.boolean(),
   inapp_observation_enabled: z.boolean(),
-  signup_status: z.literal("unconfigured"),
-  selected: z.boolean(),
-  opted_out: z.boolean(),
+  signup_status: z.literal("interest_submission"),
+  routing_mode: z.literal("shared_inbox"),
+  recipient_label: z.literal("Repformed@gmail.com"),
   jobs: z.array(
     z.object({
       id: z.string().uuid(),
-      kind: z.enum(["training_overdue", "review_overdue"]),
-      profile_id: z.string().uuid(),
+      kind: z.enum(["training_overdue", "review_overdue", "interest_received"]),
+      profile_id: z.string().uuid().nullable(),
       athlete_name: z.string(),
       state: z.enum([
         "queued",
@@ -35,7 +35,7 @@ export const STAFF_MAIL_STATUS: Record<
   string
 > = {
   queued: "Queued",
-  processing: "Sending attempt in progress",
+  processing: "Attempt started · result pending",
   retry: "Waiting for safe retry",
   accepted: "Provider accepted · inbox delivery not confirmed",
   failed: "Failed · staff follow-up needed",
@@ -53,12 +53,5 @@ export class StaffNotifications {
         error.message || "Staff email status could not be loaded.",
       );
     return staffMailSchema.parse(data);
-  }
-  async optOut(value: boolean) {
-    const { error } = await this.client.rpc("set_staff_notification_opt_out", {
-      opt_out: value,
-    });
-    if (error)
-      throw new Error(error.message || "Email preference was not confirmed.");
   }
 }

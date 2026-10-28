@@ -57,6 +57,7 @@ export function MobileStaffHome({ shared }: { shared: SharedState }) {
           enabled
           monitoring={shared.deliveryMonitoringEnabled}
           operationalEmails={shared.staffNotificationEmailsEnabled}
+          interestInbox={Boolean(shared.interestEndpoint)}
         />
       )}
       {!shared.staffRosterEnabled && (

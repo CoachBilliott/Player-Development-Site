@@ -19,6 +19,7 @@ jobs:
       - run: npm run typecheck
       - run: npx --yes deno@2.5.6 check backend/functions/account-lifecycle/index.ts
       - run: npx --yes deno@2.5.6 check backend/functions/staff-notifications/index.ts
+      - run: npx --yes deno@2.5.6 check backend/functions/interest-intake/index.ts
       - run: npm test
       - run: python3 -m unittest discover -s scripts/tests
       - run: npm run build

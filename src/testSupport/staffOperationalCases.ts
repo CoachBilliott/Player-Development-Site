@@ -1,6 +1,6 @@
 import { it, expect } from "vitest";
 import type { PGlite } from "@electric-sql/pglite";
-type Setup = {
+export type Setup = {
   db: () => PGlite;
   as: (actor?: string, role?: string) => Promise<void>;
   id: (n: number) => string;

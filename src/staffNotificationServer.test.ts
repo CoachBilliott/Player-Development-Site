@@ -9,7 +9,7 @@ import {
 const job: StaffJob = {
   id: "00000000-0000-4000-8000-000000000001",
   kind: "training_overdue",
-  recipient_email: "fictional-staff@example.test",
+  recipient_email: "Repformed@gmail.com",
   lease_token: "00000000-0000-4000-8000-000000000002",
   idempotency_key: "repformed-staff/00000000-0000-4000-8000-000000000001/v1",
 };
@@ -61,7 +61,7 @@ it("disabled email mode observes only in-app eligibility and never claims/transp
   const r = await f.handler(f.request());
   expect(await r.json()).toMatchObject({
     email: "disabled",
-    signup: "unconfigured",
+    signup: "interest_submission",
     external_sends: 0,
   });
   expect(f.send).not.toHaveBeenCalled();
@@ -97,7 +97,7 @@ it("does not call provider acceptance delivery, return recipients, or pretend a 
 it("uses fixed generic staff templates with no athlete or video details", () => {
   expect(staffEmail(job)).toMatchObject({
     from: "Repformed <notifications@repformed.com>",
-    to: ["fictional-staff@example.test"],
+    to: ["Repformed@gmail.com"],
   });
   expect(staffEmail(job).text).toContain("https://repformed.com/#workspace");
   expect(staffEmail(job).text).not.toContain(job.id);
@@ -179,14 +179,12 @@ it("rejects invalid claimed jobs before any provider request", async () => {
   }
 });
 it("uses a conservative retry floor even when the provider offers an immediate retry", async () => {
-  const transport = vi
-    .fn<typeof fetch>()
-    .mockResolvedValue(
-      new Response("rate limited", {
-        status: 429,
-        headers: { "retry-after": "1" },
-      }),
-    );
+  const transport = vi.fn<typeof fetch>().mockResolvedValue(
+    new Response("rate limited", {
+      status: 429,
+      headers: { "retry-after": "1" },
+    }),
+  );
   expect(
     await resendStaffSender("synthetic-key", transport)(job),
   ).toMatchObject({ outcome: "retry", retryAfter: 60 });

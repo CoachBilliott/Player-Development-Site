@@ -595,7 +595,7 @@ export default function App() {
                 lockedIds={state.run?.drillIds}
               />
             ) : (
-              <Membership />
+              <Membership interestEndpoint={shared.interestEndpoint} />
             )}
           </AccountInvitationGate>
         </div>

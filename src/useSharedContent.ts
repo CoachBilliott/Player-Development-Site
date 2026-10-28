@@ -12,6 +12,7 @@ import { isStaff, type AccountRole } from "./roles";
 import { clearStaffDrafts } from "./staffDrafts";
 
 export function useSharedContent() {
+  const [interestEndpoint, setInterestEndpoint] = useState<string | null>(null);
   const [serviceTrackingEnabled, setServiceTrackingEnabled] = useState(false);
   const [staffRosterEnabled, setStaffRosterEnabled] = useState(false);
   const [staffNotificationEmailsEnabled, setStaffNotificationEmailsEnabled] =
@@ -56,6 +57,10 @@ export function useSharedContent() {
         const raw = await response.json();
         const config = parseSharedConfig(raw);
         if (!config || stopped) return;
+        if (raw.interestIntakeEnabled === true)
+          setInterestEndpoint(
+            new URL("/functions/v1/interest-intake", config.url).href,
+          );
         const connection = await connectSharedContent(config);
         if (stopped) return;
         setService(connection);
@@ -219,6 +224,7 @@ export function useSharedContent() {
     }
   }
   return {
+    interestEndpoint,
     service,
     accountLifecycleEnabled,
     serviceTrackingEnabled,

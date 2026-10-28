@@ -1,10 +1,12 @@
 import { staffOperationalCases } from "./staffOperationalCases";
+import { interestPolicyCases } from "./interestPolicyCases";
 import { PGlite } from "@electric-sql/pglite";
 import { readFileSync } from "node:fs";
 import { beforeAll, afterAll, beforeEach, afterEach, it, expect } from "vitest";
 export function deliveryPolicyCases(
   grouped: boolean,
   staffNotifications = false,
+  interestIntake = false,
 ) {
   let db: PGlite;
   const id = (n: number) =>
@@ -63,6 +65,7 @@ export function deliveryPolicyCases(
       ...(staffNotifications
         ? ["017-staff-operational-notifications.sql"]
         : []),
+      ...(interestIntake ? ["018-public-interest-and-shared-inbox.sql"] : []),
     ].filter((file) => grouped || !/^(013|014)-/.test(file)))
       await db.exec(
         readFileSync(new URL("../../backend/" + file, import.meta.url), "utf8"),
@@ -706,7 +709,7 @@ export function deliveryPolicyCases(
     await blocked("select public.delivery_staff_queue()", [], /Staff access/);
   });
   if (staffNotifications)
-    staffOperationalCases({
+    (interestIntake ? interestPolicyCases : staffOperationalCases)({
       db: () => db,
       as,
       id,
