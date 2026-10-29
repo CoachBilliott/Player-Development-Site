@@ -10,7 +10,13 @@ import {
 import { Modal, Notice, Tag } from "./components";
 import type { PwaState } from "./pwa";
 
-export function InstallApp({ app }: { app: PwaState }) {
+export function InstallApp({
+  app,
+  signedIn = false,
+}: {
+  app: PwaState;
+  signedIn?: boolean;
+}) {
   const [confirmUpdate, setConfirmUpdate] = useState(false);
   return (
     <main className="page narrow install-page">
@@ -146,8 +152,8 @@ export function InstallApp({ app }: { app: PwaState }) {
         </button>
         {app.message && <p role="status">{app.message}</p>}
       </section>
-      <a href="#account" className="button">
-        Log in to your account
+      <a href={signedIn ? "#workspace" : "#account"} className="button">
+        {signedIn ? "Open dashboard" : "Log in to your account"}
         <ArrowRight size={18} />
       </a>
       {confirmUpdate && (

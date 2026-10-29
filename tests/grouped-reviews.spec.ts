@@ -14,6 +14,10 @@ test("one three-clip review survives partial upload and refresh, starts one dead
     .getByRole("button", { name: "Prepare a review", exact: true })
     .click();
   const compose = page.getByRole("dialog");
+  await expect(compose).toContainText(
+    "Review allowance is separate from storage capacity",
+  );
+  await expect(compose).not.toContainText("Four monthly reviews");
   await compose
     .getByLabel("Choose up to three review clips")
     .setInputFiles([file, file, file]);

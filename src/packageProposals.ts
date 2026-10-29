@@ -53,7 +53,7 @@ export const PACKAGE_PROPOSALS = [
     cadence: "Position Development + 2 chosen video reviews per month",
     includes: "Everything proposed in Position Development, plus",
     items: [
-      "Two chosen drill-video reviews per month, with up to three minutes of footage per review",
+      "Two chosen drill-video reviews per month for each subscribed Elite athlete, with up to three minutes of footage per review",
       "Written strengths, corrections and next-practice guidance",
       "Guardian-visible feedback and review history",
     ],

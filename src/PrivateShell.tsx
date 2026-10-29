@@ -140,6 +140,7 @@ export function PrivateFooter() {
   return (
     <footer className="private-footer">
       <nav aria-label="Account help and credits">
+        <a href="#customer-help">Customer help</a>
         <a href="#contact">Contact</a>
         <a href={`${import.meta.env.BASE_URL}account-help.html`}>
           Account & privacy help

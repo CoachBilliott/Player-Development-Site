@@ -117,7 +117,7 @@ test("unavailable hero videos retain a real poster and never block the website o
     .getByRole("link", { name: "Fictional preview", exact: true })
     .click();
   await expect(
-    page.getByRole("heading", { name: "See how your training works." }),
+    page.getByRole("heading", { name: "Explore fictional practice." }),
   ).toBeVisible();
 });
 

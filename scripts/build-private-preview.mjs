@@ -1,4 +1,4 @@
-import { mkdir, copyFile, writeFile, readFile } from "node:fs/promises";
+import { mkdir, copyFile, cp, writeFile, readFile } from "node:fs/promises";
 import { execFileSync } from "node:child_process";
 import { resolve } from "node:path";
 import process from "node:process";
@@ -8,8 +8,19 @@ for (const path of [
   "brand/repformed-mark.svg",
   "account-help.html",
   "credits.html",
+  "help.css",
+  "interest-privacy.html",
+  "social-links.css",
+  "social-links.js",
+  "social-links.json",
+  "partner-guide.html",
+  "partner-guide.pdf",
+  "phone-test.html",
+  "phone-test.pdf",
 ])
   await copyFile(resolve("public", path), resolve(root, path));
+for (const path of ["help", "partner-guide"])
+  await cp(resolve("public", path), resolve(root, path), { recursive: true });
 await writeFile(
   resolve(root, "_headers"),
   `/*

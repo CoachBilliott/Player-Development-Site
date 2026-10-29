@@ -1,0 +1,154 @@
+@font-face {
+  font-family: "Repformed Help";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./help/fonts/dm-sans.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Repformed Help Display";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("./help/fonts/barlow-condensed.woff2") format("woff2");
+}
+.help-document {
+  --ink: #faf5ea;
+  --paper: #181818;
+  --muted: #bbb9b2;
+  --accent: #c7a45c;
+  --line: #41403d;
+  --dark: #181818;
+  font-family: "Repformed Help", sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+}
+.help-document .top {
+  background: #181818;
+  color: #faf5ea;
+  border-bottom: 1px solid var(--line);
+}
+.help-document .brand small {
+  color: #bbb9b2;
+}
+.help-document h1,
+.help-document h2,
+.help-document h3 {
+  font-family: "Repformed Help Display", sans-serif;
+  letter-spacing: 0;
+}
+.help-document .chapter {
+  padding: 28px 0;
+  scroll-margin-top: 110px;
+}
+.help-document h2 {
+  font-size: clamp(30px, 4vw, 40px);
+}
+.help-document p,
+.help-document li {
+  max-width: 75ch;
+  line-height: 1.7;
+}
+.help-document .run {
+  display: block;
+  list-style: decimal;
+  padding-left: 24px;
+  counter-reset: none;
+}
+.help-document .run li {
+  display: list-item;
+  padding: 8px 0 8px 8px;
+  border: 0;
+}
+.help-document .run li:before {
+  display: none;
+}
+.help-document .tip {
+  background: #252522;
+  border-color: var(--line);
+  color: var(--ink);
+}
+.help-document .tip p {
+  color: var(--muted);
+}
+.help-document .button {
+  background: #c7a45c;
+  color: #181818;
+  border-color: #c7a45c;
+}
+.help-document .button.ghost {
+  background: transparent;
+  color: #faf5ea;
+  border-color: #77766f;
+}
+.help-document a:focus-visible,
+.help-document button:focus-visible,
+.help-document summary:focus-visible,
+.help-document section:focus {
+  outline: 3px solid #c7a45c;
+  outline-offset: 5px;
+}
+.help-jumps,
+.help-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  align-items: center;
+}
+.help-jumps {
+  margin: 24px 0;
+}
+.help-jumps a,
+.help-footer a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  text-underline-offset: 4px;
+}
+.help-footer {
+  max-width: 860px;
+  padding: 24px 22px;
+  margin: auto;
+  border-top: 1px solid #41403d;
+}
+.archive-banner {
+  background: #181818;
+  color: #faf5ea;
+  padding: 20px max(22px, calc((100% - 1100px) / 2));
+  font:
+    400 16px/1.65 "Repformed Help",
+    sans-serif;
+  border-bottom: 2px solid #c7a45c;
+}
+.archive-banner p {
+  margin: 0;
+  max-width: 75ch;
+}
+.archive-banner a {
+  color: #f0d49f;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+@media (max-width: 600px) {
+  .help-document .top {
+    gap: 12px;
+    padding: 16px;
+  }
+  .help-document .top .brand {
+    min-width: 0;
+  }
+  .help-document .brand small {
+    font-size: 9px;
+  }
+  .help-document .top .button {
+    font-size: 12px;
+    padding: 12px;
+  }
+  .help-document .chapter {
+    padding: 22px 0;
+  }
+}
+
+.help-document .intro {
+  color: var(--muted);
+}

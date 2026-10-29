@@ -12,7 +12,12 @@ import {
   Video,
 } from "lucide-react";
 import { Logo, Notice, Tag } from "./components";
-import { mobileNavigation, nativeApp, openWebsite, websiteUrl } from "./mobile";
+import {
+  mobileNavigation,
+  nativeApp,
+  openWebsite,
+  websiteNavigationUrl,
+} from "./mobile";
 import type { SharedState } from "./useSharedContent";
 import type { PwaState } from "./pwa";
 import { SocialLinks } from "./SocialLinks";
@@ -32,7 +37,7 @@ export function WebsiteLink({
     <>
       <a
         className={className}
-        href={websiteUrl(path)}
+        href={websiteNavigationUrl(path)}
         target="_blank"
         rel="noreferrer"
         onClick={(event) => {
@@ -61,13 +66,19 @@ export function MobileHeader({
     <header className="app-header">
       <Logo href={signedIn ? "#workspace" : "#app"} />
       <div className="app-header-tools">
-        <span className="app-build-label">
-          {demo
-            ? "SAMPLE DEMO"
-            : signedIn
-              ? "PRIVATE ACCOUNT"
-              : "ACCOUNT ACCESS"}
-        </span>
+        {!signedIn && !nativeApp() ? (
+          <WebsiteLink className="app-website-back">
+            Back to website
+          </WebsiteLink>
+        ) : (
+          <span className="app-build-label">
+            {demo
+              ? "SAMPLE DEMO"
+              : signedIn
+                ? "PRIVATE ACCOUNT"
+                : "ACCOUNT ACCESS"}
+          </span>
+        )}
         <a href="#app-help" className="app-help-shortcut" aria-label="App help">
           <CircleHelp size={21} />
         </a>
@@ -203,12 +214,17 @@ export function MobileHelp({ app }: { app: PwaState }) {
           interest. Both use the same private account service. The public demo
           stays on the website.
         </p>
-        <WebsiteLink path="#membership">
-          View website membership information
-        </WebsiteLink>
-        <WebsiteLink path="#contact">
-          Contact the team <ArrowRight size={17} />
-        </WebsiteLink>
+        <div className="help-actions">
+          <WebsiteLink path="#membership">
+            View website membership information
+          </WebsiteLink>
+          <WebsiteLink path="#contact">
+            Contact the team <ArrowRight size={17} />
+          </WebsiteLink>
+          <WebsiteLink path="#customer-help">
+            Customer help <ArrowRight size={17} />
+          </WebsiteLink>
+        </div>
         <SocialLinks />
       </section>
       <section className="panel">

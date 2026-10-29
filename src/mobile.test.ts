@@ -1,7 +1,7 @@
 import { afterEach, expect, it, vi } from "vitest";
 import { Capacitor } from "@capacitor/core";
 import { AppLauncher } from "@capacitor/app-launcher";
-import { openWebsite, websiteUrl } from "./mobile";
+import { openWebsite, websiteUrl, websiteNavigationUrl } from "./mobile";
 
 vi.mock("@capacitor/core", () => ({
   Capacitor: { isNativePlatform: vi.fn(() => false) },
@@ -23,6 +23,33 @@ it("resolves app help and recovery links on the production root", () => {
   );
   expect(websiteUrl("/?flow=recovery#account")).toBe(
     "https://repformed.com/?flow=recovery#account",
+  );
+});
+
+it("keeps web help on its deployment root or configured subdirectory", () => {
+  const base = "https://review.example.test/project/";
+  expect(websiteNavigationUrl("#customer-help", base)).toBe(
+    base + "#customer-help",
+  );
+  expect(websiteNavigationUrl("account-help.html", base)).toBe(
+    base + "account-help.html",
+  );
+  expect(websiteNavigationUrl("/?flow=recovery#account", base)).toBe(
+    base + "?flow=recovery#account",
+  );
+  expect(() => websiteNavigationUrl("//outside.example.test", base)).toThrow(
+    "Only the Repformed website",
+  );
+});
+
+it("drops browser app-mode query without changing native website destinations", () => {
+  vi.stubGlobal("window", {
+    location: { href: "https://review.example.test/?source=app#app-help" },
+  });
+  expect(websiteNavigationUrl()).toBe("https://review.example.test/#home");
+  vi.mocked(Capacitor.isNativePlatform).mockReturnValue(true);
+  expect(websiteNavigationUrl("#customer-help")).toBe(
+    "https://repformed.com/#customer-help",
   );
 });
 

@@ -113,8 +113,7 @@ export function AccessWorkspace({ shared }: { shared: SharedState }) {
         title="Owner access is required."
       >
         Account roles and training entitlements are managed by an Owner. Athlete
-        coach assignments are available to Owners and Managers in Client
-        service.
+        coach assignments are available to Owners and Managers in Athletes.
       </PrivateAccessMessage>
     );
   if (selected === "training")
@@ -332,7 +331,7 @@ export function LaunchReadiness({ shared }: { shared?: SharedState }) {
           [
             "Packages",
             "Packages being finalized · billing inactive",
-            "Earlier review planning terms were $15 for one review and $45 monthly, with four reviews per child and up to three minutes total per review. The owners are finalizing packages; later choices can replace these terms. Family coverage, credit-cycle and cancellation/refund rules are not active settings. Grouped reviews need the reviewed migration and supported app release before activation.",
+            "The four proposed packages are priced in USD per athlete. One guardian account can manage multiple athletes. Each subscribed Elite athlete would have two monthly reviews, with up to three minutes of footage per review and a target of three business days, not guaranteed. Billing periods, rollover, refunds, storage and retention remain undecided; no payments or review credits are active. Grouped reviews require separate migration and release verification before activation.",
           ],
           [
             "Recurring billing",

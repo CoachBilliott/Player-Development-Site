@@ -8,6 +8,13 @@ test("Owner previews Sunday clock changes, saves a device-only draft and discard
   const backend = state();
   await fixture(context, backend);
   await page.goto("./?source=app#launch");
+  await expect(page.getByRole("main")).toContainText("two monthly reviews");
+  await expect(page.getByRole("main")).toContainText(
+    "no payments or review credits are active",
+  );
+  await expect(page.getByRole("main")).not.toContainText(
+    "four reviews per child",
+  );
   const panel = page.getByRole("region", { name: "Sunday release draft" });
   await expect(panel.getByLabel("Sunday release time")).toHaveValue("");
   await expect(panel.getByLabel("Business time zone")).toHaveValue("");

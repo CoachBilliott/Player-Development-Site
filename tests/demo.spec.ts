@@ -482,7 +482,14 @@ test("corrupted data falls back safely and future memberships have no checkout",
   );
   await page.goto("./#membership");
   await expect(page.getByText("Not available to purchase")).toHaveCount(4);
-  await expect(page.getByText("PACKAGE PLAN", { exact: true })).toHaveCount(4);
+  await expect(
+    page
+      .getByRole("region", { name: "Compare proposed packages" })
+      .getByRole("article"),
+  ).toHaveCount(4);
+  await expect(
+    page.getByRole("region", { name: "Current availability" }),
+  ).toContainText("Interest is open. Enrollment is not.");
   await expect(
     page.getByRole("button", { name: /buy|pay|checkout/i }),
   ).toHaveCount(0);
