@@ -9,11 +9,11 @@
 - Replaced hardcoded/workspace screenshot path with Playwright `testInfo.outputPath`. Both affected local desktop/phone checks and the final full suite pass; no test assertion removed and no filesystem permission change.
 - [Isolated preview](https://sample-learning.repformed.pages.dev/#sample-week) remains deployed from30601cd. Final cfe3dce differs only in the test file: application src/public trees are identical. No duplicate deployment, production/native release or media-approval claim. Backend stays disconnected. Reviewed video/text and independent public browser acceptance remain separate gates.
 
-## PR21 server roster: source GREEN, hosted approval PENDING
+## PR21 server roster: source GREEN, test-only approval RECEIVED; execution BLOCKED
 
 - Head **d791232c91cbdfdcc00cb6a6d3d70d3ee98d0e53**, [fullCI40953863302](https://github.com/repformed/Player-Development-Site/actions/runs/40953863302) SUCCESS:395 unit/database,448 web,10 app/offline,6 private-preview,11 Python plus checks.
-- Exact [test-only request/files](../roster-023-review/REQUEST-AND-INPUTS.md) frozen at6eafbdb9212b5f92e60047a568295ae319d6cf33. Owner question sent21:40; answer pending. No023execution, new flag, production scope or additional credentials/accounts.
-- Ordinary test-harness availability still needs verification. Prior management denial is not bypassed. Full role/large hosted fixture mutations beyond the minimal request need their own exact bounds.
+- Exact [test-only request/files](../roster-023-review/REQUEST-AND-INPUTS.md) frozen at6eafbdb9212b5f92e60047a568295ae319d6cf33. Owner approved at21:41:17UTC (Sentinel_049cd59f78a481918e1910945b945843) in response to exact requestSentinel_e74fac9632cc81919f7d045983dc6a5d. Approval is limited to test-only install/test/rollback with existing six identities; no new accounts/roles/credentials/mass fixtures/learning activation. No023execution or production flag change has occurred.
+- Execution is BLOCKED in this worker: no Supabase SQL/live-browser tool is available, prior coding management403 has not gained access from approval alone, and reading the existing operator task returned connectionclosed. Existing signed-in Supabase dashboard operator must verify the target and run the reviewed UTF8files; no denied call was retried or bypassed. Ordinary harness render/sign-in still needs verification for actual Auth acceptance. Full role/large hosted fixture mutations beyond the minimal request need their own exact bounds.
 
 ## PR13 stale documents/conflicting main: repaired, combined full CI RUNNING
 
