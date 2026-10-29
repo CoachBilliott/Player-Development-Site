@@ -1,3 +1,5 @@
+import { WeeklyNotificationSettings } from "./learning/WeeklyNotificationSettings";
+import { WeeklyNotificationService } from "./learning/notificationRules";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import {
@@ -178,13 +180,19 @@ export function DeliveryMonitor({
   actor,
   role,
   profiles,
+  weeklyEnabled = false,
 }: {
   client: SupabaseClient;
   actor: string;
   role: "owner" | "manager" | "coach";
   profiles: StaffAthlete[];
+  weeklyEnabled?: boolean;
 }) {
   const api = useMemo(() => new DeliveryService(client), [client]);
+  const weeklyApi = useMemo(
+    () => new WeeklyNotificationService(client),
+    [client],
+  );
   const [profile, setProfile] = useState(
       profiles.find((p) => p.athlete_id)?.athlete_id || "",
     ),
@@ -329,6 +337,7 @@ export function DeliveryMonitor({
       <label>
         Athlete delivery settings
         <select
+          disabled={busy}
           value={profile}
           onChange={(e) => {
             setProfile(e.target.value);
@@ -348,6 +357,7 @@ export function DeliveryMonitor({
       {data && (
         <>
           <p>
+            {weeklyEnabled && "Manual delivery-check deadline: "}
             {data.effective_rule
               ? `${days[data.effective_rule.weekday]} at ${data.effective_rule.time} · ${data.effective_rule.timezone} · ${data.effective_rule.grace_minutes} minutes grace`
               : "No package delivery default linked yet."}
@@ -372,6 +382,18 @@ export function DeliveryMonitor({
             checks retain their rule snapshot; edits affect new checks.
             Pauses/cancellations take effect on existing checks too.
           </p>
+          {role === "owner" && weeklyEnabled && profile && (
+            <WeeklyNotificationSettings
+              key={`${actor}:${profile}`}
+              api={weeklyApi}
+              profile={profile}
+              athleteName={athlete?.athlete_name || "Selected athlete"}
+              onBusyChange={(value) => {
+                lock.current = value;
+                setBusy(value);
+              }}
+            />
+          )}
           {role === "owner" && (
             <>
               <details>
@@ -721,6 +743,7 @@ export function ContentInbox({
   actor: string;
 }) {
   const api = useMemo(() => new DeliveryService(client), [client]);
+
   const [loaded, setLoaded] = useState<{
       actor: string;
       items: ContentNotice[];

@@ -18,3 +18,5 @@ This maps source checks to actual routes. All new learning flags remain off in p
 | Flag rollback                     | Legacy service remains scoped, attempts/grades retained, scheduler/learning access stopped                                             | SQL flag rollback test                                                                            | Provider backup/restore and Storage rollback rehearsal                                                             |
 
 Final aggregate counts and commit are reported in the PR checks and task receipt. Focused/aggregate tests overlap and must not be added together. Missing provider access, notification dispatch, real media or telemetry is never represented as an actual delivered service.
+
+024source adds Owner-only package/household/athlete weekly preferences. Validate sibling packages, opt-out, version conflicts/retries, legacy saves, scoped routing and the all-flags-off rollback guard using notificationRules/learningPolicy and weekly-notification-settings cases. Hosted024installation/normalAuth acceptance needs its own approval;023authorization does not include it.

@@ -578,6 +578,7 @@ export function StaffDeliveryWorkspace({ shared }: { shared: SharedState }) {
         monitoring={shared.deliveryMonitoringEnabled}
         operationalEmails={shared.staffNotificationEmailsEnabled}
         mode="settings"
+        learningEnabled={shared.learningPlansEnabled}
       />
     </main>
   );

@@ -56,3 +56,9 @@ The local full website run completed365 passes/1 failure: the new Owner route te
 ### Package-completeness local final checks (October29)
 
 022 source pass:453 unit/database tests, lint, TypeScript and production build passed. The focused learning route suite passed12 desktop/phone cases; isolated fictional preview passed20 cases. These overlap aggregate suites. The first new UI tests used an overly strict label selector; role-based combobox selectors fixed them without changing product/access assertions. An existing household test raced the asynchronous request capture; it now polls for the same exact selected profile before continuing. Final aggregate hosted CI is still required on the pushed head. No hosted Supabase mutation or real notification was performed.
+
+## Post-audit024source slice (not installed)
+
+Combined pre-024source1858aaaaa9c438594c2c0ffed74d6bfb5549645b passed CI40959018944:453unit/database,436web,10app/offline,20private-preview,11Python plus checks. That run does not cover024.
+
+Draft024prepares package/household/athlete weekly preferences and independent sibling notification packages while preserving old save payloads and role/guardian boundaries. Local focused policies/API52cases passed, including precedence, protected roles, lost-response idempotency, legacy-save compatibility, opt-out, routing, Chicago clock boundaries and guarded rollback retaining release history. The full local unit/database suite465passed. An affected46case desktop/phone run passed before copy refinement; a subsequent run failed at navigation because the old devserver stopped (no UI assertions ran), the final Playwright-managed-server rerun passed all46cases. Final pushed-head CI must still be terminal before a readiness claim. Counts overlap and are not additive. No hosted024or native release is implied.

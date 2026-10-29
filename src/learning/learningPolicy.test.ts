@@ -54,6 +54,7 @@ beforeAll(async () => {
     "020-learning-media-retention.sql",
     "021-learning-service-workflows.sql",
     "022-package-week-completeness.sql",
+    "024-weekly-notification-overrides.sql",
   ];
   for (const file of files)
     await db.exec(
@@ -1665,4 +1666,380 @@ it("checked saves are idempotent and immutable; a new linked quiz version does n
   expect(
     result.enrollments[0].releases[0].resources.map((x) => x.lesson_quiz_id),
   ).toEqual(f.qids);
+});
+
+const noticePackage = id(810),
+  otherNoticePackage = id(811);
+async function notificationPackages() {
+  await as();
+  const rule = {
+    weekday: 0,
+    time: "00:00",
+    timezone: "America/Chicago",
+    grace_minutes: 60,
+    escalation_minutes: 120,
+    routing: "assigned_coach",
+    notify_training: true,
+    notify_reviews: true,
+    email_requested: false,
+    submission_reminders: false,
+  };
+  for (const [pkg, title] of [
+    [noticePackage, "Fictional Foundation"],
+    [otherNoticePackage, "Fictional Elite"],
+  ])
+    await db.query("select public.save_delivery_package($1,$2,$3,0)", [
+      pkg,
+      title,
+      rule,
+    ]);
+  await db.query(
+    "select public.save_delivery_override($1,'client',$2,'{}','active',0)",
+    [profile, noticePackage],
+  );
+}
+async function saveNotification(
+  scope: "package" | "client" | "athlete",
+  target: string,
+  patch: unknown,
+  version: number,
+  selected: string | null = null,
+) {
+  await db.query(
+    "select public.learning_save_notification_rule($1,$2,$3,$4,$5,$6)",
+    [
+      scope,
+      scope === "package" ? null : target,
+      scope === "package" ? target : null,
+      patch,
+      version,
+      selected,
+    ],
+  );
+}
+async function notificationContext(target = profile) {
+  return (await r("select public.learning_notification_workspace($1) r", [
+    target,
+  ])) as {
+    effective: {
+      friday_time: string;
+      reminders_enabled: boolean;
+      low_ready_weeks: number;
+      staff_routing: string;
+      training_notices: boolean;
+    };
+    athlete: {
+      package_id: string | null;
+      rules: unknown;
+      version: number;
+    } | null;
+    client: { rules: unknown; version: number } | null;
+  };
+}
+it("weekly settings inherit package/household/athlete precedence without granting access or crossing siblings", async () => {
+  await notificationPackages();
+  await saveNotification(
+    "package",
+    noticePackage,
+    { friday_time: "18:00", low_ready_weeks: 4 },
+    1,
+  );
+  await saveNotification(
+    "package",
+    otherNoticePackage,
+    { friday_time: "21:00", low_ready_weeks: 1 },
+    1,
+  );
+  await saveNotification("client", profile, { friday_time: "19:00" }, 1);
+  await saveNotification(
+    "athlete",
+    profile,
+    { friday_time: "20:00" },
+    0,
+    otherNoticePackage,
+  );
+  expect((await notificationContext()).effective).toMatchObject({
+    friday_time: "20:00",
+    low_ready_weeks: 1,
+    reminders_enabled: true,
+  });
+  expect((await notificationContext(sibling)).effective).toMatchObject({
+    friday_time: "19:00",
+    low_ready_weeks: 4,
+  });
+  expect(
+    (await notificationContext(otherProfile)).effective.friday_time,
+  ).toMatch(/^17:00/);
+  expect((await notificationContext()).athlete?.package_id).toBe(
+    otherNoticePackage,
+  );
+  await as("", "postgres");
+  expect(
+    await r("select count(*)::integer r from public.learning_access"),
+  ).toBe(0);
+  expect(
+    await r("select count(*)::integer r from public.learning_enrollments"),
+  ).toBe(0);
+});
+it("weekly override retries are idempotent, reject stale writes and keep legacy edits compatible", async () => {
+  await notificationPackages();
+  await saveNotification(
+    "athlete",
+    profile,
+    { reminders_enabled: false },
+    0,
+    otherNoticePackage,
+  );
+  await saveNotification(
+    "athlete",
+    profile,
+    { reminders_enabled: false },
+    0,
+    otherNoticePackage,
+  );
+  expect((await notificationContext()).athlete?.version).toBe(1);
+  await blocked(
+    "select public.learning_save_notification_rule('athlete',$1,null,'{\"reminders_enabled\":true}',0,$2)",
+    [profile, otherNoticePackage],
+  );
+  await db.query(
+    "select public.save_delivery_override($1,'athlete',null,'{\"grace_minutes\":15}','active',1)",
+    [profile],
+  );
+  expect((await notificationContext()).athlete).toMatchObject({
+    package_id: otherNoticePackage,
+    rules: { reminders_enabled: false },
+    version: 2,
+  });
+  await as("", "postgres");
+  expect(
+    await r(
+      "select count(*)::integer r from public.learning_audit where action='configure_weekly_notifications'",
+    ),
+  ).toBe(1);
+  expect(
+    await r(
+      "select rule ? 'friday_time' r from public.delivery_packages where id=$1",
+      [noticePackage],
+    ),
+  ).toBe(false);
+});
+it("weekly rule configuration stays Owner-only and raw/private helper reads remain denied", async () => {
+  await notificationPackages();
+  for (const actor of [manager, coach, otherCoach, parent, otherParent]) {
+    await as(actor);
+    await blocked("select public.learning_notification_workspace($1)", [
+      profile,
+    ]);
+    await blocked(
+      "select public.learning_save_notification_rule('athlete',$1,null,'{}',0,null)",
+      [profile],
+    );
+    await blocked("select public.learning_notification_rules($1)", [profile]);
+    await blocked("select weekly_rules from public.delivery_athlete_settings");
+  }
+  await as("", "anon");
+  await blocked("select public.learning_notification_workspace($1)", [profile]);
+});
+it("weekly rule validator rejects malformed clocks, thresholds, unknown fields and wrong targets", async () => {
+  await notificationPackages();
+  for (const patch of [
+    null,
+    [],
+    { friday_time: "24:00" },
+    { friday_time: 17 },
+    { low_ready_weeks: 0 },
+    { low_ready_weeks: 9 },
+    { low_ready_weeks: 1.5 },
+    { reminders_enabled: "false" },
+    { email: true },
+    { weekday: 3 },
+  ]) {
+    await blocked(
+      "select public.learning_save_notification_rule('athlete',$1,null,$2,0,null)",
+      [profile, patch],
+      /choose|unknown|empty|valid/i,
+    );
+  }
+  await blocked(
+    "select public.learning_save_notification_rule('package',$1,$2,'{}',1,null)",
+    [profile, noticePackage],
+  );
+  await blocked(
+    "select public.learning_save_notification_rule('athlete',$1,null,'{}',0,$2)",
+    [profile, id(9999)],
+  );
+});
+it("effective Friday clock observes Chicago DST, opt-out and same-week dedup without changing releases", async () => {
+  const rid = await release();
+  await notificationPackages();
+  await saveNotification("client", profile, { friday_time: "19:00" }, 1);
+  await as("", "postgres");
+  await db.query(
+    "update public.learning_releases set available_at='2026-10-25 05:00Z' where id=$1",
+    [rid],
+  );
+  await db.query(
+    "update public.learning_enrollments set state='finished' where id=$1",
+    [enrollment],
+  );
+  await db.query("select public.learning_tick('2026-10-30 23:59Z',false)");
+  expect(
+    await r(
+      "select count(*)::integer r from public.learning_notices where category='friday_incomplete'",
+    ),
+  ).toBe(0);
+  await db.query("select public.learning_tick('2026-10-31 00:01Z',false)");
+  await db.query("select public.learning_tick('2026-10-31 00:02Z',false)");
+  expect(
+    await r(
+      "select count(*)::integer r from public.learning_notices where category='friday_incomplete'",
+    ),
+  ).toBe(1);
+  await db.query("select public.learning_tick('2026-11-07 00:59Z',false)");
+  expect(
+    await r(
+      "select count(*)::integer r from public.learning_notices where category='friday_incomplete'",
+    ),
+  ).toBe(1);
+  await db.query("select public.learning_tick('2026-11-07 01:01Z',false)");
+  expect(
+    await r(
+      "select count(*)::integer r from public.learning_notices where category='friday_incomplete'",
+    ),
+  ).toBe(2);
+  await as();
+  await saveNotification("athlete", profile, { reminders_enabled: false }, 0);
+  await as(parent);
+  expect(
+    JSON.stringify(await r("select public.learning_inbox() r")),
+  ).not.toContain("friday_incomplete");
+  await as("", "postgres");
+  await db.query("select public.learning_tick('2026-11-07 01:01Z',false)");
+  expect(
+    await r(
+      "select count(*)::integer r from public.learning_notices where category='friday_incomplete' and resolved_at is null",
+    ),
+  ).toBe(0);
+  expect(
+    await r("select count(*)::integer r from public.learning_releases"),
+  ).toBe(1);
+});
+it("capacity threshold and staff routing inherit without widening Coach visibility", async () => {
+  await setup();
+  await notificationPackages();
+  await saveNotification("package", noticePackage, { low_ready_weeks: 1 }, 1);
+  await as("", "postgres");
+  await db.exec(
+    "update public.learning_settings set scheduler_enabled=true,notices_enabled=true",
+  );
+  await db.query("select public.learning_tick(now(),false)");
+  expect(
+    await r(
+      "select count(*)::integer r from public.learning_notices where staff_only",
+    ),
+  ).toBe(0);
+  await as();
+  await saveNotification("athlete", profile, { low_ready_weeks: 3 }, 0);
+  await db.query(
+    "select public.save_delivery_override($1,'athlete',null,'{\"routing\":\"owners_managers\"}','active',1)",
+    [profile],
+  );
+  await as("", "postgres");
+  await db.query("select public.learning_tick(now(),false)");
+  await as(coach);
+  expect(await r("select public.learning_inbox() r")).toEqual([]);
+  await as(manager);
+  expect(JSON.stringify(await r("select public.learning_inbox() r"))).toContain(
+    "low_content",
+  );
+  await as(otherCoach);
+  expect(await r("select public.learning_inbox() r")).toEqual([]);
+  await as(parent);
+  expect(await r("select public.learning_inbox() r")).toEqual([]);
+});
+it("training-ready preference suppresses notices without hiding released content or backfilling", async () => {
+  await notificationPackages();
+  await db.query(
+    "select public.save_delivery_override($1,'athlete',null,'{\"notify_training\":false}','active',0)",
+    [profile],
+  );
+  await release();
+  await as("", "postgres");
+  expect(
+    await r(
+      "select count(*)::integer r from public.learning_notices where category='content_ready'",
+    ),
+  ).toBe(0);
+  expect(
+    await r("select count(*)::integer r from public.learning_releases"),
+  ).toBe(1);
+  await as(parent);
+  expect(
+    JSON.stringify(await r("select public.learning_athlete($1) r", [profile])),
+  ).toContain("Fictional import");
+  await as();
+  await db.query(
+    "select public.save_delivery_override($1,'athlete',null,'{\"notify_training\":true}','active',1)",
+    [profile],
+  );
+  await as("", "postgres");
+  await db.query("select public.learning_tick(now(),false)");
+  expect(
+    await r(
+      "select count(*)::integer r from public.learning_notices where category='content_ready'",
+    ),
+  ).toBe(0);
+});
+it("notification rollback preserves stored overrides, accounts and history without enabling flags", async () => {
+  await release();
+  await notificationPackages();
+  await saveNotification(
+    "athlete",
+    profile,
+    { friday_time: "19:00" },
+    0,
+    otherNoticePackage,
+  );
+  await as("", "postgres");
+  const rollback = readFileSync(
+    new URL(
+      "../../backend/rollback/024-weekly-notification-overrides.sql",
+      import.meta.url,
+    ),
+    "utf8",
+  )
+    .replace(/^begin;$/m, "")
+    .replace(/^commit;$/m, "");
+  await db.exec("savepoint rollback_guard");
+  await expect(db.exec(rollback)).rejects.toThrow(/Disable learning/);
+  await db.exec("rollback to savepoint rollback_guard");
+  await db.exec(
+    "update public.learning_settings set enabled=false,scheduler_enabled=false,notices_enabled=false,youth_enabled=false",
+  );
+  await db.exec(rollback);
+  expect(
+    await r(
+      "select weekly_rules r from public.delivery_athlete_settings where profile_id=$1",
+      [profile],
+    ),
+  ).toEqual({ friday_time: "19:00" });
+  expect(await r("select count(*)::integer r from auth.users")).toBe(6);
+  expect(
+    await r("select scheduler_enabled r from public.learning_settings"),
+  ).toBe(false);
+  expect(
+    await r("select count(*)::integer r from public.learning_releases"),
+  ).toBe(1);
+  await as();
+  expect(
+    await r("select public.delivery_profile_workspace($1) is not null r", [
+      profile,
+    ]),
+  ).toBe(true);
+  await blocked(
+    "select public.learning_notification_workspace($1)",
+    [profile],
+    /does not exist/,
+  );
 });

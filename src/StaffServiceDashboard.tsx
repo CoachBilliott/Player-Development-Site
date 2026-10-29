@@ -1,3 +1,5 @@
+import { WeeklyNotificationSettings } from "./learning/WeeklyNotificationSettings";
+import { WeeklyNotificationService } from "./learning/notificationRules";
 import { LearningAthlete } from "./learning/LearningAthlete";
 import { LearningApi } from "./learning/api";
 import { learningDate } from "./learning/schedule";
@@ -57,7 +59,12 @@ export function StaffServiceDashboard({
   preview?: boolean;
   mode?: "roster" | "settings";
 }) {
+  const learningRoster = learningEnabled && mode === "roster";
   const api = useMemo(() => new StaffService(client), [client]);
+  const notificationApi = useMemo(
+    () => new WeeklyNotificationService(client),
+    [client],
+  );
   const [data, setData] = useState<ServiceRoster | null>(null),
     [current, setCurrent] = useState<StaffAthlete | null>(null),
     [target, setTarget] = useState(urlTarget),
@@ -117,9 +124,9 @@ export function StaffServiceDashboard({
       setRefreshing(true);
     }
   }
-  const activeFilters = learningEnabled ? requestFilters : null;
+  const activeFilters = learningRoster ? requestFilters : null;
   const searchPending =
-    learningEnabled &&
+    learningRoster &&
     (query !== requestFilters.query ||
       filter !== requestFilters.filter ||
       ageFilter !== requestFilters.age ||
@@ -142,7 +149,7 @@ export function StaffServiceDashboard({
   useEffect(() => {
     if (!enabled) return;
     let active = true;
-    const request = learningEnabled
+    const request = learningRoster
       ? api.page(activeFilters!, cursor)
       : api.roster();
     void request
@@ -169,7 +176,7 @@ export function StaffServiceDashboard({
     attempt,
     actor,
     role,
-    learningEnabled,
+    learningRoster,
     activeFilters,
     cursor,
   ]);
@@ -311,6 +318,7 @@ export function StaffServiceDashboard({
             actor={actor}
             role={role}
             profiles={data.rows}
+            weeklyEnabled={learningEnabled}
           />
         )}{" "}
         {operationalEmails && (
@@ -863,6 +871,15 @@ export function StaffServiceDashboard({
                       task={learningTask}
                     />
                   </div>
+                )}
+                {learningEnabled && role === "owner" && current.athlete_id && (
+                  <WeeklyNotificationSettings
+                    key={current.athlete_id}
+                    api={notificationApi}
+                    profile={current.athlete_id}
+                    athleteName={current.athlete_name || "Selected athlete"}
+                    onBusyChange={setAssignmentBusy}
+                  />
                 )}
                 {assignmentNotice && <p role="status">{assignmentNotice}</p>}
                 {learningEnabled && !preview && role === "owner" && (

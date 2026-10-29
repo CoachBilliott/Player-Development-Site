@@ -174,6 +174,49 @@ test("enabled Owner plan opens inside selected athlete, preserves account contex
           .target_profile,
     )
     .toBe(athleteA);
+  await context.route(
+    "**/rest/v1/rpc/learning_notification_workspace",
+    async (route) => {
+      const body = route.request().postDataJSON();
+      expect(body.target_profile).toBe(athleteA);
+      await route.fulfill({
+        json: {
+          profile_id: athleteA,
+          global: {
+            friday_time: "17:00",
+            reminders_enabled: true,
+            low_ready_weeks: 2,
+          },
+          runtime: {
+            learning_enabled: false,
+            scheduler_enabled: false,
+            notices_enabled: false,
+          },
+          packages: [],
+          client: null,
+          athlete: null,
+          effective: {
+            friday_time: "17:00",
+            reminders_enabled: true,
+            low_ready_weeks: 2,
+            timezone: "America/Chicago",
+            training_notices: true,
+            staff_routing: "assigned_coach",
+          },
+        },
+      });
+    },
+  );
+  await page
+    .getByText("Weekly notification preferences", { exact: true })
+    .click();
+  await expect(page.getByLabel("Change preferences for")).toBeVisible();
+  await expect(page.locator(".weekly-notification-settings")).toContainText(
+    "Fictional Jordan",
+  );
+  await expect(
+    page.getByRole("heading", { name: "Weekly plan", exact: true }),
+  ).toBeVisible();
   await page.getByRole("button", { name: "Back to athletes" }).click();
   await page
     .getByRole("navigation", { name: "Workspace navigation" })
