@@ -116,7 +116,6 @@
     "via_parent_at": "2026-10-29T05:29:00Z",
     "six_guarded_sessions_verified": true,
     "existing_two_week_plan_found": true,
-    "quiz_created": false,
     "csv_downloaded_and_inspected": true,
     "chooser_transport_outcome": "closed; uncertain",
     "enrollment_grading_release_confirmed": false,
@@ -126,7 +125,9 @@
     "test_learning_disabled_afterward_confirmed": false,
     "cleanup_action_denied": true,
     "alternate_route_cleanup_attempted_by_coding_worker": false,
-    "required_next_step": "Restore authorized browser or obtain fresh relevant permission context; inspect uncertain upload before retry. Do not bypass denial."
+    "required_next_step": "Restore authorized browser or obtain fresh relevant permission context; inspect uncertain upload before retry. Do not bypass denial.",
+    "quiz_creation_confirmed": false,
+    "quiz_found_before_chooser_attempt": false
   },
   "separate_ui_correction_release": {
     "source": "5491236a05b4e655243bd7ea0f24f513eea47b3e",
