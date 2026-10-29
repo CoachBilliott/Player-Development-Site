@@ -350,6 +350,7 @@ export function previewShared(
     accountLifecycleEnabled: true,
     serviceTrackingEnabled: false,
     staffRosterEnabled: true,
+    staffRosterPagingEnabled: false,
     staffNotificationEmailsEnabled: false,
     deliveryMonitoringEnabled: false,
     accountNotice: "",
