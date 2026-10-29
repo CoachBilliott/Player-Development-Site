@@ -1,0 +1,28 @@
+{
+  "status": "Prepared only; no hosted execution or approval",
+  "source": "d791232c91cbdfdcc00cb6a6d3d70d3ee98d0e53",
+  "target": "ojcfrfpeftvngyluomex",
+  "productionExcluded": "iilbulpqbuknhdpmtrvm",
+  "files": [
+    {
+      "path": "00-preflight-read-only.sql",
+      "sha256": "70cf8a5b6ea3a0a6e332cf59ef7c31cf4eca446846371fbaedd69405b1e34dd8"
+    },
+    {
+      "path": "02-postflight-read-only.sql",
+      "sha256": "fe70bcff7088f26210ea4d5c5033fa544dcb2714311a5b3e784f6d71835e4f2e"
+    },
+    {
+      "path": "023-staff-roster-pages.sql",
+      "sha256": "f809984c4003f9a01308ebfa9931be3bca76b5bbbf52386f78689861d35d03be"
+    },
+    {
+      "path": "REQUEST-AND-INPUTS.md",
+      "sha256": "f1bbce632a7ec1cc6e220eb2e2d4c0261a5c3971502da23b7eb3a10c7c338e2c"
+    },
+    {
+      "path": "rollback-023.sql",
+      "sha256": "6eea1f2e2688a822880b1af0d829b7bb34d7e2ab35cf17bf2edac36328966a26"
+    }
+  ]
+}
