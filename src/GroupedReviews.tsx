@@ -238,8 +238,8 @@ export function GroupedReviewPanel({
             </select>
           </label>
           <p>
-            {remaining} stored-clip spaces available. Four monthly reviews do
-            not mean unlimited video storage. No charge or credit is used here.
+            {remaining} stored-clip spaces available. Review allowance is
+            separate from storage capacity. No charge or credit is used here.
           </p>
           <label>
             Choose up to three review clips
