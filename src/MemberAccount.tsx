@@ -492,11 +492,6 @@ function ConnectedAccount({
         </p>
       )}
       <div className="member-heading">
-        {appSurface() && (
-          <a className="text-button member-heading-help" href="#app-help">
-            App help & support <ArrowRight size={16} />
-          </a>
-        )}
         <Tag>
           <LockKeyhole size={14} />{" "}
           {userId ? "PRIVATE PROFILES" : "ACCOUNT ACCESS"}

@@ -5,23 +5,27 @@ import { uid } from "./workoutFixture";
 import { fixture as videoFixture } from "./videoReviewFixture";
 import { mockProject } from "./contentFixture";
 
-test("app login help is separated from its account label and stays keyboard reachable", async ({
+test("app login removes the duplicate support row and keeps header help keyboard reachable", async ({
   page,
   context,
 }) => {
   await mockProject(context, new Map());
   await page.goto("./?source=app#account");
-  const help = page.getByRole("link", {
-    name: "App help & support",
-    exact: true,
-  });
-  const label = page.locator(".member-heading > .tag");
+  await expect(
+    page.getByRole("heading", { name: "Welcome back.", exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "App help & support", exact: true }),
+  ).toHaveCount(0);
+  const help = page
+    .getByRole("banner")
+    .getByRole("link", { name: "App help", exact: true });
   await expect(help).toBeVisible();
-  const a = await help.boundingBox(),
-    b = await label.boundingBox();
+  const a = await page.getByRole("banner").boundingBox(),
+    b = await page.locator(".member-heading > .tag").boundingBox();
   expect(a).not.toBeNull();
   expect(b).not.toBeNull();
-  expect(b!.y - (a!.y + a!.height)).toBeGreaterThanOrEqual(12);
+  expect(b!.y).toBeGreaterThan(a!.y + a!.height);
   await help.focus();
   await page.keyboard.press("Enter");
   await expect(
