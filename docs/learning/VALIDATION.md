@@ -2,7 +2,7 @@
 
 Current status, October 29, 2026: weekly learning remains unpublished. Current website and TestFlight0.1.0(15) use **0816c343a99a76e03ad2e48c7e16207058624c02**, production Cloudflare **bab6aa19-838c-424e-8aa1-d562cb7a88c2**. Build15 is VALID/IN_BETA_TESTING in Owner Testing, but contains no activated weekly learning. No production learning schema/flag/Cron changes have been made by this branch. No physical iPhone/all-role hosted acceptance is claimed.
 
-Implementation baseline **90b73fb4d7cec835496c285a1b2d09b22e52b6cf** passed [CI40916100302](https://github.com/repformed/Player-Development-Site/actions/runs/40916100302):453 unit/database,420 website,10 app/offline,20 isolated-preview,11 Python plus lint/types/Deno/build. This documentation-only correction does not alter tested runtime code, but its new-head required CI must finish before claiming that head green. Earlier records below are dated historical evidence, not current hosted acceptance or additive test totals.
+Implementation baseline **90b73fb4d7cec835496c285a1b2d09b22e52b6cf** passed [CI40916100302](https://github.com/repformed/Player-Development-Site/actions/runs/40916100302):453 unit/database,420 website,10 app/offline,20 isolated-preview,11 Python plus lint/types/Deno/build. The current-main integration preserves the released login, review-action and legacy roster-pagination repairs while retaining the draft learning flows. Its new-head required CI must finish before claiming the combined head green. Earlier records below are dated historical evidence, not current hosted acceptance or additive test totals.
 
 ## October 29 readiness remediation
 

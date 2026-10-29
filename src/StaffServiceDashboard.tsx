@@ -109,6 +109,7 @@ export function StaffServiceDashboard({
     return () => clearTimeout(timer);
   }, [query, filter, ageFilter, positionFilter, coachFilter]);
   function changeFilter(change: () => void) {
+    setPage(1);
     change();
     if (learningEnabled) {
       setCursor(null);
@@ -130,6 +131,8 @@ export function StaffServiceDashboard({
     setRefreshing(true);
     setAttempt((n) => n + 1);
   }
+  const [page, setPage] = useState(1);
+  const resultCount = useRef<HTMLParagraphElement>(null);
   const assignButton = useRef<HTMLButtonElement>(null);
   const lock = useRef(false);
   const returnFocus = useRef<HTMLElement | null>(null);
@@ -244,6 +247,17 @@ export function StaffServiceDashboard({
       ? data?.rows || []
       : serviceRows(scopedRows, query, filter),
     total = data?.page?.total ?? data?.rows.length ?? 0;
+  const pageSize = 25;
+  const pages = Math.max(1, Math.ceil(rows.length / pageSize));
+  const currentPage = Math.min(page, pages);
+  const pageStart = (currentPage - 1) * pageSize;
+  const visibleRows = learningEnabled
+    ? rows
+    : rows.slice(pageStart, pageStart + pageSize);
+  function changePage(next: number) {
+    setPage(next);
+    requestAnimationFrame(() => resultCount.current?.focus());
+  }
   const coachChoices = learningEnabled
     ? (data?.coaches || []).map((c) => [c.id, c.label] as const)
     : [
@@ -268,6 +282,7 @@ export function StaffServiceDashboard({
       setPreviousCursors([]);
       setRefreshing(true);
     }
+    setPage(1);
     setQuery("");
     setFilter("all");
     setAgeFilter("");
@@ -485,13 +500,27 @@ export function StaffServiceDashboard({
               </label>
             </div>
           </details>
-          <p className="staff-result-count" role="status">
+          <p
+            ref={resultCount}
+            tabIndex={-1}
+            className="staff-result-count"
+            role="status"
+          >
             {searchPending || refreshing ? (
               "Updating roster…"
+            ) : learningEnabled ? (
+              <>
+                Showing {rows.length} of {data.page?.matched ?? total} records ·
+                page {previousCursors.length + 1}
+              </>
             ) : (
               <>
-                Showing {rows.length} of {data.page?.matched ?? total} records
-                {learningEnabled && ` · page ${previousCursors.length + 1}`}
+                Showing{" "}
+                {rows.length > pageSize
+                  ? `${pageStart + 1}–${pageStart + visibleRows.length}`
+                  : rows.length}{" "}
+                of {rows.length} matching records
+                {rows.length !== total ? ` (${total} in your scope)` : ""}
               </>
             )}
             {query.trim() ? ` for “${query.trim()}”` : ""}
@@ -528,7 +557,7 @@ export function StaffServiceDashboard({
                 </tr>
               </thead>
               <tbody>
-                {rows.map((r, n) => {
+                {visibleRows.map((r, n) => {
                   const state = serviceState(r),
                     action = serviceAction(r, role);
                   return (
@@ -684,6 +713,30 @@ export function StaffServiceDashboard({
               </button>
             </nav>
           )}
+          {!learningEnabled && pages > 1 && (
+            <nav
+              className="staff-roster-pagination"
+              aria-label="Athlete roster pages"
+            >
+              <button
+                className="button secondary"
+                disabled={currentPage === 1}
+                onClick={() => changePage(currentPage - 1)}
+              >
+                Previous page
+              </button>
+              <span>
+                Page {currentPage} of {pages}
+              </span>
+              <button
+                className="button secondary"
+                disabled={currentPage === pages}
+                onClick={() => changePage(currentPage + 1)}
+              >
+                Next page
+              </button>
+            </nav>
+          )}
           {!preview && (
             <details className="staff-tracking-details">
               <summary>About these service records</summary>
@@ -745,9 +798,14 @@ export function StaffServiceDashboard({
                   <span className="tag">NEXT STEP</span>
                   <h3>{current.next_action}</h3>
                   <div className="actions">
+                    {(current.pending_reviews || 0) > 0 && (
+                      <StaffLink route="video-reviews" className="button">
+                        Open review queue
+                      </StaffLink>
+                    )}
                     {learningEnabled && (
                       <button
-                        className="button"
+                        className={`button ${(current.pending_reviews || 0) > 0 ? "secondary" : ""}`}
                         onClick={() => {
                           setLearningTask({
                             kind: current.learning?.pending_grades
@@ -774,21 +832,13 @@ export function StaffServiceDashboard({
                       current.athlete_id && (
                         <button
                           ref={assignButton}
-                          className="button"
+                          className={`button ${(current.pending_reviews || 0) > 0 ? "secondary" : ""}`}
                           disabled={assignmentBusy}
                           onClick={() => setAssigning(true)}
                         >
                           Assign training <ArrowRight size={16} />
                         </button>
                       )}
-                    {(current.pending_reviews || 0) > 0 && (
-                      <StaffLink
-                        route="video-reviews"
-                        className="button secondary"
-                      >
-                        Open review queue
-                      </StaffLink>
-                    )}
                   </div>
                   {preview && (
                     <p>

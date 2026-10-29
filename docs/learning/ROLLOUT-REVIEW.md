@@ -1,6 +1,6 @@
 # Weekly learning: draft rollout review
 
-Current state, October 29, 2026: production website and TestFlight **0.1.0 (15)** use **0816c343a99a76e03ad2e48c7e16207058624c02**. Cloudflare deployment is **bab6aa19-838c-424e-8aa1-d562cb7a88c2**; build15 is VALID/IN_BETA_TESTING for existing Owner Testing. PR12 has already merged/released. This weekly-learning branch is still draft and not production-enabled. Its implementation baseline90b73fb4 passed CI40916100302; the documentation alignment does not change runtime permissions or activate anything. Public intake/consent and the existing shared-inbox email remain unchanged. A successful website or simulator check does not prove physical iPhone or live-role acceptance.
+Current state, October 29, 2026: production website and TestFlight **0.1.0 (15)** use **0816c343a99a76e03ad2e48c7e16207058624c02**. Cloudflare deployment is **bab6aa19-838c-424e-8aa1-d562cb7a88c2**; build15 is VALID/IN_BETA_TESTING for existing Owner Testing. PR12 has already merged/released. This weekly-learning branch is still draft and not production-enabled. Its implementation baseline90b73fb4 passed CI40916100302; current-main integration preserves the released UI repairs without changing runtime permissions or activating anything. Final combined-head validation is required. Public intake/consent and the existing shared-inbox email remain unchanged. A successful website or simulator check does not prove physical iPhone or live-role acceptance.
 
 ## Source model and safeguards
 
