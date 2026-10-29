@@ -31,7 +31,12 @@ test("four future proposals distinguish cadence, price and review terms without 
     await expect(card).toContainText(`$${prices[i][0]}`);
     await expect(card).toContainText(`$${prices[i][1]} / year proposed`);
     await expect(card).toContainText("Not available to purchase");
-    await expect(card.getByRole("button")).toHaveCount(0);
+    await expect(
+      card.getByRole("button", {
+        name: `Express interest in ${names[i]}`,
+        exact: true,
+      }),
+    ).toBeVisible();
   }
   await expect(
     page.getByRole("article", { name: "Foundation", exact: true }),
@@ -49,7 +54,7 @@ test("four future proposals distinguish cadence, price and review terms without 
     exact: true,
   });
   await expect(elite).toContainText(
-    "Two chosen drill-video reviews per month, with up to three minutes of footage per review",
+    "Two chosen drill-video reviews per month for each subscribed Elite athlete, with up to three minutes of footage per review",
   );
   await expect(elite).toContainText(
     "Written strengths, corrections and next-practice guidance",

@@ -3,7 +3,7 @@ import AxeBuilder from "@axe-core/playwright";
 import { disableBackend } from "./backendFixture";
 import { fixture, state, accountId, staffId } from "./workoutFixture";
 
-test("public header and mobile menu show Log in without a universal status strip", async ({
+test("public header prioritizes interest and keeps member login without a universal status strip", async ({
   page,
   context,
 }, info) => {
@@ -12,6 +12,11 @@ test("public header and mobile menu show Log in without a universal status strip
   for (const route of ["home", "membership", "contact"]) {
     await page.goto(`./#${route}`);
     const header = page.getByRole("banner");
+    await expect(header.locator(".header-account")).toHaveText(
+      "Express interest",
+    );
+    if (info.project.name === "phone")
+      await header.getByRole("button", { name: "Open navigation" }).click();
     await expect(
       header.getByRole("link", { name: "Log in", exact: true }),
     ).toBeVisible();
@@ -19,6 +24,8 @@ test("public header and mobile menu show Log in without a universal status strip
       header.getByRole("link", { name: "Dashboard", exact: true }),
     ).toHaveCount(0);
     await expect(page.locator(".demo-strip")).toHaveCount(0);
+    if (info.project.name === "phone")
+      await header.getByRole("button", { name: "Close navigation" }).click();
   }
   if (info.project.name === "phone") {
     await page.getByRole("button", { name: "Open navigation" }).click();
@@ -104,6 +111,14 @@ for (const role of [
     ).toHaveCount(0);
     await page.goto("./#home");
     await page.reload();
+    await expect(header.locator(".header-account")).toHaveText(
+      "Express interest",
+    );
+    await expect(
+      header.getByRole("link", { name: "Dashboard", exact: true }),
+    ).toHaveCount(0);
+    if (info.project.name === "phone")
+      await page.getByRole("button", { name: "Open navigation" }).click();
     await expect(
       header.getByRole("link", { name: "Log in", exact: true }),
     ).toBeVisible();
@@ -113,7 +128,6 @@ for (const role of [
         .getByRole("link", { name: "Dashboard", exact: true }),
     ).toHaveCount(0);
     if (info.project.name === "phone") {
-      await page.getByRole("button", { name: "Open navigation" }).click();
       await expect(
         page
           .getByRole("navigation", { name: "Mobile navigation" })

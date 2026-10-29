@@ -1320,3 +1320,12 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+.app-website-back {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 12px;
+  font-weight: 600;
+  text-underline-offset: 4px;
+}

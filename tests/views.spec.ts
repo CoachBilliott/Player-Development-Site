@@ -33,6 +33,8 @@ test("the public website has one customer demo entry, with parent and solo journ
   ).toBeVisible();
   const header = page.getByRole("banner");
   await expect(header.locator('a[href="#demo"]')).toHaveCount(0);
+  if (info.project.name === "phone")
+    await header.getByRole("button", { name: "Open navigation" }).click();
   await expect(
     header.getByRole("link", { name: "Log in", exact: true }),
   ).toBeVisible();
@@ -70,7 +72,7 @@ test("the public website has one customer demo entry, with parent and solo journ
     .click();
   await expect(page).toHaveURL(/#demo$/);
   await expect(
-    page.getByRole("heading", { name: "See how your training works." }),
+    page.getByRole("heading", { name: "Explore fictional practice." }),
   ).toBeVisible();
   await expect(
     page
@@ -162,7 +164,7 @@ test("old staff preview links require real sign-in and public uploads have no an
     await page.goto("./#" + route);
     await expect(page).toHaveURL(/#demo$/);
     await expect(
-      page.getByRole("heading", { name: "See how your training works." }),
+      page.getByRole("heading", { name: "Explore fictional practice." }),
     ).toBeVisible();
   }
 });

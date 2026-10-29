@@ -114,8 +114,7 @@ export function AccessWorkspace({ shared }: { shared: SharedState }) {
         title="Owner access is required."
       >
         Account roles and training entitlements are managed by an Owner. Athlete
-        coach assignments are available to Owners and Managers in Client
-        service.
+        coach assignments are available to Owners and Managers in Athletes.
       </PrivateAccessMessage>
     );
   if (selected === "training")

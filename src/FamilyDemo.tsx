@@ -202,11 +202,10 @@ export function FamilyDemo({ app = false }: { app?: boolean }) {
       </a>
       <div className="member-heading">
         <Tag>FOOTBALL DEMO · SAMPLE DATA</Tag>
-        <h1 tabIndex={-1}>See how your training works.</h1>
+        <h1 tabIndex={-1}>Explore fictional practice.</h1>
         <p>
-          Explore one football training platform. Follow a sample workout and
-          see how practice is recorded. Choose who manages training below; no
-          account is needed for this demo.
+          Try sample family controls and guided practice without an account.
+          This preview does not include the proposed video lessons or quizzes.
         </p>
       </div>
       <p className="eyebrow" id="demo-setup-label">

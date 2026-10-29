@@ -1,0 +1,102 @@
+.customer-help {
+  max-width: 1040px;
+}
+.customer-help .page-intro {
+  max-width: 760px;
+}
+.customer-help > section {
+  border-top: 1px solid var(--line);
+  padding: 30px 0;
+}
+.customer-help section p {
+  max-width: 72ch;
+  color: var(--muted);
+  line-height: 1.7;
+}
+.customer-help h2 {
+  font-size: clamp(30px, 4vw, 40px);
+  margin: 0 0 16px;
+  scroll-margin-top: 110px;
+}
+.customer-help h3 {
+  margin: 26px 0 10px;
+  font-size: 21px;
+}
+.help-topics,
+.help-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 24px;
+}
+.help-topics {
+  margin: 24px 0 32px;
+}
+.help-topics button,
+.help-actions > a,
+.help-staff-reference a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  text-underline-offset: 4px;
+}
+.help-topics button {
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+}
+.customer-help section a:not(.button):not(.text-button) {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.help-staff-reference {
+  border-top: 1px solid var(--line);
+  padding: 20px 0;
+}
+.help-staff-reference summary {
+  cursor: pointer;
+  padding: 12px 0;
+}
+.help-staff-reference p {
+  max-width: 72ch;
+  line-height: 1.7;
+  color: var(--muted);
+}
+.header-actions .header-login {
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+@media (max-width: 700px) {
+  .customer-help > section {
+    padding: 24px 0;
+  }
+  .help-topics {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+  .header-actions .header-login {
+    font-size: 13px;
+    padding-inline: 4px;
+  }
+}
+
+.help-topics button {
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+/* Member login remains in the phone menu; the public primary action stays legible. */
+@media (max-width: 700px) {
+  .header-actions .header-login {
+    display: none;
+  }
+  .website-layout .header-account svg {
+    display: none;
+  }
+}

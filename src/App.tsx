@@ -63,6 +63,7 @@ import { FamilyDemo } from "./FamilyDemo";
 import { Home } from "./Home";
 import { Membership } from "./Membership";
 import { Contact } from "./Contact";
+import { CustomerHelp } from "./CustomerHelp";
 import { SocialLinks } from "./SocialLinks";
 import { QuickHelp } from "./QuickHelp";
 import { appSurface, nativeApp } from "./mobile";
@@ -138,6 +139,7 @@ const safeHash = () => {
     "coach",
     "membership",
     "contact",
+    "customer-help",
     "install",
     "account",
     "profiles",
@@ -443,11 +445,18 @@ export default function App() {
                   ))}
                 </nav>
                 <div className="header-actions">
+                  {!shared.signedIn && (
+                    <a className="header-login" href="#account">
+                      Log in
+                    </a>
+                  )}
                   <a
                     className="header-account"
-                    href={shared.signedIn ? "#workspace" : "#account"}
+                    href={
+                      shared.signedIn ? "#workspace" : "?interest=1#membership"
+                    }
                   >
-                    {shared.signedIn ? "Dashboard" : "Log in"}{" "}
+                    {shared.signedIn ? "Dashboard" : "Express interest"}{" "}
                     <ArrowUpRight size={17} />
                   </a>
                   <button
@@ -633,7 +642,9 @@ export default function App() {
                 }}
               />
             ) : page === "install" ? (
-              <InstallApp app={app} />
+              <InstallApp app={app} signedIn={shared.signedIn} />
+            ) : page === "customer-help" ? (
+              <CustomerHelp />
             ) : page === "content-review" ? (
               <ContentApprovals shared={shared} />
             ) : page === "workout-builder" ? (
@@ -679,6 +690,7 @@ export default function App() {
                 </div>
                 <div className="footer-group">
                   <h2>Help & access</h2>
+                  <a href="#customer-help">Customer help</a>
                   <a href="#contact">Contact</a>
                   <QuickHelp />
                   <a href={shared.signedIn ? "#workspace" : "#account"}>

@@ -5,6 +5,7 @@ import { CONTACT_EMAIL } from "./contactContent";
 import { PACKAGE_PROPOSALS, packageInterestLink } from "./packageProposals";
 import "./memberships.css";
 import { InterestForm } from "./InterestForm";
+import type { InterestPackage } from "./interestContract";
 
 function focusInterest() {
   document.getElementById("interest-title")?.focus({ preventScroll: true });
@@ -21,8 +22,24 @@ export function Membership({
   interestLoading?: boolean;
 }) {
   const pending = interestLoading && !interestEndpoint;
-  const [interest, setInterest] = useState("undecided"),
+  const [interest, setInterest] = useState<InterestPackage>("undecided"),
     [copy, setCopy] = useState("");
+  const [selectionNotice, setSelectionNotice] = useState("");
+  const [submissionState, setSubmissionState] = useState<
+    "idle" | "sending" | "received"
+  >("idle");
+  function changePackage(id: InterestPackage) {
+    setInterest(id);
+    setSelectionNotice("");
+    setCopy("");
+  }
+  function selectPackage(id: InterestPackage, name: string) {
+    if (submissionState !== "idle") return;
+    setInterest(id);
+    setCopy("");
+    setSelectionNotice(`${name} selected. Review your details before sending.`);
+    focusInterest();
+  }
   useEffect(() => {
     const url = new URL(window.location.href);
     if (url.searchParams.get("interest") !== "1") return;
@@ -55,46 +72,64 @@ export function Membership({
       >
         <strong>Interest is open. Enrollment is not.</strong>
         <p>
-          These are prelaunch package plans, not active offers. Features, prices
-          and annual terms remain under review. No payments or reservations are
-          taken, and no launch date is promised.
+          These are proposed plans. Enrollment, payments and reservations are
+          not open. Features, prices and annual terms remain under review.
+        </p>
+        <p>
+          USD per athlete. One guardian account can manage multiple athletes.
+          Each subscribed Elite athlete would have two monthly reviews, not
+          shared across siblings.
         </p>
         <button className="text-button" onClick={focusInterest}>
           Share your interest <ArrowRight size={17} />
         </button>
       </section>
-      <div className="proposed-package-grid">
-        {PACKAGE_PROPOSALS.map((p, i) => (
+      <section
+        className="proposed-package-grid"
+        aria-label="Compare proposed packages"
+      >
+        {PACKAGE_PROPOSALS.map((p) => (
           <article
             className="package-card proposed-package"
             aria-labelledby={`package-${p.id}`}
             key={p.id}
           >
-            <div className="proposal-top">
-              <Tag>PACKAGE PLAN</Tag>
-              <span>0{i + 1}</span>
+            <div className="proposal-identity">
+              <h2 id={`package-${p.id}`}>{p.name}</h2>
+              <div className="proposal-price">
+                <strong>${p.monthly}</strong>
+                <span>USD / athlete / month</span>
+                <small>${p.annual} / year proposed · USD per athlete</small>
+              </div>
             </div>
-            <h2 id={`package-${p.id}`}>{p.name}</h2>
-            <p className="proposal-focus">{p.focus}</p>
-            <div className="proposal-price">
-              <strong>${p.monthly}</strong>
-              <span>/ month proposed</span>
-              <small>
-                ${p.annual} / year proposed · annual terms under review
-              </small>
+            <div className="proposal-summary">
+              <p className="proposal-cadence">{p.cadence}</p>
+              <details className="proposal-details">
+                <summary>What’s included in {p.name}</summary>
+                <p className="proposal-focus">{p.focus}</p>
+                <p className="proposal-includes">{p.includes}</p>
+                <div className="check-lines">
+                  {p.items.map((text) => (
+                    <CheckLine key={text}>{text}</CheckLine>
+                  ))}
+                </div>
+                {"note" in p && <p className="proposal-note">{p.note}</p>}
+              </details>
             </div>
-            <p className="proposal-cadence">{p.cadence}</p>
-            <p className="proposal-includes">{p.includes}</p>
-            <div className="check-lines">
-              {p.items.map((text) => (
-                <CheckLine key={text}>{text}</CheckLine>
-              ))}
+            <div className="proposal-action">
+              <button
+                className="button secondary"
+                disabled={submissionState !== "idle"}
+                onClick={() => selectPackage(p.id, p.name)}
+              >
+                Express interest in {p.name}{" "}
+                <ArrowRight size={17} aria-hidden="true" />
+              </button>
+              <span className="proposal-closed">Not available to purchase</span>
             </div>
-            {"note" in p && <p className="proposal-note">{p.note}</p>}
-            <span className="proposal-closed">Not available to purchase</span>
           </article>
         ))}
-      </div>
+      </section>
       <section
         className="proposal-rhythm"
         aria-label="Proposed delivery rhythm"
@@ -126,6 +161,11 @@ export function Membership({
           <h2 id="interest-title" tabIndex={-1}>
             Interested? Tell us what fits.
           </h2>
+          {selectionNotice && (
+            <p role="status" className="interest-selection">
+              {selectionNotice}
+            </p>
+          )}
           <p role={pending ? "status" : undefined}>
             {pending
               ? "Loading interest form…"
@@ -140,7 +180,15 @@ export function Membership({
           </p>
         </div>
         {!pending && interestEndpoint && (
-          <InterestForm endpoint={interestEndpoint} />
+          <InterestForm
+            endpoint={interestEndpoint}
+            packageChoice={interest}
+            onPackageChange={changePackage}
+            onStateChange={(next) => {
+              setSubmissionState(next);
+              if (next !== "idle") setSelectionNotice("");
+            }}
+          />
         )}
         {!pending && (
           <details
@@ -158,9 +206,9 @@ export function Membership({
                 <select
                   id="interest-package"
                   value={interest}
+                  disabled={submissionState !== "idle"}
                   onChange={(e) => {
-                    setInterest(e.target.value);
-                    setCopy("");
+                    changePackage(e.target.value as InterestPackage);
                   }}
                 >
                   <option value="undecided">

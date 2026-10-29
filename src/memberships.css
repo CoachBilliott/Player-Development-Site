@@ -301,4 +301,95 @@
   border-radius: 12px;
 }
 
-.interest-adult-check input { accent-color: var(--brand-gold); }
+.interest-adult-check input {
+  accent-color: var(--brand-gold);
+}
+
+/* Compare the same fields in compact rows; details remain available on demand. */
+.proposed-package-grid {
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+.experience .proposed-package {
+  display: grid;
+  grid-template-columns: minmax(190px, 1fr) minmax(250px, 1.5fr) minmax(
+      180px,
+      0.9fr
+    );
+  align-items: start;
+  gap: 28px;
+  text-align: left;
+  padding: 24px;
+}
+.proposal-price {
+  border: 0;
+  padding: 14px 0 0;
+  margin: 0;
+}
+.proposal-identity,
+.proposal-summary,
+.proposal-action {
+  min-width: 0;
+}
+.proposal-action {
+  display: grid;
+  gap: 12px;
+  align-self: center;
+}
+.proposal-action .button {
+  white-space: normal;
+  text-align: left;
+  justify-content: space-between;
+  min-height: 48px;
+}
+.proposal-action .button svg {
+  flex-shrink: 0;
+}
+.proposal-details {
+  margin-top: 12px;
+}
+.proposal-details summary {
+  cursor: pointer;
+  padding: 10px 0;
+  min-height: 44px;
+  font-size: 14px;
+  font-weight: 600;
+}
+.proposal-details .proposal-focus,
+.proposal-details .proposal-includes {
+  margin: 10px 0;
+}
+.proposal-details .proposal-note {
+  margin-top: 16px !important;
+}
+.proposal-closed {
+  padding: 0;
+  margin: 0;
+}
+.package-interest .interest-selection {
+  color: var(--ink);
+  border-left: 2px solid var(--brand-gold);
+  padding-left: 12px;
+}
+@media (max-width: 900px) {
+  .experience .proposed-package {
+    grid-template-columns: minmax(180px, 1fr) minmax(0, 1.5fr);
+  }
+  .proposal-action {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+}
+@media (max-width: 600px) {
+  .experience .proposed-package {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 22px;
+  }
+  .proposal-action {
+    justify-self: stretch;
+  }
+  .proposal-price strong {
+    font-size: 34px;
+  }
+}
