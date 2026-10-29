@@ -1,7 +1,9 @@
 {
-  "README.md": "95be2d4c6d8a2ca2f523b9c815917f61c6f087932b443a33fa56a7a13fb494f2",
+  "README.md": "f5a214b7a8d77c3642e60c8d97bfe75ca1a750fb6832bfe8485400d9a79e8c18",
   "024-weekly-notification-overrides.sql": "61cf86e918ec29951f29254f66af14c4838eb305de5ba8beb6549b41bfea2c50",
   "fictional-owner-320.png": "5414cebc163234b5321eb407b0a12b2e8017f60478d2759d65cb7892a30adbb5",
   "rollback-024.sql": "516df6825ff8763737f337bf14cd0aeabbfc18c9c0a4c52e27d6086a40ef38f8",
+  "ci-artifacts.json": "e4f23fdf4a9ad9e45ef4da1de75acb4dac1fc9bc47996e2319b4b1fea401413a",
+  "final-ci.json": "ec664060d3d5e95b2c85fff3b7d7da3f070bfcc106af3f2a31165a4ddc0d6aa0",
   "ACCESS-AND-ROLLBACK.md": "79247f0673869aa26d5b537d28ed9f527c07743c6549bd7878f48c4c47ff58ac"
 }

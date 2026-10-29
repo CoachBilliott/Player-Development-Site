@@ -8,7 +8,9 @@ Install requires reviewed016and019–022 and all learning/scheduler/notices/yout
 
 ## Validation
 
-Final-head CI40968374045 was running when this bundle was prepared. Local53focused SQL/API and46affected desktop/phone checks pass; those overlap aggregate suites. The prior fullunit465passed before one final installation-guard test was added. Actual final CI receipts replace pending status; no hosted or physical-device acceptance follows from fixture/PGlite checks.
+**Final-head CI40968374045 SUCCESS at22:59:13UTC October29,2026** on exact1e2269fe72df886685c860308d9c17880d7288a2: **466unit/database,450website browser,10compiled app/offline,20isolated private-preview,11Python** plus lint/types/all3Deno checks/build. None of the required stages was skipped. These are per-suite counts, not a sum of overlapping historical/focused checks. Raw workflow/step receipt and artifact metadata are included.
+
+Local53focused SQL/API and46affected desktop/phone checks also passed; they overlap the final full suites and are not additional counts. The previous failed run was an unused screenshot-test variable lint error, fixed without weakening assertions. No hosted or physical-device acceptance follows from fixture/PGlite/compiled-app checks.
 
 The320px screenshot is the real responsive component with an explicit fictional athlete and fake transport. It shows configuration, not active notices. No customer data or credentials are included.
 
