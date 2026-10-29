@@ -25,6 +25,18 @@ try {
  await db.query('update auth.users set email=$1 where id=$2',[users[0].email,users[0].id]);
  await db.exec('update public.learning_settings set enabled=true');
  const on=(await db.exec(sql)).find(r=>r.rows?.[0]?.scheduler_enabled!==undefined).rows[0];assert.equal(on.enabled,true);assert.equal(on.scheduler_enabled,false);assert.equal(on.notices_enabled,false);assert.equal(on.youth_enabled,false);
- const receipt={kind:'Local PGlite only; no hosted requests/Auth/Storage acceptance',checks:{valid_fixed_fixtures:true,read_only_preserves_rows_and_flags:true,wrong_role_detected:true,wrong_identity_detected:true,existing_enabled_flag_reported_not_changed:true,negative_grants_and_RLS_reported:true},hosted_mutations:0,credentials_used:0};
+ await db.exec('update public.learning_settings set enabled=false');
+ const setup=await readFile(artifact+'/resume-acceptance/02-proposed-standalone-athlete-fixture.sql','utf8');
+ let blocked=false;try{await db.exec(setup);}catch{blocked=true;await db.exec('rollback');}assert(blocked);
+ const preserved=JSON.stringify((await db.query('select user_id,role,version from public.account_roles order by user_id')).rows);
+ const newId='93000000-0000-4000-8000-000000000007';
+ await db.query('insert into auth.users(id,email,email_confirmed_at) values($1,$2,now())',[newId,'repformed-learning-athlete@example.test']);
+ await db.exec(setup);
+ const actor=(await db.query('select r.role,a.account_type,p.age_group from public.account_roles r join public.member_accounts a on a.user_id=r.user_id join public.player_profiles p on p.owner_id=r.user_id where r.user_id=$1',[newId])).rows[0];
+ assert.deepEqual(actor,{role:'athlete',account_type:'adult',age_group:'18+'});
+ assert.equal(JSON.stringify((await db.query('select user_id,role,version from public.account_roles where user_id<>$1 order by user_id',[newId])).rows),preserved);
+ blocked=false;try{await db.exec(setup);}catch{blocked=true;await db.exec('rollback');}assert(blocked);
+ const counts=(await db.query('select (select count(*)::integer from public.account_roles) roles,(select count(*)::integer from public.player_profiles) profiles,(select enabled from public.learning_settings) enabled')).rows[0];assert.deepEqual(counts,{roles:7,profiles:4,enabled:false});
+ const receipt={kind:'Local PGlite only; no hosted requests/Auth/Storage acceptance',checks:{valid_fixed_fixtures:true,read_only_preserves_rows_and_flags:true,wrong_role_detected:true,wrong_identity_detected:true,existing_enabled_flag_reported_not_changed:true,negative_grants_and_RLS_reported:true,requires_exact_seventh_identity:true,adds_one_standalone_adult_preserving_six:true,duplicate_fixture_refused_without_overwrite:true},hosted_mutations:0,credentials_used:0};
  await writeFile(artifact+'/resume-acceptance/LOCAL-PREFLIGHT-VALIDATION.json',JSON.stringify(receipt,null,2)+'\n');console.log(JSON.stringify(receipt));
 }finally{await db.close();}

@@ -1,12 +1,12 @@
 # Resume hosted learning acceptance
 
-Prepared October 29, 2026. This is a bounded handoff and read-only preflight, **not a hosted acceptance pass**. Production stays at `7c60c4ba16b1e9a0d6a18a60268ab5fe7897fbba`; PR13 `f078d1bc237b0e168f6ed0cf9c241367c5a7fc08` remains draft/unmerged/off. Do not create a replacement project/task.
+Prepared October 29, 2026. **Latest browser attempt14:51UTC remains blocked by ERR_QUIC_PROTOCOL_ERROR before any render/sign-in; no credentials, data, flags or network settings changed.** This is a bounded handoff and read-only preflight, **not a hosted acceptance pass**. Production stays at `7c60c4ba16b1e9a0d6a18a60268ab5fe7897fbba`; PR13 `f078d1bc237b0e168f6ed0cf9c241367c5a7fc08` remains draft/unmerged/off. Do not create a replacement project/task.
 
 ## What is established
 
 - Current PR13 CI40890247154 passed: 430 unit/database, 404 website, 10 compiled-app/offline, 20 fictional-preview, 11 Python, lint/types/Deno/build. Counts overlap other runs. These are not actual hosted-role or physical-device results.
 - Existing harness: https://learning-auth-rehearsal.repformed.pages.dev/ ; deployment `eeea6899-8e3f-461c-9230-35287d8e1d3d`, source `1bb3f5e9661fa9b3d7d8131fa8752e9d557f49ff`. Cloudflare provider metadata still reports successful preview deployment at 14:36 UTC. This does not prove browser availability.
-- All 14 learning runtime files and migrations019–021 exactly match current feature source. Other inspected differences are added tests and a service-detail scroll-padding rule; that modal is not mounted by the harness. No functional rebuild or new migration is needed merely to resume these tests. See SOURCE-COMPATIBILITY.json.
+- All 14 learning runtime files and migrations019–021 exactly match current feature source. Other inspected differences are added tests and a service-detail scroll-padding rule; that modal is not mounted by the harness. No functional rebuild or new migration is needed merely to resume the six existing roles. A seventh standalone Athlete needs the separately prepared fixed-client-allowlist update after approval. See SOURCE-COMPATIBILITY.json.
 - Earlier coordinator evidence established six ordinary guarded sign-ins/profile RLS and a synthetic private lesson upload. It did not complete quiz import, enrollment, scoring, written grading, released history or cross-household lesson-file acceptance. Current sessions are not established.
 - The authorized dashboard worker last verified test learning/scheduler/notices/youth OFF at 12:21 UTC, and zero quizzes/versions/attempts/grades/enrollments. Preserve existing plans, samples, accounts and history; do not reseed or rerun the empty-project install.
 - Last authorized browser navigation failed ERR_QUIC_PROTOCOL_ERROR. Coding-worker frontend403/1010 and management403 are separate restrictions and have not been retried/bypassed.
@@ -23,7 +23,7 @@ No completed password-recovery receipt is present in this task evidence. Coordin
 
 After verifying the exact signed-in Dashboard URL/header is test project `ojcfrfpeftvngyluomex`, the authorized owner browser can review [01-current-state-read-only.sql](01-current-state-read-only.sql). It returns fixed-fixture booleans, counts, safe flags, bucket limits and privilege checks only. It begins READ ONLY and rolls back. A project literal/current_database() is not identity proof. Never execute in production. No automatic repair, reset, account creation, media read, grants or flags change.
 
-All identity/role/profile booleans must be true. All four learning flags and excluded email/intake/monitoring/youth controls must be false. All18 learning tables must retain RLS, authenticated tick and raw quiz-key grants must be false, buckets private. Unexpected data/flags/grants mean STOP and review, not deletion. Counts are observations; previously zero activity is not a reset requirement. LOCAL-PREFLIGHT-VALIDATION.json records six local-only guard checks, not hosted results.
+All identity/role/profile booleans must be true. All four learning flags and excluded email/intake/monitoring/youth controls must be false. All18 learning tables must retain RLS, authenticated tick and raw quiz-key grants must be false, buckets private. Unexpected data/flags/grants mean STOP and review, not deletion. Counts are observations; previously zero activity is not a reset requirement. LOCAL-PREFLIGHT-VALIDATION.json records nine local-only guard checks, not hosted results.
 
 ## Smallest additional action-time approval
 
@@ -59,3 +59,11 @@ Existing package/client delivery-monitor settings do not automatically configure
 ## Reproducing the local preflight checks
 
 `validate-local-preflight.mjs` is the exact local validation script, using the preserved original coding-workspace bundle, harness seed and PGlite dependency paths under /workspace. It is not an owner password tool and makes no hosted requests. Run only inside that coding workspace; the browser operator needs only the reviewed read-only SQL. No new broad regression run was needed for these documentation/preflight-only additions; the feature source and green exact-head CI are unchanged.
+
+## Prepared seventh-account fixture (not approved/applied)
+
+[02-proposed-standalone-athlete-fixture.sql](02-proposed-standalone-athlete-fixture.sql) makes the requested scope concrete: after separately approved official Auth UI creation of `repformed-learning-athlete@example.test`, it adds only existing-role Athlete data, an `adult` member account and own fictional 18+ profile `93000000-0000-4000-8000-000000000013`. It refuses missing/mismatched existing six UUID/email/role pairs, enabled excluded flags, unexpected or duplicate fixture state. It does not create an Auth user, set a password, change grants/schema, assign a plan/coach, send mail or touch production. Existing six rows/history remain intact. Local PGlite validated missing-user rejection, exact new adult fixture, unchanged original six and duplicate rejection.
+
+The initial six-account read-only preflight is for BEFORE this proposed addition. After an approved seventh setup, its six-account booleans are expected to differ: use the fixture's bounded7-role/4-profile postflight and unchanged flags/grants checks; never delete/reseed to make old counts match. The prepared harness source supports the one exact extra address and server-returned Athlete role, but has NOT been deployed and cannot create an account. New identity/fixture/harness-refresh approval is pending. Existing six-account helper approval does not cover resetting a seventh.
+
+Next owner action is ordinary navigation to the SAME harness URL on the laptop without entering secrets, to establish whether it loads outside the currently failing supported browser session. Do not alter protocol/security settings or bypass warnings. If it still fails, stop dependent acceptance and restore the supported browser connection through available platform support; this coding task exposes no browser recovery control. No more failed worker-side network retries are useful.

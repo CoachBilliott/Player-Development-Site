@@ -2,7 +2,8 @@
   "HARNESS-METADATA.json": "2e29eac575955d93738c1021e1e01523f8ef736ccc748439d42f3571a485bb8c",
   "SOURCE-COMPATIBILITY.json": "156250b1a9863e2af599915696765768ccfa8eac5a819a6ecf375cd64c0b31b8",
   "01-current-state-read-only.sql": "03685c050b75c8ed42242878692f7ae2c79930b01f546191895e05eca89df096",
-  "README.md": "0eeab01973145ea9b41b3d122e0f159fdba145c35781282a5461a32c554c6379",
-  "validate-local-preflight.mjs": "5413b4f2fe2ff2e45a4b5c2d8224af068e5d07dc217ac74bce018c0d9bd9091c",
-  "LOCAL-PREFLIGHT-VALIDATION.json": "d20a4b878faec1201b941a7a4d072be11680594a9427fe1313ca72050ccb4efc"
+  "README.md": "02ecb23ec10a25a336f783dffa3b090dce3d2912bb7b226df07eecfbea99b012",
+  "validate-local-preflight.mjs": "343369fa9cfc5e798e22cf57c7dce6f4bdf691e8568a51e177f0a023ff962bd3",
+  "LOCAL-PREFLIGHT-VALIDATION.json": "c374dbc85d74015215f27334cc4432623998f3e186908a0fb28d391b132ce0bf",
+  "02-proposed-standalone-athlete-fixture.sql": "d6b85b7a82bf448effbbacb47fbdc8a632e95ee79309189154d6dc093367ed1c"
 }
