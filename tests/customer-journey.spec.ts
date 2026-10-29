@@ -89,12 +89,10 @@ test("each package preselects interest without losing the adult draft, consent o
     ).not.toBeChecked();
   }
   await mkdir("artifacts/customer-journey", { recursive: true });
-  await page
-    .locator("#package-interest")
-    .screenshot({
-      path: `artifacts/customer-journey/selected-form-${info.project.name}.png`,
-      style: "header,.app-tabs{visibility:hidden !important}",
-    });
+  await page.locator("#package-interest").screenshot({
+    path: `artifacts/customer-journey/selected-form-${info.project.name}.png`,
+    style: "header,.app-tabs{visibility:hidden !important}",
+  });
   await form.getByLabel("Email me when Repformed launches").check();
   await page
     .getByRole("button", {
@@ -199,7 +197,6 @@ test("customer help is current, customer-first and links the clearly historical 
 
 test("app help actions are separate and browser entry/account offer a clean website exit", async ({
   page,
-  context,
 }) => {
   await page.goto("./?source=app#app-help");
   const first = page.getByRole("link", {
@@ -215,24 +212,33 @@ test("app help actions are separate and browser entry/account offer a clean webs
   expect(a.height).toBeGreaterThanOrEqual(44);
   expect(b.height).toBeGreaterThanOrEqual(44);
   expect(a.x + a.width + 11 <= b.x || a.y + a.height + 11 <= b.y).toBe(true);
+  const helpLink = page.getByRole("link", {
+    name: "Customer help",
+    exact: true,
+  });
+  const customerHelpUrl = new URL("./#customer-help", page.url()).href;
+  await expect(helpLink).toHaveAttribute("href", customerHelpUrl);
+  const helpPopupPromise = page.waitForEvent("popup");
+  await helpLink.click();
+  const helpPopup = await helpPopupPromise;
+  await expect(helpPopup).toHaveURL(customerHelpUrl);
+  await expect(
+    helpPopup.getByRole("heading", { level: 1, name: "Find your next step." }),
+  ).toBeVisible();
+  await helpPopup.close();
   await page.goto("./?source=app#app");
   await page.evaluate(() =>
     sessionStorage.setItem("fixture-app-draft", "preserved"),
   );
-  await context.route("https://repformed.com/**", (r) =>
-    r.fulfill({
-      contentType: "text/html",
-      body: "<title>Fictional website destination</title>",
-    }),
-  );
+  const websiteHome = new URL("./#home", page.url()).href;
   const exit = page
     .getByRole("link", { name: "Back to website", exact: true })
     .first();
-  await expect(exit).toHaveAttribute("href", "https://repformed.com/#home");
+  await expect(exit).toHaveAttribute("href", websiteHome);
   const popupPromise = page.waitForEvent("popup");
   await exit.click();
   const popup = await popupPromise;
-  await expect(popup).toHaveURL("https://repformed.com/#home");
+  await expect(popup).toHaveURL(websiteHome);
   await popup.close();
   expect(
     await page.evaluate(() => sessionStorage.getItem("fixture-app-draft")),
@@ -240,7 +246,7 @@ test("app help actions are separate and browser entry/account offer a clean webs
   await page.goto("./?source=app#account");
   await expect(
     page.getByRole("link", { name: "Back to website", exact: true }),
-  ).toHaveAttribute("href", "https://repformed.com/#home");
+  ).toHaveAttribute("href", websiteHome);
 });
 
 for (const role of ["owner", "manager", "coach", "parent", "athlete"]) {
