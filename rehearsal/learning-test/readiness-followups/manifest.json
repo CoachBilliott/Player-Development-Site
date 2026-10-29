@@ -14,6 +14,10 @@
       "sha256": "3f2b52b12c5d8ff8165eaba98cdc90301fed441da43110289eba5e8aece74e91"
     },
     {
+      "path": "POST-AUDIT-FIXES.md",
+      "sha256": "fd668f2275065fb4b7836ee836191913e5b326a214116c7ddf1212ff250181e4"
+    },
+    {
       "path": "README.md",
       "sha256": "2587fbe65421b12ea37f2508bca9a190d090b3fbcc23a7cb6c8dc892235baf64"
     },
