@@ -1,0 +1,57 @@
+{
+  "website": "https://repformed.com/",
+  "source": "a58bd829ea128e39426a8e630bc35b37999581b3",
+  "tested_head": "53f7b02905f0c10a37014efe0475aaa3fa95bf88",
+  "identical_to_tested_tree": true,
+  "deployment_id": "cccba94e-f378-47e8-9a67-392969a4b60a",
+  "immutable_url": "https://cccba94e.repformed.pages.dev",
+  "deployment_status": "success",
+  "deployment_environment": "production",
+  "deployed_at": "2026-10-29T03:10:48.886074Z",
+  "entry_script": "./assets/index-9Msd1-0O.js",
+  "production_domains": [
+    "repformed.pages.dev",
+    "repformed.com"
+  ],
+  "production_config_unchanged": true,
+  "configuration_hash_unchanged": "bce7ca9fc4b5806db2b10d51e0ef06a04c455bf36d145d331409bb94b0f1c39c",
+  "pr": "https://github.com/repformed/Player-Development-Site/pull/12",
+  "pr_ci": "https://github.com/repformed/Player-Development-Site/actions/runs/40807228178",
+  "main_ci": "https://github.com/repformed/Player-Development-Site/actions/runs/40810479138",
+  "main_ci_status": "success",
+  "main_ci_receipt": {
+    "conclusion": "success",
+    "headSha": "a58bd829ea128e39426a8e630bc35b37999581b3",
+    "status": "completed",
+    "updatedAt": "2026-10-29T03:19:46Z",
+    "url": "https://github.com/repformed/Player-Development-Site/actions/runs/40810479138"
+  },
+  "main_ci_passed": {
+    "unit_database": 375,
+    "website": 358,
+    "compiled_app_offline": 8,
+    "isolated_preview": 6,
+    "python": 11
+  },
+  "postmerge_production_artifact_checks": 14,
+  "additional_auth_navigation_fixture_checks": 24,
+  "postmerge_checks_total": 38,
+  "previous_source": "f1e9812dce0fe465d99d5115fddcce16c9796dc2",
+  "previous_deployment": "4e084cca-042b-41c5-806a-1d730239cc68",
+  "database_or_permissions_changed": false,
+  "credentials_or_runtime_settings_changed": false,
+  "weekly_learning_activated": false,
+  "scheduler_changed": false,
+  "notification_settings_changed": false,
+  "native_release_changed": false,
+  "pr13_state": {
+    "headRefOid": "9c56ec55bd7c58073468e65c60011f43935a036e",
+    "isDraft": true,
+    "state": "OPEN"
+  },
+  "final_verified_at": "2026-10-29T03:20:24.831406+00:00",
+  "public_browser_verification": "Independent public rendering/signed-in acceptance not performed by this worker; known Cloudflare1010 restriction not retried or bypassed. Fresh normal-auth artifact browser checks passed with synthetic fixtures.",
+  "entry_script_sha256": "71342ea99d1b91a951116520da52055ba6360a58bd5e0e330ea33fa21e790624",
+  "artifact_files": 67,
+  "learning_feature_flag_enabled": false
+}

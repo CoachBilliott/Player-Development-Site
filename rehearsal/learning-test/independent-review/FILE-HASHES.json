@@ -7,9 +7,17 @@
     "bytes": 8721,
     "sha256": "907562cf5e35e6bec38b4a221a29dd5a9ef2e310ff8176c0c8f4660cbf668778"
   },
+  "PRODUCTION-RELEASE.json": {
+    "bytes": 2508,
+    "sha256": "6ce7b989904ef55d9c6dff6d1bc970d9d46429b0d69ebdc64d26810a6022e1ca"
+  },
+  "PRODUCTION-RELEASE.md": {
+    "bytes": 3144,
+    "sha256": "c8a6e9c778624e3c21b55fd3c72701487b093d804bf3b30292cede34b1cea06e"
+  },
   "README.md": {
-    "bytes": 9548,
-    "sha256": "d6b1d55e160076aec6ad001a320198abc66464168e28927355dcfc7d8c796e34"
+    "bytes": 9792,
+    "sha256": "38646786d9dcbb593b218d7a931955ec97213d59e1c9e6c8f492d7197d380ed5"
   },
   "assignment-confirm-phone.png": {
     "bytes": 453981,
