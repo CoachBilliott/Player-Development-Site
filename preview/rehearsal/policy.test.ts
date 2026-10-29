@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import {
   TEST_REF,
+  TEST_ACCOUNTS,
   TEST_URL,
   publicTestKey,
   testFetch,
@@ -34,11 +35,20 @@ describe("isolated real-service harness boundaries", () => {
         /public publishable\/anon key/,
       );
   });
-  it("keeps six reserved fictional accounts and synthetic UUID text paths only", () => {
+  it("allows only the seven exact proposed fictional identities and synthetic UUID text paths", () => {
     expect(syntheticAccount("repformed-learning-parent@example.test")).toBe(
       true,
     );
-    expect(syntheticAccount("real@example.com")).toBe(false);
+    expect(TEST_ACCOUNTS).toHaveLength(7);
+    expect(syntheticAccount("repformed-learning-athlete@example.test")).toBe(
+      true,
+    );
+    for (const email of [
+      "real@example.com",
+      "repformed-learning-athlete@example.test.evil",
+      "repformed-learning-admin@example.test",
+    ])
+      expect(syntheticAccount(email)).toBe(false);
     const id = "91000000-0000-4000-8000-000000000001";
     expect(samplePath(`${id}/${id}/${id}.txt`)).toBe(true);
     expect(samplePath(`${id}/../../private.mp4`)).toBe(false);

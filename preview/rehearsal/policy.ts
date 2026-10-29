@@ -7,6 +7,8 @@ export const TEST_ACCOUNTS = [
   "other-coach",
   "parent",
   "other-parent",
+  // Prepared only; the seventh test identity still requires owner approval.
+  "athlete",
 ].map((role) => `repformed-learning-${role}@example.test`);
 export const SAMPLE_TEXT =
   "REPFORMED REHEARSAL ONLY\nOriginal synthetic adult lesson. No real athlete information.\n";

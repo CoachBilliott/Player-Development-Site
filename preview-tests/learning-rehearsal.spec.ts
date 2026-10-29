@@ -37,7 +37,11 @@ async function fixture(context: BrowserContext) {
       return route.fulfill({ status: 204, headers });
     if (url.pathname.endsWith("/token")) {
       email = request.postDataJSON().email;
-      role = email.includes("parent") ? "parent" : "owner";
+      role = email.includes("parent")
+        ? "parent"
+        : email.includes("athlete")
+          ? "athlete"
+          : "owner";
       const now = Math.floor(Date.now() / 1000);
       token = [
         Buffer.from(JSON.stringify({ alg: "HS256", typ: "JWT" })).toString(
@@ -333,4 +337,21 @@ test("original sample uses stable private upload and sign/read without exposing 
     .getByRole("button", { name: "Check private signing and bytes" })
     .click();
   await expect(page.getByRole("status")).toContainText("media allow: blocked");
+});
+
+test("proposed standalone Athlete uses the server role and never gains staff authoring controls", async ({
+  page,
+  context,
+}) => {
+  await fixture(context);
+  await page.goto("./");
+  await connect(page);
+  await login(page, "athlete");
+  await expect(
+    page.getByText("Verified session", { exact: false }),
+  ).toContainText("athlete");
+  await expect(
+    page.getByRole("button", { name: "Actual training bank", exact: true }),
+  ).toHaveCount(0);
+  await expect(page.getByLabel("Temporary test password")).toHaveCount(0);
 });
