@@ -1,6 +1,6 @@
 # Weekly learning: draft rollout review
 
-Nothing in this branch has been migrated to production. Current production remains f1e9812. The public interest form, its one shared-inbox notification, and existing account email setup are unchanged. Native build 13 is unchanged.
+Current state, October 29, 2026: production website and TestFlight **0.1.0 (15)** use **0816c343a99a76e03ad2e48c7e16207058624c02**. Cloudflare deployment is **bab6aa19-838c-424e-8aa1-d562cb7a88c2**; build15 is VALID/IN_BETA_TESTING for existing Owner Testing. PR12 has already merged/released. This weekly-learning branch is still draft and not production-enabled. Its implementation baseline90b73fb4 passed CI40916100302; the documentation alignment does not change runtime permissions or activate anything. Public intake/consent and the existing shared-inbox email remain unchanged. A successful website or simulator check does not prove physical iPhone or live-role acceptance.
 
 ## Source model and safeguards
 
@@ -47,7 +47,7 @@ No new tables, raw-table grants, role grants, email connection or scheduler acti
 4. Test manually: correct sibling, cross-household/coach denial, immutable history, protected answer keys, upload/read/withdraw, save/resume, grading, expiry/revocation, pause/resume/repeat, group atomicity, account erasure. Coaching must review actual training independently.
 5. Approve scheduler activation separately after an explicit dry-run. Use the existing supported database scheduler only if available; no service or credentials have been provisioned. Schedule frequent ticks in UTC while the function computes Chicago local boundaries. Confirm Sunday/Friday DST and dedup in hosted rehearsal before a standing job. No email backfill or mass sends.
 6. Client content/reminder notices stay in-app. Staff missing-content EMAIL dispatch remains off; connecting it to the existing operational outbox requires a reviewed bounded recipient/canary/no-backfill step. No routine weekly client emails, push, marketing sends or payments.
-7. Publish the tested website only after review. Physical iPhone/native packaging/testing/upload is separate; shared web code does not update installed build 13 automatically.
+7. Publish the tested website only after review. Physical iPhone/native packaging/testing/upload is separate; shared web code does not update installed TestFlight15 automatically. This learning branch has not been included in that released build.
 
 ## Rollback
 
@@ -59,26 +59,26 @@ The main roster now summarizes weekly enrollment/current release/readiness and r
 
 Google Sheets preparation is CSV export/upload, not live sync. No native Google Sheet was created by this task. Fictional preview media are labeled placeholders, browser-local grades are simulation, and real scoring/access logic is separately tested in PostgreSQL. No finished curriculum, qualified coaching review, billing integration or real-device acceptance is claimed.
 
-## Verified hosted discovery (read-only, October 28)
+## Historical hosted discovery (read-only, October 28)
 
-The production project `iilbulpqbuknhdpmtrvm` has **no learning schema, no installed pg_cron extension, and no cron job catalog**. Management API branch listing returned an empty list. No separate authorized hosted rehearsal target is configured in this task. This was metadata-only inspection; no extension, branch, migration or job was created.
+The production project `iilbulpqbuknhdpmtrvm` has **no learning schema, no installed pg_cron extension, and no cron job catalog**. Management API branch listing returned an empty list. At that historical checkpoint no separate rehearsal target had been authorized. This was metadata-only inspection; no extension, branch, migration or job was created. It is not the current target inventory.
 
 The exact additional approvals therefore need to be staged:
 
-1. **Rehearsal target:** identify an already-owned empty nonproduction Supabase project, or approve creating an empty rehearsal target in the Repformed organization. No production user data copied, no paid plan/resource created without a separate price decision. Stage synthetic adults and staff identities only, with no outgoing mail. Apply the production baseline (001–012,015–018) then019/020/021; test real Auth claims and Storage policies. Library interface behavior and app routes alone do not establish hosted access safety.
+1. **Existing rehearsal target:** use only approved isolated project **ojcfrfpeftvngyluomex**. Baseline and019–021 were installed there, with six approved fictional Auth accounts. Do not reapply a baseline glob or reset the project. Learning/scheduler/notices/youth were last verifiedOFF12:21UTC October29; interrupted upload left no quizzes/versions/attempts/grades/enrollments. Normal harness navigation last failed ERR_QUIC14:51UTC. Restore ordinary supported browser/sign-in access, verify installed definitions/recovery, then obtain the bounded022 installation and temporary learning-only test approval before mutation. No new privileged credentials, real customer data, outgoing mail or security/network bypass. Initial sign-ins/upload do not certify the unfinished quiz/release/grade/history cases.
 2. **Production schema/security:** approve019’s private learning records/RPC grants and erasure integration plus020’s released-media read scope and retained-original DELETE/UPDATE restriction, and021’s guarded roster/summary/group-preview RPCs and service-wrapper change. Retention currently has no automatic expiry/cleanup and can retain originals after plans end; accept or revise that policy first. Confirm a usable provider backup/restore point before applying. Keep youth and scheduler off. No new account roles, public quiz keys, video-review quotas or billing.
-3. **Adult website feature:** after rehearsal, approve the coordinated PR12→PR13 release with real authentication and `learningPlansEnabled`; enable the backend learning flag for the existing adult/private boundary. Eligibility is manual verification, not a payment event. Use a bounded existing/synthetic adult acceptance record only if separately included in the test approval; do not fabricate enrollments as real purchases.
+3. **Adult website feature:** after rehearsal and current-main integration, review the exact tested PR13 release with real authentication and `learningPlansEnabled`; enable the backend learning flag for the existing adult/private boundary. Eligibility is manual verification, not a payment event. Use a bounded existing/synthetic adult acceptance record only if separately included in the test approval; do not fabricate enrollments as real purchases.
 4. **Standing automation:** because pg_cron is absent, explicitly approve enabling Supabase Cron and creating the single named job `repformed-weekly-learning`, running `select public.learning_tick(now(),false)` every minute (`* * * * *`). The function handles Sunday00:00 and configurable Friday17:00 America/Chicago; UTC cron does not hard-code a DST offset. Enable scheduler/in-app notices only after a reviewed zero-error dry-run and staged retry/DST tests. No new sending key, email/push, historical backfill or extra recipient is part of this action. Exact physical midnight execution has normal scheduler latency; actual availability is recorded separately from the scheduled timestamp.
 
 Rollback: disable scheduler/notices and unschedule that named job, disable frontend/backend learning access, return to the known production frontend. Preserve new history tables and retained originals. Do not disable an unrelated job, drop shared extensions or remove storage retention policies as an automatic rollback. Permission-policy rollback needs an explicit reviewed script and backup plan.
 
 ## Dependency and remaining product gaps
 
-PR13 is based on `ux/staff-workflows` at2f38796 (PR12), rather than main. Intended order after approval is PR12 first, then rebase/retarget PR13 onto that main and rerun the combined checks before PR13 merge/deploy. Neither draft is currently authorized for production publication of this second workflow pass.
+PR12 is already published. Before PR13 release, integrate the current main0816c343 and reconcile any accepted PR21/023 roster work with021's learning-aware summary/read path; preserve current homepage, intake/auth and Build15 UI repairs. Rerun final combined gates on the integrated head. Conditional publication authority does not waive hosted acceptance, recovery or the exact production permission/retention/scheduler approvals. No production learning activation is recorded.
 
 The source supports groups and scoped group grades, Friday in-app reminders, ready-content notices, paged roster, athlete-context weekly actions and shared mobile-compatible screens. Remaining operational gates:
 
-- Friday time/ready-week threshold are global learning defaults; existing package/client monitoring rules do not automatically configure this new scheduler. Final per-package/client reminder policy remains a separate decision/integration.
+- Friday time/ready-week threshold are global learning defaults; existing package/client monitoring rules do not automatically configure this new scheduler. Requested package/client customization therefore remains an implementation/integration gap, not an owner decision already resolved or a capability to claim as complete. Keep source defaults explicit until that integration and its access/precedence tests pass.
 - Standing scheduler, hosted Storage/Auth rehearsal, staff missing-content email wiring, billing entitlements, final retention/expiry/refund policy, actual curriculum and physical native-device acceptance remain unfinished.
 - Source tests of153 synthetic roster rows are correctness coverage, not production scale/load evidence. Changes to a live roster between cursor pages can change sort position; refresh resets pagination. Selected group members remain explicit and capped500.
 - Public future-plan wording is truthful and the historical partner guide now prominently points to the conditional weekly-plan handbook. No public enrollment or native TestFlight update is implied.
@@ -91,7 +91,7 @@ Read-only recovery preparation also captured the current service-detail/account-
 
 ## October 29 additive package-completeness review (022, not applied)
 
-Current public production is6e37d105. The isolated hosted rehearsal project ojcfrfpeftvngyluomex exists; earlier discovery notes above are historical. Latest dashboard verification has all learning/scheduler/notices/youth flags OFF. Ordinary harness browser access remains blocked; no new migration or flag change was attempted through another route.
+Current public production is0816c343; TestFlight15 uses the same source. The isolated hosted rehearsal project ojcfrfpeftvngyluomex exists; earlier discovery notes above are historical. Latest dashboard verification has all learning/scheduler/notices/youth flags OFF. Ordinary harness browser access remains blocked; no new migration or flag change was attempted through another route.
 
 022 adds no tables, columns, role grants, RLS policies, quotas, retention rules or standing jobs. It adds internal package-requirement/readiness helpers and one authenticated guarded save RPC with lesson classification plus per-IQ quiz-version links. Existing staff authoring, Owner/Manager approval and catalog scope are preserved. Historical release access and grades are not reclassified or overwritten. Classification lives in new immutable week snapshots; older normal package weeks need a newly reviewed complete version before future release. An explicit private_test plan is labeled test content and cannot certify a real package. Orientation week0 is distinct from the weekly allocation.
 

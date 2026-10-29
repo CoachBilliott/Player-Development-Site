@@ -1,6 +1,8 @@
 # Weekly learning validation record
 
-Current status, October 29, 2026: weekly learning remains unpublished. Public production is `6e37d105044310c0881d7618143c58f99863c841` (package presentation release), not the learning preview. Production learning migrations/flags/Cron have not been activated by this task. Records below are dated source checkpoints, not current hosted acceptance. No new native release has been uploaded.
+Current status, October 29, 2026: weekly learning remains unpublished. Current website and TestFlight0.1.0(15) use **0816c343a99a76e03ad2e48c7e16207058624c02**, production Cloudflare **bab6aa19-838c-424e-8aa1-d562cb7a88c2**. Build15 is VALID/IN_BETA_TESTING in Owner Testing, but contains no activated weekly learning. No production learning schema/flag/Cron changes have been made by this branch. No physical iPhone/all-role hosted acceptance is claimed.
+
+Implementation baseline **90b73fb4d7cec835496c285a1b2d09b22e52b6cf** passed [CI40916100302](https://github.com/repformed/Player-Development-Site/actions/runs/40916100302):453 unit/database,420 website,10 app/offline,20 isolated-preview,11 Python plus lint/types/Deno/build. This documentation-only correction does not alter tested runtime code, but its new-head required CI must finish before claiming that head green. Earlier records below are dated historical evidence, not current hosted acceptance or additive test totals.
 
 ## October 29 readiness remediation
 
@@ -11,7 +13,6 @@ Migration022 addresses the audit finding that an approved quiz-only week could c
 The existing isolated test project is `ojcfrfpeftvngyluomex`; all four learning/scheduler/notices/youth flags were verified OFF by the authorized dashboard worker at12:21UTC. Interrupted quiz upload persisted zero quizzes, versions, attempts, grades or enrollments. Ordinary harness navigation most recently failed with ERR_QUIC_PROTOCOL_ERROR at14:51UTC. Earlier six-user sign-in/profile/private-upload observations do not certify current sessions or the unfinished quiz/enrollment/grading/library tests. No connection/protection/credential bypass is permitted.
 
 Production recovery evidence and exact019–022 permission/media-retention review remain release gates. Existing six fictional users require secure ordinary sign-in/recovery; a seventh standalone athlete has not been created or approved. No live role audit, physical iPhone acceptance, marketing send or payment activation is claimed.
-
 
 ## Previous complete green checkpoint
 
@@ -44,9 +45,9 @@ GitHub Actions uploads `learning-review-evidence` with original CSV templates an
 
 The walkthrough uses real UI components with a browser-local fake transport, explicit fictional adults and no real media. Its grading, timing, enrollments and role changes are simulated. The separate PostgreSQL tests exercise actual draft RPCs, role/household/coach access, immutable scoring/history, release retry/rollback, DST, reminder dedup, group atomicity and153-row paging. This is correctness evidence, not production-load testing.
 
-Read-only hosted inventory at21:35UTC found production only, zero branches, no learning schema or pg_cron, zero listed provider backups, PITR off and WAL on. A schema-function/policy metadata snapshot is saved outside the repository, but is not a customer-data backup or tested restore point. No target was provisioned or modified. Hosted real Auth/Storage/restore rehearsal remains required before permission migration; see the rollout review for exact staged approval.
+Historical October28 read-only hosted inventory at21:35UTC found production only, zero branches, no learning schema or pg_cron, zero listed provider backups, PITR off and WAL on. A schema-function/policy metadata snapshot is saved outside the repository, but is not a customer-data backup or tested restore point. No target was provisioned or modified at that historical checkpoint. The subsequently approved isolated target isojcfrfpeftvngyluomex as described above. Hosted real Auth/Storage/restore rehearsal remains required before production permission migration; see the rollout review for exact staged approval.
 
-Public browser QA from this worker is limited by the known Cloudflare1010 client restriction; no bypass or redundant requests are used. Cloudflare deployment metadata and local browser checks can verify preview provenance/isolation; independent public QA is separate. Installed iPhone build13 remains unchanged; compiled app/offline tests are not physical-device acceptance. No payment integration, finished curriculum, qualified coaching approval or public youth readiness is claimed.
+Public browser QA from this worker is limited by the known Cloudflare1010 client restriction; no bypass or redundant requests are used. Cloudflare deployment metadata and local browser checks can verify preview provenance/isolation; independent public QA is separate. TestFlight15 is the current released app; this draft learning system is not included. Compiled app/offline tests are not physical-device acceptance. No payment integration, finished curriculum, qualified coaching approval or public youth readiness is claimed.
 
 Visual review found a roster-only date formatting defect: the source instant was correct but the browser-local formatter was labeled Central. Weekly roster dates now explicitly use America/Chicago; tests pin midnight immediately before and after the November DST change. Other legacy review dates keep their existing browser-local semantics. See [ACCEPTANCE-MATRIX.md](ACCEPTANCE-MATRIX.md) for the cross-site route/role map.
 

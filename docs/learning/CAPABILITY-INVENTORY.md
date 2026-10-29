@@ -1,5 +1,7 @@
 # Verified capability inventory and staged delivery scope
 
+> Historical inventory, retained for source provenance. Current production and TestFlight15 are0816c343; PR12 is already merged/published. PR13 weekly learning remains draft. Use VALIDATION.md and ROLLOUT-REVIEW.md for current release/acceptance gates; the earlier baseline below is not a current deployment instruction.
+
 Baseline: production `f1e9812` / PR11. PR12 is unpublished. This inventory was
 verified against the content schemas, staff roster RPC, assignment RPCs, uploader
 and all existing SQL migrations. Package descriptions are proposals, not evidence
