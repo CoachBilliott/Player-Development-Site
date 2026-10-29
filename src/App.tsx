@@ -412,6 +412,17 @@ export default function App() {
       <div
         className={`${mobile ? "mobile-layout" : "website-layout"}${privatePage ? " is-private" : ""}`}
       >
+        <a
+          className="skip-to-content"
+          href="#main-content"
+          onClick={(event) => {
+            event.preventDefault();
+            mainRef.current?.focus();
+            mainRef.current?.scrollIntoView({ block: "start" });
+          }}
+        >
+          Skip to main content
+        </a>
         {mobile ? (
           <MobileHeader demo={demoPage} signedIn={shared.signedIn} />
         ) : privatePage ? (
@@ -519,7 +530,13 @@ export default function App() {
             {toast}
           </div>
         )}
-        <div ref={mainRef} className="page-transition" key={page}>
+        <div
+          id="main-content"
+          tabIndex={-1}
+          ref={mainRef}
+          className="page-transition"
+          key={page}
+        >
           <AccountInvitationGate
             shared={shared}
             enforce={

@@ -406,3 +406,35 @@
     font-size: 0.875rem;
   }
 }
+
+/* A deliberate user action pauses the decorative film without changing content. */
+.hero-motion-control {
+  margin-top: 18px;
+  padding: 10px 14px;
+  min-height: 44px;
+  border: 1px solid #e1c385;
+  border-radius: 4px;
+  background: #181818;
+  color: #faf5ea;
+  font: inherit;
+  cursor: pointer;
+}
+.hero-motion-control:focus-visible,
+.skip-to-content:focus-visible {
+  outline: 3px solid #e1c385;
+  outline-offset: 4px;
+}
+.skip-to-content {
+  position: fixed;
+  left: 16px;
+  top: 12px;
+  z-index: 10000;
+  transform: translateY(-180%);
+  padding: 12px 18px;
+  background: #181818;
+  color: #faf5ea;
+  border: 2px solid #e1c385;
+}
+.skip-to-content:focus {
+  transform: none;
+}
