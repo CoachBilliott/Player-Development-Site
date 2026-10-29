@@ -125,7 +125,7 @@ test("web-app entry/help use account language and keep TestFlight guidance out o
     page
       .locator(".app-header")
       .getByRole("link", { name: "Back to website", exact: true }),
-  ).toHaveAttribute("href", "https://repformed.com/#home");
+  ).toHaveAttribute("href", new URL("./#home", page.url()).href);
   await expect(page.getByRole("main")).not.toContainText("adult pilot");
   await page.goto("./?source=app#app-help");
   await expect(page.getByRole("main")).toContainText("REPFORMED · APP HELP");

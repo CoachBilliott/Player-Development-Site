@@ -142,5 +142,5 @@ test("app help links to the public Contact page without a separate sign-in", asy
   await page.goto("./?source=app#app-help");
   await expect(
     page.getByRole("link", { name: "Contact the team", exact: true }),
-  ).toHaveAttribute("href", "https://repformed.com/#contact");
+  ).toHaveAttribute("href", new URL("./#contact", page.url()).href);
 });

@@ -38,6 +38,18 @@ export function websiteUrl(path = "#home") {
     throw new Error("Only the Repformed website can be opened here.");
   return url.href;
 }
+export function websiteNavigationUrl(path = "#home", browserBase?: string) {
+  const canonical = new URL(websiteUrl(path));
+  if (nativeApp()) return canonical.href;
+  const base =
+    browserBase || new URL(import.meta.env.BASE_URL, window.location.href).href;
+  // Web help stays on its own deployment and drops app-mode context. Native
+  // handoffs still use the canonical website through the existing launcher.
+  return new URL(
+    canonical.pathname.replace(/^\/+/, "") + canonical.search + canonical.hash,
+    base,
+  ).href;
+}
 export async function openWebsite(path = "#home") {
   const url = websiteUrl(path);
   if (nativeApp()) {

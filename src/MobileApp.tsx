@@ -12,7 +12,12 @@ import {
   Video,
 } from "lucide-react";
 import { Logo, Notice, Tag } from "./components";
-import { mobileNavigation, nativeApp, openWebsite, websiteUrl } from "./mobile";
+import {
+  mobileNavigation,
+  nativeApp,
+  openWebsite,
+  websiteNavigationUrl,
+} from "./mobile";
 import type { SharedState } from "./useSharedContent";
 import type { PwaState } from "./pwa";
 import { SocialLinks } from "./SocialLinks";
@@ -32,7 +37,7 @@ export function WebsiteLink({
     <>
       <a
         className={className}
-        href={websiteUrl(path)}
+        href={websiteNavigationUrl(path)}
         target="_blank"
         rel="noreferrer"
         onClick={(event) => {
