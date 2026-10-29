@@ -1,0 +1,18 @@
+{
+  "COPY-RELEASE.json": {
+    "bytes": 2634,
+    "sha256": "bfbfb2e6cc4371fdf72832c6f7a3d0ad10988624c781d2457e062c325b55c449"
+  },
+  "FINDINGS.md": {
+    "bytes": 5807,
+    "sha256": "0aa87b40f891e6dd5b38f68c9ea4d5c316b7ddc8b69c084997caacdddb2a5d85"
+  },
+  "LOCAL-INVESTIGATION.json": {
+    "bytes": 682,
+    "sha256": "66ee4dad952d8c989d622704d503f57fb002942c0a25f45f710a86956a5b2faf"
+  },
+  "README.md": {
+    "bytes": 3255,
+    "sha256": "61e0832048e5834d531f58c01a222e5bd176e8ac7eaea301c967e2d5496e1a6e"
+  }
+}

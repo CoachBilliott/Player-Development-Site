@@ -1,0 +1,64 @@
+{
+  "website": "https://repformed.com/",
+  "source": "3d35ccc626ee054151a578c0bd0888f12c21f698",
+  "tested_head": "ae5b4d5545601a2519dc5b0112e33ec50659b0f9",
+  "entry_script": "./assets/index-yKoZJl6r.js",
+  "previous_source": "a58bd829ea128e39426a8e630bc35b37999581b3",
+  "previous_deployment": "cccba94e-f378-47e8-9a67-392969a4b60a",
+  "production_config_unchanged": true,
+  "copy": "Proposed drill packages would release content on Sundays",
+  "learning_activated": false,
+  "intake_or_sw_source_changed": false,
+  "deployment_id": "6ba70ade-a02b-4611-974f-e5fbe70c5a4a",
+  "immutable_url": "https://6ba70ade.repformed.pages.dev",
+  "deployment_status": "success",
+  "deployed_at": "2026-10-29T04:23:33.812839Z",
+  "pr": "https://github.com/repformed/Player-Development-Site/pull/14",
+  "pr_ci": "https://github.com/repformed/Player-Development-Site/actions/runs/40816007065",
+  "main_ci": "https://github.com/repformed/Player-Development-Site/actions/runs/40817369994",
+  "main_ci_status": "success",
+  "main_ci_receipt": {
+    "conclusion": "success",
+    "headSha": "3d35ccc626ee054151a578c0bd0888f12c21f698",
+    "status": "completed",
+    "updatedAt": "2026-10-29T04:35:07Z",
+    "url": "https://github.com/repformed/Player-Development-Site/actions/runs/40817369994"
+  },
+  "main_ci_passed": {
+    "unit_database": 375,
+    "website": 358,
+    "compiled_app_offline": 8,
+    "isolated_preview": 6,
+    "python": 11
+  },
+  "production_artifact_browser_checks": 16,
+  "final_verified_at": "2026-10-29T04:36:37.596601+00:00",
+  "production_domains": [
+    "repformed.pages.dev",
+    "repformed.com"
+  ],
+  "public_postcopy_browser_qa": "Not performed by this worker; independent earlier spectator report predates this copy.",
+  "artifact_files": 67,
+  "entry_sha256": "593c2bd159623092887af2e8e89179f6bc9623668cf02123859f9b4515f65d66",
+  "config_sha256": "bce7ca9fc4b5806db2b10d51e0ef06a04c455bf36d145d331409bb94b0f1c39c",
+  "browser_upload_approval_interacted": false,
+  "database_permission_changes": false,
+  "native_changed": false,
+  "new_form_or_email_submission": false,
+  "unreleased_learning_source": "05b2ecb06cfa325fad08972ab6ae79692c193a28",
+  "unreleased_learning_ci": {
+    "conclusion": "success",
+    "headSha": "05b2ecb06cfa325fad08972ab6ae79692c193a28",
+    "status": "completed",
+    "updatedAt": "2026-10-29T04:38:50Z",
+    "url": "https://github.com/repformed/Player-Development-Site/actions/runs/40817611141"
+  },
+  "unreleased_learning_passed": {
+    "unit_database": 428,
+    "website": 366,
+    "compiled_app_offline": 8,
+    "isolated_preview": 20,
+    "python": 11
+  },
+  "learning_pr_merged": false
+}

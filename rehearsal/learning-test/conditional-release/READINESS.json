@@ -1,13 +1,12 @@
 {
   "prepared_at": "2026-10-29T03:33:13.993266+00:00",
-  "source": "e4f025094f4696858639be71753891d052318415",
-  "previous_tested_source": "9c56ec55bd7c58073468e65c60011f43935a036e",
-  "application_tree_identical_to_previous_tested_source": true,
+  "source": "05b2ecb06cfa325fad08972ab6ae79692c193a28",
+  "previous_tested_source": "e4f025094f4696858639be71753891d052318415",
   "pull_request": 13,
   "base": "main",
-  "production_source": "a58bd829ea128e39426a8e630bc35b37999581b3",
-  "production_deployment": "cccba94e-f378-47e8-9a67-392969a4b60a",
-  "ci_run": 40812285119,
+  "production_source": "3d35ccc626ee054151a578c0bd0888f12c21f698",
+  "production_deployment": "6ba70ade-a02b-4611-974f-e5fbe70c5a4a",
+  "ci_run": 40817611141,
   "ci_state": "success",
   "migrations": [
     {
@@ -62,18 +61,16 @@
     "data_backup": false,
     "restore_rehearsed": false
   },
-  "production_changed_by_this_pass": false,
   "conditional_publication_authorization": true,
   "specific_production_permission_approvals_received": false,
   "hosted_acceptance_results_from_new_desktop_task_received": false,
-  "live_role_or_spectator_audit_executed_by_this_worker": false,
   "native_release_changed": false,
   "ci": {
     "conclusion": "success",
-    "headSha": "e4f025094f4696858639be71753891d052318415",
+    "headSha": "05b2ecb06cfa325fad08972ab6ae79692c193a28",
     "status": "completed",
-    "updatedAt": "2026-10-29T03:41:21Z",
-    "url": "https://github.com/repformed/Player-Development-Site/actions/runs/40812285119"
+    "updatedAt": "2026-10-29T04:38:50Z",
+    "url": "https://github.com/repformed/Player-Development-Site/actions/runs/40817611141"
   },
   "passed": {
     "unit_database": 428,
@@ -82,11 +79,49 @@
     "isolated_preview": 20,
     "python": 11
   },
-  "final_source_verified_at": "2026-10-29T03:41:59.236562+00:00",
+  "final_source_verified_at": "2026-10-29T04:41:52.523334+00:00",
   "anonymous_live_api_checks": {
     "public_control": 1,
     "private_permission_denials": 10,
     "row_exposure_observed": false,
     "full_authenticated_role_audit": false
+  },
+  "live_frontend_audit_executed_by_this_worker": false,
+  "live_anonymous_api_subset_executed": true,
+  "full_live_authenticated_role_audit": false,
+  "independent_live_spectator_report": {
+    "at": "2026-10-29T04:00:00Z/2026-10-29T04:02:00Z",
+    "reported_via_coordinating_parent": true,
+    "environment": "repformed.com live desktop",
+    "passed_routes": [
+      "home",
+      "membership",
+      "contact",
+      "account/login",
+      "demo",
+      "install",
+      "account-help",
+      "interest-privacy",
+      "credits"
+    ],
+    "forms_submitted": false,
+    "mobile_tested": false,
+    "privileged_roles_tested": false,
+    "social_destinations_tested": false,
+    "browser_entry_asset_independently_captured": false,
+    "observed_before_copy_only_pr14": true
+  },
+  "frontend_delta_from_previous_source": [
+    "src/Home.tsx future tense preserving Sunday midnight",
+    "tests/home-package-journey.spec.ts existing assertion"
+  ],
+  "backend_migration_sources_unchanged": true,
+  "reconciled_with_main": "3d35ccc626ee054151a578c0bd0888f12c21f698",
+  "learning_production_activation_performed": false,
+  "production_data_or_permission_changes": false,
+  "separate_copy_only_pr14_release": {
+    "source": "3d35ccc626ee054151a578c0bd0888f12c21f698",
+    "deployment": "6ba70ade-a02b-4611-974f-e5fbe70c5a4a",
+    "no_intake_or_sw_fix": true
   }
 }

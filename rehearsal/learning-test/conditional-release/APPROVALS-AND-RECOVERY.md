@@ -1,5 +1,7 @@
 # Conditional learning publication: exact remaining gates
 
+Update: a separate approved copy-only PR14 is now published at 3d35ccc / 6ba70ade. The learning candidate is reconciled with it at 05b2ecb, CI 40817611141 SUCCESS, unchanged backend/migration source. See [the latest receipt](../public-audit-followups/README.md); the initial preparation record below is historical. The specific learning security/recovery/activation gates remain unmet.
+
 October 29, 2026. PR12 is already published at production commit `a58bd829ea128e39426a8e630bc35b37999581b3`, deployment `cccba94e-f378-47e8-9a67-392969a4b60a`. Its post-merge CI 40810479138 passed. This preparation does not redeploy it.
 
 The owner conditionally authorized publication once testing and recovery readiness pass, followed by a rigorous live audit. **Ordinary PR13 website publication does not need to be requested again once its conditions and specific action approvals are satisfied.** That condition does not authorize a new production access model, credential, standing job, paid resource or account grant by itself. No production learning action is taken in this pass.

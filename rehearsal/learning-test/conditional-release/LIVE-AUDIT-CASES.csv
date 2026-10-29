@@ -1,9 +1,9 @@
 case_id,actor,scope,check,expected,current_status,severity_if_failed
-S01,Signed-out spectator,Public website,Homepage/packages/contact/five socials/privacy/navigation; desktop and phone,Honest prelaunch offer; no paid/youth enrollment; no overflow/keyboard traps,BLOCKED_WORKER_FRONTEND,High
+S01,Signed-out spectator,Public website,Homepage/packages/contact/five socials/privacy/navigation; desktop and phone,Honest prelaunch offer; no paid/youth enrollment; no overflow/keyboard traps,PASS_REPORTED_DESKTOP_PARTIAL_MOBILE_PENDING,High
 S02,Signed-out spectator,Private routes,Open copied workspace/training/staff-settings/review URLs,Login or denied UI; no staff/household payload; static HTML200 is not proof of access,BLOCKED_WORKER_FRONTEND,Critical
 S03,Anonymous API,Private tables/RPCs,Eight private tables and two staff/inbox RPC reads with published public key,Explicit server permission denial with a working public control,PASS_LIVE_API,Critical
 S04,Signed-out spectator,Private media,Known controlled private lesson/review path and signing request,No anonymous private media access; do not guess real client paths,NEEDS_CONTROLLED_PATH,Critical
-S05,Signed-out spectator,Interest flow,Read form/privacy and reuse existing approved end-to-end canary receipt,No account/email-app requirement; no fresh email/submission while owner sleeps,UI_PENDING_EXISTING_CANARY_REUSED,High
+S05,Signed-out spectator,Interest flow,Read form/privacy and reuse existing approved end-to-end canary receipt,No account/email-app requirement; no fresh email/submission while owner sleeps,PASS_REPORTED_DESKTOP_DISCLOSURES_DELIVERY_NOT_RETESTED,High
 O01,Owner,Staff workspace,Roster/athlete/detail/navigation and personal Account separation,All Repformed service clients only; useful true empty states,NEEDS_OWNER_SESSION,High
 O02,Owner,Staff administration,Inspect self/last-owner protection and canceled role change,Protected Owner retained; no real role grant or live save during read-only audit,NEEDS_OWNER_SESSION,Critical
 O03,Owner,Athlete assignment,Inspect current workout and selected-athlete replacement preview; cancel,Fixed household/athlete context and sibling independence; no real assignment mutation,NEEDS_OWNER_SESSION,High
