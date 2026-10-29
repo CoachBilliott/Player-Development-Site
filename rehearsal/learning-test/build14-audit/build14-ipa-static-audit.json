@@ -1,0 +1,31 @@
+{
+  "ipa_sha256": "4ec9d27b401259ccb71bbb20393b9375c3b5158e079a4ef0454491199a54dd7a",
+  "ipa_bytes": 16367797,
+  "uncompressed_payload_bytes": 18173418,
+  "bundle": {
+    "CFBundleIdentifier": "com.coachbilliott.playerdevelopment",
+    "CFBundleDisplayName": "Repformed",
+    "CFBundleShortVersionString": "0.1.0",
+    "CFBundleVersion": "14",
+    "MinimumOSVersion": "15.0",
+    "ITSAppUsesNonExemptEncryption": false,
+    "NSCameraUsageDescription": "Record a practice video only when you choose to submit it privately for coach review.",
+    "NSMicrophoneUsageDescription": "Include audio only when you choose to record a practice video for coach review.",
+    "NSPhotoLibraryUsageDescription": "Choose a practice video for private coach review or a training resource to upload."
+  },
+  "config_sha256": "bce7ca9fc4b5806db2b10d51e0ef06a04c455bf36d145d331409bb94b0f1c39c",
+  "config_flags": {
+    "enabled": true,
+    "url": "https://iilbulpqbuknhdpmtrvm.supabase.co",
+    "membersEnabled": true,
+    "membersSignupEnabled": false,
+    "accountLifecycleEnabled": true,
+    "serviceTrackingEnabled": true,
+    "staffRosterEnabled": true,
+    "deliveryMonitoringEnabled": true,
+    "interestIntakeEnabled": true,
+    "staffNotificationEmailsEnabled": true
+  },
+  "private_signing_files_found": [],
+  "web_files": 74
+}

@@ -1,0 +1,113 @@
+{
+  "updated_at": "2026-10-29T18:32:09.138864+00:00",
+  "build": "0.1.0 (14)",
+  "source": "4641584e801366c1d9e694b7dfb46ce290c4ed99",
+  "ipa_sha256": "4ec9d27b401259ccb71bbb20393b9375c3b5158e079a4ef0454491199a54dd7a",
+  "method": "Exact signed IPA extracted web assets; Linux Chromium154 app-mode; mocked authorized adult fixtures; no production network or real records/sends; not live role or physical iPhone acceptance.",
+  "native_simulator": {
+    "tests": 6,
+    "passed": 6,
+    "device": "iPhone17Pro iOS26.2 x86_64",
+    "run": 40921599570
+  },
+  "role_audit": {
+    "cases": 15,
+    "passed": 15,
+    "roles": [
+      "signed_out",
+      "owner",
+      "manager",
+      "coach",
+      "unassigned_coach",
+      "guardian",
+      "athlete"
+    ]
+  },
+  "narrow_audit": {
+    "cases": 7,
+    "passed": 7,
+    "width": 320
+  },
+  "regression": {
+    "unique_cases": 64,
+    "initial_passed": 63,
+    "initial_failed": 1,
+    "cause": "Audit configuration omitted phone project name, selecting desktop-nav assertion at phone width.",
+    "corrected_case_passed": 1,
+    "source_assertions_changed": false,
+    "full_rerun_after_config_correction": false
+  },
+  "wcag_subset": {
+    "widths": [
+      390,
+      320
+    ],
+    "route_samples_per_width": 26,
+    "violations": 0,
+    "horizontal_overflow": false,
+    "certification": false
+  },
+  "timing_environment": "Cold contexts on loopback with concurrent regression workload. These are coarse local UI timings, not native startup/FPS/memory/network benchmarks.",
+  "ui_ready_medians_ms": {
+    "signed_out": 724.8,
+    "owner": 1435.5,
+    "manager": 1059.7,
+    "coach": 777.5,
+    "unassigned_coach": 931.6,
+    "guardian": 1274.1,
+    "athlete": 921.3
+  },
+  "scale_probe": {
+    "method": "1000 fictional adult roster rows, browser loopback; not hosted database/native-device performance",
+    "load_to_last_row_visible_ms": 2505,
+    "filter_ms": 468,
+    "initial_button_count": 1005,
+    "dom_elements_after_filter": 157
+  },
+  "remaining_unverified": [
+    "Physical install/update, native cold launch/RAM/FPS/battery, real camera/library/network playback/offline recovery",
+    "Actual hosted multi-role Auth/RLS/Storage and assignment revocation",
+    "Older supported iOS15\u201325 and Dynamic Type/VoiceOver",
+    "PR13 weekly learning/quiz/grading/library/scheduler acceptance and production recovery/security gates"
+  ],
+  "findings": [
+    {
+      "id": "N14-01",
+      "priority": "P2",
+      "title": "Login help and account tag have no visual gap",
+      "evidence": "Actual native simulator screenshot and exact-IPA app-mode reproduction."
+    },
+    {
+      "id": "N14-02",
+      "priority": "P2",
+      "title": "Entire staff roster rendered without pagination",
+      "evidence": "1000 fictional athletes ->1005 buttons; current server/query returns full scope. Native and hosted load not measured."
+    },
+    {
+      "id": "N14-03",
+      "priority": "P2",
+      "title": "Overdue review panel emphasizes Assign training before review action",
+      "evidence": "Owner detail screenshot and StaffServiceDashboard.tsx action ordering."
+    },
+    {
+      "id": "N14-04",
+      "priority": "P2",
+      "title": "Review help still routes owner setup through Account",
+      "evidence": "VideoReview.tsx owner enablement copy says Account while personal and staff settings have been separated."
+    },
+    {
+      "id": "N14-G1",
+      "priority": "P1 launch gate",
+      "title": "Weekly package fulfillment remains unreleased and unaccepted",
+      "evidence": "PR13 unmerged/off; build14 has existing pilot training/review only. Not a regression or claim that source implementation is absent."
+    },
+    {
+      "id": "N14-G2",
+      "priority": "P1 launch gate",
+      "title": "Live role privacy and physical device acceptance not complete",
+      "evidence": "No authorized representative live sessions/devices available in this task; fixtures/simulator cannot close it."
+    }
+  ],
+  "production_mutations_during_audit": false,
+  "release_changes_during_audit": false
+}

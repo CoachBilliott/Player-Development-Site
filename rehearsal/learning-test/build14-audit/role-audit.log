@@ -1,0 +1,22 @@
+
+Running 15 tests using 1 worker
+
+(node:87846) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 ../.player-development-setup/build14-audit-tests/roles.spec.ts:26:26 › signed_out: exact IPA assets, fictional role tasks and three cold local samples (4.3s)
+  ✓   2 ../.player-development-setup/build14-audit-tests/roles.spec.ts:26:26 › owner: exact IPA assets, fictional role tasks and three cold local samples (7.1s)
+  ✓   3 ../.player-development-setup/build14-audit-tests/roles.spec.ts:26:26 › manager: exact IPA assets, fictional role tasks and three cold local samples (7.4s)
+  ✓   4 ../.player-development-setup/build14-audit-tests/roles.spec.ts:26:26 › coach: exact IPA assets, fictional role tasks and three cold local samples (4.2s)
+  ✓   5 ../.player-development-setup/build14-audit-tests/roles.spec.ts:26:26 › unassigned_coach: exact IPA assets, fictional role tasks and three cold local samples (4.2s)
+  ✓   6 ../.player-development-setup/build14-audit-tests/roles.spec.ts:26:26 › guardian: exact IPA assets, fictional role tasks and three cold local samples (4.9s)
+  ✓   7 ../.player-development-setup/build14-audit-tests/roles.spec.ts:26:26 › athlete: exact IPA assets, fictional role tasks and three cold local samples (4.4s)
+  ✓   8 ../.player-development-setup/build14-audit-tests/roles.spec.ts:65:1 › Owner 1000-athlete local scaling probe: render/search cost and no real backend (3.4s)
+  ✓   9 ../.player-development-setup/build14-audit-tests/roles.spec.ts:68:27 › signed_out: phone appearance and accessible role navigation (4.1s)
+  ✓  10 ../.player-development-setup/build14-audit-tests/roles.spec.ts:68:27 › owner: phone appearance and accessible role navigation (6.9s)
+  ✓  11 ../.player-development-setup/build14-audit-tests/roles.spec.ts:68:27 › manager: phone appearance and accessible role navigation (7.3s)
+  ✓  12 ../.player-development-setup/build14-audit-tests/roles.spec.ts:68:27 › coach: phone appearance and accessible role navigation (5.4s)
+  ✓  13 ../.player-development-setup/build14-audit-tests/roles.spec.ts:68:27 › unassigned_coach: phone appearance and accessible role navigation (4.4s)
+  ✓  14 ../.player-development-setup/build14-audit-tests/roles.spec.ts:68:27 › guardian: phone appearance and accessible role navigation (4.6s)
+  ✓  15 ../.player-development-setup/build14-audit-tests/roles.spec.ts:68:27 › athlete: phone appearance and accessible role navigation (5.0s)
+
+  15 passed (1.3m)

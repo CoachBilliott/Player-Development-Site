@@ -1,0 +1,106 @@
+{
+  "updated_at": "2026-10-29T18:32:09.138503+00:00",
+  "authorization": "Owner requested ready features released to existing TestFlight and audited; no public App Store/new testers/new credentials/PR13 activation",
+  "candidate": {
+    "version": "0.1.0",
+    "build": 14,
+    "source": "4641584e801366c1d9e694b7dfb46ce290c4ed99",
+    "ready_app_content_identical_to_web_source": "c8713b59434172b3c89f8bd637499ae0545fdb07",
+    "workflow_only_pr": "https://github.com/repformed/Player-Development-Site/pull/19",
+    "app_id": "6826677846",
+    "bundle_id": "com.coachbilliott.playerdevelopment",
+    "team_id": "4T6V3S3CZL",
+    "on_device_name": "Repformed",
+    "apple_record_name": "Player Development Test",
+    "config_sha256": "bce7ca9fc4b5806db2b10d51e0ef06a04c455bf36d145d331409bb94b0f1c39c",
+    "backend_url": "https://iilbulpqbuknhdpmtrvm.supabase.co",
+    "public_signup": false,
+    "weekly_learning": false
+  },
+  "apple_preflight": {
+    "checkedAt": "2026-10-29T17:12:51.335Z",
+    "appId": "6826677846",
+    "bundleId": "com.coachbilliott.playerdevelopment",
+    "appName": "Player Development Test",
+    "requestedBuildNumber": "14",
+    "builds": [],
+    "betaGroups": [
+      {
+        "id": "aba46520-648d-4978-8fe5-f55f8bac676c",
+        "name": "Owner Testing",
+        "isInternalGroup": true,
+        "hasAccessToAllBuilds": true,
+        "buildNumbers": [
+          "13",
+          "12",
+          "11",
+          "10",
+          "9",
+          "8",
+          "7",
+          "6",
+          "5",
+          "4",
+          "3"
+        ],
+        "publicLinkEnabled": null,
+        "publicLink": null
+      }
+    ],
+    "reviewDetails": {
+      "hasContactFirstName": false,
+      "hasContactLastName": false,
+      "hasContactPhone": false,
+      "hasContactEmail": false,
+      "hasReviewNotes": false,
+      "demoAccountRequired": null,
+      "hasDemoAccountName": false
+    }
+  },
+  "required_exact_main_runs": {
+    "source_ci": "https://github.com/repformed/Player-Development-Site/actions/runs/40921595990",
+    "unsigned_native": "https://github.com/repformed/Player-Development-Site/actions/runs/40921599570",
+    "status": "Both success; source40921595990 and unsigned-native40921599570."
+  },
+  "prior_native_attempts": [
+    {
+      "run": 40908989034,
+      "outcome": "No macOS arm64 runner acquired; no steps"
+    },
+    {
+      "run": 40913930615,
+      "outcome": "No macOS arm64 runner acquired; no steps"
+    },
+    {
+      "run": 40918012843,
+      "source": "727d7e16e917fae14e5c10c301997629680f39af",
+      "outcome": "Intel runner acquired and Xcode verified; SwiftPM failed to resolve github.com for public dependencies before app compilation/tests/archive"
+    }
+  ],
+  "credentials": "Existing fixed GitHub workflow bindings only; direct secret-name metadata read403, no retry/extraction/configuration; Apple read-only workflow succeeded",
+  "upload": {
+    "success": true,
+    "run": "https://github.com/repformed/Player-Development-Site/actions/runs/40925648089",
+    "completed_at": "2026-10-29T18:00:39Z",
+    "apple_build_id": "4eedb1fd-eeeb-4d0e-884b-01d9a7410852"
+  },
+  "processing": {
+    "state": "VALID",
+    "internalBuildState": "IN_BETA_TESTING",
+    "verified_at": "2026-10-29T18:07:20.343Z",
+    "run": "https://github.com/repformed/Player-Development-Site/actions/runs/40927771051",
+    "group": "Owner Testing",
+    "external_beta_or_public_release": false
+  },
+  "tester_changes": false,
+  "app_store_submission": false,
+  "production_website": "Unchanged c8713b5/afe8e4ab deployment",
+  "native_installed_build": "Physical device installation not independently verified; TestFlight14 available.",
+  "audit_limits": [
+    "No physical iPhone install/update/sign-in/camera/private upload/playback acceptance yet",
+    "No live multi-role or real family account changes",
+    "Simulator/unsigned and signed IPA static audit must be distinguished from TestFlight device testing",
+    "No PR13 functionality, scheduler, billing or new junior access activated"
+  ],
+  "audit_report": "build14-role-audit/AUDIT.md"
+}

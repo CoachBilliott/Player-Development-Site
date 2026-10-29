@@ -1,0 +1,33 @@
+{
+  "method": "Automated WCAG subset and 390px app-mode navigation on exact IPA assets with fictional fixtures; not a full accessibility certification or native device audit",
+  "records": [
+    {
+      "destination": "Athletes",
+      "heading": "Athletes.",
+      "horizontal_overflow": false,
+      "violations": [],
+      "incomplete_checks": 2
+    },
+    {
+      "destination": "Training",
+      "heading": "Your training bank.",
+      "horizontal_overflow": false,
+      "violations": [],
+      "incomplete_checks": 1
+    },
+    {
+      "destination": "Staff",
+      "heading": "Your staff settings.",
+      "horizontal_overflow": false,
+      "violations": [],
+      "incomplete_checks": 1
+    },
+    {
+      "destination": "Account",
+      "heading": "Account settings.",
+      "horizontal_overflow": false,
+      "violations": [],
+      "incomplete_checks": 1
+    }
+  ]
+}

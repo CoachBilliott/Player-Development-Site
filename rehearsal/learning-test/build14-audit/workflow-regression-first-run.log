@@ -1,0 +1,102 @@
+
+Running 64 tests using 2 workers
+
+(node:84934) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:84935) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   2 tests/accounts.spec.ts:526:1 › unconfigured public member entry is honest and collects no profile data (3.9s)
+  ✓   1 tests/account-lifecycle.spec.ts:186:1 › Owner reviews an invitation, canceling is harmless, repeated confirmation sends one request (4.8s)
+  ✓   4 tests/account-lifecycle.spec.ts:237:1 › email service failure does not pretend delivery succeeded (2.6s)
+  ✓   5 tests/account-lifecycle.spec.ts:262:1 › an invited Coach accepts exactly the invited access without choosing Parent or Athlete (1.8s)
+  ✓   6 tests/account-lifecycle.spec.ts:291:1 › cancelled invitations cannot fall through to profile setup (1.1s)
+  ✓   7 tests/account-lifecycle.spec.ts:305:1 › customer deletion requires confirmation and password, with no action on cancel or incorrect password (2.0s)
+  ✓   8 tests/account-lifecycle.spec.ts:341:1 › confirmed deletion clears private UI and produces one request on repeated clicks (1.4s)
+  ✓   3 tests/accounts.spec.ts:544:1 › parent profiles support private create, edit, cancel, repeated clicks, refresh, cross-device access and deletion (11.0s)
+  ✓   9 tests/account-lifecycle.spec.ts:370:1 › a failed cleanup keeps a retryable deletion request and does not display success (1.9s)
+  ✓  11 tests/account-lifecycle.spec.ts:408:1 › Owner closure creates a review request and never calls automatic deletion (1.9s)
+  ✓  10 tests/accounts.spec.ts:636:1 › signup verifies email, recovery updates a password and adult accounts cannot add minors (6.0s)
+  ✓  12 tests/account-lifecycle.spec.ts:432:1 › invitation and account controls fit phones and pass WCAG checks (3.4s)
+  ✓  14 tests/adult-household-journey.spec.ts:6:1 › approved adult household completes assigned practice, receives private coach feedback and retains progress (5.5s)
+  ✓  13 tests/accounts.spec.ts:684:1 › failed saves preserve drafts; signout and switching accounts expose no previous profiles; member deletion is explicit (7.4s)
+  ✓  15 tests/athlete-assignment.spec.ts:47:1 › Owner assigns inside the athlete record without choosing another customer; cancel/repeated clicks preserve the sibling (14.0s)
+  ✓  17 tests/athlete-assignment.spec.ts:134:1 › missing fixed athlete never falls back to account-wide assignment (1.5s)
+  ✓  18 tests/athlete-assignment.spec.ts:156:1 › roster filters by existing age, position and coach without introducing group membership (1.4s)
+  ✓  16 tests/accounts.spec.ts:734:1 › member forms and private dashboard fit small phones and pass automated accessibility checks (16.4s)
+  ✓  19 tests/private-workspace.spec.ts:8:1 › one login surface supports recovery, verification and password visibility without a second coach form (3.2s)
+  ✓  21 tests/private-workspace.spec.ts:70:3 › owner workspace navigation keeps daily tools and personal settings distinct (1.4s)
+  ✓  20 tests/accounts.spec.ts:792:1 › expired email callbacks recover safely and the closed under-18 gate is reflected in the editor (4.0s)
+  ✓  22 tests/private-workspace.spec.ts:70:3 › manager workspace navigation keeps daily tools and personal settings distinct (1.4s)
+  ✓  24 tests/private-workspace.spec.ts:70:3 › coach workspace navigation keeps daily tools and personal settings distinct (1.2s)
+  ✓  23 tests/accounts.spec.ts:825:1 › private pilot accepts a verified email session, removes URL credentials and sets a password without opening signup (3.4s)
+  ✓  25 tests/private-workspace.spec.ts:129:1 › Owner access directory is absent in settings and protected self access stays disabled (2.5s)
+  ✓  27 tests/private-workspace.spec.ts:175:1 › Owner directory separates loading, failed reads and retry from an empty result (1.0s)
+  ✓  28 tests/private-workspace.spec.ts:225:1 › parent training, family profiles and credentials have separate screens with canceled edits (2.1s)
+  ✓  26 tests/accounts.spec.ts:864:1 › Owner manages five levels with protected self access, confirmation, cancellation, failure and refresh persistence (6.9s)
+  ✓  30 tests/accounts.spec.ts:941:3 › manager sees the correct level without Owner access controls (1.5s)
+  ✓  31 tests/accounts.spec.ts:941:3 › coach sees the correct level without Owner access controls (1.6s)
+  ✘  29 tests/private-workspace.spec.ts:282:1 › public homepage retains its existing header, hero and footer (6.8s)
+  ✓  32 tests/accounts.spec.ts:941:3 › parent sees the correct level without Owner access controls (2.2s)
+(node:88358) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  33 tests/accounts.spec.ts:941:3 › athlete sees the correct level without Owner access controls (3.1s)
+  ✓  34 tests/staff-service.spec.ts:12:1 › Owner landing shows all clients, overdue service and private athlete drilldown with honest telemetry (10.4s)
+  ✓  36 tests/staff-service.spec.ts:93:1 › Manager can change service coaches; Coach sees assigned athlete and direct sibling URL is denied (5.0s)
+  ✓  37 tests/staff-workflows.spec.ts:26:1 › legacy workout links retain guarded assignment, cancellation and replacement confirmation (3.2s)
+  ✓  35 tests/accounts.spec.ts:961:1 › a private family athlete joins with a parent code, reports practice without adult setup, and remains under parent review and revocation (17.8s)
+  ✓  38 tests/staff-workflows.spec.ts:92:3 › manager sees three clear jobs without gaining owner assignment or role administration (1.7s)
+  ✓  39 tests/accounts.spec.ts:1109:3 › owner receives the matching authenticated workspace and old preview links do not elevate permissions (2.0s)
+  ✓  40 tests/staff-workflows.spec.ts:92:3 › coach sees three clear jobs without gaining owner assignment or role administration (1.7s)
+  ✓  41 tests/accounts.spec.ts:1109:3 › manager receives the matching authenticated workspace and old preview links do not elevate permissions (2.0s)
+  ✓  43 tests/accounts.spec.ts:1109:3 › coach receives the matching authenticated workspace and old preview links do not elevate permissions (1.5s)
+  ✓  42 tests/staff-workflows.spec.ts:127:1 › Owner staff administration expands one account and a canceled change leaves permissions intact (5.3s)
+  ✓  44 tests/accounts.spec.ts:1152:1 › Parent and adult Athlete workspaces use private profiles; inactive memberships never unlock protected training (3.0s)
+  ✓  45 tests/staff-workflows.spec.ts:162:1 › athlete service keeps assignment context and uncommon settings out of the daily roster (4.4s)
+  ✓  47 tests/staff-workflows.spec.ts:204:3 › parent cannot open staff training, assignments or people through copied URLs (874ms)
+  ✓  48 tests/staff-workflows.spec.ts:204:3 › athlete cannot open staff training, assignments or people through copied URLs (1.1s)
+  ✓  49 tests/video-review.spec.ts:14:1 › real drill viewer shows media and all steps together and records one completion (1.6s)
+  ✓  50 tests/video-review.spec.ts:36:1 › recording can be canceled and unsupported files never upload (1.4s)
+  ✓  46 tests/accounts.spec.ts:1295:1 › member app separates Today, Workouts, Progress and Account and keeps family selection and reviews private (9.6s)
+  ✓  51 tests/video-review.spec.ts:69:1 › video preview, repeated send clicks and refresh preserve exactly one private submission (3.9s)
+  ✓  53 tests/video-review.spec.ts:111:1 › failed upload retries the same submission and deletion requires confirmation (2.4s)
+  ✓  54 tests/video-review.spec.ts:141:1 › assigned coach can open a private clip and save feedback once (1.7s)
+  ✓  52 tests/accounts.spec.ts:1461:1 › solo app training reports survive navigation and refresh while failed reads and signout expose no previous profile (8.5s)
+  ✓  55 tests/video-review.spec.ts:176:1 › Owner can separately assign workouts and optional review access without charging (1.5s)
+  ✓  57 tests/video-review.spec.ts:204:1 › multi-drill practice shows the order and next activity, allows review, and never treats playback or canceled practice as completion (4.1s)
+  ✓  56 tests/accounts.spec.ts:1554:1 › a connected junior app sees one athlete and respects parent recording permission (4.7s)
+  ✓  58 tests/accounts.spec.ts:1615:1 › staff app navigation stays on authorized content tools rather than member or public marketing screens (2.1s)
+  ✓  59 tests/accounts.spec.ts:1648:3 › owner account opens staff tools without household setup, including delayed access checks and app refresh (4.7s)
+  ✓  60 tests/accounts.spec.ts:1648:3 › manager account opens staff tools without household setup, including delayed access checks and app refresh (3.2s)
+  ✓  61 tests/accounts.spec.ts:1648:3 › coach account opens staff tools without household setup, including delayed access checks and app refresh (3.5s)
+  ✓  62 tests/accounts.spec.ts:1750:1 › Owner password setup finishes on the staff account without creating a Parent or Athlete account (2.0s)
+  ✓  63 tests/accounts.spec.ts:1788:1 › failed role checks never fall back to customer setup and can be retried (2.1s)
+  ✓  64 tests/accounts.spec.ts:1823:1 › new passwords accept eight characters with all required groups and reject missing groups before sending (2.8s)
+
+
+  1) tests/private-workspace.spec.ts:282:1 › public homepage retains its existing header, hero and footer 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('navigation', { name: 'Main navigation' })
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('navigation', { name: 'Main navigation' }) with timeout 5000ms
+      - waiting for getByRole('navigation', { name: 'Main navigation' })
+
+
+      299 |     await expect(
+      300 |       page.getByRole("navigation", { name: "Main navigation" }),
+    > 301 |     ).toBeVisible();
+          |       ^
+      302 | });
+      303 |
+        at /workspace/repformed-staff-simplification-review/tests/private-workspace.spec.ts:301:7
+
+    Error Context: ../.player-development-setup/build14-regression-results/private-workspace-public-h-50c54-ting-header-hero-and-footer/error-context.md
+
+  1 failed
+    tests/private-workspace.spec.ts:282:1 › public homepage retains its existing header, hero and footer 
+  63 passed (2.3m)

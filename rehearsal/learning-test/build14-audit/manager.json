@@ -1,0 +1,74 @@
+{
+  "role": "manager",
+  "build": 14,
+  "method": "Exact signed IPA web assets in local Chromium app-mode; fake backend and adults only; not physical iOS/live service acceptance",
+  "browser": "154.0.8037.57",
+  "viewport": "390×844",
+  "network": "loopback; service workers blocked; reduced motion; external requests denied; no real emails/accounts",
+  "samples": [
+    {
+      "ready_heading": "Athletes.",
+      "ready_ui_ms": 1059.7,
+      "dom_content_loaded_ms": 531.7999999970198,
+      "load_ms": 532.1999999992549,
+      "first_contentful_paint_ms": 760,
+      "dom_elements": 206,
+      "scroll_width": 390,
+      "viewport_width": 390
+    },
+    {
+      "ready_heading": "Athletes.",
+      "ready_ui_ms": 1739.4,
+      "dom_content_loaded_ms": 668.6000000014901,
+      "load_ms": 671.1000000014901,
+      "first_contentful_paint_ms": 1068,
+      "dom_elements": 206,
+      "scroll_width": 390,
+      "viewport_width": 390
+    },
+    {
+      "ready_heading": "Athletes.",
+      "ready_ui_ms": 607.2,
+      "dom_content_loaded_ms": 177.5,
+      "load_ms": 177.89999999850988,
+      "first_contentful_paint_ms": 280,
+      "dom_elements": 206,
+      "scroll_width": 390,
+      "viewport_width": 390
+    }
+  ],
+  "median_ready_ui_ms": 1059.7,
+  "journey": [
+    {
+      "task": "Default app navigation",
+      "links": [
+        "Athletes",
+        "Training",
+        "Staff",
+        "Account"
+      ]
+    },
+    {
+      "task": "Open assigned/authorized athlete detail",
+      "clicks": 1,
+      "focus": {
+        "tag": "BUTTON",
+        "text": "",
+        "inside": true
+      },
+      "actions": [
+        "",
+        "Back to athletes"
+      ]
+    },
+    {
+      "task": "Open account from role workspace",
+      "clicks": 3,
+      "heading": "Account settings."
+    },
+    {
+      "task": "Direct Owner administration URL",
+      "result": "denied in fixture"
+    }
+  ]
+}
