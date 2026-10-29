@@ -1,0 +1,29 @@
+{
+  "status": "PR17 source tested locally; aggregate CI running; no production release yet",
+  "tested_head": "c4988cdee88e85e4b3771aa49b1d06e48af715ae",
+  "branch": "fix/package-comparison-essentials",
+  "pr": "https://github.com/repformed/Player-Development-Site/pull/17",
+  "pr_ci": "https://github.com/repformed/Player-Development-Site/actions/runs/40900017880",
+  "pr_ci_status": "in_progress",
+  "local_passed": {
+    "unit_database": 378,
+    "focused_website": 50,
+    "disconnected_preview_smoke": 8,
+    "lint": true,
+    "types": true,
+    "build": true
+  },
+  "counts_overlap_aggregate": true,
+  "production_source_before": "7c60c4ba16b1e9a0d6a18a60268ab5fe7897fbba",
+  "previous_deployment": "dbfdf64f-c868-47eb-95cd-71d94e045625",
+  "previous_artifact_directory": "/workspace/.player-development-setup/release-customer-journey-7c60c4b",
+  "previous_artifact_verified_files": 72,
+  "config_sha256": "bce7ca9fc4b5806db2b10d51e0ef06a04c455bf36d145d331409bb94b0f1c39c",
+  "backend_security_credential_changes": false,
+  "real_submissions": 0,
+  "real_emails": 0,
+  "native_build_unchanged": 13,
+  "official_position_workload": "2 IQ videos + 2 quizzes + 2 movement sessions + 2 ADDITIONAL position drills each week",
+  "price_wording": "Plain USD per athlete, correct annual savings; no pilot/cost disclaimer; enrollment/payments/reservations closed; features planned",
+  "updated_at": "2026-10-29T15:20:19.430182+00:00"
+}
