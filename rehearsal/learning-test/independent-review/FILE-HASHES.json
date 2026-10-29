@@ -1,0 +1,26 @@
+{
+  "CHECKS.json": {
+    "bytes": 2445,
+    "sha256": "bd04f1d4db8856a1faca3294f6868915c2504763e8d7cb491ebb997e948bfdc6"
+  },
+  "DEPLOYMENT-CHECKLIST.md": {
+    "bytes": 8721,
+    "sha256": "907562cf5e35e6bec38b4a221a29dd5a9ef2e310ff8176c0c8f4660cbf668778"
+  },
+  "README.md": {
+    "bytes": 9548,
+    "sha256": "d6b1d55e160076aec6ad001a320198abc66464168e28927355dcfc7d8c796e34"
+  },
+  "assignment-confirm-phone.png": {
+    "bytes": 453981,
+    "sha256": "c02ed5b7b6d4bf21a2226fcfe2a47075376e35b569a8559ea9a2e4cda5b77f4c"
+  },
+  "phone-qa-before-fix.json": {
+    "bytes": 1311,
+    "sha256": "45f0eb19056da427ff8a6a33bc4035a524f932d58596e8232c96291d430ec01b"
+  },
+  "training-375.png": {
+    "bytes": 69747,
+    "sha256": "75b51751b21437a6e49151fdb2a0495ceda689b92db78765839ce05466fe6fe3"
+  }
+}

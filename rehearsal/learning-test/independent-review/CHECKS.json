@@ -1,0 +1,75 @@
+{
+  "verified_at": "2026-10-29T02:49:52.203200+00:00",
+  "releases": [
+    {
+      "pull_request": 12,
+      "source": "53f7b02905f0c10a37014efe0475aaa3fa95bf88",
+      "pull_request_state": {
+        "baseRefName": "main",
+        "headRefOid": "53f7b02905f0c10a37014efe0475aaa3fa95bf88",
+        "isDraft": true,
+        "mergeable": "MERGEABLE",
+        "state": "OPEN"
+      },
+      "ci": {
+        "conclusion": "success",
+        "createdAt": "2026-10-29T02:35:11Z",
+        "headSha": "53f7b02905f0c10a37014efe0475aaa3fa95bf88",
+        "status": "completed",
+        "updatedAt": "2026-10-29T02:47:57Z",
+        "url": "https://github.com/repformed/Player-Development-Site/actions/runs/40807228178"
+      },
+      "passed": {
+        "unit_database": 375,
+        "website": 358,
+        "compiled_app_offline": 8,
+        "isolated_preview": 6,
+        "python": 11
+      },
+      "ci_log_sha256": "4acba6d1185acb717cd9cfcc3b8784e8d945f5ded50cea769f97b9d1cd4cbfec"
+    },
+    {
+      "pull_request": 13,
+      "source": "9c56ec55bd7c58073468e65c60011f43935a036e",
+      "pull_request_state": {
+        "baseRefName": "ux/staff-workflows",
+        "headRefOid": "9c56ec55bd7c58073468e65c60011f43935a036e",
+        "isDraft": true,
+        "mergeable": "MERGEABLE",
+        "state": "OPEN"
+      },
+      "ci": {
+        "conclusion": "success",
+        "createdAt": "2026-10-29T02:36:22Z",
+        "headSha": "9c56ec55bd7c58073468e65c60011f43935a036e",
+        "status": "completed",
+        "updatedAt": "2026-10-29T02:48:02Z",
+        "url": "https://github.com/repformed/Player-Development-Site/actions/runs/40807346159"
+      },
+      "passed": {
+        "unit_database": 428,
+        "website": 366,
+        "compiled_app_offline": 8,
+        "isolated_preview": 20,
+        "python": 11
+      },
+      "ci_log_sha256": "d6fdb28daf8e52695a6f06bfad9580f7e3354c79d21c3eee80b1cbeae7c13f52"
+    }
+  ],
+  "production_unchanged": {
+    "source": "f1e9812dce0fe465d99d5115fddcce16c9796dc2",
+    "cloudflare_deployment": "4e084cca-042b-41c5-806a-1d730239cc68",
+    "project": "repformed",
+    "branch": "main"
+  },
+  "local_followup": {
+    "learning_schedule_policy_presentation": 41,
+    "all_learning_branch_unit_database": 428,
+    "pr12_affected_assignment_after_fix": 6,
+    "pr12_isolated_preview_after_fix": 6
+  },
+  "hosted_mutations": false,
+  "password_resets": false,
+  "credential_changes": false,
+  "native_release": false
+}
