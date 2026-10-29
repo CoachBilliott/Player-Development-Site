@@ -36,7 +36,7 @@ test("home connects the four shared package stages to learning, practice and par
     "Written feedback · up to three minutes of footage per review",
   );
   await expect(page.locator(".practice-intro")).toContainText(
-    "Proposed weekly plans start Sunday at midnight, Central time",
+    "Proposed weekly plans would start Sunday at midnight, Central time",
   );
   await expect(page.locator(".athlete-paths")).toContainText(
     "parent-managed approach connects lessons, practice history and athlete permissions",

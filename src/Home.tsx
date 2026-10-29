@@ -205,8 +205,8 @@ export function Home() {
             <h2>A week with a clear next step.</h2>
             <p>
               Understand the lesson. Follow the practice steps. Reflect on the
-              work. Proposed weekly plans start Sunday at midnight, Central
-              time, with a clear starting point.
+              work. Proposed weekly plans would start Sunday at midnight,
+              Central time, with a clear starting point.
             </p>
             <a className="text-button" href="#membership">
               Find the right package <ArrowUpRight size={19} />
