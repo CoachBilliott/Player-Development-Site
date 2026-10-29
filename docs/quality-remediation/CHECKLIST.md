@@ -45,3 +45,7 @@ Screenshots are generated under ignored `artifacts/customer-journey/`. They repr
 ## Release gates
 
 Exact final-head lint/types/Deno/unit/Python/build/website/PWA/preview CI; representative layout review; fresh normal-auth production artifact; unchanged configuration; retained verified rollback artifact; approved existing Cloudflare workflow; canonical deployment/source verification. Then fresh live public navigation/copy review. Never promote a disconnected review build as production or reuse earlier green results after changes.
+
+## Aggregate CI correction
+
+PR CI 40882073463 on `91fdec2` completed with 388 website cases passed and eight failed assertions: two expected the removed repeated PACKAGE PLAN badges, and six expected the old phone-header login location. The replacement assertions verify four proposed articles/current availability, phone-menu member access, preserved Dashboard restoration and sign-out removal across all five role fixtures. The no-checkout, no-stale-Dashboard and role-landing assertions remain. The two membership safety cases and all 14 site-chrome cases passed their corrected targeted runs. Product code is unchanged by this test correction. A new full exact-head run is required.
