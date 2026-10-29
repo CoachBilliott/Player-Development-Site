@@ -43,11 +43,11 @@ export function CustomerHelp() {
           open. Existing invited accounts use their approved access.
         </p>
         <p>
-          The four proposed packages describe plans under review. Prices are in
-          USD per athlete. One guardian account can manage multiple athletes;
-          each subscribed Elite athlete would have their own two monthly
-          reviews. No payments or reservations are taken, and no launch date is
-          promised.
+          The four planned packages offer levels of football learning and
+          coaching support. Prices are in USD per athlete. One guardian account
+          can manage multiple athletes; each subscribed Elite athlete would have
+          their own two monthly drill corrections. No payments or reservations
+          are taken, and no launch date is promised.
         </p>
         <div className="help-actions">
           <a className="button secondary" href="#membership">

@@ -58,7 +58,7 @@ export const CONTACT_ANSWERS = [
     id: "memberships",
     question: "Can I buy a membership or a drill review?",
     answer:
-      "Checkout, subscriptions and paid review purchases are not active yet. Current review access is enabled separately by an Owner. Creating an account or requesting review access does not charge you or start a subscription. Four proposed packages are available for feedback, with future features and prices under review. Parents, guardians and adults can express interest from the package page; this is not enrollment, payment or a reservation.",
+      "Checkout, subscriptions and paid review purchases are not active yet. Current review access is enabled separately by an Owner. Creating an account or requesting review access does not charge you or start a subscription. Four planned packages describe future learning and coaching features. Parents, guardians and adults can express interest from the package page; this is not enrollment, payment or a reservation.",
     href: "#membership",
     link: "View membership information",
   },

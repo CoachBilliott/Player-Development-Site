@@ -2,7 +2,11 @@ import { useEffect, useState } from "react";
 import { ArrowRight, Copy, Mail } from "lucide-react";
 import { Tag, CheckLine } from "./components";
 import { CONTACT_EMAIL } from "./contactContent";
-import { PACKAGE_PROPOSALS, packageInterestLink } from "./packageProposals";
+import {
+  PACKAGE_PROPOSALS,
+  PACKAGE_COMPARISON_ROWS,
+  packageInterestLink,
+} from "./packageProposals";
 import "./memberships.css";
 import { InterestForm } from "./InterestForm";
 import type { InterestPackage } from "./interestContract";
@@ -59,11 +63,11 @@ export function Membership({
   return (
     <main className="page memberships proposed-memberships">
       <div className="page-intro centered">
-        <Tag>PRELAUNCH PACKAGE PLANS</Tag>
-        <h1 tabIndex={-1}>A path for the next step.</h1>
+        <Tag>FOUR LEVELS OF SUPPORT</Tag>
+        <h1 tabIndex={-1}>Choose the support your athlete needs.</h1>
         <p>
-          Four ways to build football understanding and purposeful practice.
-          Find your starting point.
+          Start with football understanding, add practice, then choose the
+          coaching support that fits.
         </p>
       </div>
       <section
@@ -72,13 +76,12 @@ export function Membership({
       >
         <strong>Interest is open. Enrollment is not.</strong>
         <p>
-          These are proposed plans. Enrollment, payments and reservations are
-          not open. Features, prices and annual terms remain under review.
+          Explore the planned packages below. Enrollment, payments and
+          reservations are not open.
         </p>
         <p>
-          USD per athlete. One guardian account can manage multiple athletes.
-          Each subscribed Elite athlete would have two monthly reviews, not
-          shared across siblings.
+          All prices are in USD per athlete. Choose a plan to tell us what
+          interests you—no account or payment needed.
         </p>
         <button className="text-button" onClick={focusInterest}>
           Share your interest <ArrowRight size={17} />
@@ -99,23 +102,26 @@ export function Membership({
               <div className="proposal-price">
                 <strong>${p.monthly}</strong>
                 <span>USD / athlete / month</span>
-                <small>${p.annual} / year proposed · USD per athlete</small>
               </div>
+              <p className="proposal-annual">
+                ${p.annual} / year · save ${p.annualSavings}
+              </p>
             </div>
-            <div className="proposal-summary">
-              <p className="proposal-cadence">{p.cadence}</p>
-              <details className="proposal-details">
-                <summary>What’s included in {p.name}</summary>
-                <p className="proposal-focus">{p.focus}</p>
-                <p className="proposal-includes">{p.includes}</p>
-                <div className="check-lines">
-                  {p.items.map((text) => (
-                    <CheckLine key={text}>{text}</CheckLine>
-                  ))}
+            <p className="proposal-audience">{p.audience}</p>
+            <p className="proposal-benefit">{p.benefit}</p>
+            <dl
+              className="proposal-mobile-features"
+              aria-label={`${p.name} proposed features`}
+            >
+              {PACKAGE_COMPARISON_ROWS.filter(
+                (row) => p.comparison[row.key] !== "Not included",
+              ).map((row) => (
+                <div key={row.key}>
+                  <dt>{row.label}</dt>
+                  <dd>{p.comparison[row.key]}</dd>
                 </div>
-                {"note" in p && <p className="proposal-note">{p.note}</p>}
-              </details>
-            </div>
+              ))}
+            </dl>
             <div className="proposal-action">
               <button
                 className="button secondary"
@@ -131,19 +137,120 @@ export function Membership({
         ))}
       </section>
       <section
+        className="package-comparison"
+        aria-labelledby="comparison-title"
+      >
+        <h2 id="comparison-title">See what each level adds.</h2>
+        <div
+          className="comparison-scroll"
+          role="region"
+          aria-label="Detailed proposed package comparison"
+          tabIndex={0}
+        >
+          <table>
+            <caption>
+              Every level includes its lower-level benefits. Annual savings
+              compare 12 monthly payments.
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col">Proposed support</th>
+                {PACKAGE_PROPOSALS.map((p) => (
+                  <th scope="col" key={p.id}>
+                    {p.name}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {PACKAGE_COMPARISON_ROWS.map((row) => (
+                <tr key={row.key}>
+                  <th scope="row">{row.label}</th>
+                  {PACKAGE_PROPOSALS.map((p) => (
+                    <td
+                      className={
+                        p.comparison[row.key] === "Not included"
+                          ? "is-excluded"
+                          : undefined
+                      }
+                      key={p.id}
+                    >
+                      {p.comparison[row.key]}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <section
         className="proposal-rhythm"
         aria-label="Proposed delivery rhythm"
       >
-        <h2>Planned for the week ahead.</h2>
-        <p>
-          Sunday drill loading is proposed for Fundamentals, Position
-          Development and Elite Coaching. It is not an active public delivery
-          schedule. Foundation includes football-IQ learning, not drills.
+        <h2>Delivery, family access and reviews.</h2>
+        <div className="proposal-practical-grid">
+          <section aria-labelledby="planned-delivery">
+            <h3 id="planned-delivery">A planned weekly rhythm</h3>
+            <p>
+              The planned packages would deliver the upcoming week’s content on
+              Sundays. This is not an active public delivery schedule.
+              Foundation includes football-IQ lessons and quizzes, not drills.
+            </p>
+            <p>
+              Position Development adds two position-specific drills each week,
+              alongside the two movement sessions included in Fundamentals.
+            </p>
+          </section>
+          <section aria-labelledby="planned-family">
+            <h3 id="planned-family">One family account</h3>
+            <p>
+              One guardian account can manage multiple athletes. Packages are
+              priced per athlete. Each subscribed Elite athlete would have two
+              monthly drill corrections, not shared across siblings.
+            </p>
+          </section>
+          <section aria-labelledby="planned-reviews">
+            <h3 id="planned-reviews">Personalized drill corrections</h3>
+            <p>
+              Elite proposes two athlete-chosen drill corrections per month,
+              with up to three minutes of footage per submission. Feedback
+              identifies corrections, how to improve and next-step practice
+              recommendations. The target is three business days, not
+              guaranteed. Review capacity and retention are still being
+              validated.
+            </p>
+          </section>
+        </div>
+        <p className="proposal-current-access">
+          Existing invited accounts keep their current access and review limits.{" "}
+          <a href="#contact">Questions about current access?</a>
         </p>
-        <p>
-          Existing invited accounts follow their current access and review
-          limits. <a href="#contact">Questions about current access?</a>
-        </p>
+      </section>
+      <section
+        className="proposal-full-details"
+        aria-label="Full proposed package details"
+      >
+        {PACKAGE_PROPOSALS.map((p) => (
+          <details className="proposal-details" key={p.id}>
+            <summary>What’s included in {p.name}</summary>
+            <div
+              className="proposal-details-content"
+              role="group"
+              aria-label={`${p.name} complete proposal`}
+            >
+              <p className="proposal-focus">{p.focus}</p>
+              <p className="proposal-cadence">{p.cadence}</p>
+              <p className="proposal-includes">{p.includes}</p>
+              <div className="check-lines">
+                {p.items.map((text) => (
+                  <CheckLine key={text}>{text}</CheckLine>
+                ))}
+              </div>
+              {"note" in p && <p className="proposal-note">{p.note}</p>}
+            </div>
+          </details>
+        ))}
       </section>
       <section
         id="package-interest"

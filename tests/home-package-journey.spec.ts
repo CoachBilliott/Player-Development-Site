@@ -23,20 +23,22 @@ test("home connects the four shared package stages to learning, practice and par
   ]);
   const stages = ladder.getByRole("listitem");
   await expect(stages.nth(0)).toContainText(
-    "2 football-IQ videos per week · no drills",
+    "2 football-IQ videos + 2 lesson quizzes per week · no drills",
   );
   await expect(stages.nth(1)).toContainText(
-    "2 IQ + 2 fundamental drill videos per week",
+    "2 IQ + 2 quizzes + 2 movement sessions per week",
   );
   await expect(stages.nth(2)).toContainText(
-    "Position work replaces or adapts the two drills",
+    "Adds two position drills alongside the two movement sessions",
   );
-  await expect(stages.nth(3)).toContainText("2 chosen video reviews per month");
   await expect(stages.nth(3)).toContainText(
-    "Written feedback · up to three minutes of footage per review",
+    "2 personalized drill corrections per month",
+  );
+  await expect(stages.nth(3)).toContainText(
+    "Personalized feedback · up to three minutes of footage per submission",
   );
   await expect(page.locator(".practice-intro")).toContainText(
-    "Proposed weekly plans would start Sunday at midnight, Central time",
+    "The planned packages would deliver the upcoming week’s content on Sundays",
   );
   await expect(page.locator(".athlete-paths")).toContainText(
     "parent-managed approach connects lessons, practice history and athlete permissions",
@@ -100,7 +102,10 @@ test("interest intent consumes only its own query flag and remains a usable rout
   expect(new URL(page.url()).searchParams.has("interest")).toBe(false);
   await page.reload();
   await expect(
-    page.getByRole("heading", { level: 1, name: "A path for the next step." }),
+    page.getByRole("heading", {
+      level: 1,
+      name: "Choose the support your athlete needs.",
+    }),
   ).toBeVisible();
   await page.getByRole("button", { name: "Share your interest" }).click();
   await expect(
