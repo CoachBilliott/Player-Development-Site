@@ -69,6 +69,8 @@ export function StaffServiceDashboard({
   const [ageFilter, setAgeFilter] = useState(""),
     [positionFilter, setPositionFilter] = useState(""),
     [coachFilter, setCoachFilter] = useState("");
+  const [page, setPage] = useState(1);
+  const resultCount = useRef<HTMLParagraphElement>(null);
   const assignButton = useRef<HTMLButtonElement>(null);
   const lock = useRef(false);
   const returnFocus = useRef<HTMLElement | null>(null);
@@ -168,6 +170,15 @@ export function StaffServiceDashboard({
   );
   const rows = serviceRows(scopedRows, query, filter),
     total = data?.rows.length || 0;
+  const pageSize = 25;
+  const pages = Math.max(1, Math.ceil(rows.length / pageSize));
+  const currentPage = Math.min(page, pages);
+  const pageStart = (currentPage - 1) * pageSize;
+  const visibleRows = rows.slice(pageStart, pageStart + pageSize);
+  function changePage(next: number) {
+    setPage(next);
+    requestAnimationFrame(() => resultCount.current?.focus());
+  }
   const coachChoices = [
     ...new Map(
       (data?.rows || []).flatMap((r) =>
@@ -185,6 +196,7 @@ export function StaffServiceDashboard({
     ready: (data?.rows || []).filter((r) => serviceState(r) === "ready").length,
   };
   function resetFilters() {
+    setPage(1);
     setQuery("");
     setFilter("all");
     setAgeFilter("");
@@ -283,7 +295,10 @@ export function StaffServiceDashboard({
                 key={value}
                 className={`staff-count ${value}`}
                 aria-pressed={filter === value}
-                onClick={() => setFilter(value)}
+                onClick={() => {
+                  setPage(1);
+                  setFilter(value);
+                }}
               >
                 <strong>{count}</strong>
                 <span>{label}</span>
@@ -299,7 +314,10 @@ export function StaffServiceDashboard({
                   type="search"
                   placeholder="Name, client, coach or position"
                   value={query}
-                  onChange={(e) => setQuery(e.target.value)}
+                  onChange={(e) => {
+                    setPage(1);
+                    setQuery(e.target.value);
+                  }}
                 />
               </span>
             </label>
@@ -307,7 +325,10 @@ export function StaffServiceDashboard({
               Show service records
               <select
                 value={filter}
-                onChange={(e) => setFilter(e.target.value)}
+                onChange={(e) => {
+                  setPage(1);
+                  setFilter(e.target.value);
+                }}
               >
                 <option value="all">All records</option>
                 <option value="overdue">Overdue reviews</option>
@@ -337,7 +358,10 @@ export function StaffServiceDashboard({
                 <select
                   aria-label="Age group"
                   value={ageFilter}
-                  onChange={(e) => setAgeFilter(e.target.value)}
+                  onChange={(e) => {
+                    setPage(1);
+                    setAgeFilter(e.target.value);
+                  }}
                 >
                   <option value="">All age groups</option>
                   {[
@@ -358,7 +382,10 @@ export function StaffServiceDashboard({
                 <select
                   aria-label="Football position"
                   value={positionFilter}
-                  onChange={(e) => setPositionFilter(e.target.value)}
+                  onChange={(e) => {
+                    setPage(1);
+                    setPositionFilter(e.target.value);
+                  }}
                 >
                   <option value="">All positions</option>
                   {[
@@ -379,7 +406,10 @@ export function StaffServiceDashboard({
                 <select
                   aria-label="Responsible coach"
                   value={coachFilter}
-                  onChange={(e) => setCoachFilter(e.target.value)}
+                  onChange={(e) => {
+                    setPage(1);
+                    setCoachFilter(e.target.value);
+                  }}
                 >
                   <option value="">All in your scope</option>
                   <option value="none">No coach assigned</option>
@@ -392,8 +422,18 @@ export function StaffServiceDashboard({
               </label>
             </div>
           </details>
-          <p className="staff-result-count" role="status">
-            Showing {rows.length} of {total} records
+          <p
+            ref={resultCount}
+            tabIndex={-1}
+            className="staff-result-count"
+            role="status"
+          >
+            Showing{" "}
+            {rows.length > pageSize
+              ? `${pageStart + 1}–${pageStart + visibleRows.length}`
+              : rows.length}{" "}
+            of {rows.length} matching records
+            {rows.length !== total ? ` (${total} in your scope)` : ""}
             {query.trim() ? ` for “${query.trim()}”` : ""}
           </p>
           {!rows.length ? (
@@ -428,7 +468,7 @@ export function StaffServiceDashboard({
                 </tr>
               </thead>
               <tbody>
-                {rows.map((r, n) => {
+                {visibleRows.map((r, n) => {
                   const state = serviceState(r),
                     action = serviceAction(r, role);
                   return (
@@ -517,6 +557,30 @@ export function StaffServiceDashboard({
               </tbody>
             </table>
           )}
+          {pages > 1 && (
+            <nav
+              className="staff-roster-pagination"
+              aria-label="Athlete roster pages"
+            >
+              <button
+                className="button secondary"
+                disabled={currentPage === 1}
+                onClick={() => changePage(currentPage - 1)}
+              >
+                Previous page
+              </button>
+              <span>
+                Page {currentPage} of {pages}
+              </span>
+              <button
+                className="button secondary"
+                disabled={currentPage === pages}
+                onClick={() => changePage(currentPage + 1)}
+              >
+                Next page
+              </button>
+            </nav>
+          )}
           {!preview && (
             <details className="staff-tracking-details">
               <summary>About these service records</summary>
@@ -578,23 +642,20 @@ export function StaffServiceDashboard({
                   <span className="tag">NEXT STEP</span>
                   <h3>{current.next_action}</h3>
                   <div className="actions">
+                    {(current.pending_reviews || 0) > 0 && (
+                      <StaffLink route="video-reviews" className="button">
+                        Open review queue
+                      </StaffLink>
+                    )}
                     {role === "owner" && current.athlete_id && (
                       <button
                         ref={assignButton}
-                        className="button"
+                        className={`button ${(current.pending_reviews || 0) > 0 ? "secondary" : ""}`}
                         disabled={assignmentBusy}
                         onClick={() => setAssigning(true)}
                       >
                         Assign training <ArrowRight size={16} />
                       </button>
-                    )}
-                    {(current.pending_reviews || 0) > 0 && (
-                      <StaffLink
-                        route="video-reviews"
-                        className="button secondary"
-                      >
-                        Open review queue
-                      </StaffLink>
                     )}
                   </div>
                   {preview && (

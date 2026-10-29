@@ -493,7 +493,7 @@ function ConnectedAccount({
       )}
       <div className="member-heading">
         {appSurface() && (
-          <a className="text-button" href="#app-help">
+          <a className="text-button member-heading-help" href="#app-help">
             App help & support <ArrowRight size={16} />
           </a>
         )}

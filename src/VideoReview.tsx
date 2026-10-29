@@ -1,4 +1,5 @@
 import { PrivateAccessMessage } from "./PrivateShell";
+import { StaffLink } from "./StaffLinks";
 import { ServiceDesk } from "./ServiceDesk";
 import { GroupedReviewPanel, GroupedCoachReviews } from "./GroupedReviews";
 import { ReviewServices, SERVICE_LABELS, reviewDate } from "./reviewServices";
@@ -763,9 +764,15 @@ function CoachQueue({
               : "No videos waiting."}
           </h2>
           <p>
-            An Owner enables video review and assigns a coach through Account
-            access. No payment is collected by this pilot.
+            An Owner enables video review and assigns its review coach through
+            Training → Individual lesson & review permissions. This is separate
+            from roster responsibility. No payment is collected here.
           </p>
+          {owner && (
+            <StaffLink route="training-access">
+              Open individual lesson & review permissions
+            </StaffLink>
+          )}
         </section>
       )}
       {rows.some((r) => r.review_request_id) && (
