@@ -1,0 +1,9 @@
+{
+  "checkedAt": "2026-10-29T20:51:14.033694+00:00",
+  "method": "Standard proxy-aware HTTP read of published/approved/demo-public catalog using the same existing PUBLIC anon/publishable key. No private credentials/accounts or writes.",
+  "prior_sdk_attempt": "fetch failed; no HTTP authorization denial returned.",
+  "status": "Public catalog read unavailable",
+  "http_status": 401,
+  "repository_media": "public/media/credits.txt identifies existing footage as marketing stock, not coaching lessons.",
+  "private_catalog": "Not inspected."
+}

@@ -1,0 +1,28 @@
+{
+  "id": "dd429a9b-9b74-4bd1-aa07-8b5e4e140b5d",
+  "environment": "preview",
+  "url": "https://dd429a9b.repformed.pages.dev",
+  "aliases": [
+    "https://sample-learning.repformed.pages.dev"
+  ],
+  "created_on": "2026-10-29T21:02:39.211852Z",
+  "latest_stage": {
+    "name": "deploy",
+    "started_on": null,
+    "ended_on": "2026-10-29T21:02:42.217987Z",
+    "status": "success"
+  },
+  "deployment_trigger": {
+    "type": "ad_hoc",
+    "metadata": {
+      "branch": "sample-learning",
+      "commit_hash": "30601cd8cc89f38e5220be17506d22a793f0d765",
+      "commit_message": "Add honest fictional lesson quiz and progress walkthrough",
+      "commit_dirty": false
+    }
+  },
+  "checkedAt": "2026-10-29T21:03:17.336954+00:00",
+  "backend": "Disabled in artifact; CSP excludes remote connections and service workers",
+  "artifactSmoke": "Local exact built artifact passed 320/390/1440; independent public browser not yet verified",
+  "productionChanged": false
+}

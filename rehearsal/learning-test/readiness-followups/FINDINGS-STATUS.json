@@ -1,0 +1,64 @@
+{
+  "at": "2026-10-29T21:14:00Z",
+  "production": "0816c343a99a76e03ad2e48c7e16207058624c02",
+  "native": "0.1.0(15)",
+  "findings": [
+    {
+      "finding": "Login help overlap",
+      "status": "Fixed in web and build15",
+      "evidence": "Exact-source iOS simulator + exact IPA static/browser presentation; physical device not verified"
+    },
+    {
+      "finding": "Roster rendering scales poorly",
+      "status": "25-row client presentation released; server loading separately prepared PR21",
+      "evidence": "1000-row fixture bounded rendering; new scoped RPC PGlite/HTTP tests pass; hosted unverified"
+    },
+    {
+      "finding": "Overdue review next action",
+      "status": "Released repair",
+      "evidence": "Regression + exact-build presentation fixtures; real staff inbox unverified"
+    },
+    {
+      "finding": "Outdated review-access navigation",
+      "status": "Released repair",
+      "evidence": "Owner link and Manager/Coach no extra action checked in fixtures"
+    },
+    {
+      "finding": "No representative lesson/quiz demo",
+      "status": "Draft interactive PR22 isolated preview; reviewed video still missing",
+      "evidence": "Local sample checks and exact disconnected artifact3width; no trusted grades or assessment"
+    },
+    {
+      "finding": "Package incomplete week ready gate",
+      "status": "Prepared PR13 migration022; not installed/active",
+      "evidence": "PR13 local/CI source tests only; hosted enrollment/scoring/library acceptance blocked"
+    },
+    {
+      "finding": "Actual every-role/physical performance audit",
+      "status": "Unverified",
+      "evidence": "No fabrication of sessions, actors, network timings or device measurements"
+    }
+  ],
+  "terminalCI": {
+    "PR21": {
+      "head": "d791232c91cbdfdcc00cb6a6d3d70d3ee98d0e53",
+      "run": 40953863302,
+      "result": "success",
+      "unitDatabase": 395,
+      "web": 448,
+      "appOffline": 10,
+      "privatePreview": 6,
+      "python": 11
+    },
+    "PR22": {
+      "head": "30601cd8cc89f38e5220be17506d22a793f0d765",
+      "run": 40954155710,
+      "result": "failure",
+      "webPassed": 436,
+      "webFailed": 2,
+      "cause": "Local-only screenshot output /workspace is not writable on GitHub runner; UI assertions passed before artifact write",
+      "appOffline": "skipped",
+      "privatePreview": "skipped"
+    }
+  }
+}

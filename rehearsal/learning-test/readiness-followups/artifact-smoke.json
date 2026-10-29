@@ -1,0 +1,36 @@
+{
+  "source": "30601cd8cc89f38e5220be17506d22a793f0d765",
+  "method": "Local exact disconnected built artifact, Chromium; not physical iPhone or live roles",
+  "receipts": [
+    {
+      "width": 320,
+      "lesson": true,
+      "quiz": "2/2",
+      "practice": "format only; reviewed video missing",
+      "progress": "page memory only",
+      "backend": "disabled",
+      "writes": 0,
+      "noOverflow": true
+    },
+    {
+      "width": 390,
+      "lesson": true,
+      "quiz": "2/2",
+      "practice": "format only; reviewed video missing",
+      "progress": "page memory only",
+      "backend": "disabled",
+      "writes": 0,
+      "noOverflow": true
+    },
+    {
+      "width": 1440,
+      "lesson": true,
+      "quiz": "2/2",
+      "practice": "format only; reviewed video missing",
+      "progress": "page memory only",
+      "backend": "disabled",
+      "writes": 0,
+      "noOverflow": true
+    }
+  ]
+}

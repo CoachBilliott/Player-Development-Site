@@ -1,0 +1,49 @@
+{
+  "scope": "Consolidated audit and fictional local evidence only; no production mutation",
+  "files": [
+    {
+      "path": "APPROVAL-BUNDLE.md",
+      "sha256": "be02a491bd4e3a27ada507b15a60680740237ea695d13f1962340c8eff5ab19a"
+    },
+    {
+      "path": "FINDINGS-STATUS.json",
+      "sha256": "613e68c17df1ffa676b058b42562e0803e79c11b8b7a07035013db4a48d5b49c"
+    },
+    {
+      "path": "FULL-AUDIT-2026-10-29.md",
+      "sha256": "acb16c832f3c381960548e569be28ca9a7b95f596fbe540a0c51a0b39446f3bc"
+    },
+    {
+      "path": "README.md",
+      "sha256": "2587fbe65421b12ea37f2508bca9a190d090b3fbcc23a7cb6c8dc892235baf64"
+    },
+    {
+      "path": "artifact-smoke.json",
+      "sha256": "b140ea8d542f3e8b31388ae827729201c99b6ca71cab5d8e8131cbf9b5fb2c25"
+    },
+    {
+      "path": "public-sample-asset-inventory.json",
+      "sha256": "accb1388d965b8c441c08daa7517e514df45687cfe33a960ecdfe00e02c2c80f"
+    },
+    {
+      "path": "sample-learning-preview-deployment.json",
+      "sha256": "8fd290e8135120aa71cea071d13b254ace76207c6f615d9c032b0626389eb2be"
+    },
+    {
+      "path": "screenshots/artifact-1440-progress.png",
+      "sha256": "9c997fe8f0e40cf96003e700d8683bb18fc68a216fe25bef28749ba23581c8e2"
+    },
+    {
+      "path": "screenshots/artifact-390-lesson.png",
+      "sha256": "a5f01b4399d2df984ced47f028f2086f021b3760004d054a3b0f50a9b36a5e17"
+    },
+    {
+      "path": "screenshots/artifact-390-progress.png",
+      "sha256": "8c3fb7d8420ce11877e88db6b074ed7d523d2bf1aee18f60fa8b27ae85895f78"
+    },
+    {
+      "path": "screenshots/artifact-390-quiz.png",
+      "sha256": "b28be4ac78b6776fcba1ca70aca036b6a5e5845a9052ec91376351a09d2c9644"
+    }
+  ]
+}
