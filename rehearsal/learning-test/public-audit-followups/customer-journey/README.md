@@ -33,3 +33,11 @@ Exact final source and CI/deployment receipts are recorded separately in RELEASE
 The compiled website images use the fresh normal-auth artifact with fictional/stub backend fixtures. The preview-prefixed images use the disconnected design build with its notice. Neither set is a live customer session.
 
 [Release status and tests](RELEASE.json) · [Disconnected preview receipt](PREVIEW.json).
+
+## Publication receipt
+
+PR16 was merged as `7c60c4ba16b1e9a0d6a18a60268ab5fe7897fbba`. PR CI40887638509 and main CI40890063687 completed successfully: 377 unit/database, 396 website, 10 app/offline, 6 isolated-preview and 11 Python cases; lint/types/Deno/build passed. The fresh normal-auth artifact passed46 focused desktop/phone browser cases. Counts overlap.
+
+Published at2026-10-29T14:31:42Z to the existing Cloudflare Pages production project repformed, deployment `dbfdf64f-c868-47eb-95cd-71d94e045625`, entry `assets/index-DKtj-Nv7.js`. Canonical provider source/domain/success metadata was verified. The coding worker did not retry its frontend403/1010 restriction; independent actual live-browser QA remains separate. Production authentication/intake configuration was byte-for-byte preserved, no real submission/email was sent, and no backend/security/credential change occurred. The previous67-file production artifact remains hash-verified for frontend rollback. This is not a database recovery rehearsal.
+
+PR13 learning source `f078d1bc237b0e168f6ed0cf9c241367c5a7fc08` is reconciled with main and its CI40890247154 is green:430 unit/database,404 website,10 app/offline,20 preview,11 Python, plus lint/types/Deno/build. It remains draft/unmerged/unactivated, with all21 migration hashes unchanged. Local/fixture results do not close its hosted recovery/acceptance/security gates. Native build13 is unchanged.

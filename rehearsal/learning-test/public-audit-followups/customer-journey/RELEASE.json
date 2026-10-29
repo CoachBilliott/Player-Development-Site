@@ -1,5 +1,5 @@
 {
-  "status": "PR merged; fresh normal-auth artifact ready; main CI in progress; production unchanged",
+  "status": "Published; exact canonical Cloudflare production provenance verified. Independent live browser verification pending.",
   "tested_head": "e1d957d70b73b1812616097c383ad436f02d8081",
   "pr": "https://github.com/repformed/Player-Development-Site/pull/16",
   "pr_ci": "https://github.com/repformed/Player-Development-Site/actions/runs/40887638509",
@@ -32,7 +32,7 @@
   "learning_migration_hashes_unchanged": 21,
   "learning_activation": false,
   "hosted_learning_acceptance": "Incomplete; flags OFF verified by authorized laptop worker at12:21UTC. No quiz/enrollment/grading/release accepted; network harness unavailable. No bypass attempted.",
-  "updated_at": "2026-10-29T14:20:45.677700+00:00",
+  "updated_at": "2026-10-29T14:31:56.874112+00:00",
   "source": "7c60c4ba16b1e9a0d6a18a60268ab5fe7897fbba",
   "pr_ci_status": "success",
   "pr_ci_passed": {
@@ -43,7 +43,7 @@
     "python": 11
   },
   "main_ci": "https://github.com/repformed/Player-Development-Site/actions/runs/40890063687",
-  "main_ci_status": "in_progress",
+  "main_ci_status": "success",
   "artifact_directory": "/workspace/.player-development-setup/release-customer-journey-7c60c4b",
   "artifact_manifest": {
     "third-party-notices.txt": "464f3306ffc958fc0de68e4b8de5b672187fd04d28263722cd21e01c20f1d057",
@@ -133,5 +133,28 @@
   },
   "learning_tree_unchanged_by_reconciliation": true,
   "learning_current_ci": "https://github.com/repformed/Player-Development-Site/actions/runs/40890247154",
-  "learning_current_ci_status": "in_progress"
+  "learning_current_ci_status": "success",
+  "main_ci_passed": {
+    "unit_database": 377,
+    "website": 396,
+    "compiled_app_offline": 10,
+    "isolated_preview": 6,
+    "python": 11
+  },
+  "upload_started_at": "2026-10-29T14:31:36.112964+00:00",
+  "website": "https://repformed.com/",
+  "deployment_id": "dbfdf64f-c868-47eb-95cd-71d94e045625",
+  "immutable_url": "https://dbfdf64f.repformed.pages.dev",
+  "deployment_status": "success",
+  "deployed_at": "2026-10-29T14:31:42.991498Z",
+  "production_domains": [
+    "repformed.pages.dev",
+    "repformed.com"
+  ],
+  "final_provider_verified_at": "2026-10-29T14:31:56.874095+00:00",
+  "live_browser_qa_by_this_worker": false,
+  "frontend_restriction_not_retried": true,
+  "user_browser_tabs_forcibly_reloaded": false,
+  "artifact_receipt_path": "rehearsal/learning-test/public-audit-followups/customer-journey/RELEASE.json",
+  "screenshots_path": "rehearsal/learning-test/public-audit-followups/customer-journey/README.md"
 }
