@@ -1,8 +1,69 @@
 import { disableBackend } from "./backendFixture";
 import { test, expect } from "@playwright/test";
 import { createServer } from "node:http";
-import { readFile } from "node:fs/promises";
+import { mkdir, readFile } from "node:fs/promises";
+import { fixture, state, staffId } from "./workoutFixture";
 import { resolve, extname } from "node:path";
+
+async function updateServer() {
+  let newer = false;
+  const dist = resolve("dist");
+  const server = createServer(async (request, response) => {
+    try {
+      const url = new URL(request.url || "/", "http://localhost");
+      const filename = resolve(
+        dist,
+        `.${url.pathname === "/" ? "/index.html" : url.pathname}`,
+      );
+      if (!filename.startsWith(dist + "/")) {
+        response.writeHead(403);
+        response.end();
+        return;
+      }
+      let data: Buffer | string = await readFile(filename);
+      if (url.pathname === "/sw.js" && newer)
+        data = data
+          .toString()
+          .replace(
+            /^const CACHE = .+;$/m,
+            "const CACHE = `${PREFIX}test-new-version`;",
+          );
+      const types: Record<string, string> = {
+        ".js": "application/javascript",
+        ".html": "text/html",
+        ".css": "text/css",
+        ".webmanifest": "application/manifest+json",
+        ".json": "application/json",
+        ".png": "image/png",
+        ".svg": "image/svg+xml",
+        ".woff2": "font/woff2",
+        ".woff": "font/woff",
+      };
+      response.writeHead(200, {
+        "Content-Type": types[extname(filename)] || "application/octet-stream",
+        "Cache-Control": "no-store",
+      });
+      response.end(data);
+    } catch {
+      response.writeHead(404);
+      response.end();
+    }
+  });
+  await new Promise<void>((done) => server.listen(0, "127.0.0.1", done));
+  const address = server.address();
+  if (!address || typeof address === "string")
+    throw new Error("Test server did not start");
+  return {
+    url: `http://127.0.0.1:${address.port}/#install`,
+    publish: () => {
+      newer = true;
+    },
+    close: async () => {
+      server.closeAllConnections();
+      await new Promise<void>((done) => server.close(() => done()));
+    },
+  };
+}
 
 test.beforeEach(async ({ context }) => {
   await disableBackend(context);
@@ -20,6 +81,10 @@ test("installed-app shell reopens offline and saves completed sample practice", 
     "ready for offline use",
     { timeout: 20000 },
   );
+  await expect(page.getByText("An app update is ready.")).toHaveCount(0);
+  await expect(
+    page.getByText("An update was applied in another tab."),
+  ).toHaveCount(0);
   const manifest = await (
     await page.request.get("./manifest.webmanifest")
   ).json();
@@ -169,55 +234,9 @@ test("the installed app reopens offline without exposing demo or private records
 test("a real waiting service-worker update waits for confirmation and preserves saved data", async ({
   page,
 }) => {
-  let newer = false;
-  const dist = resolve("dist");
-  const server = createServer(async (request, response) => {
-    try {
-      const url = new URL(request.url || "/", "http://localhost");
-      const filename = resolve(
-        dist,
-        `.${url.pathname === "/" ? "/index.html" : url.pathname}`,
-      );
-      if (!filename.startsWith(dist + "/")) {
-        response.writeHead(403);
-        response.end();
-        return;
-      }
-      let data: Buffer | string = await readFile(filename);
-      if (url.pathname === "/sw.js" && newer)
-        data = data
-          .toString()
-          .replace(
-            /^const CACHE = .+;$/m,
-            "const CACHE = `${PREFIX}test-new-version`;",
-          );
-      const types: Record<string, string> = {
-        ".js": "application/javascript",
-        ".html": "text/html",
-        ".css": "text/css",
-        ".webmanifest": "application/manifest+json",
-        ".json": "application/json",
-        ".png": "image/png",
-        ".svg": "image/svg+xml",
-        ".woff2": "font/woff2",
-        ".woff": "font/woff",
-      };
-      response.writeHead(200, {
-        "Content-Type": types[extname(filename)] || "application/octet-stream",
-        "Cache-Control": "no-store",
-      });
-      response.end(data);
-    } catch {
-      response.writeHead(404);
-      response.end();
-    }
-  });
-  await new Promise<void>((done) => server.listen(0, "127.0.0.1", done));
+  const server = await updateServer();
   try {
-    const address = server.address();
-    if (!address || typeof address === "string")
-      throw new Error("Test server did not start");
-    await page.goto(`http://127.0.0.1:${address.port}/#install`);
+    await page.goto(server.url);
     await expect(page.locator(".app-cache-status")).toContainText(
       "ready for offline use",
       { timeout: 20000 },
@@ -229,7 +248,7 @@ test("a real waiting service-worker update waits for confirmation and preserves 
     page.on("framenavigated", (frame) => {
       if (frame === page.mainFrame()) reloads++;
     });
-    newer = true;
+    server.publish();
     await page.getByRole("button", { name: "Check for updates" }).click();
     await expect(page.getByText("An app update is ready.")).toBeVisible({
       timeout: 20000,
@@ -248,7 +267,93 @@ test("a real waiting service-worker update waits for confirmation and preserves 
     ).toBe("preserved");
     await expect(page.getByText("An app update is ready.")).toHaveCount(0);
   } finally {
-    server.closeAllConnections();
-    await new Promise<void>((done) => server.close(() => done()));
+    await server.close();
+  }
+});
+
+test("another tab's update preserves unsaved work and offers a working confirmed reload", async ({
+  page,
+  context,
+}, info) => {
+  await fixture(context, state(), "owner", staffId, true);
+  const server = await updateServer();
+  const other = await context.newPage();
+  try {
+    for (const tab of [page, other]) {
+      await tab.goto(server.url);
+      await expect(tab.locator(".app-cache-status")).toContainText(
+        "ready for offline use",
+        { timeout: 20000 },
+      );
+      await expect(
+        tab
+          .locator(".header")
+          .getByRole("link", { name: "Dashboard", exact: true }),
+      ).toBeVisible();
+    }
+    await other.evaluate(() => {
+      Object.assign(window, { unsavedPractice: "unsaved fictional note" });
+      localStorage.setItem("pd-update-check", "preserved");
+    });
+    let otherReloads = 0;
+    other.on("framenavigated", (frame) => {
+      if (frame === other.mainFrame()) otherReloads++;
+    });
+    server.publish();
+    await page.getByRole("button", { name: "Check for updates" }).click();
+    for (const tab of [page, other])
+      await expect(tab.getByText("An app update is ready.")).toBeVisible({
+        timeout: 20000,
+      });
+    // A confirmation opened before another tab activates must remain cancellable.
+    await other
+      .getByRole("button", { name: "Update app", exact: true })
+      .click();
+    await page.getByRole("button", { name: "Update app", exact: true }).click();
+    await page.getByRole("button", { name: "Reload and update" }).click();
+    await expect(page.getByText("An app update is ready.")).toHaveCount(0);
+    await expect(
+      other.getByText("An update was applied in another tab."),
+    ).toBeVisible();
+    await expect(other.getByText("An app update is ready.")).toHaveCount(0);
+    await other.getByRole("button", { name: "Keep current version" }).click();
+    await expect(
+      other.getByRole("button", { name: "Reload this tab", exact: true }),
+    ).toBeVisible();
+    expect(otherReloads).toBe(0);
+    expect(
+      await other.evaluate(() => Reflect.get(window, "unsavedPractice")),
+    ).toBe("unsaved fictional note");
+    await mkdir("artifacts/public-ux-fixes", { recursive: true });
+    await other.screenshot({
+      path: `artifacts/public-ux-fixes/other-tab-${info.project.name}.png`,
+      fullPage: true,
+    });
+    await other
+      .getByRole("button", { name: "Reload this tab", exact: true })
+      .click();
+    await expect(other.getByRole("dialog")).toContainText(
+      "Unsaved device work may be lost",
+    );
+    await other.getByRole("button", { name: "Reload and update" }).click();
+    await expect.poll(() => otherReloads).toBe(1);
+    await expect(
+      other
+        .locator(".header")
+        .getByRole("link", { name: "Dashboard", exact: true }),
+    ).toBeVisible();
+    await expect(
+      other.getByText("An update was applied in another tab."),
+    ).toHaveCount(0);
+    await expect(other.getByText("An app update is ready.")).toHaveCount(0);
+    expect(
+      await other.evaluate(() => localStorage.getItem("pd-update-check")),
+    ).toBe("preserved");
+    expect(
+      await other.evaluate(() => Reflect.get(window, "unsavedPractice")),
+    ).toBeUndefined();
+  } finally {
+    await other.close();
+    await server.close();
   }
 });
