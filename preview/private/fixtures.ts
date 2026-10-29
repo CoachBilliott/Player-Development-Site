@@ -345,6 +345,7 @@ export function previewShared(
   };
   return {
     interestEndpoint: "preview-only",
+    learningPlansEnabled: false,
     interestLoading: false,
     service: new SharedContent(client),
     accountLifecycleEnabled: true,

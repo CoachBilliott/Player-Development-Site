@@ -1,3 +1,8 @@
+import { WeeklyNotificationSettings } from "./learning/WeeklyNotificationSettings";
+import { WeeklyNotificationService } from "./learning/notificationRules";
+import { LearningAthlete } from "./learning/LearningAthlete";
+import { LearningApi } from "./learning/api";
+import { learningDate } from "./learning/schedule";
 import { StaffLink } from "./StaffLinks";
 import { AthleteTrainingAssignment } from "./AthleteTrainingAssignment";
 import { StaffNotificationPanel } from "./StaffNotificationPanel";
@@ -14,6 +19,7 @@ import {
   StaffService,
   type ServiceRoster,
   type StaffAthlete,
+  type RosterCursor,
 } from "./staffService";
 import { Modal, Tag } from "./components";
 import { reviewDate, SERVICE_LABELS } from "./reviewServices";
@@ -21,7 +27,7 @@ import {
   serviceAction,
   serviceRows,
   serviceState,
-  STATE_LABELS,
+  serviceLabel,
 } from "./staffServiceView";
 import { DeliveryMonitor } from "./DeliveryWorkspace";
 import "./staffService.css";
@@ -39,6 +45,7 @@ export function StaffServiceDashboard({
   enabled,
   monitoring = false,
   operationalEmails = false,
+  learningEnabled = false,
   preview = false,
   mode = "roster",
 }: {
@@ -48,10 +55,16 @@ export function StaffServiceDashboard({
   enabled: boolean;
   monitoring?: boolean;
   operationalEmails?: boolean;
+  learningEnabled?: boolean;
   preview?: boolean;
   mode?: "roster" | "settings";
 }) {
+  const learningRoster = learningEnabled && mode === "roster";
   const api = useMemo(() => new StaffService(client), [client]);
+  const notificationApi = useMemo(
+    () => new WeeklyNotificationService(client),
+    [client],
+  );
   const [data, setData] = useState<ServiceRoster | null>(null),
     [current, setCurrent] = useState<StaffAthlete | null>(null),
     [target, setTarget] = useState(urlTarget),
@@ -66,9 +79,65 @@ export function StaffServiceDashboard({
     [assignmentNotice, setAssignmentNotice] = useState("");
   const [assigning, setAssigning] = useState(false),
     [assignmentBusy, setAssignmentBusy] = useState(false);
+  const learning = useMemo(
+    () => new LearningApi(client, setAssignmentBusy),
+    [client],
+  );
   const [ageFilter, setAgeFilter] = useState(""),
     [positionFilter, setPositionFilter] = useState(""),
     [coachFilter, setCoachFilter] = useState("");
+  const [cursor, setCursor] = useState<RosterCursor | null>(null),
+    [previousCursors, setPreviousCursors] = useState<(RosterCursor | null)[]>(
+      [],
+    );
+  const [requestFilters, setRequestFilters] = useState({
+    query: "",
+    filter: "all",
+    age: "",
+    position: "",
+    coach: "",
+  });
+  const [learningTask, setLearningTask] = useState<
+    { kind: "plan" | "grading"; request: number } | undefined
+  >();
+  const weeklyPanel = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const timer = setTimeout(
+      () =>
+        setRequestFilters({
+          query,
+          filter,
+          age: ageFilter,
+          position: positionFilter,
+          coach: coachFilter,
+        }),
+      250,
+    );
+    return () => clearTimeout(timer);
+  }, [query, filter, ageFilter, positionFilter, coachFilter]);
+  function changeFilter(change: () => void) {
+    setPage(1);
+    change();
+    if (learningEnabled) {
+      setCursor(null);
+      setPreviousCursors([]);
+      setRefreshing(true);
+    }
+  }
+  const activeFilters = learningRoster ? requestFilters : null;
+  const searchPending =
+    learningRoster &&
+    (query !== requestFilters.query ||
+      filter !== requestFilters.filter ||
+      ageFilter !== requestFilters.age ||
+      positionFilter !== requestFilters.position ||
+      coachFilter !== requestFilters.coach);
+  function reloadLearning() {
+    setCursor(null);
+    setPreviousCursors([]);
+    setRefreshing(true);
+    setAttempt((n) => n + 1);
+  }
   const [page, setPage] = useState(1);
   const resultCount = useRef<HTMLParagraphElement>(null);
   const assignButton = useRef<HTMLButtonElement>(null);
@@ -80,8 +149,10 @@ export function StaffServiceDashboard({
   useEffect(() => {
     if (!enabled) return;
     let active = true;
-    void api
-      .roster()
+    const request = learningRoster
+      ? api.page(activeFilters!, cursor)
+      : api.roster();
+    void request
       .then((v) => {
         if (active) {
           setData(v);
@@ -99,7 +170,16 @@ export function StaffServiceDashboard({
     return () => {
       active = false;
     };
-  }, [api, enabled, attempt, actor, role]);
+  }, [
+    api,
+    enabled,
+    attempt,
+    actor,
+    role,
+    learningRoster,
+    activeFilters,
+    cursor,
+  ]);
   useEffect(() => {
     if (!enabled || !target) return;
     let active = true;
@@ -134,6 +214,7 @@ export function StaffServiceDashboard({
     return () => window.removeEventListener("popstate", back);
   }, []);
   function open(id: string) {
+    setLearningTask(undefined);
     setAssigning(false);
     returnFocus.current =
       document.activeElement instanceof HTMLElement
@@ -148,6 +229,7 @@ export function StaffServiceDashboard({
     history.pushState({ repformedServiceDetail: true }, "", u);
   }
   function close() {
+    setLearningTask(undefined);
     setAssigning(false);
     if (history.state?.repformedServiceDetail) {
       history.back();
@@ -168,27 +250,33 @@ export function StaffServiceDashboard({
       (!coachFilter ||
         (coachFilter === "none" ? !r.coach_id : r.coach_id === coachFilter)),
   );
-  const rows = serviceRows(scopedRows, query, filter),
-    total = data?.rows.length || 0;
+  const rows = learningEnabled
+      ? data?.rows || []
+      : serviceRows(scopedRows, query, filter),
+    total = data?.page?.total ?? data?.rows.length ?? 0;
   const pageSize = 25;
   const pages = Math.max(1, Math.ceil(rows.length / pageSize));
   const currentPage = Math.min(page, pages);
   const pageStart = (currentPage - 1) * pageSize;
-  const visibleRows = rows.slice(pageStart, pageStart + pageSize);
+  const visibleRows = learningEnabled
+    ? rows
+    : rows.slice(pageStart, pageStart + pageSize);
   function changePage(next: number) {
     setPage(next);
     requestAnimationFrame(() => resultCount.current?.focus());
   }
-  const coachChoices = [
-    ...new Map(
-      (data?.rows || []).flatMap((r) =>
-        r.coach_id
-          ? [[r.coach_id, r.coach_label || "Assigned coach"] as const]
-          : [],
-      ),
-    ).entries(),
-  ];
-  const counts = {
+  const coachChoices = learningEnabled
+    ? (data?.coaches || []).map((c) => [c.id, c.label] as const)
+    : [
+        ...new Map(
+          (data?.rows || []).flatMap((r) =>
+            r.coach_id
+              ? [[r.coach_id, r.coach_label || "Assigned coach"] as const]
+              : [],
+          ),
+        ).entries(),
+      ];
+  const counts = data?.page?.counts || {
     overdue: (data?.rows || []).filter((r) => serviceState(r) === "overdue")
       .length,
     attention: (data?.rows || []).filter((r) => serviceState(r) === "attention")
@@ -196,6 +284,11 @@ export function StaffServiceDashboard({
     ready: (data?.rows || []).filter((r) => serviceState(r) === "ready").length,
   };
   function resetFilters() {
+    if (learningEnabled) {
+      setCursor(null);
+      setPreviousCursors([]);
+      setRefreshing(true);
+    }
     setPage(1);
     setQuery("");
     setFilter("all");
@@ -225,6 +318,7 @@ export function StaffServiceDashboard({
             actor={actor}
             role={role}
             profiles={data.rows}
+            weeklyEnabled={learningEnabled}
           />
         )}{" "}
         {operationalEmails && (
@@ -255,7 +349,7 @@ export function StaffServiceDashboard({
           <h2>Athlete roster</h2>
           <p>
             {data
-              ? `${data.rows.filter((r) => r.athlete_id).length} athletes · ${new Set(data.rows.map((r) => r.client_id)).size} clients`
+              ? `${data.page?.athletes ?? data.rows.filter((r) => r.athlete_id).length} athletes · ${data.page?.clients ?? new Set(data.rows.map((r) => r.client_id)).size} clients`
               : "Loading your scope"}
             {role === "coach" ? " · assigned to you" : " · all clients"}
           </p>
@@ -295,10 +389,7 @@ export function StaffServiceDashboard({
                 key={value}
                 className={`staff-count ${value}`}
                 aria-pressed={filter === value}
-                onClick={() => {
-                  setPage(1);
-                  setFilter(value);
-                }}
+                onClick={() => changeFilter(() => setFilter(value))}
               >
                 <strong>{count}</strong>
                 <span>{label}</span>
@@ -314,10 +405,7 @@ export function StaffServiceDashboard({
                   type="search"
                   placeholder="Name, client, coach or position"
                   value={query}
-                  onChange={(e) => {
-                    setPage(1);
-                    setQuery(e.target.value);
-                  }}
+                  onChange={(e) => changeFilter(() => setQuery(e.target.value))}
                 />
               </span>
             </label>
@@ -325,10 +413,7 @@ export function StaffServiceDashboard({
               Show service records
               <select
                 value={filter}
-                onChange={(e) => {
-                  setPage(1);
-                  setFilter(e.target.value);
-                }}
+                onChange={(e) => changeFilter(() => setFilter(e.target.value))}
               >
                 <option value="all">All records</option>
                 <option value="overdue">Overdue reviews</option>
@@ -358,19 +443,20 @@ export function StaffServiceDashboard({
                 <select
                   aria-label="Age group"
                   value={ageFilter}
-                  onChange={(e) => {
-                    setPage(1);
-                    setAgeFilter(e.target.value);
-                  }}
+                  onChange={(e) =>
+                    changeFilter(() => setAgeFilter(e.target.value))
+                  }
                 >
                   <option value="">All age groups</option>
-                  {[
-                    ...new Set(
-                      data.rows
-                        .map((r) => r.age_group)
-                        .filter((x): x is string => !!x),
-                    ),
-                  ]
+                  {(
+                    data.page?.ages.slice() || [
+                      ...new Set(
+                        data.rows
+                          .map((r) => r.age_group)
+                          .filter((x): x is string => !!x),
+                      ),
+                    ]
+                  )
                     .sort()
                     .map((x) => (
                       <option key={x}>{x}</option>
@@ -382,19 +468,20 @@ export function StaffServiceDashboard({
                 <select
                   aria-label="Football position"
                   value={positionFilter}
-                  onChange={(e) => {
-                    setPage(1);
-                    setPositionFilter(e.target.value);
-                  }}
+                  onChange={(e) =>
+                    changeFilter(() => setPositionFilter(e.target.value))
+                  }
                 >
                   <option value="">All positions</option>
-                  {[
-                    ...new Set(
-                      data.rows
-                        .map((r) => r.position)
-                        .filter((x): x is string => !!x),
-                    ),
-                  ]
+                  {(
+                    data.page?.positions.slice() || [
+                      ...new Set(
+                        data.rows
+                          .map((r) => r.position)
+                          .filter((x): x is string => !!x),
+                      ),
+                    ]
+                  )
                     .sort()
                     .map((x) => (
                       <option key={x}>{x}</option>
@@ -406,10 +493,9 @@ export function StaffServiceDashboard({
                 <select
                   aria-label="Responsible coach"
                   value={coachFilter}
-                  onChange={(e) => {
-                    setPage(1);
-                    setCoachFilter(e.target.value);
-                  }}
+                  onChange={(e) =>
+                    changeFilter(() => setCoachFilter(e.target.value))
+                  }
                 >
                   <option value="">All in your scope</option>
                   <option value="none">No coach assigned</option>
@@ -428,17 +514,28 @@ export function StaffServiceDashboard({
             className="staff-result-count"
             role="status"
           >
-            Showing{" "}
-            {rows.length > pageSize
-              ? `${pageStart + 1}–${pageStart + visibleRows.length}`
-              : rows.length}{" "}
-            of {rows.length} matching records
-            {rows.length !== total ? ` (${total} in your scope)` : ""}
+            {searchPending || refreshing ? (
+              "Updating roster…"
+            ) : learningEnabled ? (
+              <>
+                Showing {rows.length} of {data.page?.matched ?? total} records ·
+                page {previousCursors.length + 1}
+              </>
+            ) : (
+              <>
+                Showing{" "}
+                {rows.length > pageSize
+                  ? `${pageStart + 1}–${pageStart + visibleRows.length}`
+                  : rows.length}{" "}
+                of {rows.length} matching records
+                {rows.length !== total ? ` (${total} in your scope)` : ""}
+              </>
+            )}
             {query.trim() ? ` for “${query.trim()}”` : ""}
           </p>
           {!rows.length ? (
             <div className="staff-service-empty">
-              {data.rows.length ? (
+              {(data.page ? data.page.clients > 0 : data.rows.length > 0) ? (
                 <>
                   <h3>No matching athletes.</h3>
                   <p>Try another name or reset your search and filters.</p>
@@ -499,28 +596,61 @@ export function StaffServiceDashboard({
                           ) : (
                             <AlertCircle size={13} />
                           )}{" "}
-                          {STATE_LABELS[state]}
+                          {serviceLabel(r)}
                         </span>
                       </td>
                       <td data-label="Training">
-                        <strong>
-                          {r.workout_id
-                            ? r.workout_title
-                            : "No training assigned"}
-                        </strong>
-                        <small>
-                          {!r.workout_id
-                            ? "A saved plan is needed"
-                            : !r.eligible_access
-                              ? "Access or content needs review"
-                              : !r.media_ready
-                                ? "Upload incomplete"
-                                : "Approved training available"}
-                        </small>
-                        {r.last_completion_at && (
-                          <small>
-                            Practice reported {observed(r.last_completion_at)}
-                          </small>
+                        {r.learning ? (
+                          <>
+                            <strong>
+                              {r.learning.title || "No weekly plan"}
+                            </strong>
+                            <small>
+                              {r.learning.current_title
+                                ? `Week ${r.learning.current_week}: ${r.learning.current_title}`
+                                : "No week released yet"}
+                            </small>
+                            {r.learning.next_release_at && (
+                              <small>
+                                Next: {learningDate(r.learning.next_release_at)}{" "}
+                                Central
+                              </small>
+                            )}
+                            <small>
+                              {r.learning.enrollment_state === "finished"
+                                ? "All planned weeks released"
+                                : `${r.learning.ready_weeks} approved next weeks ready`}
+                            </small>
+                            {r.learning.last_reported_at && (
+                              <small>
+                                Work reported{" "}
+                                {observed(r.learning.last_reported_at)}
+                              </small>
+                            )}
+                          </>
+                        ) : (
+                          <>
+                            <strong>
+                              {r.workout_id
+                                ? r.workout_title
+                                : "No training assigned"}
+                            </strong>
+                            <small>
+                              {!r.workout_id
+                                ? "A saved plan is needed"
+                                : !r.eligible_access
+                                  ? "Access or content needs review"
+                                  : !r.media_ready
+                                    ? "Upload incomplete"
+                                    : "Approved training available"}
+                            </small>
+                            {r.last_completion_at && (
+                              <small>
+                                Practice reported{" "}
+                                {observed(r.last_completion_at)}
+                              </small>
+                            )}
+                          </>
                         )}
                       </td>
                       <td data-label="Service coach">
@@ -542,6 +672,7 @@ export function StaffServiceDashboard({
                           <button
                             className={`button ${state === "overdue" ? "" : "secondary"} staff-primary-action`}
                             aria-label={`${action} for ${r.athlete_name}`}
+                            disabled={refreshing || searchPending}
                             onClick={() => open(r.athlete_id!)}
                           >
                             {action}
@@ -557,7 +688,40 @@ export function StaffServiceDashboard({
               </tbody>
             </table>
           )}
-          {pages > 1 && (
+          {learningEnabled && data.page && (
+            <nav
+              className="staff-roster-pages"
+              aria-label="Athlete roster pages"
+            >
+              <button
+                className="button secondary"
+                disabled={
+                  !previousCursors.length || refreshing || searchPending
+                }
+                onClick={() => {
+                  const previous = previousCursors.at(-1) || null;
+                  setPreviousCursors((c) => c.slice(0, -1));
+                  setCursor(previous);
+                  setRefreshing(true);
+                }}
+              >
+                Previous page
+              </button>
+              <span>Page {previousCursors.length + 1}</span>
+              <button
+                className="button secondary"
+                disabled={!data.page.next_cursor || refreshing || searchPending}
+                onClick={() => {
+                  setPreviousCursors((c) => [...c, cursor]);
+                  setCursor(data.page!.next_cursor);
+                  setRefreshing(true);
+                }}
+              >
+                Next page
+              </button>
+            </nav>
+          )}
+          {!learningEnabled && pages > 1 && (
             <nav
               className="staff-roster-pagination"
               aria-label="Athlete roster pages"
@@ -585,11 +749,9 @@ export function StaffServiceDashboard({
             <details className="staff-tracking-details">
               <summary>About these service records</summary>
               <p>
-                Training availability is not proof it was opened. Reports record
-                participation, not technique assessment. Purchases, payment
-                periods, scheduled release, first-available history, open events
-                and email delivery are not tracked here. Private video access
-                stays separately assigned.
+                {learningEnabled
+                  ? "Weekly status comes from enrollment, approved releases, submissions and grades. Availability is not proof it was opened; completion is reported participation, not technique assessment. Package eligibility is manually verified, not proof of payment. Private video review access remains separate."
+                  : "Training availability is not proof it was opened. Reports record participation, not technique assessment. Purchases, payment periods, scheduled release, first-available history, open events and email delivery are not tracked here. Private video access stays separately assigned."}
               </p>
             </details>
           )}
@@ -622,7 +784,7 @@ export function StaffServiceDashboard({
               <>
                 <div className="staff-detail-meta">
                   <span className={`staff-state ${serviceState(current)}`}>
-                    {STATE_LABELS[serviceState(current)]}
+                    {serviceLabel(current)}
                   </span>
                   <span>
                     {current.age_group} · {current.position}
@@ -632,7 +794,9 @@ export function StaffServiceDashboard({
                 <p className="staff-detail-plan">
                   Current training:{" "}
                   <strong>
-                    {current.workout_title || "No workout assigned"}
+                    {current.learning
+                      ? current.learning.title || "No weekly plan"
+                      : current.workout_title || "No workout assigned"}
                   </strong>
                 </p>
                 <section
@@ -647,26 +811,97 @@ export function StaffServiceDashboard({
                         Open review queue
                       </StaffLink>
                     )}
-                    {role === "owner" && current.athlete_id && (
+                    {learningEnabled && (
                       <button
-                        ref={assignButton}
                         className={`button ${(current.pending_reviews || 0) > 0 ? "secondary" : ""}`}
-                        disabled={assignmentBusy}
-                        onClick={() => setAssigning(true)}
+                        onClick={() => {
+                          setLearningTask({
+                            kind: current.learning?.pending_grades
+                              ? "grading"
+                              : "plan",
+                            request: Date.now(),
+                          });
+                          weeklyPanel.current
+                            ?.querySelector<HTMLElement>("h2")
+                            ?.focus();
+                          weeklyPanel.current?.scrollIntoView({
+                            block: "start",
+                            behavior: "smooth",
+                          });
+                        }}
                       >
-                        Assign training <ArrowRight size={16} />
+                        {current.learning?.pending_grades
+                          ? "Open quiz grades"
+                          : "Open plan controls"}
                       </button>
                     )}
+                    {!learningEnabled &&
+                      role === "owner" &&
+                      current.athlete_id && (
+                        <button
+                          ref={assignButton}
+                          className={`button ${(current.pending_reviews || 0) > 0 ? "secondary" : ""}`}
+                          disabled={assignmentBusy}
+                          onClick={() => setAssigning(true)}
+                        >
+                          Assign training <ArrowRight size={16} />
+                        </button>
+                      )}
                   </div>
                   {preview && (
                     <p>
                       {!current.coach_id && role !== "coach"
                         ? "Choose a sample service coach below. This changes fictional data in this browser only."
-                        : "Review the sample status below. Real uploads, coaching feedback and training assignment are not connected in this preview."}
+                        : learningEnabled
+                          ? "Weekly changes affect fictional records in this browser only. No real uploads or messages are sent."
+                          : "Review the sample status below. Real uploads, coaching feedback and training assignment are not connected in this preview."}
                     </p>
                   )}
                 </section>
+                {learningEnabled && current.athlete_id && (
+                  <div ref={weeklyPanel}>
+                    <LearningAthlete
+                      key={current.athlete_id + ":learning"}
+                      api={learning}
+                      profile={current.athlete_id}
+                      actor={actor}
+                      staff
+                      owner={role === "owner"}
+                      onChanged={reloadLearning}
+                      task={learningTask}
+                    />
+                  </div>
+                )}
+                {learningEnabled && role === "owner" && current.athlete_id && (
+                  <WeeklyNotificationSettings
+                    key={current.athlete_id}
+                    api={notificationApi}
+                    profile={current.athlete_id}
+                    athleteName={current.athlete_name || "Selected athlete"}
+                    onBusyChange={setAssignmentBusy}
+                  />
+                )}
                 {assignmentNotice && <p role="status">{assignmentNotice}</p>}
+                {learningEnabled && !preview && role === "owner" && (
+                  <details className="staff-detail-group">
+                    <summary>
+                      Advanced: legacy single-workout assignment
+                    </summary>
+                    <p>
+                      This separate control changes the older single workout
+                      only. It does not replace weekly enrollment, released
+                      weeks or grades.
+                    </p>
+                    <button
+                      ref={assignButton}
+                      className="button secondary"
+                      onClick={() => setAssigning(true)}
+                      disabled={assignmentBusy}
+                    >
+                      Open legacy assignment
+                    </button>
+                  </details>
+                )}
                 {assigning && current.athlete_id && role === "owner" && (
                   <AthleteTrainingAssignment
                     key={current.athlete_id}
@@ -802,13 +1037,17 @@ export function StaffServiceDashboard({
                 <details
                   className="staff-detail-group"
                   open={
-                    !current.workout_id ||
-                    !current.eligible_access ||
-                    !current.media_ready
+                    !learningEnabled &&
+                    (!current.workout_id ||
+                      !current.eligible_access ||
+                      !current.media_ready)
                   }
                 >
                   <summary>
-                    Training plan <span>{current.resources.length} drills</span>
+                    {learningEnabled
+                      ? "Legacy single workout"
+                      : "Training plan"}{" "}
+                    <span>{current.resources.length} drills</span>
                   </summary>
                   <p>
                     <strong>
@@ -848,16 +1087,17 @@ export function StaffServiceDashboard({
                     Reported complete: {observed(current.last_completion_at)}.
                   </p>
                   <p>
-                    Scheduled release: not active. First available timestamp:
-                    not recorded. Completion is reported participation, not a
-                    technique assessment.
+                    {current.learning
+                      ? `Times in Central: weekly scheduled: ${learningDate(current.learning.scheduled_at)}. Actually available: ${learningDate(current.learning.available_at)}. Most recent work reported: ${learningDate(current.learning.last_reported_at)}. Participation is not a technique assessment.`
+                      : "Scheduled release: not active. First available timestamp: not recorded. Completion is reported participation, not a technique assessment."}
                   </p>
                 </details>
                 <details className="staff-detail-group">
                   <summary>Purchase and access details</summary>
                   <p>
-                    No connected purchase/payment record. Package entitlements
-                    and email delivery are not tracked here.
+                    {learningEnabled
+                      ? "No connected purchase/payment record. Weekly eligibility is manually verified with a time window in plan controls; it is not a purchase receipt. Email delivery remains separate."
+                      : "No connected purchase/payment record. Package entitlements and email delivery are not tracked here."}
                   </p>
                   <p>
                     Training access:{" "}

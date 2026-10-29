@@ -1,3 +1,4 @@
+import { LearningDemo } from "./LearningDemo";
 import {
   TrainingWorkspace,
   AssignTrainingWorkspace,
@@ -56,6 +57,12 @@ export function Preview() {
     () => previewShared(role, signOutPreview),
     [role, signOutPreview],
   );
+  if (page === "weekly-demo")
+    return (
+      <div className="experience website-layout is-private learning-preview">
+        <LearningDemo />
+      </div>
+    );
   return (
     <div className="experience website-layout is-private">
       <aside
@@ -94,8 +101,15 @@ export function Preview() {
         </label>
       </aside>
       <PrivateHeader shared={shared} page={page} />
+      <nav aria-label="Fictional learning preview">
+        <a className="button secondary" href="#weekly-demo">
+          Preview weekly plans & quizzes (fictional)
+        </a>
+      </nav>
       <div key={`${role}:${page}`}>
-        {page === "customer-help" ? (
+        {page === "weekly-demo" ? (
+          <LearningDemo />
+        ) : page === "customer-help" ? (
           <CustomerHelp />
         ) : page === "account" ? (
           <MemberAccountPage shared={shared} />

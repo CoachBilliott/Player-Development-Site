@@ -1,3 +1,5 @@
+import { LearningAthlete } from "./learning/LearningAthlete";
+import { LearningApi } from "./learning/api";
 import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, RefreshCw, Users } from "lucide-react";
 import { Accounts } from "./accounts";
@@ -67,6 +69,7 @@ function ConnectedTraining({ shared, screen, selection, onSelect }: Props) {
     }
   });
   const service = useMemo(() => new FamilyTraining(client), [client]);
+  const learning = useMemo(() => new LearningApi(client), [client]);
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const [error, setError] = useState("");
   const [attempt, setAttempt] = useState(0);
@@ -116,6 +119,56 @@ function ConnectedTraining({ shared, screen, selection, onSelect }: Props) {
         p.id ===
         (selection.userId === userId ? selection.playerId : restoredSelection),
     ) || eligible[0];
+  if (shared.learningPlansEnabled && player)
+    return (
+      <main className="page app-training">
+        <header className="page-intro">
+          <Tag>YOUR TRAINING</Tag>
+          <h1 tabIndex={-1}>
+            {screen === "progress"
+              ? "Your learning history."
+              : screen === "workouts"
+                ? "Your released library."
+                : "This week's training."}
+          </h1>
+        </header>
+        {eligible.length > 1 && (
+          <label>
+            Training athlete
+            <select
+              value={player.id}
+              onChange={(e) => {
+                try {
+                  sessionStorage.setItem(selectionKey, e.target.value);
+                } catch {
+                  /* Keep current in-memory selection when browser storage is unavailable. */
+                }
+                onSelect({ userId, playerId: e.target.value });
+              }}
+            >
+              {eligible.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.nickname}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
+        <LearningAthlete
+          key={player.id}
+          api={learning}
+          profile={player.id}
+          actor={userId}
+          mode={
+            screen === "today"
+              ? "today"
+              : screen === "workouts"
+                ? "library"
+                : "progress"
+          }
+        />
+      </main>
+    );
   return (
     <main className={`page app-training app-training-${screen}`}>
       <div className="page-intro app-training-intro">

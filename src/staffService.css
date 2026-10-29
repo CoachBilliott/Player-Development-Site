@@ -515,6 +515,17 @@ dialog.modal:has(> .staff-detail) {
   padding: 12px 0 0;
 }
 
+.staff-roster-pages {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-block: 18px;
+}
+.staff-roster-pages span {
+  color: var(--muted, #b8bec4);
+}
 .staff-roster-pagination {
   display: flex;
   align-items: center;

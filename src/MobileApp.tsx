@@ -111,7 +111,11 @@ export function MobileTabs({
   };
   return (
     <nav className="app-tabs" aria-label="App navigation">
-      {mobileNavigation(shared.signedIn, shared.role).map(([route, label]) => {
+      {mobileNavigation(
+        shared.signedIn,
+        shared.role,
+        shared.learningPlansEnabled,
+      ).map(([route, label]) => {
         const Icon = icons[route];
         const active =
           page === route ||

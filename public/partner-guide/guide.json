@@ -1,17 +1,17 @@
 {
   "title": "Your first session, from upload to finish.",
   "subtitle": "A practical walkthrough of the Repformed website and iPhone app, made for you and your partner.",
-  "baseline": "Historical fictional browser previews · build 10 · October 2026",
-  "notice": "Screenshots show the actual website and shared app workspace in a browser, using fictional accounts and sample text attachments. They are not photographs of native Photos/camera screens or coaching demonstrations. No real player information appears here. Screenshots retain the earlier interface identity; current branding does not imply that a new native iPhone build is installed.",
+  "baseline": "Historical fictional browser previews \u00b7 build 10 \u00b7 October 2026",
+  "notice": "These screenshots document earlier single-workout screens with fictional accounts. For enabled weekly plans, library, quizzes and group enrollment, use the Weekly learning guide. Shared website source does not update an installed native app automatically. No real player information or coaching demonstrations appear here.",
   "chapters": [
     {
       "id": "website",
-      "eyebrow": "Start here · anyone",
+      "eyebrow": "Start here \u00b7 anyone",
       "title": "The website is your front door.",
       "intro": "Use the public website to explain the platform. Use the private workspace to manage or complete training. Football is the current program; future sports are not yet announced.",
       "image": "website.jpg",
       "imageAlt": "The public Player Development homepage on desktop, with its sports photography and navigation.",
-      "caption": "Public website · no account needed to explore.",
+      "caption": "Public website \u00b7 no account needed to explore.",
       "steps": [
         "Open the website link at the top of this guide. Explore the homepage and program information.",
         "Choose Try the demo on the homepage to explore the one fictional customer demo. Choose Parent & family or Solo athlete there. It is separate from your real account.",
@@ -27,9 +27,9 @@
       "intro": "Your Apple Account installs the app. Your separate Player Development account opens its private training workspace.",
       "image": "login.jpg",
       "imageAlt": "Player Development private sign-in form with email and password fields.",
-      "caption": "Private sign-in · the native app has no public demo entry.",
+      "caption": "Private sign-in \u00b7 the native app has no public demo entry.",
       "steps": [
-        "On an iPhone with approved testing access, open TestFlight → Player Development Test → Install or Update. This guide follows build 10; use a newer approved build if one is available.",
+        "On an iPhone with approved testing access, open TestFlight \u2192 Player Development Test \u2192 Install or Update. This guide follows build 10; use a newer approved build if one is available.",
         "Open Player Development and select Log in to your account. Enter your Player Development email and password, then select Sign in securely.",
         "An Owner, Manager or Coach goes to the staff workspace. Staff do not choose Parent or Athlete to use management tools.",
         "For a forgotten password, open the website account page in Safari and use password recovery. Complete the email steps, then return to the app.",
@@ -44,9 +44,9 @@
       "intro": "The website and app share the same private account permissions. Account level decides which tools appear; it does not create a subscription.",
       "image": "owner.jpg",
       "imageAlt": "The Owner workspace with Build a workout and Upload a drill actions.",
-      "caption": "Owner workspace · Overview is the staff home.",
+      "caption": "Owner workspace \u00b7 Overview is the staff home.",
       "steps": [
-        "As staff, begin on Overview. Build a workout and Upload a drill are the main actions. Content holds your bank, builder and approval tools.",
+        "As staff, begin on Overview. Build a workout and Upload a drill are the main actions. Training holds your bank, builder and approval tools.",
         "Reviews holds authorized video-review work. Account holds account settings; Owners also have Accounts & training access.",
         "Customers use Today, Workouts, Progress and Account. A parent can switch the selected family athlete; a solo athlete has one individual profile.",
         "Check your account level before troubleshooting a missing button. Staff status alone does not open private family profiles or every video submission."
@@ -55,12 +55,12 @@
     },
     {
       "id": "upload",
-      "eyebrow": "Owner · Manager · Coach",
+      "eyebrow": "Owner \u00b7 Manager \u00b7 Coach",
       "title": "Turn one recording into a drill.",
       "intro": "Start with an original or licensed video and clear instructions. The guide's sample text attachment only illustrates the upload form; supply your own qualified-reviewed training media.",
       "image": "upload-details.jpg",
       "imageAlt": "The content editor fields for resource title, purpose, equipment and practice instructions, filled with a fictional title.",
-      "caption": "Content editor · scroll for audience, rights and Preview matches.",
+      "caption": "Content editor \u00b7 scroll for audience, rights and Preview matches.",
       "steps": [
         "Open Upload a drill or Content. Keep the destination on Shared website and choose Protected training for paid/private training content.",
         "In the native iPhone app, choose Choose & prepare iPhone video. Select a Photos recording, choose its start/end range and select Prepare this clip. Preview the prepared MP4. Your original stays in Photos. On the website, use Choose a video or file instead.",
@@ -72,14 +72,14 @@
     },
     {
       "id": "approval",
-      "eyebrow": "Submit first · release deliberately",
+      "eyebrow": "Submit first \u00b7 release deliberately",
       "title": "Review before anyone trains.",
       "intro": "Saving a shared draft does not publish it. Owner or Manager approval is a separate release decision.",
       "image": "approval.jpg",
       "imageAlt": "The staff approval dialog showing a fictional drill, release acknowledgement and Confirm approval and publish button.",
-      "caption": "Approval dialog · fictional attachment, instructions and audience.",
+      "caption": "Approval dialog \u00b7 fictional attachment, instructions and audience.",
       "steps": [
-        "Open Content → Drafts & approvals. Find the saved drill and choose Preview & review.",
+        "Open Content \u2192 Drafts & approvals. Find the saved drill and choose Preview & review.",
         "Choose Send for review and confirm. Its stage becomes Awaiting review. Coaches can submit their own drafts but cannot approve publication.",
         "As Owner or Manager, preview the actual attachment, instructions, rights and intended audience. Choose Approve & publish, acknowledge the release checks, then Confirm approval & publish.",
         "If changes are needed, choose Request changes and leave a clear note. Edit, save and resubmit the draft before reviewing it again."
@@ -88,19 +88,19 @@
     },
     {
       "id": "build",
-      "eyebrow": "Owner · Manager · Coach",
+      "eyebrow": "Owner \u00b7 Manager \u00b7 Coach",
       "title": "Build the complete workout.",
       "intro": "A drill is one activity. A workout is a named session with those activities in a specific order.",
       "image": "builder.jpg",
       "imageAlt": "The workout builder showing an ordered list of two fictional drills, move controls and total planned time.",
-      "caption": "Workout builder · order, total time and shared audience.",
+      "caption": "Workout builder \u00b7 order, total time and shared audience.",
       "steps": [
-        "On an approved protected drill, choose Build a workout with this drill. Or open Overview → Build a workout to start from the bank.",
+        "On an approved protected drill, choose Build a workout with this drill. Or open Overview \u2192 Build a workout to start from the bank.",
         "Enter a Workout name and optional Workout introduction. Search approved protected drills and choose Add for each activity.",
         "Use the up/down controls to set the order. Remove an activity from this workout if needed; that does not delete the drill from the bank.",
         "Check the common age, position and experience audience and planned duration. Choose Preview workout, inspect the whole session, then Save workout."
       ],
-      "tip": "The builder supports 1–12 compatible approved drills and at most 60 planned minutes. Those are software limits, not an exercise prescription. Save before leaving: unsaved builder edits are screen-only. Changing a saved template does not silently replace an already assigned version."
+      "tip": "The builder supports 1\u201312 compatible approved drills and at most 60 planned minutes. Those are software limits, not an exercise prescription. Save before leaving: unsaved builder edits are screen-only. Changing a saved template does not silently replace an already assigned version."
     },
     {
       "id": "assign",
@@ -109,7 +109,7 @@
       "intro": "Saving a workout puts it in the staff bank. An Owner's explicit assignment makes the saved session available to an eligible customer.",
       "image": "assignment.jpg",
       "imageAlt": "The workout assignment confirmation for a fictional parent email, showing the version and two ordered drills.",
-      "caption": "Assignment confirmation · the email shown is fictional.",
+      "caption": "Assignment confirmation \u00b7 the email shown is fictional.",
       "steps": [
         "Open the saved workout. Save or discard any unsaved changes before assigning it.",
         "Under Assign this workout, choose the verified approved adult customer account. Select Preview assignment to check eligibility.",
@@ -120,16 +120,16 @@
     },
     {
       "id": "practice",
-      "eyebrow": "Parent · Athlete",
+      "eyebrow": "Parent \u00b7 Athlete",
       "title": "Practice, pause and return.",
       "intro": "Today shows the next assigned session. Parents first select the correct family athlete; a solo athlete uses their own profile.",
       "image": "resume.jpg",
       "imageAlt": "Today's Training showing a fictional assigned workout, Resume workout and its saved drill position, with no completed practice recorded.",
-      "caption": "Saved practice · position retained, completion not yet reported.",
+      "caption": "Saved practice \u00b7 position retained, completion not yet reported.",
       "steps": [
         "Open Today. Check the session, equipment and planned time. Select the practice/start button; for a parent it can read Guide and record practice.",
         "Review the practice acknowledgement and select Begin workout. Each drill shows its attached media, instructions, equipment and coaching cue.",
-        "After practicing a drill, choose Complete drill · Next. Previous drill lets you revisit instructions. Watching a video alone does not record completion.",
+        "After practicing a drill, choose Complete drill \u00b7 Next. Previous drill lets you revisit instructions. Watching a video alone does not record completion.",
         "To stop for now, choose Save & leave workout. Reopen or refresh, select the same athlete and choose Resume workout, then Resume practice after the acknowledgement.",
         "After completing the session, choose Finish workout. Open Progress to see the participation record and any applicable parent review."
       ],
@@ -142,9 +142,9 @@
       "intro": "Video review is separate from workout access. An Owner must enable it for the approved adult pilot account and select its assigned review coach.",
       "image": "today.jpg",
       "imageAlt": "The fictional customer training workspace with its assigned session; optional review access is controlled separately.",
-      "caption": "Customer workspace · video-review access is a separate permission.",
+      "caption": "Customer workspace \u00b7 video-review access is a separate permission.",
       "steps": [
-        "Owner setup: open Accounts & training access → Workouts & video review access. Choose the account, enable the optional video review feature, select the coach, then review and save the access change.",
+        "Owner setup: open Accounts & training access \u2192 Workouts & video review access. Choose the account, enable the optional video review feature, select the coach, then review and save the access change.",
         "Customer: open Send a drill video, choose the assigned drill, then Record video or Choose video. The native app also offers Choose & prepare iPhone video. Preview before sending.",
         "Choose Send for coach review and keep the app open until confirmed. Merely selecting or previewing the clip does not send it.",
         "Assigned coach: open Reviews / Video reviews, open the authorized submission, enter Coaching feedback and choose Send coaching feedback. The customer can then read the saved feedback.",
