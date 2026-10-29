@@ -14,7 +14,7 @@
 | Server roster loading     | Draft PR #21,d791232c91cbdfdcc00cb6a6d3d70d3ee98d0e53                                                   | FinalCI 40953863302 **green**, checked 21:11.023 not installed, true flag absent. Hosted rehearsal and exact approval required.                                                                                                                                    |
 | Fictional learning sample | Draft PR #22,30601cd8cc89f38e5220be17506d22a793f0d765                                                   | Local checks pass; full CI 40954155710 **failed**: 436 web checks passed, 2 failed saving screenshots to a local-only /workspace path; later app/private-preview stages skipped. Isolated previewdd429a9b-9b74-4bd1-aa07-8b5e4e140b5d only; no production release. |
 
-Actual released source evidence: [Build 15 receipt and bounded audit](../build 15-audit/RELEASE-AND-AUDIT.md). New preview: [interactive](https://sample-learning.repformed.pages.dev/#sample-week), [provider receipt](sample-learning-preview-deployment.json). Preview/backend fixtures must never be presented as live customers or trusted grades.
+Actual released source evidence: [Build 15 receipt and bounded audit](../build15-audit/RELEASE-AND-AUDIT.md). New preview: [interactive](https://sample-learning.repformed.pages.dev/#sample-week), [provider receipt](sample-learning-preview-deployment.json). Preview/backend fixtures must never be presented as live customers or trusted grades.
 
 ## 2. Evidence quality and strict grading
 
