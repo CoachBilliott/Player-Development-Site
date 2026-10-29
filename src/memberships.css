@@ -26,13 +26,16 @@
 }
 .proposed-package-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 24px;
   align-items: stretch;
 }
 .experience .proposed-package {
-  padding: 28px;
-  gap: 18px;
+  padding: 22px;
+  gap: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
   background: var(--surface);
   box-shadow: none;
   border-radius: 8px;
@@ -57,7 +60,8 @@
   border-color: #c7a45c60;
 }
 .experience .proposed-package h2 {
-  font-size: clamp(29px, 3vw, 38px);
+  font-size: clamp(26px, 2.2vw, 32px);
+  min-height: 2.2em;
   line-height: 1.1;
   margin: 0;
 }
@@ -72,8 +76,9 @@
   flex-wrap: wrap;
   gap: 8px;
   width: 100%;
-  padding: 18px 0;
-  border-block: 1px solid var(--line);
+  padding: 12px 0 0;
+  border: 0;
+  margin: 0;
 }
 .proposal-price strong {
   font-size: 38px;
@@ -305,91 +310,265 @@
   accent-color: var(--brand-gold);
 }
 
-/* Compare the same fields in compact rows; details remain available on demand. */
-.proposed-package-grid {
-  grid-template-columns: 1fr;
-  gap: 16px;
+/* Essentials stay visible; complete feature lists are secondary disclosures. */
+.proposed-memberships .page-intro h1 {
+  font-size: clamp(38px, 5vw, 64px);
+  line-height: 1.05;
 }
-.experience .proposed-package {
-  display: grid;
-  grid-template-columns: minmax(190px, 1fr) minmax(250px, 1.5fr) minmax(
-      180px,
-      0.9fr
-    );
-  align-items: start;
-  gap: 28px;
-  text-align: left;
-  padding: 24px;
+.proposed-memberships .page-intro {
+  max-width: 850px;
 }
-.proposal-price {
-  border: 0;
-  padding: 14px 0 0;
-  margin: 0;
-}
-.proposal-identity,
-.proposal-summary,
-.proposal-action {
+.proposal-identity {
   min-width: 0;
 }
+.experience .proposed-package .proposal-audience {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.experience .proposed-package .proposal-benefit {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--ink);
+}
 .proposal-action {
   display: grid;
-  gap: 12px;
-  align-self: center;
+  gap: 10px;
+  margin-top: auto;
+  width: 100%;
 }
 .proposal-action .button {
+  min-height: 48px;
+  padding-inline: 12px;
   white-space: normal;
   text-align: left;
   justify-content: space-between;
-  min-height: 48px;
+  font-size: 13px;
 }
-.proposal-action .button svg {
+.proposal-action svg {
   flex-shrink: 0;
 }
+.proposal-closed {
+  margin: 0;
+  padding: 0;
+}
+.proposal-mobile-features {
+  display: none;
+}
+.package-comparison {
+  margin: 36px 0 12px;
+}
+.package-comparison h2 {
+  font-size: 32px;
+  margin: 0 0 16px;
+}
+.comparison-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+.comparison-scroll:focus-visible {
+  outline: 3px solid var(--brand-gold);
+  outline-offset: 5px;
+}
+.comparison-scroll table {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.comparison-scroll caption {
+  text-align: left;
+  padding: 16px;
+  color: var(--muted);
+  font-size: 14px;
+}
+.comparison-scroll th,
+.comparison-scroll td {
+  width: 20%;
+  padding: 16px;
+  text-align: left;
+  vertical-align: top;
+  line-height: 1.55;
+  border-top: 1px solid var(--line);
+}
+.comparison-scroll thead th {
+  font-family: var(--font-display);
+  font-size: 21px;
+  color: var(--ink);
+  background: var(--surface);
+}
+.comparison-scroll tbody th {
+  font-weight: 600;
+  color: var(--ink);
+}
+.comparison-scroll td {
+  color: var(--ink);
+}
+.comparison-scroll .is-excluded {
+  color: var(--muted);
+}
+.proposal-practical-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px;
+}
+.proposal-practical-grid h3 {
+  margin: 8px 0 12px;
+  font-size: 24px;
+}
+.proposal-rhythm .proposal-current-access {
+  border-top: 1px solid var(--line);
+  margin-top: 20px;
+  padding-top: 20px;
+}
+.proposal-full-details {
+  border-top: 1px solid var(--line);
+  margin: 0 0 32px;
+}
 .proposal-details {
-  margin-top: 12px;
+  border-bottom: 1px solid var(--line);
 }
 .proposal-details summary {
+  min-height: 48px;
+  padding: 16px 4px;
   cursor: pointer;
-  padding: 10px 0;
-  min-height: 44px;
-  font-size: 14px;
   font-weight: 600;
 }
-.proposal-details .proposal-focus,
-.proposal-details .proposal-includes {
-  margin: 10px 0;
+.proposal-details-content {
+  padding: 0 4px 24px;
+  max-width: 75ch;
 }
-.proposal-details .proposal-note {
-  margin-top: 16px !important;
+.proposal-details-content p {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.7;
 }
-.proposal-closed {
-  padding: 0;
-  margin: 0;
+.proposal-details-content .check-lines {
+  margin: 16px 0;
 }
 .package-interest .interest-selection {
   color: var(--ink);
   border-left: 2px solid var(--brand-gold);
   padding-left: 12px;
 }
-@media (max-width: 900px) {
-  .experience .proposed-package {
-    grid-template-columns: minmax(180px, 1fr) minmax(0, 1.5fr);
-  }
-  .proposal-action {
-    grid-column: 1 / -1;
-    justify-self: start;
+@media (max-width: 1100px) {
+  .proposed-package-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
-@media (max-width: 600px) {
-  .experience .proposed-package {
+@media (max-width: 760px) {
+  .proposed-package-grid {
     grid-template-columns: 1fr;
     gap: 16px;
-    padding: 22px;
   }
-  .proposal-action {
-    justify-self: stretch;
+  .experience .proposed-package {
+    padding: 20px;
+    gap: 12px;
+  }
+  .experience .proposed-package h2 {
+    min-height: 0;
+    font-size: 30px;
+  }
+  .proposal-identity {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 110px;
+    gap: 12px;
+    align-items: start;
+  }
+  .proposal-price {
+    padding-top: 0;
+    gap: 4px;
   }
   .proposal-price strong {
     font-size: 34px;
+  }
+  .proposal-price span {
+    font-size: 12px;
+  }
+  .proposal-price small {
+    font-size: 11px;
+  }
+  .proposal-action {
+    margin-top: 0;
+  }
+  .proposal-mobile-features {
+    display: grid;
+    gap: 8px;
+    margin: 4px 0;
+  }
+  .proposal-mobile-features > div {
+    display: grid;
+    grid-template-columns: minmax(100px, 0.9fr) minmax(0, 1.1fr);
+    gap: 12px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .proposal-mobile-features dt {
+    color: var(--muted);
+  }
+  .proposal-mobile-features dd {
+    margin: 0;
+    color: var(--ink);
+  }
+  .package-comparison {
+    display: none;
+  }
+  .proposal-practical-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .proposal-practical-grid h3 {
+    margin-bottom: 6px;
+  }
+  .proposal-rhythm h2 {
+    font-size: 30px;
+  }
+}
+@media (max-width: 360px) {
+  .proposal-identity {
+    grid-template-columns: minmax(0, 1fr) 90px;
+  }
+  .experience .proposed-package h2 {
+    font-size: 26px;
+  }
+}
+
+.proposal-price span {
+  flex-basis: 100%;
+}
+@media (max-width: 360px) {
+  .proposal-identity {
+    grid-template-columns: 1fr;
+  }
+  .proposal-price {
+    max-width: none;
+  }
+}
+
+.experience .proposed-package .proposal-annual {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--muted);
+  margin: 8px 0 0;
+  grid-column: 1 / -1;
+}
+@media (max-width: 760px) {
+  .experience .proposed-package .proposal-annual {
+    margin: 0;
+  }
+  .proposal-identity {
+    row-gap: 8px;
+  }
+}
+@media (max-width: 360px) {
+  .proposal-price span {
+    flex-basis: auto;
+  }
+  .proposal-price {
+    gap: 8px;
+    align-items: baseline;
   }
 }

@@ -101,22 +101,21 @@ export function Home() {
                 <strong>{p.cadence}</strong>
                 {p.id === "position-development" && (
                   <small>
-                    Position work replaces or adapts the two drills.
+                    Adds two position drills alongside the two movement
+                    sessions.
                   </small>
                 )}
                 {p.id === "elite-coaching" && (
                   <small>
-                    Written feedback · up to three minutes of footage per
-                    review.
+                    Personalized feedback · up to three minutes of footage per
+                    submission.
                   </small>
                 )}
               </li>
             ))}
           </ol>
           <div className="home-package-path-footer">
-            <span>
-              Prelaunch package plans. Features and pricing remain under review.
-            </span>
+            <span>Planned package features. Enrollment is not open.</span>
             <a className="text-button" href="#membership">
               Compare package plans <ArrowRight size={18} />
             </a>
@@ -187,7 +186,8 @@ export function Home() {
                 </h3>
                 <p>
                   Fundamental and position plans pair clear practice steps and
-                  coaching cues. Elite adds written feedback on selected drills.
+                  coaching cues. Elite proposes personalized corrections on
+                  athlete-chosen drills.
                 </p>
                 <span className="path-detail">
                   Progression designed around age, position and experience.
@@ -205,8 +205,8 @@ export function Home() {
             <h2>A week with a clear next step.</h2>
             <p>
               Understand the lesson. Follow the practice steps. Reflect on the
-              work. Proposed drill packages would release content on Sundays to
-              give the week a clear starting point.
+              work. The planned packages would deliver the upcoming week’s
+              content on Sundays to give the week a clear starting point.
             </p>
             <a className="text-button" href="#membership">
               Find the right package <ArrowUpRight size={19} />
@@ -222,12 +222,12 @@ export function Home() {
               {
                 n: "02",
                 title: "Put it into practice",
-                text: "Fundamentals adds two drill videos a week. Position Development adapts those assignments to one primary position.",
+                text: "Fundamentals proposes two movement sessions a week. Position Development adds two position-specific drills each week.",
               },
               {
                 n: "03",
                 title: "Bring the work back",
-                text: "Keep a record of participation. The Elite plan adds two selected video reviews per month, with written next-practice feedback.",
+                text: "Keep a record of participation. Elite proposes two athlete-chosen drill corrections per month, with feedback and next-step practice recommendations.",
               },
             ].map((step) => (
               <article className="practice-step" key={step.n}>

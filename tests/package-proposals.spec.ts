@@ -29,7 +29,7 @@ test("four future proposals distinguish cadence, price and review terms without 
   for (let i = 0; i < names.length; i++) {
     const card = page.getByRole("article", { name: names[i], exact: true });
     await expect(card).toContainText(`$${prices[i][0]}`);
-    await expect(card).toContainText(`$${prices[i][1]} / year proposed`);
+    await expect(card).toContainText(`$${prices[i][1]} / year`);
     await expect(card).toContainText("Not available to purchase");
     await expect(
       card.getByRole("button", {
@@ -40,29 +40,36 @@ test("four future proposals distinguish cadence, price and review terms without 
   }
   await expect(
     page.getByRole("article", { name: "Foundation", exact: true }),
-  ).toContainText("no drills");
+  ).toContainText("No drills");
   await expect(
     page.getByRole("article", { name: "Fundamentals", exact: true }),
-  ).toContainText("2 IQ + 2 fundamental drill videos per week");
+  ).toContainText("2 movement sessions / week");
+  await page
+    .getByText("What’s included in Position Development", { exact: true })
+    .click();
   await expect(
-    page.getByRole("article", { name: "Position Development", exact: true }),
+    page.getByRole("group", { name: "Position Development complete proposal" }),
   ).toContainText(
-    "Position assignments replace or adapt the two fundamental drills",
+    "The two position-specific drills are additional to the two movement sessions",
   );
-  const elite = page.getByRole("article", {
-    name: "Elite Coaching",
-    exact: true,
+  await page
+    .getByText("What’s included in Elite Coaching", { exact: true })
+    .click();
+  const elite = page.getByRole("group", {
+    name: "Elite Coaching complete proposal",
   });
   await expect(elite).toContainText(
-    "Two chosen drill-video reviews per month for each subscribed Elite athlete, with up to three minutes of footage per review",
+    "Two personalized drill corrections per month for each subscribed Elite athlete; the athlete chooses the drills",
   );
   await expect(elite).toContainText(
-    "Written strengths, corrections and next-practice guidance",
+    "Feedback identifying corrections and how to improve",
   );
   await expect(elite).toContainText("three business days, not guaranteed");
   await expect(
     page.getByRole("region", { name: "Proposed delivery rhythm" }),
-  ).toContainText("Sunday drill loading is proposed");
+  ).toContainText(
+    "planned packages would deliver the upcoming week’s content on Sundays",
+  );
   await expect(
     page.getByRole("button", { name: /checkout|pay|purchase|subscribe/i }),
   ).toHaveCount(0);
