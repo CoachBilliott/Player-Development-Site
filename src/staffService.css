@@ -505,6 +505,10 @@ dialog.modal:has(> .staff-detail) > h2 {
   margin: 8px 0 20px;
   padding-right: 32px;
 }
+dialog.modal:has(> .staff-detail) {
+  /* Keep focused/scrolled assignment controls above the sticky return action. */
+  scroll-padding-block: 24px 96px;
+}
 .staff-detail-footer {
   background: var(--surface, #222221);
   border-top: 1px solid var(--line);
