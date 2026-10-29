@@ -1,27 +1,16 @@
-import { ArrowLeft, ArrowUpRight, CircleHelp } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, CircleHelp, UserRound } from "lucide-react";
 import { Logo } from "./components";
 import { isStaff, ROLE_LABELS, type AccountRole } from "./roles";
 import { SocialLinks } from "./SocialLinks";
 import type { SharedState } from "./useSharedContent";
 import "./privateWorkspace.css";
 
-function workspaceNavigation(
-  role: AccountRole | null,
-  interest: boolean,
-): [string, string][] {
+function workspaceNavigation(role: AccountRole | null): [string, string][] {
   if (isStaff(role))
     return [
-      ["workspace", "Client service"],
-      ["coach", "Content"],
-      ["workout-builder", "Workouts"],
-      ["video-reviews", "Reviews"],
-      ...(role !== "coach" && interest
-        ? [["interest", "Interest"] as [string, string]]
-        : []),
-      ...(role === "owner"
-        ? [["access", "Team & access"] as [string, string]]
-        : []),
-      ["account", "Account"],
+      ["workspace", "Athletes"],
+      ["training", "Training"],
+      ["staff-settings", "Staff & settings"],
     ];
   return [
     ["workspace", "Today"],
@@ -39,10 +28,49 @@ export function PrivateHeader({
   page: string;
 }) {
   const ready = shared.signedIn && shared.accessReady && !shared.accessError;
+  const staff = isStaff(shared.role);
+  const trainingPages = [
+    "training",
+    "training-assign",
+    "training-access",
+    "coach",
+    "workout-builder",
+    "content-review",
+    "member-library",
+  ];
+  const legacyTrainingAccess =
+    page === "access" &&
+    new URLSearchParams(location.search).get("accessSection") === "training";
   const active = (route: string) =>
     route === page ||
-    (route === "app-workouts" && page === "member-library") ||
-    (route === "coach" && ["member-library", "content-review"].includes(page));
+    (staff &&
+      route === "training" &&
+      (trainingPages.includes(page) || legacyTrainingAccess)) ||
+    (staff &&
+      route === "workspace" &&
+      ["video-reviews", "interest"].includes(page)) ||
+    (staff &&
+      route === "staff-settings" &&
+      ["access", "launch", "staff-delivery"].includes(page) &&
+      !legacyTrainingAccess) ||
+    (!staff && route === "app-workouts" && page === "member-library");
+  const secondary: [string, string][] =
+    staff && (trainingPages.includes(page) || legacyTrainingAccess)
+      ? [
+          ["training", "Training bank"],
+          ["coach", "Upload lesson"],
+          ["workout-builder", "Build workout"],
+          ["content-review", "Drafts & approvals"],
+        ]
+      : staff && ["workspace", "video-reviews", "interest"].includes(page)
+        ? [
+            ["workspace", "Roster"],
+            ["video-reviews", "Video reviews"],
+            ...(shared.role !== "coach" && shared.interestEndpoint
+              ? [["interest", "Interest"] as [string, string]]
+              : []),
+          ]
+        : [];
   return (
     <header className="private-header">
       <div className="private-header-top">
@@ -50,6 +78,17 @@ export function PrivateHeader({
         <div className="private-header-meta">
           {ready && shared.role && (
             <span className="private-role">{ROLE_LABELS[shared.role]}</span>
+          )}
+          {ready && staff && (
+            <a
+              href="#account"
+              aria-label="Account settings"
+              aria-current={page === "account" ? "page" : undefined}
+              className="private-account-link"
+            >
+              <UserRound size={19} />
+              <span>Account</span>
+            </a>
           )}
           <a href="#contact" aria-label="Account help" className="private-help">
             <CircleHelp size={19} />
@@ -63,10 +102,7 @@ export function PrivateHeader({
       </div>
       {ready ? (
         <nav className="private-nav" aria-label="Workspace navigation">
-          {workspaceNavigation(
-            shared.role,
-            Boolean(shared.interestEndpoint),
-          ).map(([route, label]) => (
+          {workspaceNavigation(shared.role).map(([route, label]) => (
             <a
               key={route}
               href={`#${route}`}
@@ -83,6 +119,19 @@ export function PrivateHeader({
           </a>
           <span>Repformed account access</span>
         </div>
+      )}
+      {ready && !!secondary.length && (
+        <nav className="private-subnav" aria-label="Workspace tools">
+          {secondary.map(([route, label]) => (
+            <a
+              key={route}
+              href={`#${route}`}
+              aria-current={page === route ? "page" : undefined}
+            >
+              {label}
+            </a>
+          ))}
+        </nav>
       )}
     </header>
   );

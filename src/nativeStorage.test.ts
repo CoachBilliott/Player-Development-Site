@@ -63,13 +63,13 @@ it("offers staff content tabs only for authenticated staff roles", () => {
   ]);
   for (const role of ["parent", "athlete", null] as const)
     expect(mobileNavigation(true, role).map(([page]) => page)).not.toContain(
-      "coach",
+      "training",
     );
   for (const role of ["owner", "manager", "coach"] as const)
     expect(mobileNavigation(true, role).map(([page]) => page)).toContain(
-      "coach",
+      "training",
     );
   expect(mobileNavigation(false, "owner").map(([page]) => page)).not.toContain(
-    "coach",
+    "training",
   );
 });

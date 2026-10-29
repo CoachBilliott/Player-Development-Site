@@ -4,7 +4,6 @@ import { Admin } from "./Admin";
 import { Notice } from "./components";
 import type { SharedState } from "./useSharedContent";
 import { ROLE_LABELS } from "./roles";
-import { appSurface } from "./mobile";
 import { PrivateAccessMessage } from "./PrivateShell";
 import { MemberAccountPage } from "./MemberAccount";
 
@@ -13,15 +12,13 @@ export function ContentStudio({ shared, ...local }: Props) {
   const [selectedScope, setScope] = useState<"local" | "shared" | null>(null);
   const scope = selectedScope ?? "shared";
   const [nextScope, setNextScope] = useState<"local" | "shared" | null>(null);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState("");
   const [editorBusy, setEditorBusy] = useState(false);
   if (shared.signedIn && (!shared.accessReady || shared.accessError))
     return <MemberAccountPage shared={shared} />;
   if (shared.loading && selectedScope === null)
     return (
       <main className="page narrow">
-        <h1 tabIndex={-1}>Coach content studio</h1>
+        <h1 tabIndex={-1}>Upload a lesson.</h1>
         <p role="status">Opening your upload space…</p>
       </main>
     );
@@ -29,7 +26,7 @@ export function ContentStudio({ shared, ...local }: Props) {
     <>
       {shared.coach && (
         <div className="page narrow publishing-mode">
-          <details className="publishing-settings" open={!appSurface()}>
+          <details className="publishing-settings">
             <summary>Publishing options</summary>
             <div
               className="scene-tabs"
@@ -75,45 +72,12 @@ export function ContentStudio({ shared, ...local }: Props) {
                   <RefreshCw size={16} />
                   Refresh shared library
                 </button>
-                <button
-                  className="text-button"
-                  disabled={busy || editorBusy}
-                  onClick={() => {
-                    setBusy(true);
-                    void shared
-                      .signOut()
-                      .catch((e: Error) => setError(e.message))
-                      .finally(() => setBusy(false));
-                  }}
-                >
-                  Sign out
-                </button>
               </div>
             </div>
           </details>
-          <a
-            className="button secondary"
-            href="#workout-builder"
-            aria-disabled={editorBusy}
-            onClick={(event) => {
-              if (editorBusy) event.preventDefault();
-            }}
-          >
-            Build a complete workout
-          </a>
-          <a
-            className="button secondary"
-            href="#content-review"
-            aria-disabled={editorBusy}
-            onClick={(e) => {
-              if (editorBusy) e.preventDefault();
-            }}
-          >
-            Drafts & approvals
-          </a>
-          {(shared.error || error) && (
+          {shared.error && (
             <p className="form-error" role="alert">
-              {shared.error || error}
+              {shared.error}
             </p>
           )}
           {shared.message && <p role="status">{shared.message}</p>}

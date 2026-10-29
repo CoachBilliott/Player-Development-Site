@@ -178,14 +178,15 @@ test("Owner can separately assign workouts and optional review access without ch
   context,
 }) => {
   const backend = await fixture(context, "owner");
-  await page.goto("./?source=app#access");
-  await page
-    .getByRole("button", { name: "Training access", exact: true })
-    .click();
+  await page.goto("./?source=app#training-access");
   const panel = page.getByRole("region", {
     name: "Workout and video package access",
   });
   await panel.getByLabel("Customer account").selectOption(userId);
+  await page
+    .getByText("Individual lesson access — optional", { exact: true })
+    .click();
+
   await panel.getByLabel("Fictional assigned footwork").check();
   await panel.getByLabel("Enable the optional video review feature").check();
   await panel.getByLabel("Assigned review coach").selectOption(coachId);

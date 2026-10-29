@@ -21,6 +21,11 @@ export function navigationFor(
   if (
     [
       "workspace",
+      "training",
+      "training-assign",
+      "training-access",
+      "staff-settings",
+      "staff-delivery",
       "account",
       "profiles",
       "interest",
@@ -34,19 +39,11 @@ export function navigationFor(
     ].includes(page) &&
     role
   ) {
-    if (role === "owner")
+    if (role === "owner" || role === "manager" || role === "coach")
       return [
-        ["workspace", "Overview"],
-        ["coach", "Upload & content"],
-        ["video-reviews", "Video reviews"],
-        ["access", "Account access"],
-      ];
-    if (role === "manager" || role === "coach")
-      return [
-        ["workspace", "Overview"],
-        ["coach", "Upload & content"],
-        ["video-reviews", "Video reviews"],
-        ["member-library", "Content library"],
+        ["workspace", "Athletes"],
+        ["training", "Training"],
+        ["staff-settings", "Staff & settings"],
       ];
     return [
       ["workspace", role === "parent" ? "My family" : "My training"],

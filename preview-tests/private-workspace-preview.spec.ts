@@ -33,16 +33,22 @@ test("fictional role views use actual components and cannot reach a production b
     await expect(
       page.getByRole("heading", {
         level: 1,
-        name: role === "coach" ? "Your athletes." : "Client service.",
+        name: role === "coach" ? "Your athletes." : "Athletes.",
       }),
     ).toBeVisible();
+    await expect(nav.getByRole("link")).toHaveText([
+      "Athletes",
+      "Training",
+      "Staff & settings",
+    ]);
     await expect(
-      nav.getByRole("link", { name: "Team & access", exact: true }),
-    ).toHaveCount(role === "owner" ? 1 : 0);
-    await expect(
-      nav.getByRole("link", { name: "Interest", exact: true }),
+      page
+        .getByRole("navigation", { name: "Workspace tools" })
+        .getByRole("link", { name: "Interest", exact: true }),
     ).toHaveCount(role === "coach" ? 0 : 1);
-    await nav.getByRole("link", { name: "Account", exact: true }).click();
+    await page
+      .getByRole("link", { name: "Account settings", exact: true })
+      .click();
     await expect(
       page.getByRole("heading", { name: "Account settings.", exact: true }),
     ).toBeVisible();
@@ -93,13 +99,16 @@ test("preview account changes fail honestly and keep stored fictional roles unch
   await expect(page.getByRole("alert")).toContainText("Sign-in failed");
   await expect(page.getByLabel("Preview role")).toHaveValue("visitor");
   await page.getByLabel("Preview role").selectOption("owner");
-  await page.getByRole("link", { name: "Team & access", exact: true }).click();
+  await page
+    .getByRole("link", { name: "Staff & settings", exact: true })
+    .click();
   await expect(
     page.getByLabel("Account level for fictional-owner@example.test"),
   ).toBeDisabled();
   const row = page.locator(".access-person").filter({
     has: page.getByText("fictional-manager@example.test", { exact: true }),
   });
+  await row.locator("summary").click();
   await row.getByRole("combobox").selectOption("coach");
   await row.getByRole("button", { name: "Review access change" }).click();
   await page.getByRole("button", { name: "Confirm account level" }).click();
@@ -109,8 +118,108 @@ test("preview account changes fail honestly and keep stored fictional roles unch
   await page.getByRole("button", { name: "Keep current level" }).click();
   await page.reload();
   await page.getByLabel("Preview role").selectOption("owner");
-  await page.getByRole("link", { name: "Team & access", exact: true }).click();
+  await page
+    .getByRole("link", { name: "Staff & settings", exact: true })
+    .click();
   await expect(
     page.getByLabel("Account level for fictional-manager@example.test"),
   ).toHaveValue("manager");
+});
+
+test("three staff journeys show real components but reject fictional assignment writes", async ({
+  page,
+}, info) => {
+  await page.goto("./#account");
+  await page.getByLabel("Preview role").selectOption("owner");
+  await mkdir("artifacts/staff-workflows", { recursive: true });
+  await page.screenshot({
+    path: `artifacts/staff-workflows/preview-athletes-${info.project.name}.png`,
+    fullPage: true,
+  });
+  await page
+    .getByRole("navigation", { name: "Workspace navigation" })
+    .getByRole("link", { name: "Training", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "Your training bank." }),
+  ).toBeVisible();
+  await page.screenshot({
+    path: `artifacts/staff-workflows/preview-training-${info.project.name}.png`,
+    fullPage: true,
+  });
+  await page
+    .getByRole("navigation", { name: "Workspace navigation" })
+    .getByRole("link", { name: "Athletes", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: /Fictional Jordan/ })
+    .first()
+    .click();
+  const athlete = page.getByRole("dialog");
+  await athlete
+    .getByRole("button", { name: "Assign training", exact: true })
+    .click();
+  await athlete
+    .getByRole("button", { name: /Ready position & controlled steps/ })
+    .click();
+  await expect(page.getByLabel("Assign to customer account")).toHaveCount(0);
+  await expect(page.getByLabel("Assign to athlete")).toHaveCount(0);
+  await athlete
+    .getByRole("button", { name: "Preview assignment", exact: true })
+    .click();
+  const confirm = athlete.getByRole("region", {
+    name: "Assign this complete workout?",
+  });
+  await expect(confirm).toContainText(
+    "This replaces only this athlete's current saved workout.",
+  );
+  const keepCurrent = confirm.getByRole("button", {
+    name: "Keep current assignment",
+    exact: true,
+  });
+  await keepCurrent.scrollIntoViewIfNeeded();
+  expect(
+    await keepCurrent.evaluate((button) => {
+      const box = button.getBoundingClientRect();
+      return (
+        document
+          .elementFromPoint(box.x + box.width / 2, box.y + box.height / 2)
+          ?.closest("button") === button
+      );
+    }),
+  ).toBe(true);
+  await page.screenshot({
+    path: `artifacts/staff-workflows/preview-confirm-${info.project.name}.png`,
+    fullPage: true,
+  });
+  await confirm
+    .getByRole("button", { name: "Confirm workout assignment", exact: true })
+    .click();
+  await expect(confirm.getByRole("alert")).toContainText("not confirmed");
+  await confirm
+    .getByRole("button", { name: "Keep current assignment", exact: true })
+    .click();
+  await athlete
+    .getByRole("button", { name: "Cancel assignment", exact: true })
+    .click();
+  await athlete
+    .getByRole("button", { name: "Back to athletes", exact: true })
+    .click();
+  await page
+    .getByRole("navigation", { name: "Workspace navigation" })
+    .getByRole("link", { name: "Staff & settings", exact: true })
+    .click();
+  await page.screenshot({
+    path: `artifacts/staff-workflows/preview-staff-${info.project.name}.png`,
+    fullPage: true,
+  });
+  for (const width of [320, 375, 390, 768]) {
+    await page.setViewportSize({ width, height: 844 });
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+  }
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 });

@@ -707,6 +707,7 @@ test("uploaded resource edits preserve its file, support cancellation, and persi
     page.getByText("Resource changes saved.", { exact: true }),
   ).toBeVisible();
   await page.reload();
+  await page.getByText("Publishing options", { exact: true }).click();
   await page.getByRole("button", { name: "This browser", exact: true }).click();
   await page
     .getByRole("button", { name: "Switch destination", exact: true })

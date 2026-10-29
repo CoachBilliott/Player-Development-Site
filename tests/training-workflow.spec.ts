@@ -1,3 +1,4 @@
+import { openAssignment } from "./workoutFixture";
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { fixture, state, save, accountId, profileId } from "./workoutFixture";
@@ -75,6 +76,7 @@ test("a coach submits privately, an Owner reviews, then builds and assigns the a
     .getByRole("button", { name: "Add Fictional drill 2 to workout" })
     .click();
   await save(staff);
+  await openAssignment(staff);
   await staff.getByLabel("Assign to customer account").selectOption(accountId);
   await staff.getByRole("button", { name: "Preview assignment" }).click();
   await staff

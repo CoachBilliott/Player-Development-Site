@@ -119,8 +119,9 @@ export async function staffFixture(
   data: ReturnType<typeof staffState>,
   role = "owner",
   actor = staffId,
+  training = state(),
 ) {
-  await fixture(context, state(), role, actor);
+  await fixture(context, training, role, actor);
   await context.route("**/content-config.json", (r) =>
     r.fulfill({
       json: {
@@ -141,14 +142,26 @@ export async function staffFixture(
       const allowed = (r: StaffAthlete) =>
         ["owner", "manager"].includes(role) ||
         (role === "coach" && r.coach_id === actor);
-      const view = (r: StaffAthlete) =>
-        role === "coach"
+      const view = (r: StaffAthlete) => {
+        const assignment = r.athlete_id
+          ? training.profileAssignments.get(r.athlete_id)
+          : null;
+        const updated = assignment
           ? {
               ...r,
+              workout_id: assignment.workout_id as string | null,
+              workout_title: assignment.workout_title as string,
+              workout_version: assignment.workout_version as number,
+            }
+          : r;
+        return role === "coach"
+          ? {
+              ...updated,
               client_label: `Client ${r.client_id.slice(0, 8)}`,
               review_scope: "assigned_only",
             }
-          : r;
+          : updated;
+      };
       if (p.endsWith("/staff_client_service_roster"))
         return route.fulfill({
           json: {

@@ -283,7 +283,9 @@ async function fixture(
         },
       ]);
     if (path.endsWith("/rpc/workout_assignment_profiles"))
-      return json(backend.profiles);
+      return json(
+        backend.profiles.filter((p) => p.owner_id === body.target_account),
+      );
     if (path.endsWith("/rpc/profile_workout_assignment"))
       return json(currentAssignment);
     if (path.endsWith("/member_workout_assignments"))
@@ -436,3 +438,29 @@ async function save(page: import("@playwright/test").Page) {
 
 export { state, fixture, build, save, uid, staffId, accountId, profileId };
 export type { Row, State };
+
+/** Regression coverage for retained legacy assignment URLs. The primary UI is tested in athlete-assignment.spec.ts. */
+export async function openAssignment(page: import("@playwright/test").Page) {
+  if (await page.getByLabel("Assign to customer account").isVisible()) return;
+  const id = await page
+    .locator('.builder-workout-choice[aria-pressed="true"]')
+    .getAttribute("data-workout-id");
+  if (!id)
+    throw Error(
+      "Choose a saved workout before opening legacy assignment coverage",
+    );
+  await page.goto(`./?trainingWorkout=${id}#training-assign`);
+  await expect(page.getByLabel("Assign to customer account")).toBeVisible();
+}
+export async function editCurrentWorkout(
+  page: import("@playwright/test").Page,
+) {
+  await page
+    .getByRole("link", { name: "Back to Training", exact: true })
+    .click();
+  await page
+    .getByRole("link", { name: "Edit workout", exact: true })
+    .first()
+    .click();
+  await expect(page.getByLabel("Workout name")).toBeVisible();
+}

@@ -1,3 +1,10 @@
+import {
+  TrainingWorkspace,
+  AssignTrainingWorkspace,
+  IndividualTrainingAccess,
+  StaffDeliveryWorkspace,
+} from "./StaffTraining";
+import { StaffSettingsWorkspace } from "./Workspaces";
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowLeft,
@@ -117,6 +124,11 @@ const safeHash = () => {
     "app-progress",
     "video-reviews",
     "workout-builder",
+    "training",
+    "training-assign",
+    "training-access",
+    "staff-settings",
+    "staff-delivery",
     "content-review",
     "onboarding",
     "today",
@@ -160,6 +172,7 @@ export default function App() {
   const stateSnapshot = useRef<State>(initial.state);
   const [warning, setWarning] = useState(initial.warning);
   const [page, setPage] = useState(safeHash);
+  const pageSnapshot = useRef(page);
   const [menu, setMenu] = useState(false);
   const [detail, setDetail] = useState<Drill | null>(null);
   const [ready, setReady] = useState<string[] | null>(null);
@@ -182,15 +195,24 @@ export default function App() {
   }, [mobile, shared.signedIn, page]);
   useEffect(() => {
     const fn = () => {
-      setPage(safeHash());
+      const next = safeHash(),
+        changed = next !== pageSnapshot.current;
+      pageSnapshot.current = next;
+      setPage(next);
       setMenu(false);
-      window.scrollTo(0, 0);
-      requestAnimationFrame(() =>
-        mainRef.current?.querySelector<HTMLElement>("h1")?.focus(),
-      );
+      if (changed) {
+        window.scrollTo(0, 0);
+        requestAnimationFrame(() =>
+          mainRef.current?.querySelector<HTMLElement>("h1")?.focus(),
+        );
+      }
     };
     window.addEventListener("hashchange", fn);
-    return () => window.removeEventListener("hashchange", fn);
+    window.addEventListener("popstate", fn);
+    return () => {
+      window.removeEventListener("hashchange", fn);
+      window.removeEventListener("popstate", fn);
+    };
   }, []);
   useEffect(() => {
     if (!toast) return;
@@ -373,6 +395,11 @@ export default function App() {
     "member-library",
     "launch",
     "workout-builder",
+    "training",
+    "training-assign",
+    "training-access",
+    "staff-settings",
+    "staff-delivery",
     "content-review",
     "video-reviews",
     "coach",
@@ -529,6 +556,16 @@ export default function App() {
               <Workspace shared={shared} />
             ) : page === "video-reviews" ? (
               <CoachVideoReviews shared={shared} />
+            ) : page === "training" ? (
+              <TrainingWorkspace shared={shared} />
+            ) : page === "training-assign" ? (
+              <AssignTrainingWorkspace shared={shared} />
+            ) : page === "training-access" ? (
+              <IndividualTrainingAccess shared={shared} />
+            ) : page === "staff-settings" ? (
+              <StaffSettingsWorkspace shared={shared} />
+            ) : page === "staff-delivery" ? (
+              <StaffDeliveryWorkspace shared={shared} />
             ) : page === "access" ? (
               <AccessWorkspace shared={shared} />
             ) : page === "interest" ? (

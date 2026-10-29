@@ -877,6 +877,15 @@ test("Owner manages five levels with protected self access, confirmation, cancel
     page.getByRole("heading", { name: "Owner", exact: true }),
   ).toBeVisible();
   await page.goto("./#access");
+  const allAccounts = page.getByRole("button", {
+    name: "All accounts",
+    exact: true,
+  });
+  if (await allAccounts.isVisible()) await allAccounts.click();
+  for (const summary of await page
+    .locator("details.access-person > summary")
+    .all())
+    await summary.click();
   await expect(
     page.getByLabel("Account level for fictional-parent@example.test", {
       exact: true,
@@ -1093,9 +1102,9 @@ test("a private family athlete joins with a parent code, reports practice withou
 });
 
 for (const [role, heading] of [
-  ["owner", "Your platform. Your playbook."],
-  ["manager", "Keep the team moving."],
-  ["coach", "Build the next great practice."],
+  ["owner", "Athletes."],
+  ["manager", "Athletes."],
+  ["coach", "Your athletes."],
 ] as const) {
   test(`${role} receives the matching authenticated workspace and old preview links do not elevate permissions`, async ({
     page,
@@ -1109,7 +1118,9 @@ for (const [role, heading] of [
       page.getByRole("heading", { name: heading, exact: true }),
     ).toBeVisible();
     await expect(
-      page.getByRole("link", { name: /Upload a workout/, exact: false }),
+      page
+        .getByRole("navigation", { name: "Workspace navigation" })
+        .getByRole("link", { name: "Training", exact: true }),
     ).toBeVisible();
     await page.goto("./#demo-owner");
     await expect(
@@ -1123,6 +1134,10 @@ for (const [role, heading] of [
       page.getByRole("heading", { name: heading, exact: true }),
     ).toBeVisible();
     await page.goto("./#access");
+    for (const summary of await page
+      .locator("details.access-person > summary")
+      .all())
+      await summary.click();
     if (role === "owner")
       await expect(
         page.getByRole("group", { name: "Team access sections" }),
@@ -1212,6 +1227,15 @@ test("Parent and adult Athlete workspaces use private profiles; inactive members
     }),
   ).toBeVisible();
   await page.goto("./#access");
+  const allAccounts = page.getByRole("button", {
+    name: "All accounts",
+    exact: true,
+  });
+  if (await allAccounts.isVisible()) await allAccounts.click();
+  for (const summary of await page
+    .locator("details.access-person > summary")
+    .all())
+    await summary.click();
   await expect(
     page.getByRole("heading", { name: "Owner access is required." }),
   ).toBeVisible();
@@ -1598,14 +1622,13 @@ test("staff app navigation stays on authorized content tools rather than member 
   await page.goto("./?source=app#workspace");
   const nav = page.getByRole("navigation", { name: "App navigation" });
   await expect(nav.getByRole("link")).toHaveText([
-    "Overview",
-    "Content",
-    "Reviews",
+    "Athletes",
+    "Training",
+    "Staff",
     "Account",
-    "Help",
   ]);
   await expect(
-    page.getByRole("heading", { name: "Build the next great practice." }),
+    page.getByRole("heading", { name: "Your athletes." }),
   ).toBeVisible();
   await page.goto("./?source=app#app-progress");
   await expect(
@@ -1665,12 +1688,12 @@ for (const role of ["owner", "manager", "coach"] as const) {
     await expect(
       page
         .getByRole("navigation", { name: "Workspace navigation" })
-        .getByRole("link", { name: "Content", exact: true }),
+        .getByRole("link", { name: "Training", exact: true }),
     ).toBeVisible();
     await page.goto("./?source=app#workspace");
     const nav = page.getByRole("navigation", { name: "App navigation" });
     await expect(
-      nav.getByRole("link", { name: "Overview", exact: true }),
+      nav.getByRole("link", { name: "Athletes", exact: true }),
     ).toBeVisible();
     await nav.getByRole("link", { name: "Account", exact: true }).click();
     await expect(
@@ -1681,7 +1704,7 @@ for (const role of ["owner", "manager", "coach"] as const) {
     ).toBeVisible();
     await page.reload();
     await expect(
-      nav.getByRole("link", { name: "Overview", exact: true }),
+      nav.getByRole("link", { name: "Athletes", exact: true }),
     ).toBeVisible();
     await nav.getByRole("link", { name: "Account", exact: true }).click();
     await expect(page.getByLabel("Account type", { exact: true })).toHaveCount(
