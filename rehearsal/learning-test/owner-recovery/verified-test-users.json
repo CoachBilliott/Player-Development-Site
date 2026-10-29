@@ -1,0 +1,35 @@
+{
+  "project_ref": "ojcfrfpeftvngyluomex",
+  "verified_at": "2026-10-29T01:59:00Z",
+  "notification_observation": {
+    "password_changed_enabled": false,
+    "at": "2026-10-29T01:59:00Z",
+    "note": "Browser verified read-only. Recheck immediately before apply; this file does not establish current setting."
+  },
+  "users": [
+    {
+      "id": "17054a51-d756-4b9e-8048-c82973fe0c55",
+      "email": "repformed-learning-owner@example.test"
+    },
+    {
+      "id": "134e7d0b-e54d-488b-8848-8254db86757c",
+      "email": "repformed-learning-manager@example.test"
+    },
+    {
+      "id": "7853c212-2c83-4b6a-ab95-0c8fa81c75af",
+      "email": "repformed-learning-coach@example.test"
+    },
+    {
+      "id": "2d136c01-ce7d-4c4d-b814-5af860dd707c",
+      "email": "repformed-learning-other-coach@example.test"
+    },
+    {
+      "id": "dc6804e6-fc2f-4bb0-a7ca-de8514e09024",
+      "email": "repformed-learning-parent@example.test"
+    },
+    {
+      "id": "2a566ee0-dd1f-4244-a16f-2c086bc1c6a2",
+      "email": "repformed-learning-other-parent@example.test"
+    }
+  ]
+}

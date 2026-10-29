@@ -1,0 +1,17 @@
+{
+  "name": "repformed-owner-test-recovery",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test recovery.test.mjs",
+    "verify": "node recover-test-users.mjs --allowlist verified-test-users.json",
+    "recover": "node recover-test-users.mjs --allowlist verified-test-users.json --apply"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "2.118.0"
+  }
+}
