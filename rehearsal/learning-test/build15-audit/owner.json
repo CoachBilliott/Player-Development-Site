@@ -1,0 +1,72 @@
+{
+  "role": "owner",
+  "build": 15,
+  "source": "0816c343a99a76e03ad2e48c7e16207058624c02",
+  "method": "Exact signed Build15 IPA web assets in local Chromium app-mode; fake backend and adults only; not physical iOS/live service acceptance",
+  "browser": "154.0.8037.57",
+  "viewport": "390×844",
+  "network": "loopback; service workers blocked; reduced motion; external requests denied; no real emails/accounts",
+  "samples": [
+    {
+      "ready_heading": "Athletes.",
+      "ready_ui_ms": 450.9,
+      "dom_content_loaded_ms": 178.09999999776483,
+      "load_ms": 178.39999999850988,
+      "first_contentful_paint_ms": 276,
+      "dom_elements": 206,
+      "scroll_width": 390,
+      "viewport_width": 390
+    },
+    {
+      "ready_heading": "Athletes.",
+      "ready_ui_ms": 455.4,
+      "dom_content_loaded_ms": 180.39999999850988,
+      "load_ms": 181.5,
+      "first_contentful_paint_ms": 268,
+      "dom_elements": 206,
+      "scroll_width": 390,
+      "viewport_width": 390
+    },
+    {
+      "ready_heading": "Athletes.",
+      "ready_ui_ms": 410.1,
+      "dom_content_loaded_ms": 157.90000000223517,
+      "load_ms": 158,
+      "first_contentful_paint_ms": 244,
+      "dom_elements": 206,
+      "scroll_width": 390,
+      "viewport_width": 390
+    }
+  ],
+  "median_ready_ui_ms": 450.9,
+  "journey": [
+    {
+      "task": "Default app navigation",
+      "links": [
+        "Athletes",
+        "Training",
+        "Staff",
+        "Account"
+      ]
+    },
+    {
+      "task": "Open assigned/authorized athlete detail",
+      "clicks": 1,
+      "focus": {
+        "tag": "BUTTON",
+        "text": "",
+        "inside": true
+      },
+      "actions": [
+        "",
+        "Assign training ",
+        "Back to athletes"
+      ]
+    },
+    {
+      "task": "Open account from role workspace",
+      "clicks": 3,
+      "heading": "Account settings."
+    }
+  ]
+}

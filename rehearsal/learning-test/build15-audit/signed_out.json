@@ -1,0 +1,64 @@
+{
+  "role": "signed_out",
+  "build": 15,
+  "source": "0816c343a99a76e03ad2e48c7e16207058624c02",
+  "method": "Exact signed Build15 IPA web assets in local Chromium app-mode; fake backend and adults only; not physical iOS/live service acceptance",
+  "browser": "154.0.8037.57",
+  "viewport": "390×844",
+  "network": "loopback; service workers blocked; reduced motion; external requests denied; no real emails/accounts",
+  "samples": [
+    {
+      "ready_heading": "YOUR TRAINING\nSTARTS HERE.",
+      "ready_ui_ms": 466.2,
+      "dom_content_loaded_ms": 244,
+      "load_ms": 244.60000000149012,
+      "first_contentful_paint_ms": 408,
+      "dom_elements": 75,
+      "scroll_width": 390,
+      "viewport_width": 390
+    },
+    {
+      "ready_heading": "YOUR TRAINING\nSTARTS HERE.",
+      "ready_ui_ms": 300.6,
+      "dom_content_loaded_ms": 170.39999999850988,
+      "load_ms": 170.89999999850988,
+      "first_contentful_paint_ms": null,
+      "dom_elements": 75,
+      "scroll_width": 390,
+      "viewport_width": 390
+    },
+    {
+      "ready_heading": "YOUR TRAINING\nSTARTS HERE.",
+      "ready_ui_ms": 267.9,
+      "dom_content_loaded_ms": 149,
+      "load_ms": 149.19999999925494,
+      "first_contentful_paint_ms": null,
+      "dom_elements": 75,
+      "scroll_width": 390,
+      "viewport_width": 390
+    }
+  ],
+  "median_ready_ui_ms": 300.6,
+  "journey": [
+    {
+      "task": "Header help remains separate from account heading",
+      "help": {
+        "x": 326,
+        "y": 12,
+        "width": 44,
+        "height": 44
+      },
+      "tag": {
+        "x": 20,
+        "y": 97,
+        "width": 123.78125,
+        "height": 14
+      },
+      "same_line": false
+    },
+    {
+      "task": "Welcome → login → help; no credentials sent",
+      "clicks": 2
+    }
+  ]
+}

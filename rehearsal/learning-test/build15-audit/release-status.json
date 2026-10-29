@@ -1,0 +1,89 @@
+{
+  "updated_at": "2026-10-29T19:54:47.182353+00:00",
+  "source": "0816c343a99a76e03ad2e48c7e16207058624c02",
+  "pr": 20,
+  "pr_ci": {
+    "run": 40934610403,
+    "conclusion": "success"
+  },
+  "main_ci": {
+    "run": 40936961175,
+    "conclusion": "success"
+  },
+  "native_validation": {
+    "run": 40937081398,
+    "status": "completed",
+    "conclusion": "success",
+    "simulator_tests": 6
+  },
+  "website_deploy": {
+    "verified_at": "2026-10-29T19:48:20.589987+00:00",
+    "source": "0816c343a99a76e03ad2e48c7e16207058624c02",
+    "deployment_id": "bab6aa19-838c-424e-8aa1-d562cb7a88c2",
+    "url": "https://bab6aa19.repformed.pages.dev",
+    "canonical_url": "https://repformed.com",
+    "created_on": "2026-10-29T19:46:55.638204Z",
+    "environment": "production",
+    "stage": {
+      "name": "deploy",
+      "started_on": null,
+      "ended_on": "2026-10-29T19:46:57.134354Z",
+      "status": "success"
+    },
+    "entry": "./assets/index-CiTCzc3S.js",
+    "config_sha256": "bce7ca9fc4b5806db2b10d51e0ef06a04c455bf36d145d331409bb94b0f1c39c",
+    "normal_auth": true,
+    "public_signup": false,
+    "learning": false,
+    "first_upload_attempt_failed": {
+      "http": 400,
+      "code": 9106
+    },
+    "retry_context": "Same route and credentials; runtime readiness restored after UNKNOWN state. No credential/scope changes. One retry.",
+    "worker_public_browser_qa": "Not performed; known frontend403/1010 restrictions, independent browser requested."
+  },
+  "signed15_upload": {
+    "run": 40942332407,
+    "conclusion": "success",
+    "upload_time": "2026-10-29T19:48:29Z",
+    "delivery_uuid": "8a6cbee2-4168-4ec5-bafb-400ffc6c2ca0"
+  },
+  "learning_activation": false,
+  "production_database_changes": false,
+  "runtime_observation": {
+    "spec_revision": "9",
+    "phase": "running",
+    "network_policy": "enforced",
+    "cloudflare_binding": "ready",
+    "persistent_changes": false
+  },
+  "apple_processing": {
+    "run": 40944073621,
+    "checked_at": "2026-10-29T19:53:24.989Z",
+    "build": {
+      "id": "8a6cbee2-4168-4ec5-bafb-400ffc6c2ca0",
+      "buildNumber": "15",
+      "version": "0.1.0",
+      "uploadedDate": "2026-10-29T12:49:28-07:00",
+      "processingState": "VALID",
+      "expired": false,
+      "expirationDate": "2027-01-27T11:49:28-08:00",
+      "usesNonExemptEncryption": false,
+      "internalBuildState": "IN_BETA_TESTING",
+      "externalBuildState": "READY_FOR_BETA_SUBMISSION"
+    },
+    "group": "Owner Testing",
+    "new_testers": false,
+    "external_beta_or_app_store_submission": false
+  },
+  "exact_ipa_audit": {
+    "static": "pass",
+    "role_layout_cases": 15,
+    "passed": 15,
+    "narrow_cases": 7,
+    "narrow_passed": 7,
+    "limits": "Fictional backend/browser app mode, not physical device/live roles.",
+    "receipt": "build15-ipa-static-audit.json"
+  },
+  "full_product_launch_pass": false
+}

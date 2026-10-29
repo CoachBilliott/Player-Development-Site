@@ -1,0 +1,26 @@
+{
+  "verified_at": "2026-10-29T19:48:20.589987+00:00",
+  "source": "0816c343a99a76e03ad2e48c7e16207058624c02",
+  "deployment_id": "bab6aa19-838c-424e-8aa1-d562cb7a88c2",
+  "url": "https://bab6aa19.repformed.pages.dev",
+  "canonical_url": "https://repformed.com",
+  "created_on": "2026-10-29T19:46:55.638204Z",
+  "environment": "production",
+  "stage": {
+    "name": "deploy",
+    "started_on": null,
+    "ended_on": "2026-10-29T19:46:57.134354Z",
+    "status": "success"
+  },
+  "entry": "./assets/index-CiTCzc3S.js",
+  "config_sha256": "bce7ca9fc4b5806db2b10d51e0ef06a04c455bf36d145d331409bb94b0f1c39c",
+  "normal_auth": true,
+  "public_signup": false,
+  "learning": false,
+  "first_upload_attempt_failed": {
+    "http": 400,
+    "code": 9106
+  },
+  "retry_context": "Same route and credentials; runtime readiness restored after UNKNOWN state. No credential/scope changes. One retry.",
+  "worker_public_browser_qa": "Not performed; known frontend403/1010 restrictions, independent browser requested."
+}

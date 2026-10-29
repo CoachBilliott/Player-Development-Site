@@ -1,0 +1,14 @@
+
+Running 7 tests using 1 worker
+
+(node:111319) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 ../.player-development-setup/build15-exact-narrow-tests/roles.spec.ts:68:27 › signed_out: phone appearance and accessible role navigation (2.4s)
+  ✓  2 ../.player-development-setup/build15-exact-narrow-tests/roles.spec.ts:68:27 › owner: phone appearance and accessible role navigation (4.0s)
+  ✓  3 ../.player-development-setup/build15-exact-narrow-tests/roles.spec.ts:68:27 › manager: phone appearance and accessible role navigation (3.7s)
+  ✓  4 ../.player-development-setup/build15-exact-narrow-tests/roles.spec.ts:68:27 › coach: phone appearance and accessible role navigation (3.6s)
+  ✓  5 ../.player-development-setup/build15-exact-narrow-tests/roles.spec.ts:68:27 › unassigned_coach: phone appearance and accessible role navigation (3.4s)
+  ✓  6 ../.player-development-setup/build15-exact-narrow-tests/roles.spec.ts:68:27 › guardian: phone appearance and accessible role navigation (3.5s)
+  ✓  7 ../.player-development-setup/build15-exact-narrow-tests/roles.spec.ts:68:27 › athlete: phone appearance and accessible role navigation (3.6s)
+
+  7 passed (25.4s)

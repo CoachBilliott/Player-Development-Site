@@ -1,0 +1,31 @@
+[WebServer] (node:102753) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 16 tests using 2 workers
+
+(node:102774) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:102773) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   2 [desktop] › tests/build14-remediation.spec.ts:8:1 › app login removes the duplicate support row and keeps header help keyboard reachable (2.5s)
+  ✓   3 [desktop] › tests/build14-remediation.spec.ts:102:1 › overdue review is the Owner's primary next action while assignment remains secondary (2.1s)
+  ✓   4 [desktop] › tests/build14-remediation.spec.ts:125:3 › owner review empty state names current staff permissions without granting extra access (1.6s)
+  ✓   1 [desktop] › tests/build14-remediation.spec.ts:36:1 › 1000 athletes render in bounded pages; search, back and filter reset preserve exact context (7.5s)
+  ✓   5 [desktop] › tests/build14-remediation.spec.ts:125:3 › manager review empty state names current staff permissions without granting extra access (1.4s)
+  ✓   7 [desktop] › tests/build14-remediation.spec.ts:149:1 › paged coach roster never includes another coach's athlete (2.0s)
+  ✓   6 [desktop] › tests/build14-remediation.spec.ts:125:3 › coach review empty state names current staff permissions without granting extra access (2.1s)
+(node:103280) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   8 [desktop] › tests/build14-remediation.spec.ts:164:1 › roster last page is bounded and a smaller refreshed scope cannot leave a blank stale page (2.4s)
+(node:103459) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   9 [phone] › tests/build14-remediation.spec.ts:8:1 › app login removes the duplicate support row and keeps header help keyboard reachable (1.8s)
+  ✓  11 [phone] › tests/build14-remediation.spec.ts:102:1 › overdue review is the Owner's primary next action while assignment remains secondary (2.3s)
+  ✓  12 [phone] › tests/build14-remediation.spec.ts:125:3 › owner review empty state names current staff permissions without granting extra access (1.6s)
+  ✓  13 [phone] › tests/build14-remediation.spec.ts:125:3 › manager review empty state names current staff permissions without granting extra access (1.7s)
+  ✓  14 [phone] › tests/build14-remediation.spec.ts:125:3 › coach review empty state names current staff permissions without granting extra access (1.9s)
+  ✓  10 [phone] › tests/build14-remediation.spec.ts:36:1 › 1000 athletes render in bounded pages; search, back and filter reset preserve exact context (9.3s)
+  ✓  15 [phone] › tests/build14-remediation.spec.ts:149:1 › paged coach roster never includes another coach's athlete (2.1s)
+  ✓  16 [phone] › tests/build14-remediation.spec.ts:164:1 › roster last page is bounded and a smaller refreshed scope cannot leave a blank stale page (2.0s)
+
+  16 passed (27.5s)

@@ -1,0 +1,75 @@
+{
+  "role": "coach",
+  "build": 15,
+  "source": "0816c343a99a76e03ad2e48c7e16207058624c02",
+  "method": "Exact signed Build15 IPA web assets in local Chromium app-mode; fake backend and adults only; not physical iOS/live service acceptance",
+  "browser": "154.0.8037.57",
+  "viewport": "390×844",
+  "network": "loopback; service workers blocked; reduced motion; external requests denied; no real emails/accounts",
+  "samples": [
+    {
+      "ready_heading": "Your athletes.",
+      "ready_ui_ms": 421.9,
+      "dom_content_loaded_ms": 179.19999999925494,
+      "load_ms": 179.39999999850988,
+      "first_contentful_paint_ms": 280,
+      "dom_elements": 157,
+      "scroll_width": 390,
+      "viewport_width": 390
+    },
+    {
+      "ready_heading": "Your athletes.",
+      "ready_ui_ms": 410.1,
+      "dom_content_loaded_ms": 155.89999999850988,
+      "load_ms": 156.10000000149012,
+      "first_contentful_paint_ms": 256,
+      "dom_elements": 157,
+      "scroll_width": 390,
+      "viewport_width": 390
+    },
+    {
+      "ready_heading": "Your athletes.",
+      "ready_ui_ms": 458,
+      "dom_content_loaded_ms": 186.20000000298023,
+      "load_ms": 186.40000000223517,
+      "first_contentful_paint_ms": 288,
+      "dom_elements": 157,
+      "scroll_width": 390,
+      "viewport_width": 390
+    }
+  ],
+  "median_ready_ui_ms": 421.9,
+  "journey": [
+    {
+      "task": "Default app navigation",
+      "links": [
+        "Athletes",
+        "Training",
+        "Staff",
+        "Account"
+      ]
+    },
+    {
+      "task": "Open assigned/authorized athlete detail",
+      "clicks": 1,
+      "focus": {
+        "tag": "BUTTON",
+        "text": "",
+        "inside": true
+      },
+      "actions": [
+        "",
+        "Back to athletes"
+      ]
+    },
+    {
+      "task": "Open account from role workspace",
+      "clicks": 3,
+      "heading": "Account settings."
+    },
+    {
+      "task": "Direct Owner administration URL",
+      "result": "denied in fixture"
+    }
+  ]
+}
