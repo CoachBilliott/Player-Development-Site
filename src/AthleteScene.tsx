@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useMotion } from "./motion";
-export function AthleteScene() {
+export function AthleteScene({ paused = false }: { paused?: boolean }) {
   const { enabled } = useMotion();
   const video = useRef<HTMLVideoElement>(null);
   const [failed, setFailed] = useState(false),
@@ -13,7 +13,7 @@ export function AthleteScene() {
     element.muted = true;
     const update = () => {
       if (stopped) return;
-      if (!visible || document.hidden) {
+      if (paused || !visible || document.hidden) {
         element.pause();
         return;
       }
@@ -42,7 +42,7 @@ export function AthleteScene() {
       element.removeEventListener("canplay", update);
       element.pause();
     };
-  }, [enabled, failed]);
+  }, [enabled, failed, paused]);
   const media = `${import.meta.env.BASE_URL}media/`;
   return (
     <figure className="real-athlete-scene">
