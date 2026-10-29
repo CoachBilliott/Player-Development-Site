@@ -14,6 +14,21 @@
           16px/1.65 system-ui,
           sans-serif;
       }
+      .privacy-header {
+        max-width: 720px;
+        margin: auto;
+        padding: 24px 24px 0;
+        display: flex;
+        gap: 20px;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+      }
+      .privacy-header a {
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+      }
       main {
         max-width: 720px;
         margin: auto;
@@ -43,8 +58,13 @@
     </style>
   </head>
   <body>
+    <header class="privacy-header">
+      <a class="brand" href="./#home" aria-label="Repformed home">REPFORMED</a>
+      <nav aria-label="Privacy page navigation">
+        <a href="./#membership">Back to packages</a>
+      </nav>
+    </header>
     <main>
-      <p class="brand">REPFORMED</p>
       <h1>Your interest. Your information.</h1>
       <p>
         This notice covers the adult prelaunch interest form. Expressing

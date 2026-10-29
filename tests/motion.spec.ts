@@ -1,7 +1,7 @@
 import { disableBackend } from "./backendFixture";
 import { test, expect } from "@playwright/test";
 test.beforeEach(async ({ context }) => disableBackend(context));
-test("real training footage automatically loops silently without any playback or motion buttons", async ({
+test("background footage loops silently and can be paused and resumed from the keyboard", async ({
   page,
 }) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
@@ -13,11 +13,20 @@ test("real training footage automatically loops silently without any playback or
   await expect(film).toHaveJSProperty("loop", true);
   await expect(film).toHaveJSProperty("controls", false);
   await expect(film).toHaveAttribute("playsinline", "");
+  const pause = page.getByRole("button", {
+    name: "Pause background video",
+    exact: true,
+  });
+  await pause.focus();
+  await page.keyboard.press("Space");
   await expect(
-    page.getByRole("button", {
-      name: /replay|pause animations|motion off|motion on|reduce motion/i,
-    }),
-  ).toHaveCount(0);
+    page.getByRole("button", { name: "Resume background video", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await expect
+    .poll(() => film.evaluate((el: HTMLVideoElement) => el.paused))
+    .toBe(true);
+  await page.keyboard.press("Space");
+  await expect(pause).toHaveAttribute("aria-pressed", "false");
   await expect(page.locator(".athlete-sculpture")).toHaveCount(0);
   await expect
     .poll(() =>
@@ -53,6 +62,9 @@ test("device reduced motion automatically shows a real still with no motion butt
     "paused",
   );
   await expect(page.locator(".hero-training-video")).toHaveCount(0);
+  await expect(
+    page.getByRole("button", { name: /background video/ }),
+  ).toHaveCount(0);
   await expect(page.locator(".training-poster")).toBeVisible();
   await expect(
     page.getByRole("button", {

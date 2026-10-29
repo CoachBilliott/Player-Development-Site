@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { ArrowDown, ArrowRight, ArrowUpRight, ShieldCheck } from "lucide-react";
 import { AthleteScene } from "./AthleteScene";
 import { Reveal } from "./Experience";
@@ -8,10 +9,11 @@ const media = `${import.meta.env.BASE_URL}media/`;
 
 export function Home() {
   const { enabled } = useMotion();
+  const [videoPaused, setVideoPaused] = useState(false);
   return (
     <main className="home home-package-journey">
       <section className="hero">
-        <AthleteScene />
+        <AthleteScene paused={videoPaused} />
         <div className="hero-copy">
           <div className="sport-tag">
             <span /> FOOTBALL · PLAYER DEVELOPMENT
@@ -38,6 +40,18 @@ export function Home() {
               Express interest <ArrowRight size={18} />
             </a>
           </div>
+          {enabled && (
+            <button
+              className="hero-motion-control"
+              type="button"
+              aria-pressed={videoPaused}
+              onClick={() => setVideoPaused((value) => !value)}
+            >
+              {videoPaused
+                ? "Resume background video"
+                : "Pause background video"}
+            </button>
+          )}
           <div className="hero-how-link">
             <button
               className="text-button"
