@@ -1,6 +1,7 @@
 import type { AccountRole } from "./roles";
 export const isDemoPage = (page: string) =>
   [
+    "sample-week",
     "demo",
     "onboarding",
     "today",
@@ -13,6 +14,11 @@ export function navigationFor(
   page: string,
   role: AccountRole | null,
 ): [string, string][] {
+  if (page === "sample-week")
+    return [
+      ["sample-week", "Sample journey"],
+      ["home", "Back to website"],
+    ];
   if (isDemoPage(page))
     return [
       ["demo", "Guided demo"],

@@ -60,6 +60,7 @@ import { usePwa } from "./pwa";
 import { InstallApp } from "./InstallApp";
 import { MemberAccountPage } from "./MemberAccount";
 import { FamilyDemo } from "./FamilyDemo";
+import { SampleJourney } from "./SampleJourney";
 import { Home } from "./Home";
 import { Membership } from "./Membership";
 import { Contact } from "./Contact";
@@ -145,6 +146,7 @@ const safeHash = () => {
     "profiles",
     "interest",
     "family-demo",
+    "sample-week",
     "demo",
     "workspace",
     "access",
@@ -429,7 +431,7 @@ export default function App() {
           <PrivateHeader shared={shared} page={page} />
         ) : (
           <>
-            {demoPage && (
+            {demoPage && page !== "sample-week" && (
               <div
                 className="demo-strip"
                 role="region"
@@ -551,6 +553,8 @@ export default function App() {
                 onChoose={chooseProfile}
                 onCancel={() => go(profile ? "today" : "home")}
               />
+            ) : page === "sample-week" ? (
+              <SampleJourney />
             ) : page === "demo" ? (
               <FamilyDemo app={mobile} />
             ) : (page === "app" || (mobile && page === "home")) &&
@@ -703,6 +707,7 @@ export default function App() {
                   <h2>Explore</h2>
                   <a href="#home">Home</a>
                   <a href="#membership">Proposed packages</a>
+                  <a href="#sample-week">Sample learning journey</a>
                   <a href="#demo">Fictional preview</a>
                 </div>
                 <div className="footer-group">
