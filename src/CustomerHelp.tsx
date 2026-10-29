@@ -75,7 +75,16 @@ export function CustomerHelp() {
           . If you prefer email, open “Need another way? Email us directly” on
           the package page, then write and send your message in your email app.
         </p>
-        <h3>The fictional preview</h3>
+        <h3>Explore a sample learning journey</h3>
+        <p>
+          Try an illustrative IQ lesson, a short local quiz and a
+          practice-format preview. This fictional example does not include
+          reviewed lesson or drill videos and does not save account progress.
+        </p>
+        <a className="button secondary" href="#sample-week">
+          Open sample learning journey <ArrowRight size={17} />
+        </a>
+        <h3>The fictional practice preview</h3>
         <p>
           The optional preview illustrates sample family screens and guided
           practice with fictional profiles. Practice reports stay in that
