@@ -9,14 +9,14 @@ backend functions, database permissions and notification activation are unchange
 
 - **Athletes**: find the athlete, see what needs attention, manage the service
   coach within existing Owner/Manager permissions, then open the relevant review
-  queue or assign a workout. The assignment link carries the customer and athlete
-  context. Browser Back returns to the athlete record. Staff alert diagnostics and
+  queue or assign a workout inside the athlete record. Customer and athlete stay
+  fixed; they are not selected again. Browser Back returns to the athlete record. Staff alert diagnostics and
   delivery rules are no longer expanded beneath the daily roster.
 - **Training**: one searchable bank of saved workouts and lessons. Preview a
-  lesson, edit it or hand it to the existing workout builder. Choose a workout
-  and assign its full saved drill order in a separate guarded flow. Select the
-  customer and athlete, inspect their current plan, preview eligibility and
-  confirm replacement. Cancel never grants access. Existing siblings and practice
+  lesson, edit it or hand it to the existing workout builder. Assign its saved
+  drill order from the athlete record after inspecting the current workout,
+  previewing eligibility and confirming replacement. Legacy assignment URLs
+  retain their guarded flow. Cancel never grants access. Existing siblings and practice
   history remain independent. Builder edits still require save/preview; an
   assignment never silently picks up template edits.
 - **Staff & settings**: Owners manage people and invitations separately. Account
@@ -55,3 +55,10 @@ Screenshots are generated under `artifacts/staff-workflows`. Checks include the
 new journeys, role boundaries, cancellation/repeated clicks, replacement and
 snapshot behavior, URL/history/focus, errors, keyboard accessibility and phone
 widths. Final counts and CI status belong in the pull request/release receipt.
+
+The independent October 29 phone review found that the sticky return action could
+cover the inline assignment cancellation button after scrolling. Staff dialogs
+now reserve scroll space for that action. Real-component and isolated-preview
+regression assertions check the cancellation button's hit target, rather than
+only checking that it exists in the DOM. No permission or assignment behavior
+changes accompany this layout fix.

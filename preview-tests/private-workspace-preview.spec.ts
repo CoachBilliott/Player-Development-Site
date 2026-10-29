@@ -173,6 +173,21 @@ test("three staff journeys show real components but reject fictional assignment 
   await expect(confirm).toContainText(
     "This replaces only this athlete's current saved workout.",
   );
+  const keepCurrent = confirm.getByRole("button", {
+    name: "Keep current assignment",
+    exact: true,
+  });
+  await keepCurrent.scrollIntoViewIfNeeded();
+  expect(
+    await keepCurrent.evaluate((button) => {
+      const box = button.getBoundingClientRect();
+      return (
+        document
+          .elementFromPoint(box.x + box.width / 2, box.y + box.height / 2)
+          ?.closest("button") === button
+      );
+    }),
+  ).toBe(true);
   await page.screenshot({
     path: `artifacts/staff-workflows/preview-confirm-${info.project.name}.png`,
     fullPage: true,

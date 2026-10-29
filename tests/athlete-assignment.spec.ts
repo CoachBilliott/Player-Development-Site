@@ -83,9 +83,21 @@ test("Owner assigns inside the athlete record without choosing another customer;
   await expect(confirmation).toContainText(
     "This replaces only this athlete's current saved workout.",
   );
-  await confirmation
-    .getByRole("button", { name: "Keep current assignment" })
-    .click();
+  const keepCurrent = confirmation.getByRole("button", {
+    name: "Keep current assignment",
+  });
+  await keepCurrent.scrollIntoViewIfNeeded();
+  expect(
+    await keepCurrent.evaluate((button) => {
+      const box = button.getBoundingClientRect();
+      return (
+        document
+          .elementFromPoint(box.x + box.width / 2, box.y + box.height / 2)
+          ?.closest("button") === button
+      );
+    }),
+  ).toBe(true);
+  await keepCurrent.click();
   expect(training.counts.assigns).toBe(0);
   await dialog
     .getByRole("button", { name: "Preview assignment", exact: true })
