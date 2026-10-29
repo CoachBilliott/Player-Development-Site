@@ -1,0 +1,10 @@
+[
+  {
+    "url": "https://developers.cloudflare.com/pages/configuration/preview-deployments/",
+    "error": "HTTP Error 403: Forbidden"
+  },
+  {
+    "url": "https://developers.cloudflare.com/support/troubleshooting/http-status-codes/cloudflare-1xxx-errors/error-1010/",
+    "error": "HTTP Error 403: Forbidden"
+  }
+]

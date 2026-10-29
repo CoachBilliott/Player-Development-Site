@@ -1,0 +1,80 @@
+{
+  "observed_at": "2026-10-29T23:48:01.130Z",
+  "source": "1bb3f5e9661fa9b3d7d8131fa8752e9d557f49ff",
+  "method": "Exact source rebuild, local ordinary Chromium HTTP navigation with matching CSP; external requests blocked; no credentials entered",
+  "results": [
+    {
+      "width": 390,
+      "main_status": 200,
+      "title": "Repformed — isolated learning acceptance",
+      "headings": [
+        "Isolated learning acceptance",
+        "1. Public configuration",
+        "Redacted acceptance receipt"
+      ],
+      "local_assets": [
+        {
+          "path": "/",
+          "status": 200
+        },
+        {
+          "path": "/assets/index-D3I5W15i.css",
+          "status": 200
+        },
+        {
+          "path": "/assets/index-M6Mb3VUL.js",
+          "status": 200
+        },
+        {
+          "path": "/assets/dm-sans-latin-400-normal-CW0RaeGs.woff2",
+          "status": 200
+        },
+        {
+          "path": "/assets/barlow-condensed-latin-700-normal-v1xN8_Wq.woff2",
+          "status": 200
+        }
+      ],
+      "external_requests": [],
+      "page_errors": [],
+      "service_worker_controlled": false,
+      "overflow": false
+    },
+    {
+      "width": 1440,
+      "main_status": 200,
+      "title": "Repformed — isolated learning acceptance",
+      "headings": [
+        "Isolated learning acceptance",
+        "1. Public configuration",
+        "Redacted acceptance receipt"
+      ],
+      "local_assets": [
+        {
+          "path": "/",
+          "status": 200
+        },
+        {
+          "path": "/assets/index-D3I5W15i.css",
+          "status": 200
+        },
+        {
+          "path": "/assets/index-M6Mb3VUL.js",
+          "status": 200
+        },
+        {
+          "path": "/assets/dm-sans-latin-400-normal-CW0RaeGs.woff2",
+          "status": 200
+        },
+        {
+          "path": "/assets/barlow-condensed-latin-700-normal-v1xN8_Wq.woff2",
+          "status": 200
+        }
+      ],
+      "external_requests": [],
+      "page_errors": [],
+      "service_worker_controlled": false,
+      "overflow": false
+    }
+  ],
+  "hosted_mutations": 0
+}

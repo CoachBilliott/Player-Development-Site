@@ -1,0 +1,39 @@
+{
+  "observed_at": "2026-10-29T23:46:22.993129+00:00",
+  "project": {
+    "name": "repformed",
+    "subdomain": "repformed.pages.dev",
+    "domains": [
+      "repformed.pages.dev",
+      "repformed.com"
+    ],
+    "production_branch": "main"
+  },
+  "canonical_production": {
+    "id": "bab6aa19-838c-424e-8aa1-d562cb7a88c2",
+    "source": "0816c343a99a76e03ad2e48c7e16207058624c02"
+  },
+  "harness": {
+    "id": "eeea6899-8e3f-461c-9230-35287d8e1d3d",
+    "environment": "preview",
+    "url": "https://eeea6899.repformed.pages.dev",
+    "aliases": [
+      "https://learning-auth-rehearsal.repformed.pages.dev"
+    ],
+    "created_on": "2026-10-28T23:24:57.865766Z",
+    "latest_stage": {
+      "name": "deploy",
+      "started_on": null,
+      "ended_on": "2026-10-28T23:24:59.49055Z",
+      "status": "success"
+    }
+  },
+  "source": {
+    "branch": "learning-auth-rehearsal",
+    "commit_hash": "1bb3f5e9661fa9b3d7d8131fa8752e9d557f49ff",
+    "commit_message": "Prepare isolated test-user learning acceptance harness",
+    "commit_dirty": false
+  },
+  "list_read": "Separate list?per_page=100 returned400; not retried. Exact project/deployment reads succeeded.",
+  "mutations": 0
+}

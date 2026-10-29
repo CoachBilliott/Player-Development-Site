@@ -1,0 +1,84 @@
+{
+  "observed_at": "2026-10-28T23:38:15.402107+00:00",
+  "metadata": {
+    "deployment": {
+      "id": "eeea6899-8e3f-461c-9230-35287d8e1d3d",
+      "environment": "preview",
+      "url": "https://eeea6899.repformed.pages.dev",
+      "aliases": [
+        "https://learning-auth-rehearsal.repformed.pages.dev"
+      ],
+      "created_on": "2026-10-28T23:24:57.865766Z",
+      "latest_stage": {
+        "name": "deploy",
+        "started_on": null,
+        "ended_on": "2026-10-28T23:24:59.49055Z",
+        "status": "success"
+      },
+      "stages": [
+        {
+          "name": "queued",
+          "started_on": "2026-10-28T23:24:57.865766Z",
+          "ended_on": null,
+          "status": "active"
+        },
+        {
+          "name": "initialize",
+          "started_on": null,
+          "ended_on": null,
+          "status": "idle"
+        },
+        {
+          "name": "clone_repo",
+          "started_on": null,
+          "ended_on": null,
+          "status": "idle"
+        },
+        {
+          "name": "build",
+          "started_on": null,
+          "ended_on": null,
+          "status": "idle"
+        },
+        {
+          "name": "deploy",
+          "started_on": null,
+          "ended_on": "2026-10-28T23:24:59.49055Z",
+          "status": "success"
+        }
+      ],
+      "deployment_trigger": {
+        "type": "ad_hoc",
+        "metadata": {
+          "branch": "learning-auth-rehearsal",
+          "commit_hash": "1bb3f5e9661fa9b3d7d8131fa8752e9d557f49ff",
+          "commit_message": "Prepare isolated test-user learning acceptance harness",
+          "commit_dirty": false
+        }
+      }
+    },
+    "production": {
+      "id": "4e084cca-042b-41c5-806a-1d730239cc68",
+      "source": "f1e9812dce0fe465d99d5115fddcce16c9796dc2"
+    },
+    "project": {
+      "name": "repformed",
+      "subdomain": "repformed.pages.dev",
+      "production_branch": "main"
+    }
+  },
+  "single_normal_get": {
+    "url": "https://learning-auth-rehearsal.repformed.pages.dev/",
+    "status": 403,
+    "bytes": 17,
+    "headers": {
+      "content-type": "text/plain; charset=UTF-8",
+      "server": "envoy",
+      "cf-ray": "a51dc5e7cc01b1ee-DFW"
+    },
+    "contains_cloudflare1010": true,
+    "body_excerpt": "error code: 1010\n"
+  },
+  "attempts": 1,
+  "changes": "none; no retries, protection changes, alternate hosts or identities"
+}
