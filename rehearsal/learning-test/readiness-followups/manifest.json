@@ -15,7 +15,7 @@
     },
     {
       "path": "POST-AUDIT-FIXES.md",
-      "sha256": "4d42e0c05761457a104b16d45d588435f80e27048752c60d982a1ed3c3ccc629"
+      "sha256": "92a91bc35f445ad8f154ec8da7e66abae1b792408f938097f40aad0c23fa04e2"
     },
     {
       "path": "README.md",
@@ -26,12 +26,20 @@
       "sha256": "b140ea8d542f3e8b31388ae827729201c99b6ca71cab5d8e8131cbf9b5fb2c25"
     },
     {
+      "path": "learning-combined-ci.json",
+      "sha256": "bd7bbb2b52f6ec9f6a83d4699079b6a8663e3cc3ac5d42375296593469519395"
+    },
+    {
       "path": "public-sample-asset-inventory.json",
       "sha256": "accb1388d965b8c441c08daa7517e514df45687cfe33a960ecdfe00e02c2c80f"
     },
     {
       "path": "sample-learning-preview-deployment.json",
       "sha256": "8fd290e8135120aa71cea071d13b254ace76207c6f615d9c032b0626389eb2be"
+    },
+    {
+      "path": "sample-portable-ci.json",
+      "sha256": "f6021ee2da8afb154d8ce3154e2447fafb9eae44e273f57146c1f823ec4abc8c"
     },
     {
       "path": "screenshots/artifact-1440-progress.png",
