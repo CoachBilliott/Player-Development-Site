@@ -1,6 +1,5 @@
 import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
-import { mkdir } from "node:fs/promises";
 import { disableBackend } from "./backendFixture";
 
 test.beforeEach(async ({ context, page }) => {
@@ -211,11 +210,8 @@ test("sample steps are keyboard accessible without overflow or sampled axe issue
         .analyze();
       expect(results.violations).toEqual([]);
     }
-    await mkdir("/workspace/deliverables/sample-learning-preview", {
-      recursive: true,
-    });
     await page.screenshot({
-      path: `/workspace/deliverables/sample-learning-preview/${info.project.name}-${width}-progress.png`,
+      path: info.outputPath(`${width}-progress.png`),
       fullPage: true,
     });
   }
