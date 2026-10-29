@@ -1,0 +1,10 @@
+{
+  "source": "48b2f76c456c4a7b1cbbc9e81d044a23c7012432",
+  "source_path": "backend/022-package-week-completeness.sql",
+  "harness_prepared": "a9d96837952b5e83b77b5b39b5af6dab7f03f1eb",
+  "applied_to_hosted": false,
+  "files": {
+    "022-package-week-completeness.sql": "ad1229a6cf54ea8089efd67c68770277b975106456009812192295457645f865",
+    "READINESS.json": "80c1a9b5bbb6fb964dda7eedf34221c824214e798f7d6119640ea03d447def4c"
+  }
+}

@@ -1,0 +1,111 @@
+{
+  "updated_at": "2026-10-29T16:41:45.118407+00:00",
+  "production": {
+    "source": "6e37d105044310c0881d7618143c58f99863c841",
+    "deployment": "ba7d4295-26d0-4fcc-b014-16461d65e72a",
+    "url": "https://repformed.com",
+    "provider_verified": true,
+    "independent_package_desktop_qa": "Passed 15:53\u201315:54 UTC; no submission; not mobile/private-role acceptance"
+  },
+  "public_fixes": {
+    "pr": "https://github.com/repformed/Player-Development-Site/pull/18",
+    "head": "b0c19f7bee8e8c766732d3fa861995282805ce25",
+    "changes": [
+      "Keyboard background-video pause/resume with reduced-motion still",
+      "First-tab skip link with focus and unchanged route/history",
+      "Interest privacy top linked brand and Back to packages; notice unchanged"
+    ],
+    "local_passed": {
+      "unit_database": 378,
+      "focused_desktop_phone": 58,
+      "lint": true,
+      "types": true,
+      "build": true
+    },
+    "full_browser_and_offline": "running locally",
+    "ci_url": "https://github.com/repformed/Player-Development-Site/actions/runs/40911267553",
+    "ci_last_observed": "full browser phase before GitHub API401",
+    "deployed": false,
+    "merged_source": "c8713b59434172b3c89f8bd637499ae0545fdb07",
+    "ci_status": "success",
+    "ci_passed": {
+      "unit_database": 378,
+      "website": 408,
+      "compiled_app_offline": 10,
+      "isolated_preview": 6,
+      "python": 11
+    },
+    "main_ci": "https://github.com/repformed/Player-Development-Site/actions/runs/40913744098",
+    "main_ci_status": "running",
+    "fresh_artifact_tests_passed": 30,
+    "full_local_rerun": "Canceled as redundant after exact-head full CI passed; not counted as pass",
+    "local_offline_passed": 10
+  },
+  "learning_fix": {
+    "pr": "https://github.com/repformed/Player-Development-Site/pull/13",
+    "head": "48b2f76c456c4a7b1cbbc9e81d044a23c7012432",
+    "migration": "backend/022-package-week-completeness.sql",
+    "migration_sha256": "ad1229a6cf54ea8089efd67c68770277b975106456009812192295457645f865",
+    "local_passed": {
+      "unit_database": 453,
+      "focused_desktop_phone": 12,
+      "disconnected_preview": 20,
+      "lint": true,
+      "types": true,
+      "build": true
+    },
+    "full_browser_and_offline": "Full exact-head hosted CI passed; redundant local full rerun canceled, not counted as a pass",
+    "ci_url": "https://github.com/repformed/Player-Development-Site/actions/runs/40910959155",
+    "ci_last_observed": "full browser phase before GitHub API401",
+    "hosted_022_applied": false,
+    "production_learning_activated": false,
+    "ci_status": "success",
+    "ci_passed": {
+      "unit_database": 453,
+      "website": 414,
+      "compiled_app_offline": 10,
+      "isolated_preview": 20,
+      "python": 11
+    },
+    "harness_prepared_source": "a9d96837952b5e83b77b5b39b5af6dab7f03f1eb",
+    "harness_preparation": "Prepared, lint/types/build and51learning+5policy+10mockbrowser checks passed; not deployed or hosted-applied"
+  },
+  "counts_overlap": true,
+  "native": {
+    "run_url": "https://github.com/repformed/Player-Development-Site/actions/runs/40908989034",
+    "source": "6e37d105044310c0881d7618143c58f99863c841",
+    "scope": "Existing simulator tests and unsigned archive only",
+    "observed": "Terminal cancellation before any steps: hosted macOS runner was not acquired after multiple attempts; GitHub annotations cite macOS arm64 capacity constraints. No compile/test result.",
+    "testflight_build_unchanged": 13,
+    "upload": false,
+    "physical_device_acceptance": false,
+    "provider_annotations_verified": true,
+    "latest_validation_run": "https://github.com/repformed/Player-Development-Site/actions/runs/40913930615",
+    "latest_source": "c8713b59434172b3c89f8bd637499ae0545fdb07",
+    "latest_status": "queued; one new-source unsigned attempt, no upload"
+  },
+  "blockers": [
+    {
+      "action": "Read CI, then merge approved public PR18",
+      "target": "GitHub canonical repository API",
+      "status": "Read-only GitHub access succeeds again in original checkout using existing authorization; PR13 CI green, PR18 CI browser phase. Earlier401 cause unconfirmed; no credentials changed."
+    },
+    {
+      "action": "Hosted learning acceptance",
+      "target": "ojcfrfpeftvngyluomex rehearsal website",
+      "status": "Ordinary browser ERR_QUIC_PROTOCOL_ERROR at14:51. No render/current sessions; no bypass"
+    },
+    {
+      "action": "Learning rehearsal and production activation",
+      "status": "Test022/temporary learning-only scope review; secure fictional sign-in; production019\u2013022/media retention/recovery/security and later scheduler gates remain separate"
+    }
+  ],
+  "unchanged": [
+    "Production permissions and roles",
+    "Credentials and security configuration",
+    "Interest collection/consent and single shared-inbox alert",
+    "No real submissions/emails",
+    "Payments and junior enrollment closed",
+    "Production learning/scheduler/notices not activated"
+  ]
+}
