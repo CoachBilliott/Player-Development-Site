@@ -1,0 +1,18 @@
+{
+  "source": "4c1831d00618dbc3c3d5335373edce138d3d45f8",
+  "kind": "Disconnected public design preview; never promote to production",
+  "branch": "customer-journey-review",
+  "artifact_directory": "/workspace/.player-development-setup/customer-journey-review-4c1831d",
+  "backend_enabled": false,
+  "production_changed": false,
+  "deployment_id": "b0b84062-dcf2-4dc4-85fb-6c5671dbfa36",
+  "url": "https://b0b84062.repformed.pages.dev",
+  "aliases": [
+    "https://customer-journey-review.repformed.pages.dev"
+  ],
+  "status": "success",
+  "provider_verified_at": "2026-10-29T13:59:14.111976+00:00",
+  "local_smoke_passed": 8,
+  "live_browser_verified_by_this_worker": false,
+  "production_source": "5491236a05b4e655243bd7ea0f24f513eea47b3e"
+}
