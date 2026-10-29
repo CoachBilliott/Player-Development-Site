@@ -1,3 +1,5 @@
+**Current update:** the two intake/PWA defects below have now been corrected in PR15. [Published source, CI, screenshots and precise verification limits](README-UI-CORRECTIONS.md). This document preserves the earlier copy-only release and investigation history.
+
 # Sunday copy release and read-only public UX findings
 
 The homepage now says **“Proposed drill packages would release content on Sundays.”** This corrects the inactive-package tense mismatch without changing pricing, delivery rules, design, intake, permissions or activation.

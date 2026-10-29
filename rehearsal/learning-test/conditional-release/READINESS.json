@@ -1,12 +1,12 @@
 {
   "prepared_at": "2026-10-29T03:33:13.993266+00:00",
-  "source": "05b2ecb06cfa325fad08972ab6ae79692c193a28",
-  "previous_tested_source": "e4f025094f4696858639be71753891d052318415",
+  "source": "71be2f05e3d734697e38b9c89e4bfdf43f59ee34",
+  "previous_tested_source": "05b2ecb06cfa325fad08972ab6ae79692c193a28",
   "pull_request": 13,
   "base": "main",
-  "production_source": "3d35ccc626ee054151a578c0bd0888f12c21f698",
-  "production_deployment": "6ba70ade-a02b-4611-974f-e5fbe70c5a4a",
-  "ci_run": 40817611141,
+  "production_source": "5491236a05b4e655243bd7ea0f24f513eea47b3e",
+  "production_deployment": "ca16c62f-4497-4364-b656-462005cc6c45",
+  "ci_run": 40822694355,
   "ci_state": "success",
   "migrations": [
     {
@@ -63,23 +63,9 @@
   },
   "conditional_publication_authorization": true,
   "specific_production_permission_approvals_received": false,
-  "hosted_acceptance_results_from_new_desktop_task_received": false,
+  "hosted_acceptance_results_from_new_desktop_task_received": true,
   "native_release_changed": false,
-  "ci": {
-    "conclusion": "success",
-    "headSha": "05b2ecb06cfa325fad08972ab6ae79692c193a28",
-    "status": "completed",
-    "updatedAt": "2026-10-29T04:38:50Z",
-    "url": "https://github.com/repformed/Player-Development-Site/actions/runs/40817611141"
-  },
-  "passed": {
-    "unit_database": 428,
-    "website": 366,
-    "compiled_app_offline": 8,
-    "isolated_preview": 20,
-    "python": 11
-  },
-  "final_source_verified_at": "2026-10-29T04:41:52.523334+00:00",
+  "final_source_verified_at": "2026-10-29T05:34:53.483964+00:00",
   "anonymous_live_api_checks": {
     "public_control": 1,
     "private_permission_denials": 10,
@@ -112,16 +98,67 @@
     "observed_before_copy_only_pr14": true
   },
   "frontend_delta_from_previous_source": [
-    "src/Home.tsx future tense preserving Sunday midnight",
-    "tests/home-package-journey.spec.ts existing assertion"
+    "interest configuration loading/fallback state",
+    "confirmed cross-tab PWA reload state",
+    "focused browser regressions and validation record"
   ],
   "backend_migration_sources_unchanged": true,
-  "reconciled_with_main": "3d35ccc626ee054151a578c0bd0888f12c21f698",
+  "reconciled_with_main": "5491236a05b4e655243bd7ea0f24f513eea47b3e",
   "learning_production_activation_performed": false,
   "production_data_or_permission_changes": false,
   "separate_copy_only_pr14_release": {
     "source": "3d35ccc626ee054151a578c0bd0888f12c21f698",
     "deployment": "6ba70ade-a02b-4611-974f-e5fbe70c5a4a",
     "no_intake_or_sw_fix": true
+  },
+  "hosted_acceptance_complete": false,
+  "hosted_partial_report": {
+    "via_parent_at": "2026-10-29T05:29:00Z",
+    "six_guarded_sessions_verified": true,
+    "existing_two_week_plan_found": true,
+    "quiz_created": false,
+    "csv_downloaded_and_inspected": true,
+    "chooser_transport_outcome": "closed; uncertain",
+    "enrollment_grading_release_confirmed": false,
+    "test_project": "ojcfrfpeftvngyluomex",
+    "test_learning_enabled_last_verified": true,
+    "other_test_flags_last_verified_off": true,
+    "test_learning_disabled_afterward_confirmed": false,
+    "cleanup_action_denied": true,
+    "alternate_route_cleanup_attempted_by_coding_worker": false,
+    "required_next_step": "Restore authorized browser or obtain fresh relevant permission context; inspect uncertain upload before retry. Do not bypass denial."
+  },
+  "separate_ui_correction_release": {
+    "source": "5491236a05b4e655243bd7ea0f24f513eea47b3e",
+    "deployment": "ca16c62f-4497-4364-b656-462005cc6c45",
+    "backend_or_learning_activation": false
+  },
+  "previous_green_ci": {
+    "conclusion": "success",
+    "headSha": "05b2ecb06cfa325fad08972ab6ae79692c193a28",
+    "status": "completed",
+    "updatedAt": "2026-10-29T04:38:50Z",
+    "url": "https://github.com/repformed/Player-Development-Site/actions/runs/40817611141"
+  },
+  "previous_green_passed": {
+    "unit_database": 428,
+    "website": 366,
+    "compiled_app_offline": 8,
+    "isolated_preview": 20,
+    "python": 11
+  },
+  "ci": {
+    "conclusion": "success",
+    "headSha": "71be2f05e3d734697e38b9c89e4bfdf43f59ee34",
+    "status": "completed",
+    "updatedAt": "2026-10-29T05:33:51Z",
+    "url": "https://github.com/repformed/Player-Development-Site/actions/runs/40822694355"
+  },
+  "passed": {
+    "unit_database": 428,
+    "website": 376,
+    "compiled_app_offline": 10,
+    "isolated_preview": 20,
+    "python": 11
   }
 }

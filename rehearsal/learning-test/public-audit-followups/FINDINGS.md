@@ -1,3 +1,5 @@
+**Resolution update:** [PR15 published both fixes](README-UI-CORRECTIONS.md). The observations below are retained as pre-fix evidence; current provider-verified release and local regression results are separate from live-browser acceptance.
+
 # Public spectator audit follow-ups
 
 Independent browser observations supplied by the coordinating task: actual live spectator navigation at repformed.com, October 29 04:00–04:02UTC, passed homepage, packages, Contact, login, demo, installation, account help, privacy and credits on desktop, with appropriate prelaunch disclosures. No form was submitted. Mobile, privileged-role, destination-social and form-delivery audits were not performed. This worker did not repeat the Cloudflare-blocked frontend request or bypass the pending browser upload approval.

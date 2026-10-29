@@ -1,0 +1,106 @@
+{
+  "source": "5491236a05b4e655243bd7ea0f24f513eea47b3e",
+  "tested_head": "5e1d6449b9dcb4584bf5b5d9317336fe643b4c64",
+  "pr": "https://github.com/repformed/Player-Development-Site/pull/15",
+  "pr_ci": "https://github.com/repformed/Player-Development-Site/actions/runs/40821159383",
+  "pr_ci_passed": {
+    "unit_database": 375,
+    "website": 368,
+    "compiled_app_offline": 10,
+    "isolated_preview": 6,
+    "python": 11
+  },
+  "main_ci": "https://github.com/repformed/Player-Development-Site/actions/runs/40822503394",
+  "main_ci_receipt": {
+    "conclusion": "success",
+    "headSha": "5491236a05b4e655243bd7ea0f24f513eea47b3e",
+    "status": "completed",
+    "updatedAt": "2026-10-29T05:30:32Z",
+    "url": "https://github.com/repformed/Player-Development-Site/actions/runs/40822503394"
+  },
+  "main_ci_passed": {
+    "unit_database": 375,
+    "website": 368,
+    "compiled_app_offline": 10,
+    "isolated_preview": 6,
+    "python": 11
+  },
+  "website": "https://repformed.com/",
+  "deployment_id": "ca16c62f-4497-4364-b656-462005cc6c45",
+  "immutable_url": "https://ca16c62f.repformed.pages.dev",
+  "deployment_status": "success",
+  "deployed_at": "2026-10-29T05:30:54.699466Z",
+  "production_domains": [
+    "repformed.pages.dev",
+    "repformed.com"
+  ],
+  "entry_script": "./assets/index-BEiVuM0h.js",
+  "previous_deployment": "6ba70ade-a02b-4611-974f-e5fbe70c5a4a",
+  "production_config_unchanged": true,
+  "public_static_assets_unchanged": true,
+  "production_artifact_browser_checks": 26,
+  "postmerge_compiled_app_offline_checks": 10,
+  "postmerge_checks_overlap_aggregate": true,
+  "live_browser_qa_by_this_worker": false,
+  "frontend_restriction_not_retried": true,
+  "independent_prior_spectator_qa_preserved": true,
+  "independent_prior_spectator_qa_predates_this_release": true,
+  "user_browser_tabs_forcibly_reloaded": false,
+  "native_build_unchanged": 13,
+  "new_live_form_submissions": 0,
+  "new_real_emails": 0,
+  "database_changes": false,
+  "learning_activation": false,
+  "final_verified_at": "2026-10-29T05:31:31.870235+00:00",
+  "production_configuration_sha256": "bce7ca9fc4b5806db2b10d51e0ef06a04c455bf36d145d331409bb94b0f1c39c",
+  "screenshots": {
+    "intake-loading-desktop.png": {
+      "path": "screenshots/intake-loading-desktop.png",
+      "sha256": "fd167fac27201a51af843f7efabba74e080af96513d88b6bdfd2a3d6913e6958",
+      "bytes": 17078
+    },
+    "intake-loading-phone.png": {
+      "path": "screenshots/intake-loading-phone.png",
+      "sha256": "5f1403ba859be4fb74d04cfa74b2f9efdea6312814dac0baa4f770ed6435f42f",
+      "bytes": 63875
+    },
+    "intake-ready-desktop.png": {
+      "path": "screenshots/intake-ready-desktop.png",
+      "sha256": "f062609d489d8fdbd85d0e40ef6206472004e3651aa3e6b82ca64b6fff852149",
+      "bytes": 73570
+    },
+    "intake-ready-phone.png": {
+      "path": "screenshots/intake-ready-phone.png",
+      "sha256": "5327cd5fe0634c9f2c017e3b3d620ac03dd4c3942ad7d7d81cb7f4583a26c752",
+      "bytes": 291239
+    },
+    "other-tab-desktop.png": {
+      "path": "screenshots/other-tab-desktop.png",
+      "sha256": "3f232cd11e0ea4e90788c1f5f0e6b8ac23a1c2673725c944acb2c8830125bfa1",
+      "bytes": 208121
+    },
+    "other-tab-phone.png": {
+      "path": "screenshots/other-tab-phone.png",
+      "sha256": "6a09ef133516f4533b74f7093b8ac01bf4577b6c8d73479f0d72772453f7e699",
+      "bytes": 864808
+    }
+  },
+  "screenshots_environment": "Local desktop/phone Chromium, synthetic fixtures and real local service workers",
+  "previous_source": "3d35ccc626ee054151a578c0bd0888f12c21f698",
+  "future_learning_source": "71be2f05e3d734697e38b9c89e4bfdf43f59ee34",
+  "future_learning_ci": {
+    "conclusion": "success",
+    "headSha": "71be2f05e3d734697e38b9c89e4bfdf43f59ee34",
+    "status": "completed",
+    "updatedAt": "2026-10-29T05:33:51Z",
+    "url": "https://github.com/repformed/Player-Development-Site/actions/runs/40822694355"
+  },
+  "future_learning_passed": {
+    "unit_database": 428,
+    "website": 376,
+    "compiled_app_offline": 10,
+    "isolated_preview": 20,
+    "python": 11
+  },
+  "future_learning_unmerged_and_unactivated": true
+}
