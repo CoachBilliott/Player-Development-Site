@@ -1,0 +1,30 @@
+import {PGlite} from '/workspace/Player-Development-Site/node_modules/@electric-sql/pglite/dist/index.js';
+import {readFile,writeFile} from 'node:fs/promises';
+import assert from 'node:assert/strict';
+const db=new PGlite();
+const artifact='/workspace/repformed-rehearsal-handoff/rehearsal/learning-test';
+try {
+ const src=await readFile('/workspace/Player-Development-Site/src/learning/learningPolicy.test.ts','utf8');
+ await db.exec(src.match(/await db\.exec\(`(create role anon;[\s\S]*?)`\);/)[1]);
+ await db.exec(await readFile('/workspace/deliverables/hosted-learning-rehearsal/01-empty-test-atomic-install.sql','utf8'));
+ const {users}=JSON.parse(await readFile(artifact+'/owner-recovery/verified-test-users.json','utf8'));
+ for(const u of users)await db.query('insert into auth.users(id,email,email_confirmed_at) values($1,$2,now())',[u.id,u.email]);
+ await db.exec(await readFile('/workspace/repformed-learning-harness/docs/learning-rehearsal/03-seed-fictional-context.sql','utf8'));
+ const sql=await readFile(artifact+'/resume-acceptance/01-current-state-read-only.sql','utf8');
+ const snapshot=async()=>JSON.stringify((await db.query('select (select count(*) from auth.users) users,(select count(*) from public.player_profiles) profiles,(select count(*) from storage.objects) objects,(select to_jsonb(s) from public.learning_settings s) flags')).rows);
+ const before=await snapshot(),results=await db.exec(sql);
+ assert.equal(await snapshot(),before);
+ const scope=results.find(r=>r.rows?.[0]?.exactly_six_accounts!==undefined).rows[0];assert(Object.values(scope).every(x=>x===true));
+ const privileges=results.find(r=>r.rows?.[0]?.authenticated_tick!==undefined).rows[0];assert(Object.values(privileges).every(x=>x===false));
+ const rls=results.find(r=>r.rows?.[0]?.learning_tables!==undefined).rows[0];assert.equal(rls.learning_tables,18);assert.equal(rls.learning_tables_without_rls,0);
+ await db.query('update public.account_roles set role=$1 where user_id=$2',['coach',users[0].id]);
+ const wrongRole=(await db.exec(sql)).find(r=>r.rows?.[0]?.exactly_six_accounts!==undefined).rows[0];assert.equal(wrongRole.exact_existing_role_mapping,false);
+ await db.query('update public.account_roles set role=$1 where user_id=$2',['owner',users[0].id]);
+ await db.query('update auth.users set email=$1 where id=$2',['unexpected@example.test',users[0].id]);
+ const wrongIdentity=(await db.exec(sql)).find(r=>r.rows?.[0]?.exactly_six_accounts!==undefined).rows[0];assert.equal(wrongIdentity.exact_confirmed_identity_pairs,false);
+ await db.query('update auth.users set email=$1 where id=$2',[users[0].email,users[0].id]);
+ await db.exec('update public.learning_settings set enabled=true');
+ const on=(await db.exec(sql)).find(r=>r.rows?.[0]?.scheduler_enabled!==undefined).rows[0];assert.equal(on.enabled,true);assert.equal(on.scheduler_enabled,false);assert.equal(on.notices_enabled,false);assert.equal(on.youth_enabled,false);
+ const receipt={kind:'Local PGlite only; no hosted requests/Auth/Storage acceptance',checks:{valid_fixed_fixtures:true,read_only_preserves_rows_and_flags:true,wrong_role_detected:true,wrong_identity_detected:true,existing_enabled_flag_reported_not_changed:true,negative_grants_and_RLS_reported:true},hosted_mutations:0,credentials_used:0};
+ await writeFile(artifact+'/resume-acceptance/LOCAL-PREFLIGHT-VALIDATION.json',JSON.stringify(receipt,null,2)+'\n');console.log(JSON.stringify(receipt));
+}finally{await db.close();}

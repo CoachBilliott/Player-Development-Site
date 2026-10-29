@@ -1,0 +1,93 @@
+{
+  "feature_source": "f078d1bc237b0e168f6ed0cf9c241367c5a7fc08",
+  "harness_source": "1bb3f5e9661fa9b3d7d8131fa8752e9d557f49ff",
+  "kind": "source comparison, not hosted test",
+  "files": [
+    {
+      "path": "src/learning/FutureWeekOverride.tsx",
+      "sha256": "3024f74134792a872ca0e4926c659d0302f0c36de980607d850ab9f1bbf241e4",
+      "matches_deployed_harness_source": true
+    },
+    {
+      "path": "src/learning/GroupResults.tsx",
+      "sha256": "06c83561735e7ce4db53ba2a08acc286ebdb6ff1da39c65ef6c2ebd71b4b6057",
+      "matches_deployed_harness_source": true
+    },
+    {
+      "path": "src/learning/LearningAthlete.tsx",
+      "sha256": "2c09151e483bfe4768c22b760e8e6b1a42883d43c37b7228124851585c9414ea",
+      "matches_deployed_harness_source": true
+    },
+    {
+      "path": "src/learning/LearningBankConnected.tsx",
+      "sha256": "7798ac6a2f6383ab48add100bfc346a8c486bdc09ebd3c3a563bd260149664ec",
+      "matches_deployed_harness_source": true
+    },
+    {
+      "path": "src/learning/LearningInbox.tsx",
+      "sha256": "113b181ee51ff02784b3b485422a60e8ed5455db9677821c81dcd37865eeea23",
+      "matches_deployed_harness_source": true
+    },
+    {
+      "path": "src/learning/PlanEligibility.tsx",
+      "sha256": "6919aaac5e60b065dc81a2ef39604bdf4db3d386e0355aa61377b51967b97f7c",
+      "matches_deployed_harness_source": true
+    },
+    {
+      "path": "src/learning/QuizImportPanel.tsx",
+      "sha256": "cd05008180e656e104163d2711a21b297f3ded1f5726007bb9d0a55f7684c6d5",
+      "matches_deployed_harness_source": true
+    },
+    {
+      "path": "src/learning/QuizRunner.tsx",
+      "sha256": "5ee71b97517a537210b14e7b7bd498326ddff4d89d5a9f25462d6587265738c8",
+      "matches_deployed_harness_source": true
+    },
+    {
+      "path": "src/learning/RosterPicker.tsx",
+      "sha256": "4b5399d8dcbe9570db798dd446bcfe86c256eff690424edb580a9cf76c9af514",
+      "matches_deployed_harness_source": true
+    },
+    {
+      "path": "src/learning/StaffLearning.tsx",
+      "sha256": "7b2c085b7a63387d0f8380aa2a32e6d25c466c773820c195ede05e65fb4bc319",
+      "matches_deployed_harness_source": true
+    },
+    {
+      "path": "src/learning/api.ts",
+      "sha256": "79e770531ae3a3ff882baaa93ea22e0702bbc0b221c0fd86fb50f891a724d022",
+      "matches_deployed_harness_source": true
+    },
+    {
+      "path": "src/learning/learning.css",
+      "sha256": "c4682411b44e03beb2723c797aca9993e63a5919c9f26541db731194ed8c8138",
+      "matches_deployed_harness_source": true
+    },
+    {
+      "path": "src/learning/quizImport.ts",
+      "sha256": "bbaa61bae3465a94a7dc750292c9ef1d4e5516160f39aa9589e7f0273b31aa05",
+      "matches_deployed_harness_source": true
+    },
+    {
+      "path": "src/learning/schedule.ts",
+      "sha256": "77bcbf55eab26f7aeeae812ce35c7e83d3d599addf9f3618eb8a7f100cf0a3cb",
+      "matches_deployed_harness_source": true
+    },
+    {
+      "path": "backend/019-weekly-learning.sql",
+      "sha256": "25a88837586ee9cbed1914a3bf7235bdd934e4fba12577d3b07be0eb2df3657b",
+      "matches_deployed_harness_source": true
+    },
+    {
+      "path": "backend/020-learning-media-retention.sql",
+      "sha256": "27d67b3c989136eef63b247e12a5a88a4a49d5d01383671288c2a43d956cdcd5",
+      "matches_deployed_harness_source": true
+    },
+    {
+      "path": "backend/021-learning-service-workflows.sql",
+      "sha256": "21fa42d9b70fe73ebf17dd77aa3e291b5ddf0a807c588b06a60b776401ff27f7",
+      "matches_deployed_harness_source": true
+    }
+  ],
+  "other_differences": "additional learningPolicy tests and staff-detail scroll-padding CSS; harness does not mount that service-detail modal"
+}

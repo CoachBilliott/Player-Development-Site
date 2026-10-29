@@ -1,0 +1,31 @@
+{
+  "observed_at": "2026-10-29T14:36:56.795754+00:00",
+  "kind": "Read-only provider metadata; frontend network not retried",
+  "harness": {
+    "id": "eeea6899-8e3f-461c-9230-35287d8e1d3d",
+    "environment": "preview",
+    "url": "https://eeea6899.repformed.pages.dev",
+    "aliases": [
+      "https://learning-auth-rehearsal.repformed.pages.dev"
+    ],
+    "created_on": "2026-10-28T23:24:57.865766Z",
+    "latest_stage": {
+      "name": "deploy",
+      "started_on": null,
+      "ended_on": "2026-10-28T23:24:59.49055Z",
+      "status": "success"
+    }
+  },
+  "source": {
+    "branch": "learning-auth-rehearsal",
+    "commit_hash": "1bb3f5e9661fa9b3d7d8131fa8752e9d557f49ff",
+    "commit_message": "Prepare isolated test-user learning acceptance harness",
+    "commit_dirty": false
+  },
+  "canonical_production": {
+    "id": "dbfdf64f-c868-47eb-95cd-71d94e045625",
+    "source": "7c60c4ba16b1e9a0d6a18a60268ab5fe7897fbba"
+  },
+  "frontend_availability": "Not established by metadata; last authorized browser failed ERR_QUIC_PROTOCOL_ERROR",
+  "mutations": 0
+}

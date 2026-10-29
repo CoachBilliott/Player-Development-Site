@@ -1,5 +1,5 @@
 {
-  "status": "Published; exact canonical Cloudflare production provenance verified. Independent live browser verification pending.",
+  "status": "Published; canonical provider provenance and independent affected public-browser QA verified",
   "tested_head": "e1d957d70b73b1812616097c383ad436f02d8081",
   "pr": "https://github.com/repformed/Player-Development-Site/pull/16",
   "pr_ci": "https://github.com/repformed/Player-Development-Site/actions/runs/40887638509",
@@ -32,7 +32,7 @@
   "learning_migration_hashes_unchanged": 21,
   "learning_activation": false,
   "hosted_learning_acceptance": "Incomplete; flags OFF verified by authorized laptop worker at12:21UTC. No quiz/enrollment/grading/release accepted; network harness unavailable. No bypass attempted.",
-  "updated_at": "2026-10-29T14:31:56.874112+00:00",
+  "updated_at": "2026-10-29T14:47:50.802395+00:00",
   "source": "7c60c4ba16b1e9a0d6a18a60268ab5fe7897fbba",
   "pr_ci_status": "success",
   "pr_ci_passed": {
@@ -156,5 +156,23 @@
   "frontend_restriction_not_retried": true,
   "user_browser_tabs_forcibly_reloaded": false,
   "artifact_receipt_path": "rehearsal/learning-test/public-audit-followups/customer-journey/RELEASE.json",
-  "screenshots_path": "rehearsal/learning-test/public-audit-followups/customer-journey/README.md"
+  "screenshots_path": "rehearsal/learning-test/public-audit-followups/customer-journey/README.md",
+  "independent_live_browser_qa": {
+    "reported_by": "parent coordinator, independent production browser",
+    "observed_from": "2026-10-29T14:31:55Z",
+    "observed_to": "2026-10-29T14:32:51Z",
+    "source_matches_deployment": true,
+    "verified": [
+      "homepage CTA",
+      "compact packages/USD per athlete/Elite allocation",
+      "Position expansion",
+      "interest preselection into live direct form with consent unchecked",
+      "customer help",
+      "customer-first account help"
+    ],
+    "submissions": 0,
+    "defects_observed_in_limited_scope": 0,
+    "mobile_verified": false,
+    "private_roles_verified": false
+  }
 }
