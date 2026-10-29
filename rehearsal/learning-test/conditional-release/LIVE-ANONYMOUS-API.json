@@ -1,0 +1,105 @@
+{
+  "project": "iilbulpqbuknhdpmtrvm",
+  "environment": "LIVE_PRODUCTION_API",
+  "source": "a58bd829ea128e39426a8e630bc35b37999581b3",
+  "at": "2026-10-29T03:36:09.947800+00:00",
+  "identity": "anonymous public publishable key; no user bearer session/admin authority",
+  "methods": [
+    "GET"
+  ],
+  "state_changes": false,
+  "rows_or_response_bodies_persisted": false,
+  "frontend_or_device_audit": false,
+  "results": [
+    {
+      "case": "LIVE-ANON-CONTROL",
+      "path": "/rest/v1/training_resources?select=id&visibility=eq.public_sample&limit=1",
+      "http": 200,
+      "kind": "public_control",
+      "error_code": null,
+      "status": "PASS_CONTROL",
+      "returned_rows": 0
+    },
+    {
+      "case": "LIVE-ANON-ACCOUNT_ROLES",
+      "path": "/rest/v1/account_roles?select=user_id&limit=1",
+      "http": 401,
+      "kind": "private_table",
+      "error_code": "42501",
+      "status": "PASS_PERMISSION_DENIED"
+    },
+    {
+      "case": "LIVE-ANON-MEMBER_ACCOUNTS",
+      "path": "/rest/v1/member_accounts?select=user_id&limit=1",
+      "http": 401,
+      "kind": "private_table",
+      "error_code": "42501",
+      "status": "PASS_PERMISSION_DENIED"
+    },
+    {
+      "case": "LIVE-ANON-PLAYER_PROFILES",
+      "path": "/rest/v1/player_profiles?select=id&limit=1",
+      "http": 401,
+      "kind": "private_table",
+      "error_code": "42501",
+      "status": "PASS_PERMISSION_DENIED"
+    },
+    {
+      "case": "LIVE-ANON-MEMBER_TRAINING_ACCESS",
+      "path": "/rest/v1/member_training_access?select=account_id&limit=1",
+      "http": 401,
+      "kind": "private_table",
+      "error_code": "42501",
+      "status": "PASS_PERMISSION_DENIED"
+    },
+    {
+      "case": "LIVE-ANON-ATHLETE_VIDEO_REVIEWS",
+      "path": "/rest/v1/athlete_video_reviews?select=id&limit=1",
+      "http": 401,
+      "kind": "private_table",
+      "error_code": "42501",
+      "status": "PASS_PERMISSION_DENIED"
+    },
+    {
+      "case": "LIVE-ANON-ATHLETE_SERVICE_COACHES",
+      "path": "/rest/v1/athlete_service_coaches?select=profile_id&limit=1",
+      "http": 401,
+      "kind": "private_table",
+      "error_code": "42501",
+      "status": "PASS_PERMISSION_DENIED"
+    },
+    {
+      "case": "LIVE-ANON-INTEREST_REQUESTS",
+      "path": "/rest/v1/interest_requests?select=id&limit=1",
+      "http": 401,
+      "kind": "private_table",
+      "error_code": "42501",
+      "status": "PASS_PERMISSION_DENIED"
+    },
+    {
+      "case": "LIVE-ANON-STAFF_NOTIFICATION_JOBS",
+      "path": "/rest/v1/staff_notification_jobs?select=id&limit=1",
+      "http": 401,
+      "kind": "private_table",
+      "error_code": "42501",
+      "status": "PASS_PERMISSION_DENIED"
+    },
+    {
+      "case": "LIVE-ANON-STAFF_CLIENT_SERVICE_ROSTER",
+      "path": "/rest/v1/rpc/staff_client_service_roster",
+      "http": 401,
+      "kind": "private_rpc",
+      "error_code": "42501",
+      "status": "PASS_PERMISSION_DENIED"
+    },
+    {
+      "case": "LIVE-ANON-INTEREST_STAFF_INBOX",
+      "path": "/rest/v1/rpc/interest_staff_inbox",
+      "http": 401,
+      "kind": "private_rpc",
+      "error_code": "42501",
+      "status": "PASS_PERMISSION_DENIED"
+    }
+  ],
+  "management_counts_are_not_role_acceptance": true
+}
