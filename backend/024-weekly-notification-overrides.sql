@@ -4,6 +4,15 @@
 begin;
 set local lock_timeout='5s';
 set local statement_timeout='60s';
+do $$begin
+ if to_regclass('public.learning_settings') is null or to_regprocedure('public.learning_week_readiness(uuid)') is null
+ or to_regprocedure('public.assert_delivery_owner()') is null then
+  raise exception 'Reviewed delivery016 and learning019-022 prerequisites are required. Do not install unrelated drafts automatically.';
+ end if;
+ if exists(select 1 from public.learning_settings where enabled or scheduler_enabled or notices_enabled or youth_enabled) then
+  raise exception 'Disable learning, scheduler, notices and youth before installing weekly notification overrides.';
+ end if;
+end$$;
 alter table public.delivery_packages add column weekly_rules jsonb not null default '{}' check(jsonb_typeof(weekly_rules)='object');
 alter table public.delivery_client_settings add column weekly_rules jsonb not null default '{}' check(jsonb_typeof(weekly_rules)='object');
 alter table public.delivery_athlete_settings add column weekly_rules jsonb not null default '{}' check(jsonb_typeof(weekly_rules)='object'),

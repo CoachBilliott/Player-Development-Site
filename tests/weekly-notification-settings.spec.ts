@@ -392,7 +392,6 @@ test("Owner preference form fits narrow phones, keeps keyboard focus and passes 
   await control.focus();
   await page.keyboard.press("Tab");
   await expect(page.getByLabel("Notification package")).toBeFocused();
-  const scope = page.locator(".weekly-notification-settings");
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= innerWidth,

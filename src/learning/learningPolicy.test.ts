@@ -2043,3 +2043,25 @@ it("notification rollback preserves stored overrides, accounts and history witho
     /does not exist/,
   );
 });
+
+it("weekly override installation stops before DDL when learning flags are active", async () => {
+  await as("", "postgres");
+  const sql = readFileSync(
+    new URL(
+      "../../backend/024-weekly-notification-overrides.sql",
+      import.meta.url,
+    ),
+    "utf8",
+  )
+    .replace(/^begin;$/m, "")
+    .replace(/^commit;$/m, "");
+  await db.exec("savepoint install_guard");
+  await expect(db.exec(sql)).rejects.toThrow(/Disable learning/);
+  await db.exec("rollback to savepoint install_guard");
+  expect(await r("select count(*)::integer r from auth.users")).toBe(6);
+  expect(
+    await r(
+      "select count(*)::integer r from information_schema.columns where table_schema='public' and table_name='delivery_athlete_settings' and column_name='weekly_package_id'",
+    ),
+  ).toBe(1);
+});
