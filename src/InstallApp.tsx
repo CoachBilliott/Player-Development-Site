@@ -108,14 +108,30 @@ export function InstallApp({ app }: { app: PwaState }) {
           preview progress stays on this device. Browser and home-screen storage
           may differ on some devices.
         </Notice>
-        {app.waiting && (
+        {(app.waiting || app.reloadReady || app.updating) && (
           <div className="success">
             <RefreshCw size={22} />
             <div>
-              <strong>An app update is ready.</strong>
-              <p>Save any work before reloading.</p>
-              <button className="button" onClick={() => setConfirmUpdate(true)}>
-                Update app
+              <strong>
+                {app.waiting
+                  ? "An app update is ready."
+                  : "An update was applied in another tab."}
+              </strong>
+              <p>
+                {app.updating
+                  ? "Applying your confirmed update…"
+                  : "Save any work before reloading."}
+              </p>
+              <button
+                className="button"
+                disabled={app.updating}
+                onClick={() => setConfirmUpdate(true)}
+              >
+                {app.updating
+                  ? "Updating…"
+                  : app.waiting
+                    ? "Update app"
+                    : "Reload this tab"}
               </button>
             </div>
           </div>
@@ -145,7 +161,13 @@ export function InstallApp({ app }: { app: PwaState }) {
             this device.
           </p>
           <div className="actions">
-            <button className="button" onClick={() => app.update()}>
+            <button
+              className="button"
+              onClick={() => {
+                setConfirmUpdate(false);
+                app.update();
+              }}
+            >
               Reload and update
             </button>
             <button

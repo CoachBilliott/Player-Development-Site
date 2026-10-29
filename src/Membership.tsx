@@ -15,9 +15,12 @@ function focusInterest() {
 
 export function Membership({
   interestEndpoint = null,
+  interestLoading = false,
 }: {
   interestEndpoint?: string | null;
+  interestLoading?: boolean;
 }) {
+  const pending = interestLoading && !interestEndpoint;
   const [interest, setInterest] = useState("undecided"),
     [copy, setCopy] = useState("");
   useEffect(() => {
@@ -114,87 +117,96 @@ export function Membership({
       >
         <div>
           <Tag>
-            {interestEndpoint
-              ? "ADULT INTEREST"
-              : "FOR PARENTS, GUARDIANS & ADULTS"}
+            {pending
+              ? "INTEREST"
+              : interestEndpoint
+                ? "ADULT INTEREST"
+                : "FOR PARENTS, GUARDIANS & ADULTS"}
           </Tag>
           <h2 id="interest-title" tabIndex={-1}>
             Interested? Tell us what fits.
           </h2>
-          <p>
-            {interestEndpoint
-              ? "Leave your adult email and package interest. No account needed."
-              : "Choose a proposal or send your feedback. This opens your email app; write and send your message there."}
+          <p role={pending ? "status" : undefined}>
+            {pending
+              ? "Loading interest form…"
+              : interestEndpoint
+                ? "Leave your adult email and package interest. No account needed."
+                : "Choose a proposal or send your feedback. This opens your email app; write and send your message there."}
           </p>
           <p>
-            {interestEndpoint
+            {pending || interestEndpoint
               ? "Interest only—not enrollment, payment or a reservation. Please leave out children’s information."
               : "Interest only—not enrollment, payment or a reservation. No launch date is promised. Please leave out child names, birth dates, videos and health details."}
           </p>
         </div>
-        {interestEndpoint && <InterestForm endpoint={interestEndpoint} />}
-        <details
-          className="interest-email-fallback"
-          open={interestEndpoint ? undefined : true}
-        >
-          <summary>
-            {interestEndpoint
-              ? "Need another way? Email us directly"
-              : "Email your interest"}
-          </summary>
-          <div className="interest-actions">
-            <label htmlFor="interest-package">
-              Package you’re interested in
-              <select
-                id="interest-package"
-                value={interest}
-                onChange={(e) => {
-                  setInterest(e.target.value);
-                  setCopy("");
+        {!pending && interestEndpoint && (
+          <InterestForm endpoint={interestEndpoint} />
+        )}
+        {!pending && (
+          <details
+            className="interest-email-fallback"
+            open={interestEndpoint ? undefined : true}
+          >
+            <summary>
+              {interestEndpoint
+                ? "Need another way? Email us directly"
+                : "Email your interest"}
+            </summary>
+            <div className="interest-actions">
+              <label htmlFor="interest-package">
+                Package you’re interested in
+                <select
+                  id="interest-package"
+                  value={interest}
+                  onChange={(e) => {
+                    setInterest(e.target.value);
+                    setCopy("");
+                  }}
+                >
+                  <option value="undecided">
+                    Not sure yet / general feedback
+                  </option>
+                  {PACKAGE_PROPOSALS.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <a className="button" href={packageInterestLink(interest)}>
+                <Mail size={18} />
+                Email package interest
+              </a>
+              <p className="interest-address">{CONTACT_EMAIL}</p>
+              <button
+                className="text-button"
+                onClick={async () => {
+                  try {
+                    await navigator.clipboard.writeText(CONTACT_EMAIL);
+                    setCopy(
+                      "Email address copied. Paste it into your email app.",
+                    );
+                  } catch {
+                    setCopy(
+                      "Copy is unavailable. Select the address above and paste it into your email app.",
+                    );
+                  }
                 }}
               >
-                <option value="undecided">
-                  Not sure yet / general feedback
-                </option>
-                {PACKAGE_PROPOSALS.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <a className="button" href={packageInterestLink(interest)}>
-              <Mail size={18} />
-              Email package interest
-            </a>
-            <p className="interest-address">{CONTACT_EMAIL}</p>
-            <button
-              className="text-button"
-              onClick={async () => {
-                try {
-                  await navigator.clipboard.writeText(CONTACT_EMAIL);
-                  setCopy(
-                    "Email address copied. Paste it into your email app.",
-                  );
-                } catch {
-                  setCopy(
-                    "Copy is unavailable. Select the address above and paste it into your email app.",
-                  );
-                }
-              }}
-            >
-              <Copy size={16} />
-              Copy email address
-            </button>
-            {copy && <p role="status">{copy}</p>}
-            <p className="interest-fallback">
-              No email app opening? Copy the address and email us directly. The
-              {interestEndpoint
-                ? "email fallback does not submit the form; write and send your message in your email app."
-                : "website does not submit, store or add you to a mailing list."}
-            </p>
-          </div>
-        </details>
+                <Copy size={16} />
+                Copy email address
+              </button>
+              {copy && <p role="status">{copy}</p>}
+              <p className="interest-fallback">
+                No email app opening? Copy the address and email us directly.
+                The
+                {interestEndpoint
+                  ? "email fallback does not submit the form; write and send your message in your email app."
+                  : "website does not submit, store or add you to a mailing list."}
+              </p>
+            </div>
+          </details>
+        )}
       </section>
       <div className="centered">
         <a className="button secondary" href="#demo">

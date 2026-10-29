@@ -13,6 +13,7 @@ import { clearStaffDrafts } from "./staffDrafts";
 
 export function useSharedContent() {
   const [interestEndpoint, setInterestEndpoint] = useState<string | null>(null);
+  const [interestLoading, setInterestLoading] = useState(true);
   const [serviceTrackingEnabled, setServiceTrackingEnabled] = useState(false);
   const [staffRosterEnabled, setStaffRosterEnabled] = useState(false);
   const [staffNotificationEmailsEnabled, setStaffNotificationEmailsEnabled] =
@@ -41,26 +42,36 @@ export function useSharedContent() {
   useEffect(() => {
     let stopped = false;
     let unsubscribe: (() => void) | undefined;
+    const configRequest = new AbortController();
+    const configTimeout = setTimeout(() => configRequest.abort(), 15000);
     const restoration = createSessionRestoration<Session | null>((current) => {
       if (!stopped) setSession(current);
     });
     void (async () => {
       try {
-        const response = await fetch(
-          `${import.meta.env.BASE_URL}content-config.json`,
-          { cache: "no-store" },
-        );
-        if (!response.ok)
-          throw new Error(
-            "Shared-publishing configuration is unavailable. Local demo publishing still works.",
+        let raw;
+        try {
+          const response = await fetch(
+            `${import.meta.env.BASE_URL}content-config.json`,
+            { cache: "no-store", signal: configRequest.signal },
           );
-        const raw = await response.json();
+          if (!response.ok)
+            throw new Error(
+              "Shared-publishing configuration is unavailable. Local demo publishing still works.",
+            );
+          raw = await response.json();
+        } finally {
+          // Only configuration has this deadline, never an active Auth session.
+          clearTimeout(configTimeout);
+        }
         const config = parseSharedConfig(raw);
-        if (!config || stopped) return;
-        if (raw.interestIntakeEnabled === true)
+        if (stopped) return;
+        if (config && raw.interestIntakeEnabled === true)
           setInterestEndpoint(
             new URL("/functions/v1/interest-intake", config.url).href,
           );
+        setInterestLoading(false);
+        if (!config) return;
         const connection = await connectSharedContent(config);
         if (stopped) return;
         setService(connection);
@@ -107,7 +118,12 @@ export function useSharedContent() {
           const current = await connection.client.auth.getSession();
           return current.data.session;
         });
-      } catch (e) {
+      } catch (caught) {
+        const e = configRequest.signal.aborted
+          ? new Error(
+              "The account service did not respond. Reload this page while connected to try again.",
+            )
+          : caught;
         if (!stopped)
           setConnectionError(
             e instanceof Error
@@ -121,11 +137,17 @@ export function useSharedContent() {
               : "Shared content is unavailable. Built-in and local demo content still work.",
           );
       } finally {
-        if (!stopped) setLoading(false);
+        clearTimeout(configTimeout);
+        if (!stopped) {
+          setInterestLoading(false);
+          setLoading(false);
+        }
       }
     })();
     return () => {
       stopped = true;
+      clearTimeout(configTimeout);
+      configRequest.abort();
       unsubscribe?.();
     };
   }, []);
@@ -225,6 +247,7 @@ export function useSharedContent() {
   }
   return {
     interestEndpoint,
+    interestLoading,
     service,
     accountLifecycleEnabled,
     serviceTrackingEnabled,

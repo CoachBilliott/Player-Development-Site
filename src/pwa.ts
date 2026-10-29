@@ -21,9 +21,16 @@ export function usePwa() {
         Boolean(navigator.serviceWorker.controller)),
   );
   const [waiting, setWaiting] = useState(false);
+  const [reloadReady, setReloadReady] = useState(false);
+  const [updating, setUpdating] = useState(false);
   const [message, setMessage] = useState("");
   const registration = useRef<ServiceWorkerRegistration | null>(null);
   const requestedReload = useRef(false);
+  // The worker that controlled this document's running JavaScript. A newer
+  // controller in another tab does not replace this document until it reloads.
+  const documentController = useRef(
+    "serviceWorker" in navigator ? navigator.serviceWorker.controller : null,
+  );
   useEffect(() => {
     const connection = () => setOnline(navigator.onLine);
     const installPrompt = (event: Event) => {
@@ -47,7 +54,18 @@ export function usePwa() {
         navigator.serviceWorker.controller
       )
         setWaiting(true);
-      if (!stopped && worker?.state === "activated") setOfflineReady(true);
+      if (!stopped && worker?.state === "activated") {
+        setWaiting(Boolean(registration.current?.waiting));
+        setOfflineReady(true);
+      }
+      if (!stopped && worker?.state === "redundant") {
+        setWaiting(Boolean(registration.current?.waiting));
+        if (requestedReload.current) {
+          requestedReload.current = false;
+          setUpdating(false);
+          setMessage("The update could not finish. Check for updates again.");
+        }
+      }
     };
     const updateFound = () => {
       worker?.removeEventListener("statechange", workerState);
@@ -55,8 +73,20 @@ export function usePwa() {
       worker?.addEventListener("statechange", workerState);
     };
     const controllerChange = () => {
-      if (requestedReload.current) window.location.reload();
-      else setOfflineReady(true);
+      if (stopped) return;
+      const controller = navigator.serviceWorker.controller;
+      setWaiting(Boolean(registration.current?.waiting));
+      setOfflineReady(Boolean(controller));
+      if (requestedReload.current) {
+        window.location.reload();
+      } else if (!documentController.current) {
+        // A first installation claiming this already-current page is not an
+        // update. Never prompt or reload merely because setup completed.
+        documentController.current = controller;
+      } else if (controller && controller !== documentController.current) {
+        setReloadReady(true);
+        setMessage("");
+      }
     };
     if (!nativeApp() && import.meta.env.PROD && "serviceWorker" in navigator) {
       navigator.serviceWorker.addEventListener(
@@ -103,6 +133,8 @@ export function usePwa() {
     installed,
     offlineReady,
     waiting,
+    reloadReady,
+    updating,
     message,
     canInstall: Boolean(prompt),
     async install() {
@@ -136,16 +168,41 @@ export function usePwa() {
       }
     },
     update() {
+      if (requestedReload.current) return;
       const next = registration.current?.waiting;
-      if (!next) {
+      const controller =
+        "serviceWorker" in navigator
+          ? navigator.serviceWorker.controller
+          : null;
+      if (next) {
+        requestedReload.current = true;
+        setUpdating(true);
+        setMessage("");
+        try {
+          next.postMessage({ type: "SKIP_WAITING" });
+        } catch {
+          requestedReload.current = false;
+          setUpdating(false);
+          setWaiting(false);
+          setMessage("The update could not finish. Check for updates again.");
+        }
+      } else if (
+        reloadReady ||
+        (controller &&
+          documentController.current &&
+          controller !== documentController.current)
+      ) {
+        // The confirmation also works if another tab activated the worker
+        // after this tab opened its update dialog. No forced cross-tab reload.
+        requestedReload.current = true;
+        setUpdating(true);
+        window.location.reload();
+      } else {
         setWaiting(false);
         setMessage(
-          "This update is no longer waiting. Close and reopen the app to use the latest version.",
+          "No app update is waiting. You can check for updates again.",
         );
-        return;
       }
-      requestedReload.current = true;
-      next.postMessage({ type: "SKIP_WAITING" });
     },
   };
 }
