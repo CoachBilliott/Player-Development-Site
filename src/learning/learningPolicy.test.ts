@@ -665,6 +665,124 @@ it("only Owners change reminder rules; configured Friday time and low-content re
     rules: { friday_time: "16:30:00", low_ready_weeks: 3 },
   });
 });
+it("configured Friday clock is enforced at the boundary and paused athletes receive no reminder", async () => {
+  const rid = await release();
+  await as();
+  await db.query("select public.learning_configure_rules('16:30',2)");
+  await as("", "postgres");
+  await db.query(
+    "update public.learning_releases set available_at='2026-11-01 05:00Z' where id=$1",
+    [rid],
+  );
+  await db.query(
+    "update public.learning_enrollments set next_release_at='2026-11-08 06:00Z' where id=$1",
+    [enrollment],
+  );
+  const reminders = () =>
+    r(
+      "select count(*)::integer r from public.learning_notices where category='friday_incomplete'",
+    );
+  await db.query("select public.learning_tick('2026-11-06 22:29:59Z',false)");
+  expect(await reminders()).toBe(0);
+  const version = await r(
+    "select version r from public.learning_enrollments where id=$1",
+    [enrollment],
+  );
+  await as();
+  await db.query("select public.learning_control($1,'pause',$2)", [
+    enrollment,
+    version,
+  ]);
+  await as("", "postgres");
+  await db.query("select public.learning_tick('2026-11-06 22:30Z',false)");
+  expect(await reminders()).toBe(0);
+  // Synthetic state restoration isolates the clock check from resume's deliberate
+  // next-Sunday policy; no live scheduler or enrollment is changed.
+  await db.query(
+    "update public.learning_enrollments set state='active' where id=$1",
+    [enrollment],
+  );
+  await db.query("select public.learning_tick('2026-11-06 22:30Z',false)");
+  await db.query("select public.learning_tick('2026-11-06 22:31Z',false)");
+  expect(await reminders()).toBe(1);
+});
+it("capacity warnings deduplicate, resolve when approved weeks arrive and reopen without stale read state", async () => {
+  await setup();
+  await as("", "postgres");
+  await db.exec(
+    "update public.learning_settings set scheduler_enabled=true,notices_enabled=true;update public.learning_enrollments set next_release_at=now()+interval '1 day'",
+  );
+  await db.query("select public.learning_tick(now(),false)");
+  await db.query("select public.learning_tick(now(),false)");
+  const warning = await r(
+    "select id::text r from public.learning_notices where category='low_content' and resolved_at is null",
+  );
+  expect(typeof warning).toBe("string");
+  expect(
+    await r(
+      "select count(*)::integer r from public.learning_notices where category='low_content'",
+    ),
+  ).toBe(1);
+  await as(coach);
+  await db.query("select public.learning_read_notice($1)", [warning]);
+  await as();
+  await db.query(
+    "select public.learning_save_week($1,$2,2,'Approved second week','{}',$3)",
+    [id(32), plan, [quizVersion]],
+  );
+  await db.query("select public.learning_approve_week($1)", [id(32)]);
+  await as("", "postgres");
+  await db.query("select public.learning_tick(now(),false)");
+  expect(
+    await r(
+      "select count(*)::integer r from public.learning_notices where category in ('low_content','no_content') and resolved_at is null",
+    ),
+  ).toBe(0);
+  await as();
+  await db.query("select public.learning_retract_week($1)", [id(32)]);
+  await as("", "postgres");
+  await db.query("select public.learning_tick(now(),false)");
+  expect(
+    await r(
+      "select id::text r from public.learning_notices where category='low_content' and resolved_at is null",
+    ),
+  ).toBe(warning);
+  expect(
+    await r(
+      "select count(*)::integer r from public.learning_notice_reads where notice_id=$1",
+      [warning],
+    ),
+  ).toBe(0);
+  await as();
+  await db.query("select public.learning_retract_week($1)", [week]);
+  await as("", "postgres");
+  await db.query("select public.learning_tick(now(),false)");
+  expect(
+    await r(
+      "select count(*)::integer r from public.learning_notices where category='low_content' and resolved_at is null",
+    ),
+  ).toBe(0);
+  expect(
+    await r(
+      "select count(*)::integer r from public.learning_notices where category='no_content' and resolved_at is null",
+    ),
+  ).toBe(1);
+  await as(parent);
+  expect(await r("select public.learning_inbox() r")).toEqual([]);
+  await as(otherCoach);
+  expect(await r("select public.learning_inbox() r")).toEqual([]);
+  await as("", "postgres");
+  const version = await r(
+    "select version r from public.learning_enrollments where id=$1",
+    [enrollment],
+  );
+  await as();
+  await db.query("select public.learning_control($1,'pause',$2)", [
+    enrollment,
+    version,
+  ]);
+  expect(await r("select public.learning_inbox() r")).toEqual([]);
+});
 it("linked athletes respect independent-recording permission and guardian practice approval", async () => {
   const rid = await release();
   const linked = id(7);
