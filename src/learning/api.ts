@@ -1,6 +1,7 @@
 import { z } from "zod";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { QuizImport } from "./quizImport";
+import type { LessonAllocations } from "./packageReadiness";
 const question = z.object({
   id: z.string(),
   order: z.number(),
@@ -33,6 +34,8 @@ const attempt = z.object({
   grades: z.array(grade),
 });
 const resource = z.object({
+  learning_kind: z.enum(["iq", "movement", "position"]).nullable().optional(),
+  lesson_quiz_id: z.string().nullable().optional(),
   id: z.string(),
   version: z.number(),
   content: z.object({
@@ -102,6 +105,30 @@ const week = z.object({
   approved_at: z.string().nullable(),
   retracted_at: z.string().nullable().optional(),
   ready: z.boolean(),
+  readiness: z
+    .object({
+      mode: z.enum(["package", "orientation", "test", "invalid"]),
+      complete: z.boolean(),
+      ready: z.boolean(),
+      missing: z.array(z.string()),
+      required: z
+        .object({
+          iq: z.number().optional(),
+          movement: z.number().optional(),
+          position: z.number().optional(),
+          quizzes: z.number().optional(),
+        })
+        .optional(),
+      actual: z
+        .object({
+          iq: z.number(),
+          movement: z.number(),
+          position: z.number(),
+          quizzes: z.number(),
+        })
+        .optional(),
+    })
+    .optional(),
   quiz_version_ids: z.array(z.string()),
   resources: z.array(resource),
 });
@@ -238,6 +265,7 @@ export interface LearningTransport {
     title: string,
     resources: string[],
     quizzes: string[],
+    allocations?: LessonAllocations,
   ): Promise<void>;
   approveWeek(id: string): Promise<void>;
   enroll(id: string, profile: string, plan: string): Promise<void>;
@@ -377,14 +405,16 @@ export class LearningApi implements LearningTransport {
     title: string,
     resources: string[],
     quizzes: string[],
+    allocations: LessonAllocations = {},
   ) {
-    await this.rpc("learning_save_week", {
+    await this.rpc("learning_save_week_checked", {
       target_id: id,
       target_plan: plan,
       week_no: week,
       week_title: title,
       resource_ids: resources,
       quizzes,
+      lesson_allocations: allocations,
     });
   }
   async approveWeek(id: string) {

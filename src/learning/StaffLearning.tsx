@@ -7,6 +7,12 @@ import type { LearningTransport, LearningCatalog } from "./api";
 import { QuizImportPanel } from "./QuizImportPanel";
 import { PACKAGE_PROPOSALS } from "../packageProposals";
 import "./learning.css";
+import {
+  packageRequirements,
+  pairedQuizIds,
+  type LessonAllocations,
+  type LessonKind,
+} from "./packageReadiness";
 type Profile = { id: string; name: string };
 const EMPTY_PROFILES: Profile[] = [];
 export function StaffLearning({
@@ -200,10 +206,28 @@ function PlanBank({
     [week, setWeek] = useState(1),
     [weekTitle, setWeekTitle] = useState(""),
     [lessons, setLessons] = useState<string[]>([]),
-    [quizzes, setQuizzes] = useState<string[]>([]);
+    [quizzes, setQuizzes] = useState<string[]>([]),
+    [allocations, setAllocations] = useState<LessonAllocations>({});
   const planId = useRef(crypto.randomUUID()),
     weekId = useRef(crypto.randomUUID());
   const plan = catalog.plans.find((p) => p.id === selected);
+  const requirements = packageRequirements(plan?.package_ids || []);
+  const packageWeek = week > 0 && requirements.mode === "package";
+  function updateAllocation(id: string, update: LessonAllocations[string]) {
+    setAllocations((old) => ({ ...old, [id]: update }));
+    weekId.current = crypto.randomUUID();
+  }
+  function toggleLesson(id: string) {
+    setLessons((old) =>
+      old.includes(id) ? old.filter((x) => x !== id) : [...old, id],
+    );
+    setAllocations((old) => {
+      const next = { ...old };
+      delete next[id];
+      return next;
+    });
+    weekId.current = crypto.randomUUID();
+  }
   function toggle(value: string, values: string[], set: (v: string[]) => void) {
     set(
       values.includes(value)
@@ -221,6 +245,7 @@ function PlanBank({
         <form
           onSubmit={(e) => {
             e.preventDefault();
+            if (packageRequirements(packages).mode === "invalid") return;
             void action(async () => {
               await api.createPlan(
                 planId.current,
@@ -277,7 +302,17 @@ function PlanBank({
             Content must still match the athlete. Age/position targeting can be
             specified through the plan configuration before rollout.
           </p>
-          <button disabled={busy}>Save plan</button>
+          {packageRequirements(packages).mode === "invalid" && (
+            <p role="status">
+              Choose a package. Different weekly workloads need separate plans;
+              Position Development and Elite may share one.
+            </p>
+          )}
+          <button
+            disabled={busy || packageRequirements(packages).mode === "invalid"}
+          >
+            Save plan
+          </button>
           <button
             type="button"
             disabled={busy}
@@ -296,6 +331,7 @@ function PlanBank({
             setWeek(1);
             setLessons([]);
             setQuizzes([]);
+            setAllocations({});
             weekId.current = crypto.randomUUID();
           }}
         >
@@ -316,6 +352,18 @@ function PlanBank({
             Each saved week is a new immutable version; existing releases and
             grades never change.
           </p>
+          {requirements.mode === "package" && (
+            <p className="learning-required-content">
+              A full week needs 2 football-IQ video lessons, a different
+              uploaded quiz for each, {requirements.movement} movement sessions
+              and {requirements.position} additional position drills.
+              Classification is reviewed with the week; it does not replace
+              coaching review.
+            </p>
+          )}
+          {requirements.mode !== "package" && (
+            <p role="status">{requirements.message}</p>
+          )}
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -326,11 +374,17 @@ function PlanBank({
                   week,
                   weekTitle,
                   lessons,
-                  quizzes,
+                  packageWeek ? pairedQuizIds(lessons, allocations) : quizzes,
+                  Object.fromEntries(
+                    lessons
+                      .filter((id) => allocations[id])
+                      .map((id) => [id, allocations[id]]),
+                  ),
                 );
                 weekId.current = crypto.randomUUID();
                 setLessons([]);
                 setQuizzes([]);
+                setAllocations({});
                 setWeekTitle("");
               }, "Week version saved as a draft. Approval is required before release.");
             }}
@@ -366,33 +420,94 @@ function PlanBank({
                 <legend>Lessons / drills</legend>
                 {resources.length ? (
                   resources.map((r) => (
-                    <label key={r.id}>
-                      <input
-                        type="checkbox"
-                        checked={lessons.includes(r.id)}
-                        onChange={() => toggle(r.id, lessons, setLessons)}
-                      />
-                      {r.title}
-                    </label>
+                    <div className="learning-lesson-allocation" key={r.id}>
+                      <label>
+                        <input
+                          type="checkbox"
+                          checked={lessons.includes(r.id)}
+                          onChange={() => toggleLesson(r.id)}
+                        />
+                        {r.title}
+                      </label>
+                      {lessons.includes(r.id) && (
+                        <>
+                          <label>
+                            {r.title}: content category
+                            <select
+                              value={allocations[r.id]?.kind || ""}
+                              onChange={(e) =>
+                                updateAllocation(
+                                  r.id,
+                                  e.target.value
+                                    ? { kind: e.target.value as LessonKind }
+                                    : {},
+                                )
+                              }
+                            >
+                              <option value="">Choose category</option>
+                              <option value="iq">
+                                Football-IQ video lesson
+                              </option>
+                              <option value="movement">Movement session</option>
+                              <option value="position">
+                                Additional position drill
+                              </option>
+                            </select>
+                          </label>
+                          {allocations[r.id]?.kind === "iq" && (
+                            <label>
+                              {r.title}: lesson quiz
+                              <select
+                                value={allocations[r.id]?.quiz_version_id || ""}
+                                onChange={(e) =>
+                                  updateAllocation(r.id, {
+                                    kind: "iq",
+                                    ...(e.target.value
+                                      ? { quiz_version_id: e.target.value }
+                                      : {}),
+                                  })
+                                }
+                              >
+                                <option value="">
+                                  Choose its uploaded quiz
+                                </option>
+                                {catalog.quizzes.map((q) => (
+                                  <option key={q.id} value={q.id}>
+                                    {q.title} · version {q.revision}
+                                  </option>
+                                ))}
+                              </select>
+                            </label>
+                          )}
+                        </>
+                      )}
+                    </div>
                   ))
                 ) : (
                   <p>Upload lessons in the training bank first.</p>
                 )}
               </fieldset>
-              <fieldset>
-                <legend>Uploaded quiz versions</legend>
-                {catalog.quizzes.map((q) => (
-                  <label key={q.id}>
-                    <input
-                      type="checkbox"
-                      checked={quizzes.includes(q.id)}
-                      onChange={() => toggle(q.id, quizzes, setQuizzes)}
-                    />
-                    {q.title} · version {q.revision}
-                  </label>
-                ))}
-              </fieldset>
-              <button disabled={!lessons.length && !quizzes.length}>
+              {!packageWeek && (
+                <fieldset>
+                  <legend>Uploaded quiz versions</legend>
+                  {catalog.quizzes.map((q) => (
+                    <label key={q.id}>
+                      <input
+                        type="checkbox"
+                        checked={quizzes.includes(q.id)}
+                        onChange={() => toggle(q.id, quizzes, setQuizzes)}
+                      />
+                      {q.title} · version {q.revision}
+                    </label>
+                  ))}
+                </fieldset>
+              )}
+              <button
+                disabled={
+                  requirements.mode === "invalid" ||
+                  (!lessons.length && !quizzes.length)
+                }
+              >
                 Save week draft
               </button>
             </fieldset>
@@ -411,20 +526,33 @@ function PlanBank({
                   Version {w.revision} ·{" "}
                   {w.retracted_at
                     ? "Withdrawn"
-                    : w.ready
-                      ? "Approved & ready"
-                      : w.approved_at
-                        ? "Blocked: lesson version or media changed"
-                        : "Draft, not released"}
+                    : !w.readiness
+                      ? "Package validation unavailable; ask the Owner to finish setup"
+                      : w.ready
+                        ? w.readiness.mode === "test"
+                          ? "Test ready · not a package"
+                          : w.readiness.mode === "orientation"
+                            ? "Approved orientation"
+                            : "Approved & package-complete"
+                        : w.readiness.complete
+                          ? "Content complete · awaiting approval"
+                          : "Not ready"}
                 </p>
               </div>
+              {w.readiness && !w.readiness.complete && (
+                <ul aria-label={`${w.title} missing items`}>
+                  {w.readiness.missing.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              )}
               {approver && !w.approved_at && (
                 <button
-                  disabled={busy}
+                  disabled={busy || !w.readiness?.complete}
                   onClick={() =>
                     void action(
                       () => api.approveWeek(w.id),
-                      "Week approved. Only complete approved uploads can release.",
+                      "Week approved. Only package-complete approved content can release.",
                     )
                   }
                 >

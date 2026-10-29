@@ -53,6 +53,7 @@ beforeAll(async () => {
     "019-weekly-learning.sql",
     "020-learning-media-retention.sql",
     "021-learning-service-workflows.sql",
+    "022-package-week-completeness.sql",
   ];
   for (const file of files)
     await db.exec(
@@ -665,6 +666,124 @@ it("only Owners change reminder rules; configured Friday time and low-content re
     rules: { friday_time: "16:30:00", low_ready_weeks: 3 },
   });
 });
+it("configured Friday clock is enforced at the boundary and paused athletes receive no reminder", async () => {
+  const rid = await release();
+  await as();
+  await db.query("select public.learning_configure_rules('16:30',2)");
+  await as("", "postgres");
+  await db.query(
+    "update public.learning_releases set available_at='2026-11-01 05:00Z' where id=$1",
+    [rid],
+  );
+  await db.query(
+    "update public.learning_enrollments set next_release_at='2026-11-08 06:00Z' where id=$1",
+    [enrollment],
+  );
+  const reminders = () =>
+    r(
+      "select count(*)::integer r from public.learning_notices where category='friday_incomplete'",
+    );
+  await db.query("select public.learning_tick('2026-11-06 22:29:59Z',false)");
+  expect(await reminders()).toBe(0);
+  const version = await r(
+    "select version r from public.learning_enrollments where id=$1",
+    [enrollment],
+  );
+  await as();
+  await db.query("select public.learning_control($1,'pause',$2)", [
+    enrollment,
+    version,
+  ]);
+  await as("", "postgres");
+  await db.query("select public.learning_tick('2026-11-06 22:30Z',false)");
+  expect(await reminders()).toBe(0);
+  // Synthetic state restoration isolates the clock check from resume's deliberate
+  // next-Sunday policy; no live scheduler or enrollment is changed.
+  await db.query(
+    "update public.learning_enrollments set state='active' where id=$1",
+    [enrollment],
+  );
+  await db.query("select public.learning_tick('2026-11-06 22:30Z',false)");
+  await db.query("select public.learning_tick('2026-11-06 22:31Z',false)");
+  expect(await reminders()).toBe(1);
+});
+it("capacity warnings deduplicate, resolve when approved weeks arrive and reopen without stale read state", async () => {
+  await setup();
+  await as("", "postgres");
+  await db.exec(
+    "update public.learning_settings set scheduler_enabled=true,notices_enabled=true;update public.learning_enrollments set next_release_at=now()+interval '1 day'",
+  );
+  await db.query("select public.learning_tick(now(),false)");
+  await db.query("select public.learning_tick(now(),false)");
+  const warning = await r(
+    "select id::text r from public.learning_notices where category='low_content' and resolved_at is null",
+  );
+  expect(typeof warning).toBe("string");
+  expect(
+    await r(
+      "select count(*)::integer r from public.learning_notices where category='low_content'",
+    ),
+  ).toBe(1);
+  await as(coach);
+  await db.query("select public.learning_read_notice($1)", [warning]);
+  await as();
+  await db.query(
+    "select public.learning_save_week($1,$2,2,'Approved second week','{}',$3)",
+    [id(32), plan, [quizVersion]],
+  );
+  await db.query("select public.learning_approve_week($1)", [id(32)]);
+  await as("", "postgres");
+  await db.query("select public.learning_tick(now(),false)");
+  expect(
+    await r(
+      "select count(*)::integer r from public.learning_notices where category in ('low_content','no_content') and resolved_at is null",
+    ),
+  ).toBe(0);
+  await as();
+  await db.query("select public.learning_retract_week($1)", [id(32)]);
+  await as("", "postgres");
+  await db.query("select public.learning_tick(now(),false)");
+  expect(
+    await r(
+      "select id::text r from public.learning_notices where category='low_content' and resolved_at is null",
+    ),
+  ).toBe(warning);
+  expect(
+    await r(
+      "select count(*)::integer r from public.learning_notice_reads where notice_id=$1",
+      [warning],
+    ),
+  ).toBe(0);
+  await as();
+  await db.query("select public.learning_retract_week($1)", [week]);
+  await as("", "postgres");
+  await db.query("select public.learning_tick(now(),false)");
+  expect(
+    await r(
+      "select count(*)::integer r from public.learning_notices where category='low_content' and resolved_at is null",
+    ),
+  ).toBe(0);
+  expect(
+    await r(
+      "select count(*)::integer r from public.learning_notices where category='no_content' and resolved_at is null",
+    ),
+  ).toBe(1);
+  await as(parent);
+  expect(await r("select public.learning_inbox() r")).toEqual([]);
+  await as(otherCoach);
+  expect(await r("select public.learning_inbox() r")).toEqual([]);
+  await as("", "postgres");
+  const version = await r(
+    "select version r from public.learning_enrollments where id=$1",
+    [enrollment],
+  );
+  await as();
+  await db.query("select public.learning_control($1,'pause',$2)", [
+    enrollment,
+    version,
+  ]);
+  expect(await r("select public.learning_inbox() r")).toEqual([]);
+});
 it("linked athletes respect independent-recording permission and guardian practice approval", async () => {
   const rid = await release();
   const linked = id(7);
@@ -1183,4 +1302,367 @@ it("rollback flags stop learning and scheduler access without erasing progress o
   ])) as Record<string, unknown>;
   expect(legacy.athlete_id).toBe(profile);
   expect(legacy).not.toHaveProperty("learning");
+});
+
+async function officialWeek(packages = ["foundation"]) {
+  const rids = Array.from({ length: 6 }, (_, n) => id(4100 + n));
+  const qids = [id(4200), id(4201)];
+  const p = id(4400),
+    w = id(4500);
+  const extended = packages.some(
+    (p) => p === "position-development" || p === "elite-coaching",
+  );
+  const movement = extended || packages.includes("fundamentals");
+  const chosen = rids.slice(0, extended ? 6 : movement ? 4 : 2);
+  await as("", "postgres");
+  for (const [i, rid] of rids.entries()) {
+    const path = `${owner}/${rid}/${id(4600 + i)}.mp4`;
+    await db.query(
+      "insert into public.training_resources(id,created_by,content,asset_path,asset_type,asset_name,status,review_stage) values($1,$2,$3,$4,'video/mp4','synthetic.mp4','published','approved')",
+      [
+        rid,
+        owner,
+        {
+          sport: "football",
+          title: `Synthetic allocation ${i + 1}`,
+          skill: "Footwork",
+          ages: ["18+"],
+          positions: [],
+          levels: ["New to the game"],
+          minutes: 3,
+          equipment: "Markers",
+          lesson: "Synthetic metadata, not coaching media",
+          steps: ["Example"],
+          cue: "Example",
+          kind: "movement",
+        },
+        path,
+      ],
+    );
+    await db.query(
+      "update public.training_resources set review_stage='approved',status='published' where id=$1",
+      [rid],
+    );
+    await db.query(
+      'insert into storage.objects(bucket_id,name,metadata) values(\'training-media\',$1,\'{"size":100,"mimetype":"video/mp4"}\')',
+      [path],
+    );
+  }
+  await as();
+  const payload = parseQuizCsv(EXAMPLE_QUIZ_CSV).quiz!;
+  for (const [i, q] of qids.entries())
+    await db.query("select public.learning_import_quiz($1,$2,$3,$4)", [
+      q,
+      id(4300 + i),
+      `Synthetic IQ quiz ${i + 1}`,
+      payload,
+    ]);
+  await db.query(
+    "select public.learning_create_plan($1,'Official allocation test',2,$2,'{}','{}')",
+    [p, packages],
+  );
+  const allocations: Record<
+    string,
+    { kind: string; quiz_version_id?: string }
+  > = {};
+  for (const [i, rid] of chosen.entries())
+    allocations[rid] =
+      i < 2
+        ? { kind: "iq", quiz_version_id: qids[i] }
+        : { kind: i < 4 ? "movement" : "position" };
+  return { rids, chosen, qids, p, w, allocations };
+}
+async function checkedWeek(
+  f: Awaited<ReturnType<typeof officialWeek>>,
+  w = f.w,
+  resources = f.chosen,
+  quizzes = f.qids,
+  allocations = f.allocations,
+) {
+  return db.query(
+    "select public.learning_save_week_checked($1,$2,1,'Allocation week',$3,$4,$5)",
+    [w, f.p, resources, quizzes, allocations],
+  );
+}
+async function catalogWeek(w: string) {
+  const result = (
+    await db.query<{
+      c: {
+        plans: {
+          weeks_content: {
+            id: string;
+            ready: boolean;
+            resources: unknown[];
+            readiness: {
+              mode: string;
+              complete: boolean;
+              missing: string[];
+              actual: Record<string, number>;
+            };
+          }[];
+        }[];
+      };
+    }>("select public.learning_catalog() c")
+  ).rows[0].c;
+  return result.plans.flatMap((p) => p.weeks_content).find((x) => x.id === w)!;
+}
+
+it.each([
+  ["foundation"],
+  ["fundamentals"],
+  ["position-development"],
+  ["elite-coaching"],
+  ["position-development", "elite-coaching"],
+])(
+  "requires the full official weekly allocation for %j",
+  async (...packages: string[]) => {
+    const f = await officialWeek(packages);
+    await checkedWeek(f);
+    let week = await catalogWeek(f.w);
+    expect(week.ready).toBe(false);
+    expect(week.readiness.complete, JSON.stringify(week.readiness)).toBe(true);
+    expect(week.readiness.actual).toEqual({
+      iq: 2,
+      quizzes: 2,
+      movement: packages.includes("foundation") ? 0 : 2,
+      position: packages.some(
+        (x) => x === "position-development" || x === "elite-coaching",
+      )
+        ? 2
+        : 0,
+    });
+    await as(manager);
+    await db.query("select public.learning_approve_week($1)", [f.w]);
+    week = await catalogWeek(f.w);
+    expect(week.ready).toBe(true);
+    expect(week.readiness.mode).toBe("package");
+    expect(week.readiness.missing).toEqual([]);
+  },
+);
+
+it("a quiz-only approved-content week is not ready for a real package", async () => {
+  const f = await officialWeek();
+  await db.query(
+    "select public.learning_save_week($1,$2,1,'Quiz-only draft','{}',$3)",
+    [f.w, f.p, f.qids],
+  );
+  await blocked(
+    "select public.learning_approve_week($1)",
+    [f.w],
+    /Week not ready.*Football-IQ lessons/,
+  );
+  expect((await catalogWeek(f.w)).ready).toBe(false);
+});
+
+it("approved files and two quizzes alone cannot bypass missing classifications through the legacy RPC", async () => {
+  const f = await officialWeek();
+  await db.query(
+    "select public.learning_save_week($1,$2,1,'Legacy draft',$3,$4)",
+    [f.w, f.p, f.chosen, f.qids],
+  );
+  expect((await catalogWeek(f.w)).readiness.missing.join(" ")).toMatch(
+    /Classify 2|Football-IQ lessons/,
+  );
+  await blocked(
+    "select public.learning_approve_week($1)",
+    [f.w],
+    /Week not ready.*Classify/,
+  );
+  expect((await catalogWeek(f.w)).ready).toBe(false);
+});
+
+it("missing and duplicate per-lesson quizzes, surplus drills and nonvideo IQ prevent approval", async () => {
+  const f = await officialWeek();
+  const missing = { ...f.allocations, [f.rids[1]]: { kind: "iq" } };
+  await checkedWeek(f, f.w, f.chosen, f.qids, missing);
+  expect((await catalogWeek(f.w)).readiness.missing.join(" ")).toMatch(
+    /different included quiz/,
+  );
+  await blocked(
+    "select public.learning_approve_week($1)",
+    [f.w],
+    /different included quiz/,
+  );
+  const duplicated = {
+    ...f.allocations,
+    [f.rids[1]]: { kind: "iq", quiz_version_id: f.qids[0] },
+  };
+  await checkedWeek(f, id(4501), f.chosen, f.qids, duplicated);
+  await blocked(
+    "select public.learning_approve_week($1)",
+    [id(4501)],
+    /different included quiz/,
+  );
+  await checkedWeek(f, id(4502), [...f.chosen, f.rids[2]], f.qids, {
+    ...f.allocations,
+    [f.rids[2]]: { kind: "movement" },
+  });
+  await blocked(
+    "select public.learning_approve_week($1)",
+    [id(4502)],
+    /Movement sessions: 1 selected; package requires 0/,
+  );
+  await as("", "postgres");
+  await db.query(
+    "update public.training_resources set asset_type='text/plain' where id=$1",
+    [f.rids[0]],
+  );
+  await db.query(
+    'update storage.objects set metadata=metadata||\'{"mimetype":"text/plain"}\' where name=(select asset_path from public.training_resources where id=$1)',
+    [f.rids[0]],
+  );
+  await as();
+  await checkedWeek(f, id(4503));
+  await blocked(
+    "select public.learning_approve_week($1)",
+    [id(4503)],
+    /need video media/,
+  );
+});
+
+it("Position cannot be ready with only the two movement sessions, and incompatible package workloads are blocked", async () => {
+  const f = await officialWeek(["position-development"]);
+  const selected = f.chosen.slice(0, 4);
+  const allocations = Object.fromEntries(
+    selected.map((x) => [x, f.allocations[x]]),
+  );
+  await checkedWeek(f, f.w, selected, f.qids, allocations);
+  expect((await catalogWeek(f.w)).readiness.missing).toContain(
+    "Additional position drills: 0 selected; package requires 2.",
+  );
+  await blocked(
+    "select public.learning_approve_week($1)",
+    [f.w],
+    /Additional position drills/,
+  );
+  await db.query(
+    "select public.learning_create_plan($1,'Incompatible mixed workload',2,'{foundation,fundamentals}','{}','{}')",
+    [id(4401)],
+  );
+  await db.query(
+    "select public.learning_save_week_checked($1,$2,1,'Mixed draft',$3,$4,$5)",
+    [id(4504), id(4401), selected, f.qids, allocations],
+  );
+  await blocked(
+    "select public.learning_approve_week($1)",
+    [id(4504)],
+    /separate plans/,
+  );
+});
+
+it("classification writes remain staff-scoped, helpers stay private, and forged/duplicate selections are rejected", async () => {
+  const f = await officialWeek();
+  await blocked(
+    "select public.learning_save_week_checked($1,$2,1,'Forged',$3,$4,$5)",
+    [
+      f.w,
+      f.p,
+      f.chosen,
+      f.qids,
+      { ...f.allocations, [id(4999)]: { kind: "iq" } },
+    ],
+    /only selected lessons/,
+  );
+  await blocked(
+    "select public.learning_save_week_checked($1,$2,1,'Forged',$3,$4,$5)",
+    [
+      f.w,
+      f.p,
+      f.chosen,
+      f.qids,
+      { ...f.allocations, [f.rids[0]]: { kind: "iq", objective_points: 99 } },
+    ],
+    /supported fields/,
+  );
+  await blocked(
+    "select public.learning_save_week_checked($1,$2,1,'Duplicate',$3,$4,$5)",
+    [f.w, f.p, [f.rids[0], f.rids[0]], f.qids, f.allocations],
+    /duplicate/,
+  );
+  await blocked(
+    "select public.learning_week_readiness($1)",
+    [f.w],
+    /permission denied/,
+  );
+  await blocked(
+    "select public.learning_package_requirements('{foundation}')",
+    [],
+    /permission denied/,
+  );
+  await as(coach);
+  await blocked(
+    "select public.learning_save_week_checked($1,$2,1,'Other author',$3,$4,$5)",
+    [f.w, f.p, f.chosen, f.qids, f.allocations],
+    /authoring scope/,
+  );
+  await as(parent);
+  await blocked(
+    "select public.learning_save_week_checked($1,$2,1,'Household forgery',$3,$4,$5)",
+    [f.w, f.p, f.chosen, f.qids, f.allocations],
+    /Staff access/,
+  );
+});
+
+it("checked saves are idempotent and immutable; a new linked quiz version does not rewrite a released week", async () => {
+  const f = await officialWeek();
+  await checkedWeek(f);
+  await checkedWeek(f);
+  await db.query("select public.learning_approve_week($1)", [f.w]);
+  await db.query(
+    "select public.learning_set_access($1,'foundation',now()-interval '1 day',now()+interval '1 year','Synthetic allocation test',false)",
+    [profile],
+  );
+  await db.query("select public.learning_enroll($1,$2,$3,false)", [
+    enrollment,
+    profile,
+    f.p,
+  ]);
+  await as("", "postgres");
+  await db.exec(
+    "update public.learning_settings set scheduler_enabled=true;update public.learning_enrollments set next_release_at=now()-interval '1 minute'",
+  );
+  await db.query("select public.learning_tick(now(),false)");
+  const original = (
+    await db.query<{ week_version_id: string }>(
+      "select week_version_id from public.learning_releases where enrollment_id=$1",
+      [enrollment],
+    )
+  ).rows[0];
+  expect(original.week_version_id).toBe(f.w);
+  await as();
+  const nextQuiz = id(4202);
+  await db.query(
+    "select public.learning_import_quiz($1,$2,'Synthetic revised IQ quiz',$3)",
+    [nextQuiz, id(4300), parseQuizCsv(EXAMPLE_QUIZ_CSV).quiz!],
+  );
+  const revised = {
+    ...f.allocations,
+    [f.rids[0]]: { kind: "iq", quiz_version_id: nextQuiz },
+  };
+  await blocked(
+    "select public.learning_save_week_checked($1,$2,1,'Allocation week',$3,$4,$5)",
+    [f.w, f.p, f.chosen, [nextQuiz, f.qids[1]], revised],
+    /Week ID already exists/,
+  );
+  await checkedWeek(f, id(4505), f.chosen, [nextQuiz, f.qids[1]], revised);
+  await db.query("select public.learning_approve_week($1)", [id(4505)]);
+  await as(parent);
+  const result = (
+    await db.query<{
+      a: {
+        enrollments: {
+          releases: {
+            resources: { lesson_quiz_id: string }[];
+            quizzes: { id: string }[];
+          }[];
+        }[];
+      };
+    }>("select public.learning_athlete($1) a", [profile])
+  ).rows[0].a;
+  expect(result.enrollments[0].releases[0].quizzes.map((x) => x.id)).toEqual(
+    f.qids,
+  );
+  expect(
+    result.enrollments[0].releases[0].resources.map((x) => x.lesson_quiz_id),
+  ).toEqual(f.qids);
 });
