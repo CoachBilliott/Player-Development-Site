@@ -1,6 +1,17 @@
 # Weekly learning validation record
 
-October 28, 2026. All new learning work is unpublished source and an isolated fictional preview. Production remains `f1e9812dce0fe465d99d5115fddcce16c9796dc2`; no learning migration, role grant, real enrollment, email, scheduler or native release has been applied.
+Current status, October 29, 2026: weekly learning remains unpublished. Public production is `6e37d105044310c0881d7618143c58f99863c841` (package presentation release), not the learning preview. Production learning migrations/flags/Cron have not been activated by this task. Records below are dated source checkpoints, not current hosted acceptance. No new native release has been uploaded.
+
+## October 29 readiness remediation
+
+PR13 committed checkpoint `eff2901d55597c462a7de7daf0c8998cea9542c8` passed [CI40902907191](https://github.com/repformed/Player-Development-Site/actions/runs/40902907191): 431 unit/database, 410 website, 10 app/offline, 20 isolated preview, 11 Python plus lint/types/Deno/build. Subsequent migration022 and UI/test changes are not covered by that earlier run; final-head CI is required.
+
+Migration022 addresses the audit finding that an approved quiz-only week could count as ready. It enforces the official additive weekly counts and distinct lesson/quiz pairing, with detailed missing-item status and guarded staff save/approval. It is not installed in the hosted test or production project. Local PostgreSQL emulation is not hosted Auth/Storage acceptance.
+
+The existing isolated test project is `ojcfrfpeftvngyluomex`; all four learning/scheduler/notices/youth flags were verified OFF by the authorized dashboard worker at12:21UTC. Interrupted quiz upload persisted zero quizzes, versions, attempts, grades or enrollments. Ordinary harness navigation most recently failed with ERR_QUIC_PROTOCOL_ERROR at14:51UTC. Earlier six-user sign-in/profile/private-upload observations do not certify current sessions or the unfinished quiz/enrollment/grading/library tests. No connection/protection/credential bypass is permitted.
+
+Production recovery evidence and exact019–022 permission/media-retention review remain release gates. Existing six fictional users require secure ordinary sign-in/recovery; a seventh standalone athlete has not been created or approved. No live role audit, physical iPhone acceptance, marketing send or payment activation is claimed.
+
 
 ## Previous complete green checkpoint
 
@@ -40,3 +51,7 @@ Public browser QA from this worker is limited by the known Cloudflare1010 client
 Visual review found a roster-only date formatting defect: the source instant was correct but the browser-local formatter was labeled Central. Weekly roster dates now explicitly use America/Chicago; tests pin midnight immediately before and after the November DST change. Other legacy review dates keep their existing browser-local semantics. See [ACCEPTANCE-MATRIX.md](ACCEPTANCE-MATRIX.md) for the cross-site route/role map.
 
 The local full website run completed365 passes/1 failure: the new Owner route test read its request-capture array immediately after a static panel heading appeared, before the asynchronous athlete RPC began. The assertion now polls for the same exact selected-athlete ID; no endpoint/access assertion or product behavior was removed. All8 affected desktop/phone route checks passed after that synchronization correction. A complete final-head CI rerun remains authoritative; the interrupted/superseded/failed local runs are not reported as green.
+
+### Package-completeness local final checks (October29)
+
+022 source pass:453 unit/database tests, lint, TypeScript and production build passed. The focused learning route suite passed12 desktop/phone cases; isolated fictional preview passed20 cases. These overlap aggregate suites. The first new UI tests used an overly strict label selector; role-based combobox selectors fixed them without changing product/access assertions. An existing household test raced the asynchronous request capture; it now polls for the same exact selected profile before continuing. Final aggregate hosted CI is still required on the pushed head. No hosted Supabase mutation or real notification was performed.

@@ -198,10 +198,13 @@ test("enabled household training uses selected profile and server draft endpoint
   await expect(
     page.getByRole("heading", { name: "Your released library." }),
   ).toBeVisible();
-  expect(
-    calls.filter((c) => c.name === "learning_athlete").at(-1)?.body
-      .target_profile,
-  ).toBe(profileId);
+  await expect
+    .poll(
+      () =>
+        calls.filter((c) => c.name === "learning_athlete").at(-1)?.body
+          .target_profile,
+    )
+    .toBe(profileId);
   await page.getByRole("button", { name: "Open week", exact: true }).click();
   await page.getByRole("button", { name: "Take quiz", exact: true }).click();
   await page.getByLabel("START", { exact: true }).check();
@@ -276,4 +279,150 @@ test("weekly member navigation separates current week, library and recorded grad
   await expect(
     page.getByRole("link", { name: "Weekly plan help", exact: true }),
   ).toHaveAttribute("href", "/weekly-learning-help.html");
+});
+
+test("staff pairs each IQ lesson with a quiz and sees server missing-item status before approval", async ({
+  page,
+  context,
+}) => {
+  await staffFixture(context, staffState(), "owner");
+  await connect(context, "owner");
+  const catalog = learningSimulation("owner").export().catalog;
+  const plan = catalog.plans[0];
+  plan.package_ids = ["foundation"];
+  plan.weeks_content = [];
+  const second = {
+    ...catalog.quizzes[0],
+    id: "92000000-0000-4000-8000-000000000032",
+    title: "Fictional second quiz",
+  };
+  catalog.quizzes.push(second);
+  await context.route("**/rest/v1/rpc/learning_catalog", (r) =>
+    r.fulfill({ json: catalog }),
+  );
+  const saves: Record<string, unknown>[] = [];
+  await context.route(
+    "**/rest/v1/rpc/learning_save_week_checked",
+    async (r) => {
+      const body = r.request().postDataJSON();
+      saves.push(body);
+      plan.weeks_content.push({
+        id: body.target_id,
+        week_number: 1,
+        title: body.week_title,
+        revision: 1,
+        approved_at: null,
+        ready: false,
+        resources: [],
+        quiz_version_ids: body.quizzes,
+        readiness: {
+          mode: "package",
+          complete: false,
+          ready: false,
+          missing: [
+            "All selected uploads must be complete, approved and unchanged.",
+          ],
+        },
+      });
+      await r.fulfill({ json: body.target_id });
+    },
+  );
+  await page.goto("./#workspace");
+  await page
+    .getByRole("navigation", { name: "Workspace navigation" })
+    .getByRole("link", { name: "Training", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Weekly plans & quizzes", exact: true })
+    .click();
+  await page
+    .getByRole("combobox", { name: "Open plan", exact: true })
+    .selectOption(plan.id);
+  await page
+    .getByLabel("Week title", { exact: true })
+    .fill("Synthetic Foundation draft");
+  for (let i = 1; i <= 2; i++) {
+    await page
+      .getByRole("checkbox", { name: `Fictional drill ${i}`, exact: true })
+      .check();
+    await page
+      .getByRole("combobox", {
+        name: `Fictional drill ${i}: content category`,
+        exact: true,
+      })
+      .selectOption("iq");
+    await page
+      .getByRole("combobox", {
+        name: `Fictional drill ${i}: lesson quiz`,
+        exact: true,
+      })
+      .selectOption(catalog.quizzes[i - 1].id);
+  }
+  await page
+    .getByRole("button", { name: "Save week draft", exact: true })
+    .click();
+  await expect(page.getByRole("status")).toContainText(
+    "Week version saved as a draft",
+  );
+  expect(saves).toHaveLength(1);
+  expect(saves[0].quizzes).toEqual(catalog.quizzes.map((q) => q.id));
+  expect(
+    Object.values(saves[0].lesson_allocations as Record<string, unknown>),
+  ).toEqual(
+    catalog.quizzes.map((q) => ({ kind: "iq", quiz_version_id: q.id })),
+  );
+  await expect(
+    page.getByRole("list", {
+      name: "Synthetic Foundation draft missing items",
+    }),
+  ).toContainText(
+    "All selected uploads must be complete, approved and unchanged.",
+  );
+  await expect(
+    page.getByRole("button", { name: "Approve week", exact: true }),
+  ).toBeDisabled();
+  expect(saves[0]).not.toHaveProperty("ready");
+  expect(saves[0]).not.toHaveProperty("approved_at");
+});
+
+test("staff cannot treat an older unchecked ready flag as package certification", async ({
+  page,
+  context,
+}) => {
+  await staffFixture(context, staffState(), "owner");
+  await connect(context, "owner");
+  const catalog = learningSimulation("owner").export().catalog;
+  const plan = catalog.plans[0];
+  plan.package_ids = ["foundation"];
+  plan.weeks_content.forEach((w) => {
+    delete w.readiness;
+    w.approved_at = null;
+    w.ready = true;
+  });
+  await context.route("**/rest/v1/rpc/learning_catalog", (r) =>
+    r.fulfill({ json: catalog }),
+  );
+  await page.goto("./#workspace");
+  await page
+    .getByRole("navigation", { name: "Workspace navigation" })
+    .getByRole("link", { name: "Training", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Weekly plans & quizzes", exact: true })
+    .click();
+  await page
+    .getByRole("combobox", { name: "Open plan", exact: true })
+    .selectOption(plan.id);
+  await expect(
+    page
+      .getByText(
+        "Package validation unavailable; ask the Owner to finish setup",
+        { exact: false },
+      )
+      .first(),
+  ).toBeVisible();
+  for (const button of await page
+    .getByRole("button", { name: "Approve week", exact: true })
+    .all())
+    await expect(button).toBeDisabled();
 });

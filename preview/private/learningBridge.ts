@@ -232,7 +232,10 @@ export function learningBridge(
             args.age_groups as string[],
             args.position_groups as string[],
           );
-        else if (name === "learning_save_week")
+        else if (
+          name === "learning_save_week" ||
+          name === "learning_save_week_checked"
+        )
           await sim.api.saveWeek(
             String(args.target_id),
             String(args.target_plan),
@@ -240,6 +243,9 @@ export function learningBridge(
             String(args.week_title),
             args.resource_ids as string[],
             args.quizzes as string[],
+            args.lesson_allocations as
+              | import("../../src/learning/packageReadiness").LessonAllocations
+              | undefined,
           );
         else if (name === "learning_approve_week")
           await sim.api.approveWeek(String(args.target_week));

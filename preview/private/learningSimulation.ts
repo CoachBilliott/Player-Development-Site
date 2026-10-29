@@ -5,6 +5,7 @@ import type {
   LearningCatalog,
   LearningNotice,
 } from "../../src/learning/api";
+import { packageRequirements } from "../../src/learning/packageReadiness";
 import { EXAMPLE_QUIZ_CSV, parseQuizCsv } from "../../src/learning/quizImport";
 const uid = (n: number) =>
   `92000000-0000-4000-8000-${String(n).padStart(12, "0")}`;
@@ -52,6 +53,7 @@ export function learningSimulation(
           revision: 1,
           approved_at: "2026-10-25T05:00:00Z",
           ready: true,
+          readiness: { mode: "test", complete: true, ready: true, missing: [] },
           resources: [],
           quiz_version_ids: [uid(30)],
         })),
@@ -360,6 +362,12 @@ export function learningSimulation(
         );
       const p = catalog.plans.find((p) => p.id === planId);
       if (!p) throw Error("Plan unavailable.");
+      const requirements = packageRequirements(p.package_ids);
+      const mode =
+        week === 0 && requirements.mode !== "invalid"
+          ? "orientation"
+          : requirements.mode;
+      const complete = mode === "test" || mode === "orientation";
       p.weeks_content.push({
         id,
         week_number: week,
@@ -368,6 +376,16 @@ export function learningSimulation(
           1 + p.weeks_content.filter((w) => w.week_number === week).length,
         approved_at: null,
         ready: false,
+        readiness: {
+          mode,
+          complete,
+          ready: false,
+          missing: complete
+            ? []
+            : [
+                "This fictional preview has no video lessons. A quiz-only draft does not meet package requirements.",
+              ],
+        },
         resources: [],
         quiz_version_ids: quizzes,
       });
@@ -379,6 +397,9 @@ export function learningSimulation(
         .flatMap((p) => p.weeks_content)
         .find((w) => w.id === id);
       if (!w) throw Error("Week unavailable.");
+      if (!w.readiness?.complete)
+        throw Error("Week not ready: package content is incomplete.");
+      w.readiness.ready = true;
       w.approved_at = "2026-10-28T19:00:00Z";
       w.ready = true;
     },

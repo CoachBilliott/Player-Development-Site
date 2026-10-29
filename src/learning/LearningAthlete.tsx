@@ -492,6 +492,18 @@ export function LearningAthlete({
               {selected.quizzes.map((q) => (
                 <article key={q.id} className="learning-quiz-card">
                   <h4>{q.title}</h4>
+                  {selected.resources.some(
+                    (r) => r.lesson_quiz_id === q.id,
+                  ) && (
+                    <p>
+                      Lesson quiz for{" "}
+                      {
+                        selected.resources.find(
+                          (r) => r.lesson_quiz_id === q.id,
+                        )!.content.title
+                      }
+                    </p>
+                  )}
                   <p>
                     {q.questions.length
                       ? q.questions.length + " questions · "
