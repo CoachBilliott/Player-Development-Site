@@ -9,11 +9,21 @@ import {
   type InterestPackage,
 } from "./interestContract";
 
-export function InterestForm({ endpoint }: { endpoint: string }) {
+export function InterestForm({
+  endpoint,
+  packageChoice,
+  onPackageChange,
+  onStateChange,
+}: {
+  endpoint: string;
+  packageChoice?: InterestPackage;
+  onPackageChange?: (choice: InterestPackage) => void;
+  onStateChange?: (state: "idle" | "sending" | "received") => void;
+}) {
   const [launchUpdates, setLaunchUpdates] = useState(false);
   const [name, setName] = useState(""),
     [email, setEmail] = useState(""),
-    [choice, setChoice] = useState<InterestPackage>("undecided"),
+    [localChoice, setChoice] = useState<InterestPackage>("undecided"),
     [adult, setAdult] = useState(false),
     [website, setWebsite] = useState(""),
     [busy, setBusy] = useState(false),
@@ -22,6 +32,7 @@ export function InterestForm({ endpoint }: { endpoint: string }) {
   const lock = useRef(false),
     request = useRef<{ signature: string; id: string } | null>(null);
   const statusRef = useRef<HTMLParagraphElement>(null);
+  const choice = packageChoice ?? localChoice;
   if (received)
     return (
       <div className="interest-received">
@@ -45,6 +56,7 @@ export function InterestForm({ endpoint }: { endpoint: string }) {
         }
         lock.current = true;
         setBusy(true);
+        onStateChange?.("sending");
         setError("");
         const signature = JSON.stringify([
           name.trim(),
@@ -75,8 +87,10 @@ export function InterestForm({ endpoint }: { endpoint: string }) {
           setEmail("");
           setWebsite("");
           setReceived(true);
+          onStateChange?.("received");
           requestAnimationFrame(() => statusRef.current?.focus());
         } catch (e) {
+          onStateChange?.("idle");
           setError(
             e instanceof Error
               ? e.message
@@ -116,7 +130,11 @@ export function InterestForm({ endpoint }: { endpoint: string }) {
           <select
             id="adult-interest-package"
             value={choice}
-            onChange={(e) => setChoice(e.target.value as InterestPackage)}
+            onChange={(e) => {
+              const value = e.target.value as InterestPackage;
+              setChoice(value);
+              onPackageChange?.(value);
+            }}
           >
             <option value="undecided">Not sure yet</option>
             {PACKAGE_PROPOSALS.map((p) => (

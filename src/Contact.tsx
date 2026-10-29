@@ -92,15 +92,12 @@ export function Contact() {
             </span>
             <ArrowUpRight size={20} aria-hidden="true" />
           </a>
-          <a
-            className="contact-resource"
-            href={`${import.meta.env.BASE_URL}partner-guide.html`}
-          >
+          <a className="contact-resource" href="#customer-help">
             <BookOpen size={25} aria-hidden="true" />
             <span>
-              <strong>Website & app guide</strong>
+              <strong>Customer help</strong>
               <span>
-                A walkthrough of training, uploads and private reviews.
+                Invitations, training access, the web app and your information.
               </span>
             </span>
             <ArrowUpRight size={20} aria-hidden="true" />

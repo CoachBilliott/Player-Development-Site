@@ -6,11 +6,12 @@
     <meta name="theme-color" content="#181818" />
     <title>Repformed — Account setup & deletion</title>
     <link rel="stylesheet" href="./partner-guide/guide.css" />
+    <link rel="stylesheet" href="./help.css" />
     <link rel="icon" href="./favicon.svg" />
     <link rel="stylesheet" href="./social-links.css" />
     <script src="./social-links.js" defer></script>
   </head>
-  <body>
+  <body class="help-document">
     <a class="skip" href="#main">Skip to account help</a>
     <header class="top">
       <a class="brand" href="./"
@@ -19,7 +20,7 @@
           alt=""
           width="48"
           height="36"
-        /><span>Repformed<small>PRIVATE PILOT ACCOUNT HELP</small></span></a
+        /><span>Repformed<small>ACCOUNT HELP</small></span></a
       ><a class="button small" href="./#account">Account access</a>
     </header>
     <main id="main" style="max-width: 860px; margin: auto; padding: 38px 22px">
@@ -32,50 +33,14 @@
         includes the login and owned training data. Staff and guardian-managed
         accounts use a review so their responsibilities can be handled safely.
       </p>
-      <section class="chapter" id="invite">
-        <h2>Owners: invite an adult.</h2>
-        <ol class="run">
-          <li>
-            Open Account or Accounts & training access, then Invite someone to
-            Repformed.
-          </li>
-          <li>
-            Enter the adult’s email and choose Parent, Athlete, Coach or
-            Manager. Invite only adults who requested access. New Owner access
-            is assigned later through the existing account-level controls after
-            verified setup.
-          </li>
-          <li>
-            Select Review invitation, check the email and intended level, then
-            Confirm & request invitation email. Keep editing invitation cancels
-            without sending.
-          </li>
-          <li>
-            Refresh Recent invitations. Awaiting recipient means the email
-            service accepted the request, not that the recipient received or
-            accepted it. Check failures before retrying; failed requests wait at
-            least 60 seconds. A dedicated sender is needed for reliable customer
-            delivery.
-          </li>
-          <li>
-            For a verified email without completed account access, the Owner can
-            prepare its setup invitation without another email. That person
-            signs in normally and accepts the approved setup. Existing
-            configured accounts use Manage account access.
-          </li>
-        </ol>
-        <aside class="tip">
-          <strong>Separate permissions</strong>
-          <p>
-            An invitation does not assign training, charge money or provide
-            Apple TestFlight access. TestFlight tester access is separate.
-            Cancelling an invitation prevents its access from activating even if
-            an email is already in transit.
-          </p>
-        </aside>
-      </section>
-      <section class="chapter" id="accept">
-        <h2>Recipients: finish your own setup.</h2>
+      <nav class="help-jumps" aria-label="Account help topics">
+        <a href="#accept">Finish setup</a><a href="#delete">Delete an account</a
+        ><a href="#retention">What can remain</a
+        ><a href="#review">Assisted closure</a
+        ><a href="#invite">Staff invitations</a>
+      </nav>
+      <section class="chapter" tabindex="-1" id="accept">
+        <h2>Finish your account setup.</h2>
         <ol class="run">
           <li>
             Open the invitation email and follow its verification/password steps
@@ -99,7 +64,7 @@
           password recovery in Safari if needed.
         </p>
       </section>
-      <section class="chapter" id="delete">
+      <section class="chapter" tabindex="-1" id="delete">
         <h2>Customers: review full account deletion.</h2>
         <ol class="run">
           <li>
@@ -133,22 +98,7 @@
           </p>
         </aside>
       </section>
-      <section class="chapter" id="review">
-        <h2>Staff and guardian-managed closure.</h2>
-        <p>
-          Choose Request assisted account closure, review the explanation, type
-          DELETE, then Confirm closure review request. This creates a request;
-          it does not delete the account automatically.
-        </p>
-        <p>
-          Owners must arrange account ownership before closing. Staff
-          training-content ownership needs review. Guardian-managed access
-          requires its verified review process. An Owner sees requests in
-          Account → Account closure requests. Mark request reviewed records that
-          review only; it does not claim the account was erased.
-        </p>
-      </section>
-      <section class="chapter" id="retention">
+      <section class="chapter" tabindex="-1" id="retention">
         <h2>What can remain?</h2>
         <p>
           Other households retain their own records with your reporter identity
@@ -165,8 +115,65 @@
           legal policy.
         </p>
       </section>
+      <section class="chapter" tabindex="-1" id="review">
+        <h2>Staff and guardian-managed closure.</h2>
+        <p>
+          Choose Request assisted account closure, review the explanation, type
+          DELETE, then Confirm closure review request. This creates a request;
+          it does not delete the account automatically.
+        </p>
+        <p>
+          Owners must arrange account ownership before closing. Staff
+          training-content ownership needs review. Guardian-managed access
+          requires its verified review process. An Owner sees requests in
+          Account → Account closure requests. Mark request reviewed records that
+          review only; it does not claim the account was erased.
+        </p>
+      </section>
+      <section class="chapter" tabindex="-1" id="invite">
+        <h2>Owners: invite an adult.</h2>
+        <ol class="run">
+          <li>
+            Open Staff &amp; settings, then Invite staff. Choose Invite someone
+            to Repformed.
+          </li>
+          <li>
+            Enter the adult’s email and choose Parent, Athlete, Coach or
+            Manager. Invite only adults who requested access. New Owner access
+            is assigned later through the existing account-level controls after
+            verified setup.
+          </li>
+          <li>
+            Select Review invitation, check the email and intended level, then
+            Confirm & request invitation email. Keep editing invitation cancels
+            without sending.
+          </li>
+          <li>
+            Refresh Recent invitations. Awaiting recipient means the email
+            service accepted the request, not that the recipient received or
+            accepted it. Check failures before retrying; failed requests wait at
+            least 60 seconds. Check the reported delivery state rather than
+            assuming an email reached the inbox.
+          </li>
+          <li>
+            For a verified email without completed account access, the Owner can
+            prepare its setup invitation without another email. That person
+            signs in normally and accepts the approved setup. Existing
+            configured accounts use Manage account access.
+          </li>
+        </ol>
+        <aside class="tip">
+          <strong>Separate permissions</strong>
+          <p>
+            An invitation does not assign training, charge money or provide
+            Apple TestFlight access. TestFlight tester access is separate.
+            Cancelling an invitation prevents its access from activating even if
+            an email is already in transit.
+          </p>
+        </aside>
+      </section>
       <section class="chapter">
-        <h2>Keep the pilot private.</h2>
+        <h2>Current access and staff references</h2>
         <p>
           Use approved adult accounts and original or licensed,
           qualified-reviewed training content. Public signup, billing and real
@@ -175,13 +182,19 @@
         </p>
         <div class="actions">
           <a class="button" href="./partner-guide.html"
-            >Open the illustrated walkthrough</a
+            >Historical staff pilot walkthrough</a
           ><a class="button ghost" href="./phone-test.html"
-            >Open the phone test checklist</a
+            >Staff phone test checklist</a
           >
         </div>
       </section>
     </main>
+    <footer class="help-footer">
+      <a href="./#customer-help">Customer help</a
+      ><a href="./#contact">Contact</a
+      ><a href="./interest-privacy.html">Interest privacy</a
+      ><a href="./credits.html">Credits &amp; licenses</a>
+    </footer>
     <div class="standalone-socials" data-social-links hidden></div>
   </body>
 </html>

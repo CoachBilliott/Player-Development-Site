@@ -349,8 +349,8 @@ export function AthleteVideoReview({
           )}
           {state.can_submit && !drills.length && (
             <p>
-              Your coach needs to assign a drill before you can submit its
-              video.
+              Training must be assigned before you can send its video. Contact
+              the team for help.
             </p>
           )}
           <div className="review-history">

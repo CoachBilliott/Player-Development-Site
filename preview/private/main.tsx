@@ -5,6 +5,7 @@ import {
   StaffDeliveryWorkspace,
 } from "../../src/StaffTraining";
 import { WorkoutBuilder } from "../../src/WorkoutBuilder";
+import { CustomerHelp } from "../../src/CustomerHelp";
 import { StaffSettingsWorkspace } from "../../src/Workspaces";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
@@ -94,7 +95,9 @@ export function Preview() {
       </aside>
       <PrivateHeader shared={shared} page={page} />
       <div key={`${role}:${page}`}>
-        {page === "account" ? (
+        {page === "customer-help" ? (
+          <CustomerHelp />
+        ) : page === "account" ? (
           <MemberAccountPage shared={shared} />
         ) : page === "profiles" ? (
           <MemberAccountPage shared={shared} profiles />
