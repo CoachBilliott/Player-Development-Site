@@ -1,6 +1,6 @@
 # Independent release and schedule review
 
-**Publication update:** PR12 has since been approved, merged and published. See [the final production receipt](PRODUCTION-RELEASE.md). PR13 remains draft/unmerged/off. The original source-only review below is preserved as historical evidence.
+**Publication update:** PR12 has since been approved, merged and published. See [the final production receipt](PRODUCTION-RELEASE.md). PR13 remains draft/unmerged/off. Current learning preparation and bounded live-audit results are in [the conditional release handoff](../conditional-release/README.md). The original source-only review below is preserved as historical evidence.
 
 October 29, 2026. This assessment is source/local-browser work only. No account reset, credential configuration, hosted migration, feature activation, Cron job, outgoing email or deployment was performed.
 

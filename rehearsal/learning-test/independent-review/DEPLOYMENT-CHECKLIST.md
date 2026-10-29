@@ -1,5 +1,7 @@
 # Separate release and rollback checklists
 
+**Current update:** PR12 has been published; see [its final receipt](PRODUCTION-RELEASE.md). The owner has since conditionally authorized PR13 publication after readiness gates. Use [the current exact approvals/recovery plan](../conditional-release/APPROVALS-AND-RECOVERY.md) and [live audit handoff](../conditional-release/LIVE-AUDIT.md). Specific production permissions and other gates remain pending. The original preparatory checklist below is preserved as historical evidence.
+
 Prepared October 29, 2026. **This checklist authorizes no action.** The current instruction is to prepare and test, not publish or activate. No production mutation was made.
 
 ## A. PR12: navigation and manual athlete assignment only
