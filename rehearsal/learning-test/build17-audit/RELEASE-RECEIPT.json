@@ -1,0 +1,52 @@
+{
+  "verified_at": "2026-10-30T06:02:44.645609+00:00",
+  "source": "70052ad3ea4de0fc42beac53bb0138f640d7bd8c",
+  "website": {
+    "url": "https://repformed.com",
+    "deployment": "3a46672b-b999-4d10-a1da-a674028ff754",
+    "success_at": "2026-10-30T05:23:21.448131Z",
+    "entry": "assets/index-BuPCLDfv.js"
+  },
+  "native": {
+    "version": "0.1.0",
+    "build": 17,
+    "signed_workflow": 41010880664,
+    "attempt": 1,
+    "result": "success",
+    "apple_status_workflow": 41011715032,
+    "apple_checked_at": "2026-10-30T06:02:13.313Z",
+    "apple_build_id": "e46dceaa-762e-4831-bac9-236325c3a78e",
+    "processing": "VALID",
+    "internal_state": "IN_BETA_TESTING",
+    "group": "Owner Testing",
+    "group_explicitly_includes_build": true,
+    "external_state": "READY_FOR_BETA_SUBMISSION; not externally released",
+    "ipa_sha256": "39d0df3309292d9569160a3176edd438e70652281c44f37676817644a6aaaf58",
+    "ipa_bytes": 16368251
+  },
+  "configuration_sha256": "bce7ca9fc4b5806db2b10d51e0ef06a04c455bf36d145d331409bb94b0f1c39c",
+  "critical_application_assets_identical": true,
+  "sw_difference": "same logic and asset set; font ordering and derived cache key differ",
+  "source_checks": {
+    "main_ci": 41006659216,
+    "native_validation": 41006712872,
+    "native_attempt": 2,
+    "native_tests": 6,
+    "all_required_results": "success"
+  },
+  "post_release_audit": {
+    "390px_fixture_checks": 15,
+    "320px_fixture_checks": 15,
+    "geometry_cases": 4,
+    "role_presentations": 7,
+    "appearance_views_per_width": 26,
+    "axe_violations_per_width": 0,
+    "page_overflow_views_per_width": 0,
+    "incomplete_axe_checks_per_width": 31,
+    "coach_card_regression": "passed: all four staff roles at 320/375/390",
+    "physical_device": "unverified",
+    "live_private_role_acceptance": "unverified",
+    "hosted_learning": "unreleased/unaccepted"
+  },
+  "production_learning_paging_security_or_credentials_changed": false
+}
