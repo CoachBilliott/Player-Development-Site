@@ -66,6 +66,12 @@ beforeAll(async () => {
       "utf8",
     ),
   );
+  await db.exec(
+    readFileSync(
+      new URL("../backend/019-account-names.sql", import.meta.url),
+      "utf8",
+    ),
+  );
 }, 30000);
 afterAll(async () => db?.close());
 beforeEach(async () => db.exec("begin"));
@@ -342,4 +348,250 @@ it("does not mark deletion complete while the email login still exists", async (
   await expect(
     value("public.finish_account_closure($1,false)", [request]),
   ).rejects.toThrow(/Authentication deletion/);
+});
+
+it("adult names preserve own-row privacy, duplicate Unicode names and exact Owner directory scope", async () => {
+  await as(parent);
+  await value(`public.save_my_account_name('  José 李  ',0,'${parent}')`);
+  await as(other);
+  await value(`public.save_my_account_name('José 李',0,'${other}')`);
+  expect(
+    (await db.query("select user_id,display_name from public.account_names"))
+      .rows,
+  ).toEqual([{ user_id: other, display_name: "José 李" }]);
+  await as(owner);
+  const old = (await db.query("select * from public.list_account_access('')"))
+    .rows;
+  const named = (
+    await db.query<Record<string, unknown>>(
+      "select * from public.list_account_access_v2('')",
+    )
+  ).rows;
+  expect(
+    named.map((row) =>
+      Object.fromEntries(
+        Object.entries(row).filter(([key]) => key !== "display_name"),
+      ),
+    ),
+  ).toEqual(old);
+  expect(named.filter((row) => row.display_name === "José 李")).toHaveLength(2);
+  expect((await db.query("select * from public.account_names")).rows).toEqual(
+    [],
+  );
+});
+for (const actor of [manager, coach, parent, other]) {
+  it(`names do not grant directory access to ${actor}`, async () => {
+    await as(actor);
+    await expect(
+      db.query<Record<string, unknown>>(
+        "select * from public.list_account_access_v2('')",
+      ),
+    ).rejects.toThrow(/Owner access/);
+  });
+}
+it("name edits cannot target another account, write directly, or use stale versions", async () => {
+  await as(parent);
+  expect(await value("public.get_my_account_name()")).toEqual({
+    eligible: true,
+    display_name: null,
+    version: 0,
+  });
+  await value(`public.save_my_account_name('Alex',0,'${parent}')`);
+  await db.exec("savepoint rejected");
+  await expect(
+    value(`public.save_my_account_name('Overwrite',0,'${parent}')`),
+  ).rejects.toThrow(/another session/);
+  await db.exec("rollback to savepoint rejected");
+  await expect(
+    db.query("update public.account_names set display_name='Other'"),
+  ).rejects.toThrow(/permission denied/);
+  await db.exec("rollback to savepoint rejected");
+  expect(
+    await value(`public.save_my_account_name('  ',1,'${parent}')`),
+  ).toEqual({
+    eligible: true,
+    display_name: null,
+    version: 2,
+  });
+});
+for (const bad of [
+  "a".repeat(101),
+  "a\nb",
+  "a\tb",
+  "a\u007fb",
+  "a\u0085b",
+  "a\u200fb",
+  "a\u2028b",
+  "a\u{E0001}b",
+]) {
+  it(`rejects invalid name ${JSON.stringify(bad.slice(0, 12))}`, async () => {
+    await as(parent);
+    await expect(
+      db.query(`select public.save_my_account_name($1,0,'${parent}')`, [bad]),
+    ).rejects.toThrow(/account_name_valid/);
+  });
+}
+it("100 Unicode codepoints fit and account-data erasure cascades names", async () => {
+  await as(parent);
+  expect(
+    (
+      await value<{ display_name: string }>(
+        `public.save_my_account_name($1,0,'${parent}')`,
+        ["😀".repeat(100)],
+      )
+    ).display_name,
+  ).toHaveLength(200);
+  await as("", "postgres");
+  await db.query("delete from public.member_accounts where user_id=$1", [
+    parent,
+  ]);
+  expect((await db.query("select * from public.account_names")).rows).toEqual(
+    [],
+  );
+});
+for (const condition of [
+  "unverified",
+  "no setup",
+  "guardian",
+  "closing",
+  "failed closure",
+]) {
+  it(`rejects name saves for ${condition}`, async () => {
+    if (condition === "unverified")
+      await db.query(
+        "update auth.users set email_confirmed_at=null where id=$1",
+        [parent],
+      );
+    if (condition === "no setup")
+      await db.query("delete from public.member_accounts where user_id=$1", [
+        parent,
+      ]);
+    if (condition === "guardian")
+      await db.query(
+        "insert into public.guardian_managed_athletes(user_id) values($1)",
+        [parent],
+      );
+    if (condition === "closing" || condition === "failed closure")
+      await db.query(
+        "insert into public.account_closures(id,user_id,state) values($1,$2,$3)",
+        [request, parent, condition === "closing" ? "cleaning" : "failed"],
+      );
+    await as(parent);
+    expect(
+      (await value<{ eligible: boolean }>("public.get_my_account_name()"))
+        .eligible,
+    ).toBe(false);
+    await expect(
+      value(`public.save_my_account_name('Alex',0,'${parent}')`),
+    ).rejects.toThrow(/Verified adult/);
+  });
+}
+it("anonymous users cannot read names or call either name RPC", async () => {
+  await as("", "anon");
+  for (const sql of [
+    "select * from public.account_names",
+    "select public.get_my_account_name()",
+    `select public.save_my_account_name('Alex',0,'${parent}')`,
+    "select * from public.list_account_access_v2('')",
+  ]) {
+    await db.exec("savepoint denied_name");
+    await expect(db.query(sql)).rejects.toThrow(/permission denied/);
+    await db.exec("rollback to savepoint denied_name");
+  }
+});
+
+it("v2 keeps pending accounts, email-only search and the exact 50-account cap", async () => {
+  for (let n = 100; n < 160; n++)
+    await db.query(
+      "insert into auth.users(id,email,email_confirmed_at) values($1,$2,null)",
+      [id(n), `pending-${n}@example.test`],
+    );
+  await as(owner);
+  for (const search of ["", "pending-15", "José", "fictional"]) {
+    const old = (
+      await db.query<Record<string, unknown>>(
+        "select * from public.list_account_access($1)",
+        [search],
+      )
+    ).rows;
+    const named = (
+      await db.query<Record<string, unknown>>(
+        "select * from public.list_account_access_v2($1)",
+        [search],
+      )
+    ).rows;
+    expect(
+      named.map((row) =>
+        Object.fromEntries(
+          Object.entries(row).filter(([key]) => key !== "display_name"),
+        ),
+      ),
+    ).toEqual(old);
+    if (search === "") expect(named).toHaveLength(50);
+    if (search === "pending-15")
+      expect(named.every((row) => row.adult_setup === false)).toBe(true);
+  }
+});
+
+it("authenticated callers without a user cannot save and no client can invoke eligibility or write names directly", async () => {
+  await as("");
+  await expect(
+    value(`public.save_my_account_name('Fake',0,'${parent}')`),
+  ).rejects.toThrow(/Sign in/);
+});
+it("new privileged functions have fixed search paths and restricted grants", async () => {
+  const defs = (
+    await db.query<{
+      proname: string;
+      prosecdef: boolean;
+      proconfig: string[];
+    }>(
+      "select proname,prosecdef,proconfig from pg_proc where proname in ('get_my_account_name','save_my_account_name','list_account_access_v2','can_save_account_name')",
+    )
+  ).rows;
+  expect(defs).toHaveLength(4);
+  for (const fn of defs) {
+    expect(fn.prosecdef).toBe(true);
+    expect(fn.proconfig).toContain('search_path=""');
+    const sig =
+      fn.proname +
+      (fn.proname === "save_my_account_name"
+        ? "(text,integer,uuid)"
+        : fn.proname === "list_account_access_v2"
+          ? "(text)"
+          : "()");
+    expect(
+      await value("has_function_privilege('anon',$1,'EXECUTE')", [sig]),
+    ).toBe(false);
+    expect(
+      await value("has_function_privilege('authenticated',$1,'EXECUTE')", [
+        sig,
+      ]),
+    ).toBe(fn.proname !== "can_save_account_name");
+  }
+  expect(
+    await value(
+      "has_table_privilege('authenticated','public.account_names','INSERT')",
+    ),
+  ).toBe(false);
+  expect(
+    await value(
+      "has_table_privilege('authenticated','public.account_names','UPDATE')",
+    ),
+  ).toBe(false);
+  expect(
+    await value(
+      "has_table_privilege('authenticated','public.account_names','DELETE')",
+    ),
+  ).toBe(false);
+});
+
+it("rejects a save from a switched session rather than storing the previous adult's draft", async () => {
+  await as(other);
+  await expect(
+    db.query(
+      "select public.save_my_account_name('Previous adult draft',0,$1)",
+      [parent],
+    ),
+  ).rejects.toThrow(/signed-in account changed/);
 });

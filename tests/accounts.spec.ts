@@ -26,6 +26,10 @@ function fixture(
 ) {
   const paused = practiceResumeFixture();
   const accounts = new Map<string, Row>();
+  const names = new Map<
+    string,
+    { display_name: string | null; version: number }
+  >();
   const players = new Map<string, Row>();
   const levels = new Map<string, { role: string; version: number }>();
   const links = new Map<string, string>();
@@ -358,7 +362,37 @@ function fixture(
             if (player.owner_id === id) players.delete(key);
           return route.fulfill({ status: 204, body: "" });
         }
-        if (url.pathname.endsWith("/rpc/list_account_access")) {
+        if (url.pathname.endsWith("/rpc/get_my_account_name")) {
+          return route.fulfill({
+            json: {
+              eligible: accounts.has(id) && !guardianAccounts.has(id),
+              display_name: names.get(id)?.display_name || null,
+              version: names.get(id)?.version || 0,
+            },
+          });
+        }
+        if (url.pathname.endsWith("/rpc/save_my_account_name")) {
+          if (
+            !accounts.has(id) ||
+            body.expected_user_id !== id ||
+            guardianAccounts.has(id) ||
+            body.expected_version !== (names.get(id)?.version || 0)
+          )
+            return route.fulfill({
+              status: 409,
+              json: { message: "Name changed" },
+            });
+          const name = {
+            display_name: body.new_display_name,
+            version: body.expected_version + 1,
+          };
+          names.set(id, name);
+          return route.fulfill({ json: { ...name, eligible: true } });
+        }
+        if (
+          url.pathname.endsWith("/rpc/list_account_access") ||
+          url.pathname.endsWith("/rpc/list_account_access_v2")
+        ) {
           if (levelFor(id)?.role !== "owner")
             return route.fulfill({
               status: 403,
@@ -369,6 +403,7 @@ function fixture(
               .map((target) => ({
                 user_id: target,
                 email: user(target).email,
+                display_name: names.get(target)?.display_name || null,
                 role: levelFor(target)?.role || null,
                 version: levelFor(target)?.version || 0,
                 email_verified: true,
@@ -677,7 +712,9 @@ test("signup verifies email, recovery updates a password and adult accounts cann
     .getByLabel("New password", { exact: true })
     .fill("Fictional-next8!");
   await page.getByRole("button", { name: "Save new password" }).click();
-  await expect(page.getByRole("status")).toContainText("Password updated");
+  await expect(
+    page.getByRole("status").filter({ hasText: "Password updated" }),
+  ).toBeVisible();
   expect(backend.counts.password).toBe(1);
   await expect(page).not.toHaveURL(/flow=|code=/);
 });
@@ -1871,6 +1908,193 @@ test("new passwords accept eight characters with all required groups and reject 
   expect(backend.counts.password).toBe(0);
   await replacement.fill("Bb2!cccc");
   await page.getByRole("button", { name: "Save new password" }).click();
-  await expect(page.getByRole("status")).toContainText("Password updated");
+  await expect(
+    page.getByRole("status").filter({ hasText: "Password updated" }),
+  ).toBeVisible();
   expect(backend.counts.password).toBe(1);
+});
+
+test("adult names can be saved, cancelled, removed and cleared when switching accounts", async ({
+  page,
+  context,
+}) => {
+  const backend = fixture();
+  await backend.install(context);
+  await signIn(page);
+  await setup(page);
+  await page.goto("./#account");
+  const name = page.getByRole("textbox", {
+    name: "Your name (optional)",
+    exact: true,
+  });
+  await expect(name).toHaveValue("");
+  await expect(
+    page.getByText(/Visible to you and Repformed Owners/),
+  ).toBeVisible();
+  await name.fill("a".repeat(101));
+  await page.getByRole("button", { name: "Save name", exact: true }).click();
+  await expect(page.getByRole("alert")).toContainText("100 characters");
+  await expect(name).toBeEnabled();
+  await name.fill("  José 李  ");
+  await page.getByRole("button", { name: "Save name", exact: true }).click();
+  await expect(
+    page.getByText("Your name is saved.", { exact: true }),
+  ).toBeVisible();
+  await expect(name).toHaveValue("José 李");
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+  await page.screenshot({
+    path: `test-results/adult-name-settings-${test.info().project.name}.png`,
+    fullPage: true,
+  });
+  await name.fill("Uncommitted edit");
+  await page.getByRole("button", { name: "Cancel name edit" }).click();
+  await expect(name).toHaveValue("José 李");
+  await context.setOffline(true);
+  await expect(name).toBeDisabled();
+  await context.setOffline(false);
+  await expect(name).toBeEnabled();
+  await page.reload();
+  await expect(name).toHaveValue("José 李");
+  await signOut(page);
+  await signIn(page, "fictional-adult@example.test");
+  await setup(page, "adult");
+  await page.goto("./#account");
+  await expect(name).toHaveValue("");
+  await expect(page.getByText("José 李", { exact: true })).toHaveCount(0);
+  await signOut(page);
+  await signIn(page);
+  await page.goto("./#account");
+  await expect(name).toHaveValue("José 李");
+  await name.fill("");
+  await page.getByRole("button", { name: "Save name", exact: true }).click();
+  await expect(
+    page.getByText("Your name is removed.", { exact: true }),
+  ).toBeVisible();
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= window.innerWidth,
+    ),
+  ).toBe(true);
+});
+
+test("Owner directory shows duplicate adult names with exact email and ID in role confirmation", async ({
+  page,
+  context,
+}) => {
+  const backend = fixture(false, false, "owner");
+  await backend.install(context);
+  await context.route("**/rest/v1/rpc/list_account_access_v2", (route) =>
+    route.fulfill({
+      json: [
+        {
+          user_id: parentId,
+          email: "fictional-parent@example.test",
+          role: "owner",
+          version: 1,
+          email_verified: true,
+          adult_setup: true,
+          display_name: "Alex Rivera",
+        },
+        {
+          user_id: otherId,
+          email: "fictional-adult@example.test",
+          role: "coach",
+          version: 7,
+          email_verified: true,
+          adult_setup: true,
+          display_name: "Alex Rivera",
+        },
+      ],
+    }),
+  );
+  await signIn(page);
+  await page.goto("./#access");
+  await expect(
+    page.locator(".access-person strong", { hasText: "Alex Rivera" }),
+  ).toHaveCount(2);
+  const person = page
+    .locator(".access-person")
+    .filter({ hasText: "fictional-adult@example.test" });
+  await person.locator("summary").click();
+  await person
+    .getByLabel("Account level for fictional-adult@example.test")
+    .selectOption("manager");
+  await person.getByRole("button", { name: "Review access change" }).click();
+  const modal = page.getByRole("dialog");
+  await expect(modal.getByText("Alex Rivera", { exact: true })).toBeVisible();
+  await expect(
+    modal.getByText("fictional-adult@example.test", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    modal.getByText(`Account ID: ${otherId} · Access version: 7`, {
+      exact: true,
+    }),
+  ).toBeVisible();
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= window.innerWidth,
+    ),
+  ).toBe(true);
+  await page.screenshot({
+    path: `test-results/adult-name-directory-${test.info().project.name}.png`,
+    fullPage: true,
+  });
+  await modal.getByRole("button", { name: "Keep current level" }).click();
+  expect(backend.counts.roleWrites).toBe(0);
+});
+
+test("name save failures require reload and retain the unconfirmed draft", async ({
+  page,
+  context,
+}) => {
+  const backend = fixture();
+  await backend.install(context);
+  await signIn(page);
+  await setup(page);
+  await page.goto("./#account");
+  const name = page.getByRole("textbox", {
+    name: "Your name (optional)",
+    exact: true,
+  });
+  await name.fill("My draft");
+  await context.route("**/rest/v1/rpc/save_my_account_name", (route) =>
+    route.fulfill({ status: 409, json: { message: "stale" } }),
+  );
+  await page.getByRole("button", { name: "Save name", exact: true }).click();
+  await expect(page.getByRole("alert")).toContainText("not confirmed saved");
+  await expect(name).toHaveValue("My draft");
+  await expect(name).toBeDisabled();
+  await page.getByRole("button", { name: "Reload your name" }).click();
+  await expect(name).toHaveValue("");
+  await expect(name).toBeEnabled();
+});
+
+test("adult name load errors can be retried and unfinished setup cannot edit names", async ({
+  page,
+  context,
+}) => {
+  const backend = fixture();
+  await backend.install(context);
+  await signIn(page);
+  await page.goto("./#account");
+  const panel = page.getByRole("region", { name: "Your name", exact: true });
+  await expect(
+    panel.getByText(/Verified email and completed adult setup are required/),
+  ).toBeVisible();
+  await expect(panel.getByRole("textbox")).toHaveCount(0);
+  await setup(page);
+  let failed = true;
+  await context.route("**/rest/v1/rpc/get_my_account_name", (route) =>
+    failed
+      ? route.fulfill({ status: 503, json: { message: "Unavailable" } })
+      : route.fulfill({
+          json: { eligible: true, display_name: null, version: 0 },
+        }),
+  );
+  await page.goto("./#account");
+  await expect(panel.getByRole("alert")).toContainText("could not be loaded");
+  await expect(panel.getByRole("textbox")).toHaveCount(0);
+  failed = false;
+  await panel.getByRole("button", { name: "Reload your name" }).click();
+  await expect(panel.getByRole("textbox")).toHaveValue("");
 });

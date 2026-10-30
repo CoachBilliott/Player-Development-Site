@@ -271,7 +271,10 @@ async function fixture(
           });
       return json({});
     }
-    if (path.endsWith("/rpc/list_account_access"))
+    if (
+      path.endsWith("/rpc/list_account_access") ||
+      path.endsWith("/rpc/list_account_access_v2")
+    )
       return json([
         {
           user_id: accountId,
