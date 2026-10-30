@@ -42,7 +42,7 @@ export const SERVICE_LABELS: Record<ReviewService["state"], string> = {
   queued: "Ready for coach",
   in_review: "Coach reviewing",
   delivered: "Feedback ready",
-  cancelled: "Cancelled",
+  cancelled: "Canceled",
 };
 export const BLOCKERS = {
   none: "No follow-up needed",
@@ -79,7 +79,7 @@ export function reviewTiming(row: ReviewService, now: number) {
       : "On track";
 }
 export function reviewDate(value: string) {
-  return new Date(value).toLocaleString(undefined, {
+  return new Date(value).toLocaleString("en-US", {
     month: "short",
     day: "numeric",
     hour: "numeric",
@@ -113,7 +113,7 @@ export class ReviewServices {
       expected_version: row.version,
     });
     if (error)
-      throw new Error("This request changed. Refresh before cancelling.");
+      throw new Error("This request changed. Refresh before canceling.");
   }
   async manage(
     row: ReviewService,

@@ -180,8 +180,8 @@ export function AccountClosure({ shared }: { shared: SharedState }) {
                 accounts stay intact.
               </p>
               <Notice>
-                Re-enter your current Repformed password, then type
-                DELETE. Selecting the final button starts irreversible cleanup.
+                Re-enter your current Repformed password, then type DELETE.
+                Selecting the final button starts irreversible cleanup.
               </Notice>
             </>
           ) : (
@@ -275,7 +275,7 @@ export function AccountClosure({ shared }: { shared: SharedState }) {
                   onClick={close}
                 >
                   {closing
-                    ? "Close without cancelling deletion"
+                    ? "Close without canceling deletion"
                     : "Keep my account"}
                 </button>
               </div>

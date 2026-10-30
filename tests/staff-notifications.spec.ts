@@ -261,7 +261,8 @@ test("Manager sees the shared inbox status and private interest without recipien
   });
   await page.goto("./?source=app#interest");
   await expect(inbox).toContainText("fictional-adult@example.test");
-  await expect(inbox).toContainText("Waiting for safe retry");
+  await expect(inbox).not.toContainText("Waiting for safe retry");
+  await expect(inbox.locator("details")).toHaveCount(0);
   await page.reload();
   await expect(inbox).toContainText("fictional-adult@example.test");
   expect(data.calls.preferences).toBe(0);
@@ -300,7 +301,7 @@ test("private interest distinguishes unrecorded, unchecked and earlier affirmati
   const inbox = page.getByRole("region", {
     name: "Private package interest inbox",
   });
-  await expect(inbox).toContainText("not recorded on this submission");
+  await expect(inbox).not.toContainText("Launch email:");
   await expect(
     inbox.getByText("Launch preference record", { exact: true }),
   ).toHaveCount(0);
@@ -314,14 +315,65 @@ test("private interest distinguishes unrecorded, unchecked and earlier affirmati
   await inbox
     .getByRole("button", { name: "Refresh interest requests" })
     .click();
-  await expect(inbox).toContainText("not requested on this submission");
-  await inbox.locator("summary").click();
-  await expect(inbox).toContainText(
-    "A separate affirmative request was recorded",
+  await expect(inbox).toContainText("Launch email: Not requested");
+  await expect(inbox.locator("details")).toHaveCount(0);
+  await expect(inbox).not.toContainText("repformed-launch-notice-v1");
+  await expect(inbox).not.toContainText("2026-10-27");
+  expect(data.interestRows[0].launch_requested_at).toBe("2026-10-27T10:00:00Z");
+  Object.assign(data.interestRows[0], { launch_choice: true });
+  await inbox
+    .getByRole("button", { name: "Refresh interest requests" })
+    .click();
+  await expect(inbox).toContainText("Launch email: Requested");
+  Object.assign(data.interestRows[0], {
+    adult_name: "",
+    launch_choice: false,
+    launch_choice_at: null,
+    launch_notice_version: null,
+  });
+  await inbox
+    .getByRole("button", { name: "Refresh interest requests" })
+    .click();
+  await expect(inbox).not.toContainText("Launch email:");
+  await expect(inbox).not.toContainText("Adult contact");
+  await expect(inbox).toContainText("fictional-adult@example.test");
+  expect(data.interestRows[0].launch_requested_at).toBe("2026-10-27T10:00:00Z");
+  expect(data.calls.provider).toBe(0);
+});
+
+test("interest cards contain only recorded inputs and never expose technical details", async ({
+  page,
+  context,
+}) => {
+  const data = await alerts(context);
+  Object.assign(data.interestRows[0], {
+    package_interest: "elite-coaching",
+    launch_choice: true,
+    launch_choice_at: "2026-10-28T10:00:00Z",
+    launch_notice_version: "repformed-launch-notice-v1",
+  });
+  await page.goto("./?source=app#interest");
+  const inbox = page.getByRole("region", {
+    name: "Private package interest inbox",
+  });
+  const card = inbox.locator("li").first();
+  await expect(card).toContainText("Launch email: Requested");
+  expect(
+    (await card.innerText())
+      .split(/\n+/)
+      .map((s) => s.trim())
+      .filter(Boolean),
+  ).toEqual([
+    "Fictional Adult",
+    "fictional-adult@example.test",
+    "Elite Coaching",
+    "Launch email: Requested",
+  ]);
+  await expect(card.locator("details,summary")).toHaveCount(0);
+  expect(data.interestRows[0].email_state).toBe("retry");
+  expect(data.interestRows[0].launch_notice_version).toBe(
+    "repformed-launch-notice-v1",
   );
-  await expect(inbox).toContainText("does not erase that history");
-  await expect(inbox).toContainText("Email ownership is not verified");
-  await expect(inbox).toContainText("No launch announcement is sent");
   expect(data.calls.provider).toBe(0);
 });
 

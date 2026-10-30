@@ -337,8 +337,7 @@
 .home-about > img {
   width: 100%;
   height: auto;
-  aspect-ratio: 4 / 5;
-  object-fit: cover;
+  object-fit: contain;
   border-radius: 8px;
 }
 .home-about h2 {
@@ -369,9 +368,6 @@
     grid-template-columns: 1fr;
     gap: 28px;
     padding-block: 44px;
-  }
-  .home-about > img {
-    aspect-ratio: 16 / 9;
   }
 }
 @media (max-width: 600px) {

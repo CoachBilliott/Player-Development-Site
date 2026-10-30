@@ -1764,7 +1764,7 @@ function Progress({
               </span>
               <div>
                 <span className="eyebrow">
-                  {new Date(h.date).toLocaleDateString(undefined, {
+                  {new Date(h.date).toLocaleDateString("en-US", {
                     month: "short",
                     day: "numeric",
                     year: "numeric",

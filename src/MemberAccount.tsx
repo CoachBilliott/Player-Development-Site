@@ -1290,9 +1290,9 @@ function ConnectedAccount({
           <p>
             Repformed stores the adult’s email and login credentials through
             Supabase Auth. Member records store your account type,
-            acknowledgement time, and each player’s nickname, age group,
-            football position, experience and goal. Do not enter full names,
-            birth dates, school details, health information or photos.
+            acknowledgment time, and each player’s nickname, age group, football
+            position, experience and goal. Do not enter full names, birth dates,
+            school details, health information or photos.
           </p>
           <p>
             Profiles are private to their household and explicitly linked

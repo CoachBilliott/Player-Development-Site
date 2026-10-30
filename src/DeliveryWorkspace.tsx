@@ -22,12 +22,11 @@ const days = [
   "Friday",
   "Saturday",
 ];
+const stateLabel = (value: string) =>
+  value === "cancelled" ? "canceled" : value;
 function stamp(v: string | null, zone?: string) {
   return v
-    ? new Date(v).toLocaleString(
-        undefined,
-        zone ? { timeZone: zone } : undefined,
-      )
+    ? new Date(v).toLocaleString("en-US", zone ? { timeZone: zone } : undefined)
     : "Not observed";
 }
 function RuleFields({
@@ -288,7 +287,8 @@ export function DeliveryMonitor({
                 {q.athlete_name} · {q.cycle_key}
               </strong>
               <p>
-                Due {stamp(q.due_at, q.timezone)} · {q.timezone} · {q.state}
+                Due {stamp(q.due_at, q.timezone)} · {q.timezone} ·{" "}
+                {stateLabel(q.state)}
                 {q.escalated_at ? " · escalated to Owners/Managers" : ""}
               </p>
               <p>
@@ -473,7 +473,9 @@ export function DeliveryMonitor({
                       onChange={(e) => setClientState(e.target.value)}
                     >
                       {["active", "paused", "cancelled"].map((s) => (
-                        <option key={s}>{s}</option>
+                        <option key={s} value={s}>
+                          {stateLabel(s)}
+                        </option>
                       ))}
                     </select>
                   </label>
@@ -514,7 +516,9 @@ export function DeliveryMonitor({
                       onChange={(e) => setAthleteState(e.target.value)}
                     >
                       {["active", "paused", "cancelled"].map((s) => (
-                        <option key={s}>{s}</option>
+                        <option key={s} value={s}>
+                          {stateLabel(s)}
+                        </option>
                       ))}
                     </select>
                   </label>
@@ -610,7 +614,7 @@ export function DeliveryMonitor({
               {data.checks.map((c) => (
                 <li key={c.id}>
                   <strong>
-                    {c.cycle_key} · {c.state}
+                    {c.cycle_key} · {stateLabel(c.state)}
                   </strong>
                   <p>
                     Due {stamp(c.due_at, c.rule_snapshot.timezone)} ·{" "}
@@ -632,7 +636,7 @@ export function DeliveryMonitor({
                       onClick={() =>
                         void act(
                           () => api.checkState(c.id, "cancelled", c.state),
-                          "Delivery expectation cancelled. Recheck to resolve any recorded alert.",
+                          "Delivery expectation canceled. Recheck to resolve any recorded alert.",
                         )
                       }
                     >

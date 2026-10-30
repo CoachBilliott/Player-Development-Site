@@ -252,8 +252,8 @@ export function AccountInvitationGate({
         </section>
       ) : (
         <Notice>
-          This invitation is cancelled, expired or delivery is unfinished. Ask
-          an Owner to check it. An old email link cannot activate a cancelled
+          This invitation is canceled, expired or delivery is unfinished. Ask an
+          Owner to check it. An old email link cannot activate a canceled
           invitation. TestFlight testing access is separate from your Player
           Development account.
         </Notice>

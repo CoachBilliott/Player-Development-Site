@@ -100,7 +100,7 @@ for (const role of ["owner", "manager", "coach"] as const) {
       page.getByRole("heading", { level: 1, name: "Account settings." }),
     ).toBeVisible();
     await expect(page.getByLabel("Find an account by email")).toHaveCount(0);
-    await expect(page.getByLabel("Adult invitation email")).toHaveCount(0);
+    await expect(page.getByLabel("Email address")).toHaveCount(0);
     await expect(
       page.getByRole("button", { name: "Change password", exact: true }),
     ).toBeVisible();

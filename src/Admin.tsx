@@ -409,7 +409,7 @@ export function Admin({
               <h2>Pick up where you left off</h2>
               <p>
                 <strong>{savedDraft.drill.title || savedDraft.filename}</strong>{" "}
-                · saved {new Date(savedDraft.savedAt).toLocaleString()}
+                · saved {new Date(savedDraft.savedAt).toLocaleString("en-US")}
               </p>
               <div className="actions">
                 <button
