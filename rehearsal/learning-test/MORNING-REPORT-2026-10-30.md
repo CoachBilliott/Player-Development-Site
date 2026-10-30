@@ -1,4 +1,4 @@
-> **Website copy repair published:** source `b54fd92`, production `71f46286-84fd-41de-8da6-85caa7e59f59`, success06:55:25UTC. Main CI41015671164 and24 frozen-artifact checks passed; normal configuration preserved. TestFlight remains17 while native18 validation41015701802 continues. No signed18 upload yet, learning remains off. See [current web receipt](build18-audit/web-deployment-receipt.json). The audit below is the prior70052ad/17 snapshot until the exact new app audit completes.
+> **Latest release confirmed:** website `b54fd92` / production `71f46286-84fd-41de-8da6-85caa7e59f59`; TestFlight **0.1.0 (18)** VALID / IN_BETA_TESTING in Owner Testing, checked07:18:25UTC via41019263982. Signed41018447424 succeeded once. Exact IPA15+15+4 checks and two skip-link diagnostics passed. A remaining P3 “1 drills” label is recorded and being corrected; no new P0/P1/P2 observed in the accessible sample. [Exact release receipt](build18-audit/RELEASE-RECEIPT.json). Detailed morning matrix below is being reconciled to this release; physical/live-private/learning gates remain unverified.
 
 # Repformed morning report — October 30, 2026
 

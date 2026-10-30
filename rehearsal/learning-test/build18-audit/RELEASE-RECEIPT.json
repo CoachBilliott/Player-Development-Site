@@ -1,0 +1,86 @@
+{
+  "verified_at": "2026-10-30T07:44:34.624127+00:00",
+  "source": "b54fd92fdaf7d19bb742f3566d569072cc16a1db",
+  "website": {
+    "verified_at": "2026-10-30T06:56:02.296259+00:00",
+    "source": "b54fd92fdaf7d19bb742f3566d569072cc16a1db",
+    "deployment_id": "71f46286-84fd-41de-8da6-85caa7e59f59",
+    "url": "https://71f46286.repformed.pages.dev",
+    "canonical_url": "https://repformed.com",
+    "environment": "production",
+    "stage": {
+      "name": "deploy",
+      "started_on": null,
+      "ended_on": "2026-10-30T06:55:25.593917Z",
+      "status": "success"
+    },
+    "created_on": "2026-10-30T06:55:24.007827Z",
+    "main_ci": 41015671164,
+    "main_ci_result": "success",
+    "artifact_smoke": 24,
+    "config_sha256": "bce7ca9fc4b5806db2b10d51e0ef06a04c455bf36d145d331409bb94b0f1c39c",
+    "entry": "assets/index-DoaRe2Xm.js",
+    "upload_attempts": 1,
+    "published_scope": "roster count wording only; no backend, roles, security, credentials, learning flags, packages or intake changes",
+    "testflight_current": 17,
+    "native18_validation": 41015701802,
+    "native18_status": "running; no signed upload yet",
+    "live_browser_limit": "provider readback and frozen-artifact tests; public frontend restriction not retried; real private-role and physical acceptance unverified",
+    "unchanged_previews": [
+      {
+        "id": "965069fe-c47c-473a-a70e-a09fa6d8a29f",
+        "source": "3ea85dec40e4723d514713ff264939893424fc04",
+        "aliases": [
+          "https://learning-auth-rehearsal.repformed.pages.dev"
+        ]
+      },
+      {
+        "id": "8798e8e8-5de3-486e-b5cf-95aae3511ec5",
+        "source": "18176fd093b38a595213ba69a1847c9743475901",
+        "aliases": [
+          "https://private-workspace-ux.repformed.pages.dev"
+        ]
+      }
+    ]
+  },
+  "native": {
+    "version": "0.1.0",
+    "build": 18,
+    "signed_run": 41018447424,
+    "attempt": 1,
+    "signed_result": "success",
+    "apple_status_run": 41019263982,
+    "apple_checked_at": "2026-10-30T07:18:25.671Z",
+    "apple_build_id": "0877fa1d-f218-4347-b2a3-b2e5d79ae3b7",
+    "processing": "VALID",
+    "internal_state": "IN_BETA_TESTING",
+    "group": "Owner Testing",
+    "group_explicitly_includes_build": true,
+    "external_state": "READY_FOR_BETA_SUBMISSION; not external/public release",
+    "ipa_sha256": "d57777b69c92e341010a49001bc76740c69677c17733c466f20928c8cc75bd0c",
+    "ipa_bytes": 16368261
+  },
+  "validation": {
+    "main_ci": 41015671164,
+    "native_ci": 41015701802,
+    "simulator_passed": 6,
+    "failed_or_skipped": 0,
+    "artifact_browser": 24,
+    "exact_ipa_390": 15,
+    "exact_ipa_320": 15,
+    "geometry_counts": 4,
+    "dialog_skip_diagnostic": 2,
+    "all_results": "passed; different evidence classes, not summed"
+  },
+  "audit": {
+    "appearance_views_per_width": 26,
+    "axe_violations_per_width": 0,
+    "overflow_views_per_width": 0,
+    "incomplete_checks_per_width": 31,
+    "physical_device": "unverified",
+    "live_private_roles": "unverified",
+    "weekly_learning": "unreleased/off",
+    "new_finding": "P3: single-resource athlete detail says1drills; source correction needed; no new P0/P1/P2 observed in sample"
+  },
+  "production_security_learning_credentials_or_sessions_changed": false
+}
