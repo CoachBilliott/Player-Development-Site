@@ -63,6 +63,7 @@ import { FamilyDemo } from "./FamilyDemo";
 import { Home } from "./Home";
 import { Membership } from "./Membership";
 import { Contact } from "./Contact";
+import { MeetTheStaff } from "./MeetTheStaff";
 import { CustomerHelp } from "./CustomerHelp";
 import { SocialLinks } from "./SocialLinks";
 import { QuickHelp } from "./QuickHelp";
@@ -139,6 +140,7 @@ const safeHash = () => {
     "coach",
     "membership",
     "contact",
+    "staff",
     "customer-help",
     "install",
     "account",
@@ -609,6 +611,8 @@ export default function App() {
               <MemberAccountPage shared={shared} />
             ) : page === "home" ? (
               <Home />
+            ) : page === "staff" ? (
+              <MeetTheStaff />
             ) : page === "contact" ? (
               <Contact />
             ) : page === "today" && profile ? (
@@ -703,6 +707,7 @@ export default function App() {
                   <h2>Explore</h2>
                   <a href="#home">Home</a>
                   <a href="#membership">Proposed packages</a>
+                  <a href="#staff">Meet the staff</a>
                   <a href="#demo">Fictional preview</a>
                 </div>
                 <div className="footer-group">

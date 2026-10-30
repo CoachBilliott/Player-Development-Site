@@ -54,6 +54,7 @@ export function navigationFor(
   return [
     ["home", "The platform"],
     ["membership", "Proposed packages"],
+    ["staff", "Meet the staff"],
     ["contact", "Contact"],
   ];
 }

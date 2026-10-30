@@ -311,6 +311,9 @@ export function Home() {
                 and individual adult training.
               </li>
             </ul>
+            <a className="text-button" href="#staff">
+              Meet the staff <ArrowRight size={18} aria-hidden="true" />
+            </a>
             <p className="home-sport-note">
               Football is our first focus. Additional sports will be announced
               as programs develop.

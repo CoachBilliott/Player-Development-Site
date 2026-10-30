@@ -1,0 +1,41 @@
+:root {
+  font-family: "DM Sans", sans-serif;
+  --font-body: "DM Sans", sans-serif;
+  --font-display: "Barlow Condensed", sans-serif;
+  --brand-black: #181818;
+  --brand-ivory: #faf5ea;
+  --brand-gold: #c7a45c;
+  --brand-steel: #8c939d;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+.review-banner {
+  padding: 12px 6%;
+  background: var(--brand-gold);
+  font-size: 11px;
+}
+.staff-header {
+  background: var(--brand-black);
+  color: var(--brand-ivory);
+  padding: 28px 6%;
+}
+.staff-brand {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  font:
+    700 28px/1 "Barlow Condensed",
+    sans-serif;
+  letter-spacing: 1px;
+}
+.staff-brand small {
+  display: block;
+  font:
+    600 8px/2 "DM Sans",
+    sans-serif;
+  letter-spacing: 2px;
+}
