@@ -1,3 +1,5 @@
+> **Release in progress after this audit:** PR26 merged as `b54fd92` at06:42UTC under existing publication approval. Fresh normal build and24 compiled-artifact tests pass; main CI41015671164 and native41015701802 are running. Website70052ad and TestFlight17 remain current until verified receipts. No learning activation. See [release stage](build18-audit/RELEASE-STAGE.json); the source-only paragraph below is the audit-time snapshot.
+
 # Repformed morning report — October 30, 2026
 
 **The latest ready interface repairs are on the website and in TestFlight 17. The complete weekly-training product is not yet accepted or activated.** No overall launch-ready grade is defensible while private-role, grading/delivery, recovery and physical-device gates remain unverified. These are not averaged away by passing interface tests.
