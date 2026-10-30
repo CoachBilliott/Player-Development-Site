@@ -28,3 +28,14 @@ The existing six tabs retain the old JavaScript bundle and memory-only sessions.
 A corrected retest requires coordinated ordinary loading and private sign-in, or another genuinely supported existing session path established by the owner/operator. The normal “Refresh verified role” action can use the SDK's ordinary session refresh but does not load new source. Owner asleep is not permission to expose passwords or alter Auth persistence.
 
 When a supported authenticated path is available, only the existing helper executes the previously approved unchanged SQL install and exact rollback. Run scope, paging and detail checks under each permitted actor, save versioned receipts, verify anonymous denial paired with positive staff results, then verify exact rollback and flags off. The unchanged SQL and original approval remain separate from this test-tool correction. No production approval or new role/account mutation is implied.
+
+### Fixed expected results for the `Other` search
+
+| Verified role | Expected athlete aliases | Expected matched count | Unfiltered scoped total |
+|---|---|---:|---:|
+| Owner | Jordan, Other | 2 | 3 |
+| Manager | Jordan, Other | 2 | 3 |
+| Coach assigned to Avery | None | 0 | 1 |
+| Other Coach | Jordan, Other | 2 | 2 |
+
+Parents must receive explicit staff-access denial; do not treat an empty successful response as equivalent. Coach queries for either fictional parent email must return zero matches while retaining the appropriate scoped total. Owner/Manager may match client emails already permitted in their visible labels. Quoted strings, no-results, combined filters, page traversal/retry/clamp and exact scope remain independently checked; matching one convenient query cannot pass the aggregate.

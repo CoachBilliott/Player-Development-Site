@@ -1,6 +1,6 @@
 # Overnight release candidates and gates
 
-October 30, 2026, 03:29 UTC. No new grade is assigned here.
+October 30, 2026, 03:27 UTC. No new grade is assigned here.
 
 | Slice | Exact candidate | Completed evidence | Current blocker / next step |
 |---|---|---|---|
