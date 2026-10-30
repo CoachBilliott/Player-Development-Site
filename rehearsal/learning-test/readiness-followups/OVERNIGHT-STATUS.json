@@ -1,5 +1,5 @@
 {
-  "observed_at": "2026-10-30T03:52:05.027491+00:00",
+  "observed_at": "2026-10-30T04:08:13.504678+00:00",
   "public_hero": {
     "pr": 23,
     "tested_head": "7900940ab584c062753bfe741b361ec24dfda0f4",
@@ -22,15 +22,20 @@
     },
     "main_native_validation": {
       "id": 40998267444,
+      "failed_attempt": 1,
+      "failure": "artifact service timeout; simulator and unsigned archive passed",
+      "attempt": 2,
       "status": "running"
     },
     "production_upload": "success: one attempt"
   },
   "integration": {
     "pr": 24,
-    "head": "7025bc1c93cd76901fc08f0725a6d95f3dd979b2",
-    "ci": 40997249659,
-    "status": "failed private preview; bridge fix passed all 20 locally, lint/types; final commit/CI pending",
+    "head": "0d7479a0aff805fb205a413143b09aaab2853069",
+    "ci": 40999740486,
+    "status": "running",
+    "local_preview": 20,
+    "local_lint_types": "passed",
     "production": "not merged or activated"
   },
   "test_probe": {

@@ -1,3 +1,9 @@
+## Native evidence-save failure and one normal retry — October 30
+
+Website remains successfully published at source 51841292 / Cloudflare 448dc0cd. Native run 40998267444 attempt 1 passed simulator tests, unsigned device archive and report export, but failed while saving evidence: GitHub CreateArtifact timed out after five internal attempts. Provider artifact inventory confirmed zero saved artifacts. Overall native validation is FAILED for attempt 1; no signed/Apple upload started. One standard failed-job rerun is now attempt 2 on the same source, with no workflow, credential, permission or network changes. TestFlight stays 15 until all gates pass. See ../hero-control-release/native-validation-retry.json.
+
+Integration PR #24 final source 0d7479a0aff805fb205a413143b09aaab2853069 is running aggregate CI 40999740486. All 20 repaired private-preview cases, lint and clean types passed locally. The earlier failure was a missing cancellable-SDK interface in the isolated simulation bridge; no assertion or protection was removed. No hosted learning or roster activation.
+
 ## Production publication confirmed — October 30, 03:51 UTC
 
 The public hero cleanup is now production source `51841292`, Cloudflare `448dc0cd-2b6a-41ed-ae0f-5b7d1c57586b`, successful at 03:50:56 UTC. Exact main CI 40998246749 is GREEN in all stages; 378 unit/database, 426 website, 10 app/offline, 6 private-preview, 11 Python plus static/function/build gates. Fresh normal-auth build and eight artifact smoke checks passed; config hash unchanged. See [exact receipt](../hero-control-release/README.md). Independent live browser QA remains pending, not inferred from provider metadata. TestFlight still 15; exact-main native validation runs before any upload.

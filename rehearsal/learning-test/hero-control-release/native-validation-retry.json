@@ -1,0 +1,20 @@
+{
+  "recorded_at": "2026-10-30T04:08:13.504678+00:00",
+  "source": "51841292d0f286fe916155633d39506c742d47e9",
+  "run": 40998267444,
+  "failed_attempt": 1,
+  "simulator_tests": "passed",
+  "unsigned_device_archive": "passed",
+  "reports_export": "passed",
+  "artifact_save": "failed: CreateArtifact request timeout after five internal attempts",
+  "saved_artifacts": 0,
+  "retry": {
+    "attempt": 2,
+    "mode": "one normal failed-job rerun, same exact source/workflow",
+    "status": "running"
+  },
+  "signed_upload_started": false,
+  "apple_upload_started": false,
+  "current_distributed_build": 15,
+  "credentials_security_settings_changed": false
+}
