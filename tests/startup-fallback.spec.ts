@@ -7,10 +7,11 @@ test("blocked main entry retains useful contact and retry without claiming submi
   context,
 }) => {
   await disableBackend(context);
+  let blockEntry = true;
   // Vite dev and production entries: fail only the main application module.
   await context.route(
     /\/(?:src\/main\.tsx|assets\/index-[^/]+\.js)(?:\?.*)?$/,
-    (route) => route.abort(),
+    (route) => (blockEntry ? route.abort() : route.continue()),
   );
   await page.goto("./");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Repformed");
@@ -27,6 +28,12 @@ test("blocked main entry retains useful contact and retry without claiming submi
     (await new AxeBuilder({ page }).include(".startup-fallback").analyze())
       .violations,
   ).toEqual([]);
+  blockEntry = false;
+  await page.getByRole("link", { name: "reload the website" }).click();
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(
+    "Know the game",
+  );
+  await expect(page.locator(".startup-fallback")).toHaveCount(0);
 });
 
 test("JavaScript-disabled visitors receive an honest contact alternative", async ({
