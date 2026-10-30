@@ -1,0 +1,27 @@
+{
+  "observed_at": "2026-10-30T04:30:02.685116+00:00",
+  "source": "51841292d0f286fe916155633d39506c742d47e9",
+  "native_validation": {
+    "run": 40998267444,
+    "attempt": 2,
+    "result": "success",
+    "tests": 6,
+    "device": "iPhone 17 Pro",
+    "os": "iOS Simulator 26.2",
+    "configuration": "Debug",
+    "skipped": 0,
+    "failed": 0,
+    "artifact_bytes": 46633693
+  },
+  "signed_workflow": {
+    "run": 41002907123,
+    "requested_build": 16,
+    "status": "running; archive/export",
+    "upload_claim": "not yet confirmed"
+  },
+  "current_distributed_build": 15,
+  "physical_device": "unverified",
+  "live_authenticated_roles": "unverified",
+  "immediate_postlaunch_screenshot": "blank; captured without render wait, not used as appearance or launch-performance pass",
+  "waited_ui_attachments": "welcome/login rendered and inspected; no credentials entered or Auth submitted"
+}
