@@ -1,5 +1,5 @@
 {
-  "observed_at": "2026-10-30T06:44:40.625727+00:00",
+  "observed_at": "2026-10-30T06:56:02.296259+00:00",
   "source": "b54fd92fdaf7d19bb742f3566d569072cc16a1db",
   "merged_pr": 26,
   "merge_at": "2026-10-30T06:42:36Z",
@@ -10,7 +10,7 @@
   },
   "main_ci": {
     "id": 41015671164,
-    "status": "running"
+    "status": "success"
   },
   "native_validation": {
     "id": 41015701802,
@@ -24,8 +24,12 @@
   "fresh_normal_production_build": "passed",
   "compiled_artifact_smoke": 24,
   "config_sha256": "bce7ca9fc4b5806db2b10d51e0ef06a04c455bf36d145d331409bb94b0f1c39c",
-  "actual_website_source": "70052ad3ea4de0fc42beac53bb0138f640d7bd8c",
+  "actual_website_source": "b54fd92fdaf7d19bb742f3566d569072cc16a1db",
   "actual_testflight_build": 17,
-  "new_website_or_signed_upload_attempted": false,
-  "learning_security_credentials_sessions_changed": false
+  "new_website_or_signed_upload_attempted": {
+    "website": "one upload succeeded",
+    "signed18": false
+  },
+  "learning_security_credentials_sessions_changed": false,
+  "actual_website_deployment": "71f46286-84fd-41de-8da6-85caa7e59f59"
 }

@@ -1,4 +1,4 @@
-> **Release in progress after this audit:** PR26 merged as `b54fd92` at06:42UTC under existing publication approval. Fresh normal build and24 compiled-artifact tests pass; main CI41015671164 and native41015701802 are running. Website70052ad and TestFlight17 remain current until verified receipts. No learning activation. See [release stage](build18-audit/RELEASE-STAGE.json); the source-only paragraph below is the audit-time snapshot.
+> **Website copy repair published:** source `b54fd92`, production `71f46286-84fd-41de-8da6-85caa7e59f59`, success06:55:25UTC. Main CI41015671164 and24 frozen-artifact checks passed; normal configuration preserved. TestFlight remains17 while native18 validation41015701802 continues. No signed18 upload yet, learning remains off. See [current web receipt](build18-audit/web-deployment-receipt.json). The audit below is the prior70052ad/17 snapshot until the exact new app audit completes.
 
 # Repformed morning report — October 30, 2026
 

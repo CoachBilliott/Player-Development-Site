@@ -1,5 +1,5 @@
 {
-  "observed_at": "2026-10-30T06:40:21.980552+00:00",
+  "observed_at": "2026-10-30T06:56:02.296259+00:00",
   "public_hero": {
     "pr": 23,
     "tested_head": "7900940ab584c062753bfe741b361ec24dfda0f4",
@@ -64,9 +64,9 @@
     "final_hosted_retest": "pending supported ordinary sessions"
   },
   "actual_website": {
-    "source": "70052ad3ea4de0fc42beac53bb0138f640d7bd8c",
-    "deployment": "3a46672b-b999-4d10-a1da-a674028ff754",
-    "published_at": "2026-10-30T05:23:21.448131Z"
+    "source": "b54fd92fdaf7d19bb742f3566d569072cc16a1db",
+    "deployment": "71f46286-84fd-41de-8da6-85caa7e59f59",
+    "published_at": "2026-10-30T06:55:25.593917Z"
   },
   "actual_native": {
     "version": "0.1.0",
@@ -89,17 +89,10 @@
   },
   "security_credentials_flags_emails_changed": false,
   "native_candidate": {
-    "build": 17,
-    "source": "70052ad3ea4de0fc42beac53bb0138f640d7bd8c",
-    "native_validation": 41006712872,
-    "native_attempt": 2,
-    "native_result": "success incl artifacts",
-    "signed_run": 41010880664,
-    "status": "distributed Build17; accessible exact-release audit consolidated; full launch not certified",
-    "duplicate_requests": false,
-    "signed_result": "success",
-    "apple_first_check": 41011462935,
-    "apple_receipt_run": 41011715032
+    "build": 18,
+    "source": "b54fd92fdaf7d19bb742f3566d569072cc16a1db",
+    "native_validation": 41015701802,
+    "status": "validation running; signed18 not yet requested; actualnative17"
   },
   "post_release_finding": {
     "id": "P2-01",
