@@ -1,3 +1,9 @@
+## Final integration source GREEN — October 30
+
+Draft PR #24 head 0d7479a0aff805fb205a413143b09aaab2853069 passed full CI 40999740486: **487 unit/database, 486 website, 10 app/offline, 20 private-preview, 11 Python**, plus lint, types, three Deno checks and build. Every required stage completed. Focused historical totals are not added. The isolated bridge now supports the real component's cancellable SDK reads; failed weekly-roster assertions were retained and passed after repair. Source/fixture success does not close hosted Auth/Storage/scoring/history or migration/security/recovery gates. PR #24 remains draft, based on PR #13, and is not a production activation. Original PR #13/#21 branches remain preserved.
+
+Website hero source 51841292 / CF 448dc0cd is published. Native run 40998267444 attempt 2 is running after attempt 1's evidence-upload service timeout; no signed or Apple upload yet. TestFlight remains 15. Corrected hosted paging remains blocked on new-probe loading and ordinary authentication; all six old tabs are preserved, without an equivalent manual probe path. No database reinstallation, credentials, roles, flags, scheduler or emails changed.
+
 ## Native evidence-save failure and one normal retry — October 30
 
 Website remains successfully published at source 51841292 / Cloudflare 448dc0cd. Native run 40998267444 attempt 1 passed simulator tests, unsigned device archive and report export, but failed while saving evidence: GitHub CreateArtifact timed out after five internal attempts. Provider artifact inventory confirmed zero saved artifacts. Overall native validation is FAILED for attempt 1; no signed/Apple upload started. One standard failed-job rerun is now attempt 2 on the same source, with no workflow, credential, permission or network changes. TestFlight stays 15 until all gates pass. See ../hero-control-release/native-validation-retry.json.

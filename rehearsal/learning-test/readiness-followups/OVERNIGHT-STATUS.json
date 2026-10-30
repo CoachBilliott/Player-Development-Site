@@ -1,5 +1,5 @@
 {
-  "observed_at": "2026-10-30T04:08:13.504678+00:00",
+  "observed_at": "2026-10-30T04:11:18.134934+00:00",
   "public_hero": {
     "pr": 23,
     "tested_head": "7900940ab584c062753bfe741b361ec24dfda0f4",
@@ -33,10 +33,18 @@
     "pr": 24,
     "head": "0d7479a0aff805fb205a413143b09aaab2853069",
     "ci": 40999740486,
-    "status": "running",
-    "local_preview": 20,
-    "local_lint_types": "passed",
-    "production": "not merged or activated"
+    "status": "success in all stages; draft and not deployed",
+    "counts": {
+      "id": 40999740486,
+      "url": "https://github.com/repformed/Player-Development-Site/actions/runs/40999740486",
+      "result": "success",
+      "unit_database": 487,
+      "website_browser": 486,
+      "app_offline": 10,
+      "private_preview": 20,
+      "python": 11,
+      "lint_types_three_deno_build": "passed"
+    }
   },
   "test_probe": {
     "source": "3ea85dec40e4723d514713ff264939893424fc04",

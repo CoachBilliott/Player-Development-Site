@@ -1,0 +1,33 @@
+{
+  "recorded_at": "2026-10-30T04:11:18.134934+00:00",
+  "pr": 24,
+  "head": "0d7479a0aff805fb205a413143b09aaab2853069",
+  "base": "feat/weekly-learning-plans",
+  "ci": {
+    "id": 40999740486,
+    "url": "https://github.com/repformed/Player-Development-Site/actions/runs/40999740486",
+    "result": "success",
+    "unit_database": 487,
+    "website_browser": 486,
+    "app_offline": 10,
+    "private_preview": 20,
+    "python": 11,
+    "lint_types_three_deno_build": "passed"
+  },
+  "local_focused_counts_not_added": {
+    "integration_browser": 62,
+    "api_database": 58,
+    "final_preview": 20
+  },
+  "status": "draft source only; not production or hosted acceptance",
+  "prior_failures_preserved": [
+    "mock argument tuple type",
+    "mock unused implementation arguments",
+    "isolated bridge lacked SDK abortSignal"
+  ],
+  "current_website": {
+    "source": "51841292d0f286fe916155633d39506c742d47e9",
+    "deployment": "448dc0cd-2b6a-41ed-ae0f-5b7d1c57586b"
+  },
+  "current_testflight": 15
+}
