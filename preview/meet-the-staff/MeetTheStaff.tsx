@@ -43,8 +43,9 @@ export function MeetTheStaff({ profiles }: { profiles: PublicStaffProfile[] }) {
                   <img
                     src={profile.photo.src}
                     alt={profile.photo.alt}
-                    width="800"
-                    height="900"
+                    width="1067"
+                    height="1600"
+                    style={{ objectPosition: profile.photo.objectPosition }}
                     loading="lazy"
                   />
                 ) : (
@@ -81,9 +82,9 @@ export function MeetTheStaff({ profiles }: { profiles: PublicStaffProfile[] }) {
           <p className="eyebrow">BEFORE PUBLICATION</p>
           <h2 id="review-title">Real people. Approved profiles.</h2>
           <p>
-            Devyn’s biography uses his submitted questionnaire. His headshot is
-            pending, and Victor’s profile is awaiting submission. All profiles
-            remain unpublished until final review.
+            Devyn’s biography uses his submitted questionnaire. His submitted
+            sideline photo is included, and Victor’s profile is awaiting
+            submission. All profiles remain unpublished until final review.
           </p>
         </section>
       </main>

@@ -17,10 +17,26 @@ for (const width of [320, 390, 768, 1440]) {
     await expect(page.getByRole("article").nth(1)).toHaveAccessibleName(
       "Devyn Billiott",
     );
-    await expect(page.getByText("Headshot pending")).toHaveCount(2);
+    await expect(page.getByText("Headshot pending")).toHaveCount(1);
     const devyn = page.getByRole("article", { name: "Devyn Billiott" });
     await expect(devyn.getByText("Co-Owner", { exact: true })).toBeVisible();
     await expect(devyn.locator(".staff-bio")).toHaveCount(1);
+    const photo = devyn.getByRole("img");
+    await expect(photo).toBeVisible();
+    expect(
+      await photo.evaluate((img: HTMLImageElement) => ({
+        loaded:
+          img.complete &&
+          img.naturalWidth === 1067 &&
+          img.naturalHeight === 1600,
+        width: img.clientWidth,
+      })),
+    ).toEqual({ loaded: true, width: expect.any(Number) });
+    expect(
+      await photo.evaluate(
+        (img: HTMLImageElement) => img.clientWidth <= img.naturalWidth,
+      ),
+    ).toBe(true);
     await expect(devyn.locator(".staff-bio")).toContainText(
       "Cypress Creek High School",
     );

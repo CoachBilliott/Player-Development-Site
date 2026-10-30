@@ -4,7 +4,7 @@ export type PublicStaffProfile = {
   title: string;
   bio: string;
   experience: string[];
-  photo?: { src: string; alt: string };
+  photo?: { src: string; alt: string; objectPosition?: string };
 };
 
 // Public content only. Claims are self-reported in Devyn’s submitted form,
@@ -19,6 +19,11 @@ export const previewProfiles: PublicStaffProfile[] = [
   },
   {
     id: "devyn-billiott",
+    photo: {
+      src: "./staff/devyn-billiott.webp",
+      alt: "Devyn Billiott wearing a coaching headset on the football sideline",
+      objectPosition: "center 56%",
+    },
     name: "Devyn Billiott",
     title: "Co-Owner",
     bio: "Devyn Billiott brings four years of varsity Texas high school coaching experience and currently coaches at Cypress Creek High School. A former All-State center at La Marque High School, he specializes in offensive and defensive line development, blocking, pass rush, and strength and conditioning. He helped start Repformed to make quality coaching more accessible to young athletes and families. His approach emphasizes understanding the “why” behind each technique, building confidence, and developing accountability, consistency, and a love for improvement.",
