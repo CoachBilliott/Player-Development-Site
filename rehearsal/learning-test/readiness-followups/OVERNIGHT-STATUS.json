@@ -1,5 +1,5 @@
 {
-  "observed_at": "2026-10-30T04:42:46.973021+00:00",
+  "observed_at": "2026-10-30T05:04:09.877441+00:00",
   "public_hero": {
     "pr": 23,
     "tested_head": "7900940ab584c062753bfe741b361ec24dfda0f4",
@@ -70,5 +70,21 @@
   "native_candidate": {
     "status": "published internal TestFlight build16",
     "audit": "390px fixture pass; 320px running; actual live-role/device acceptance unverified"
+  },
+  "post_release_finding": {
+    "id": "P2-01",
+    "actual_build": 16,
+    "scope": "Coach roster Refresh escapes card at320; confirmed assigned/unassigned fixtures",
+    "status": "open in released source518; fix prepared, not deployed",
+    "repair_pr": 25,
+    "repair_head": "ea0fb3e1014aec2da6fe70db7fabf529ce2078c1",
+    "focused_tests": 8,
+    "lint_clean_types": "passed",
+    "aggregate_ci": 41005538393,
+    "aggregate_status": "running",
+    "next_build17_preflight": {
+      "run": 41005953849,
+      "unused_at": "2026-10-30T05:00:18.196Z"
+    }
   }
 }
