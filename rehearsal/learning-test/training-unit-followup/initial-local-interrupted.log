@@ -1,0 +1,23 @@
+
+Running 58 tests using 2 workers
+
+(node:39440) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:39441) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   1 [desktop] › tests/athlete-assignment.spec.ts:47:1 › Owner assigns inside the athlete record without choosing another customer; cancel/repeated clicks preserve the sibling (30.1s)
+  ✘   2 [desktop] › tests/athlete-assignment.spec.ts:140:1 › missing fixed athlete never falls back to account-wide assignment (30.2s)
+(node:39735) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:39744) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   3 [desktop] › tests/athlete-assignment.spec.ts:162:1 › roster filters by existing age, position and coach without introducing group membership (30.1s)
+(node:40045) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   4 [desktop] › tests/grouped-reviews.spec.ts:5:1 › one three-clip review survives partial upload and refresh, starts one deadline and receives one private response (30.1s)
+(node:40137) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   6 [desktop] › tests/review-service.spec.ts:35:1 › one-review request is shared, survives reload and repeated taps, and can be cancelled without payment (5.9s)
+(node:40360) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Terminated

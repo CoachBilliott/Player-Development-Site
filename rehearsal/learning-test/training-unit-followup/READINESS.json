@@ -1,0 +1,20 @@
+{
+  "observed_at": "2026-10-30T07:55:22.192301+00:00",
+  "finding": "P3: one-resource labels use plural drill/clip",
+  "observed_release": "websiteb54fd92 / TestFlight18",
+  "pr": 27,
+  "source": "ad177f25215155873f1863b39da1732e1208af11",
+  "branch": "fix/training-unit-labels",
+  "scope": "16 label occurrences across existing training/review summaries; no quantity, API, quota, assignment, permissions, flags or media changes",
+  "local": {
+    "lint_forced_types_production_build": "passed",
+    "desktop_phone_workflow_checks": 58,
+    "initial_error": "Local JSX edit error caught by lint before source push; stopped failed browser run, corrected syntax, final fresh58 passed"
+  },
+  "ci": {
+    "id": 41022890198,
+    "status": "running"
+  },
+  "release": "source only; no new web/native publication; actual18 remains available",
+  "next_release_candidate": "19 only after branch+main+native checks; no new generic approval needed under standing scope"
+}
