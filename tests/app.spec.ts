@@ -120,9 +120,11 @@ test("installed-app shell reopens offline and saves completed sample practice", 
   expect(cached.some((url) => url.endsWith("/media/solo-football.jpg"))).toBe(
     true,
   );
-  expect(cached.some((url) => url.endsWith("/media/football-field.jpg"))).toBe(
-    true,
-  );
+  expect(
+    cached.some((url) =>
+      url.endsWith("/media/repformed-horizontal-football-field.webp"),
+    ),
+  ).toBe(true);
   expect(cached.some((url) => /training-loop\.(mp4|webm)$/.test(url))).toBe(
     false,
   );
@@ -228,6 +230,28 @@ test("the installed app reopens offline without exposing demo or private records
   expect(
     await page.evaluate(() => localStorage.getItem("pd-family-demo-v1")),
   ).toBeNull();
+  await context.setOffline(false);
+});
+
+test("the approved About field remains available on a first offline visit", async ({
+  page,
+  context,
+}) => {
+  await page.goto("./#install");
+  await expect(page.locator(".app-cache-status")).toContainText(
+    "ready for offline use",
+    { timeout: 20000 },
+  );
+  await context.setOffline(true);
+  await page.goto("./#home");
+  const field = page.getByRole("img", {
+    name: "Repformed-branded football field illustration",
+    exact: true,
+  });
+  await field.scrollIntoViewIfNeeded();
+  await expect
+    .poll(() => field.evaluate((image: HTMLImageElement) => image.naturalWidth))
+    .toBe(1672);
   await context.setOffline(false);
 });
 
