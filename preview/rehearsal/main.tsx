@@ -25,6 +25,7 @@ import {
 import "@fontsource/dm-sans/latin-400.css";
 import "@fontsource/barlow-condensed/latin-700.css";
 import "./harness.css";
+import { RosterChecks } from "./RosterChecks";
 
 type Connection = {
   client: SupabaseClient;
@@ -82,7 +83,10 @@ export function App() {
       ...rows,
       {
         check,
-        role: actor?.role || "anonymous",
+        role:
+          check === "anonymous roster"
+            ? "anonymous"
+            : actor?.role || "anonymous",
         result,
         at: new Date().toISOString(),
       },
@@ -559,6 +563,14 @@ export function App() {
                   access-control pass.
                 </p>
               </section>
+              <RosterChecks
+                key={actor ? actor.id + actor.role : "anonymous"}
+                client={connection.client}
+                anonymous={connection.anonymous}
+                actor={actor}
+                busy={busy}
+                run={(name, action) => void run(name, action)}
+              />
               <div className="harness-grid">
                 <section>
                   <h2>Profile access</h2>

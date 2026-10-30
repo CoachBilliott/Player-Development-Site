@@ -1,11 +1,14 @@
 import { test, expect, type BrowserContext, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { TEST_REF, TEST_URL, SAMPLE_TEXT } from "../preview/rehearsal/policy";
+import { profiles, coachIds } from "../preview/rehearsal/rosterProbe";
 const id = "93000000-0000-4000-8000-000000000001";
 const own = "93000000-0000-4000-8000-000000000010";
 const other = "93000000-0000-4000-8000-000000000011";
 const publicKey = "sb_publishable_fixture_only_123456";
-async function fixture(context: BrowserContext) {
+async function fixture(context: BrowserContext, roster = false) {
+  let actorId = id,
+    rosterFailure = "";
   let email = "repformed-learning-owner@example.test",
     role = "owner",
     token = "",
@@ -38,6 +41,24 @@ async function fixture(context: BrowserContext) {
     if (url.pathname.endsWith("/token")) {
       email = request.postDataJSON().email;
       role = email.includes("parent") ? "parent" : "owner";
+      if (roster) {
+        const account = email.split("repformed-learning-")[1].split("@")[0];
+        actorId = (
+          {
+            owner: "17054a51-d756-4b9e-8048-c82973fe0c55",
+            manager: "134e7d0b-e54d-488b-8848-8254db86757c",
+            coach: coachIds[0],
+            "other-coach": coachIds[1],
+            parent: "dc6804e6-fc2f-4bb0-a7ca-de8514e09024",
+            "other-parent": "2a566ee0-dd1f-4244-a16f-2c086bc1c6a2",
+          } as Record<string, string>
+        )[account];
+        role = account.includes("parent")
+          ? "parent"
+          : account.includes("coach")
+            ? "coach"
+            : account;
+      }
       const now = Math.floor(Date.now() / 1000);
       token = [
         Buffer.from(JSON.stringify({ alg: "HS256", typ: "JWT" })).toString(
@@ -45,7 +66,7 @@ async function fixture(context: BrowserContext) {
         ),
         Buffer.from(
           JSON.stringify({
-            sub: id,
+            sub: actorId,
             role: "authenticated",
             aud: "authenticated",
             exp: now + 3600,
@@ -60,14 +81,19 @@ async function fixture(context: BrowserContext) {
         token_type: "bearer",
         expires_in: 3600,
         expires_at: now + 3600,
-        user: { id, email, aud: "authenticated", role: "authenticated" },
+        user: {
+          id: actorId,
+          email,
+          aud: "authenticated",
+          role: "authenticated",
+        },
       });
     }
     if (url.pathname.endsWith("/user") && !identityOk)
       return respond({ message: "Invalid JWT" }, 401);
     if (url.pathname.endsWith("/user"))
       return respond({
-        id,
+        id: actorId,
         email,
         aud: "authenticated",
         role: "authenticated",
@@ -78,6 +104,89 @@ async function fixture(context: BrowserContext) {
       if (request.headers().authorization !== "Bearer " + token)
         return respond({ message: "Invalid JWT" }, 401);
       return respond(role);
+    }
+    if (
+      url.pathname.endsWith("/staff_client_service_roster_page") ||
+      url.pathname.endsWith("/staff_athlete_service")
+    ) {
+      if (request.headers().authorization !== "Bearer " + token)
+        return respond({ code: "42501", message: "permission denied" }, 403);
+      if (
+        rosterFailure === "missing" &&
+        !url.pathname.endsWith("/staff_athlete_service")
+      )
+        return respond({ code: "PGRST202", message: "missing function" }, 404);
+      if (rosterFailure === "network") return route.abort();
+      const detail = url.pathname.endsWith("/staff_athlete_service");
+      const allowed: readonly string[] =
+        role === "parent"
+          ? []
+          : role !== "coach"
+            ? profiles
+            : actorId === coachIds[0]
+              ? [profiles[0]]
+              : profiles.slice(1);
+      const denied = () =>
+        respond(
+          {
+            code: "P0001",
+            message: detail
+              ? "This athlete is outside your service roster."
+              : "Staff access is required.",
+          },
+          400,
+        );
+      const body = request.postDataJSON();
+      if (detail)
+        return allowed.includes(body.target_profile)
+          ? respond({ athlete_id: body.target_profile })
+          : denied();
+      if (role === "parent") return denied();
+      if (rosterFailure === "malformed") return respond({ rows: [] });
+      const base = rosterFailure === "leak" ? profiles : allowed;
+      let found = [...base];
+      if (body.search_text)
+        found = found.filter(
+          (p) =>
+            ["Avery", "Jordan", "Other"][
+              profiles.indexOf(p as (typeof profiles)[number])
+            ].toLowerCase() ===
+            body.search_text
+              .normalize("NFKD")
+              .replace(/[\u0300-\u036f]/g, "")
+              .toLowerCase(),
+        );
+      if (body.coach_filter)
+        found = found.filter(
+          (p) =>
+            (p === profiles[0] ? coachIds[0] : coachIds[1]) ===
+            body.coach_filter,
+        );
+      if (body.status_filter === "unassigned") found = [];
+      const size = body.page_size,
+        pages = Math.max(1, Math.ceil(found.length / size)),
+        number = Math.min(body.page_number, pages);
+      return respond({
+        source: "account_backend",
+        scope: role === "coach" ? "assigned_athletes" : "all_repformed_clients",
+        rows: found
+          .slice((number - 1) * size, number * size)
+          .map((athlete_id) => ({ athlete_id, client_id: id })),
+        coaches: [],
+        page: {
+          number,
+          size,
+          pages,
+          total: base.length,
+          matched: found.length,
+          athletes: base.length,
+          clients: 1,
+          counts: { overdue: 0, attention: base.length, ready: 0 },
+          ages: ["18+"],
+          positions: ["Quarterback"],
+          coaches: [],
+        },
+      });
     }
     if (url.pathname.endsWith("/learning_quiz_keys"))
       return respond({ code: "42501", message: "Permission denied" }, 403);
@@ -144,6 +253,9 @@ async function fixture(context: BrowserContext) {
   return {
     calls,
     reviews,
+    setRosterFailure: (value: string) => {
+      rosterFailure = value;
+    },
     expireIdentity: () => {
       identityOk = false;
     },
@@ -333,4 +445,149 @@ test("original sample uses stable private upload and sign/read without exposing 
     .getByRole("button", { name: "Check private signing and bytes" })
     .click();
   await expect(page.getByRole("status")).toContainText("media allow: blocked");
+});
+
+test("023 normal SDK probe checks scope/pages/details without writes or stored sessions", async ({
+  page,
+  context,
+}) => {
+  const f = await fixture(context, true);
+  await page.goto("./");
+  await connect(page);
+  await login(page);
+  for (const [button, check] of [
+    ["Check signed-in roster scope", "roster scope"],
+    ["Check roster paging and filters", "roster pages and filters"],
+    ["Check direct athlete detail scope", "roster direct details"],
+    ["Check anonymous roster denial", "anonymous roster"],
+  ]) {
+    await page.getByRole("button", { name: button, exact: true }).click();
+    await expect(
+      page.getByRole("row").filter({ hasText: check }),
+    ).toContainText("passed");
+  }
+  await expect(
+    page
+      .getByRole("row")
+      .filter({ hasText: "anonymous roster" })
+      .locator("td")
+      .nth(1),
+  ).toHaveText("anonymous");
+  expect(f.calls.filter((c) => c.startsWith("POST /rest/"))).toEqual(
+    expect.arrayContaining([
+      "POST /rest/v1/rpc/staff_client_service_roster_page",
+    ]),
+  );
+  expect(
+    f.calls.some((c) =>
+      /assign_|save_|learning_tick|admin|invite|update|insert|delete/.test(c),
+    ),
+  ).toBe(false);
+  expect(
+    await page.evaluate(() => [localStorage.length, sessionStorage.length]),
+  ).toEqual([0, 0]);
+  await expect(page.getByLabel("Temporary test password")).toHaveCount(0);
+  expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+});
+test("023 probe labels missing migration blocked, malformed failed, and clears detail on signout", async ({
+  page,
+  context,
+}) => {
+  const f = await fixture(context, true);
+  await page.goto("./");
+  await connect(page);
+  await login(page);
+  f.setRosterFailure("missing");
+  await page
+    .getByRole("button", { name: "Check signed-in roster scope", exact: true })
+    .click();
+  await expect(
+    page.getByRole("row").filter({ hasText: "roster scope" }),
+  ).toContainText("blocked");
+  await page
+    .getByRole("button", { name: "Reset receipt", exact: true })
+    .click();
+  await page
+    .getByRole("button", {
+      name: "Check direct athlete detail scope",
+      exact: true,
+    })
+    .click();
+  await expect(
+    page.getByRole("row").filter({ hasText: "roster direct details" }),
+  ).toContainText("passed");
+  f.setRosterFailure("malformed");
+  await page
+    .getByRole("button", { name: "Check signed-in roster scope", exact: true })
+    .click();
+  await expect(
+    page.getByRole("row").filter({ hasText: "roster scope" }),
+  ).toContainText("failed");
+  await page
+    .getByRole("button", { name: "Sign out and clear private views" })
+    .click();
+  await expect(
+    page.getByText("Observed response contradicted", { exact: false }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole("button", {
+      name: "Check signed-in roster scope",
+      exact: true,
+    }),
+  ).toBeDisabled();
+});
+test("023 parent explicit denial is tested through ordinary authenticated requests", async ({
+  page,
+  context,
+}) => {
+  await fixture(context, true);
+  await page.goto("./");
+  await connect(page);
+  await login(page, "parent");
+  await page
+    .getByRole("button", { name: "Check signed-in roster scope", exact: true })
+    .click();
+  await expect(
+    page.getByRole("row").filter({ hasText: "roster scope" }),
+  ).toContainText("passed");
+  await expect(
+    page.getByRole("button", {
+      name: "Check roster paging and filters",
+      exact: true,
+    }),
+  ).toBeDisabled();
+  await page
+    .getByRole("button", {
+      name: "Check direct athlete detail scope",
+      exact: true,
+    })
+    .click();
+  await expect(
+    page.getByRole("row").filter({ hasText: "roster direct details" }),
+  ).toContainText("passed");
+});
+test("023 coach cannot pass an unscoped leaked roster", async ({
+  page,
+  context,
+}) => {
+  const f = await fixture(context, true);
+  await page.goto("./");
+  await connect(page);
+  await login(page, "coach");
+  await page
+    .getByRole("button", { name: "Check signed-in roster scope", exact: true })
+    .click();
+  await expect(
+    page.getByRole("row").filter({ hasText: "roster scope" }),
+  ).toContainText("passed");
+  await page
+    .getByRole("button", { name: "Reset receipt", exact: true })
+    .click();
+  f.setRosterFailure("leak");
+  await page
+    .getByRole("button", { name: "Check signed-in roster scope", exact: true })
+    .click();
+  await expect(
+    page.getByRole("row").filter({ hasText: "roster scope" }),
+  ).toContainText("failed");
 });

@@ -80,6 +80,10 @@ export function learnerKeysAbsent(value: unknown): boolean {
   );
 }
 export type CheckName =
+  | "roster scope"
+  | "roster pages and filters"
+  | "roster direct details"
+  | "anonymous roster"
   | "verified sign-in"
   | "raw keys"
   | "anonymous keys"
