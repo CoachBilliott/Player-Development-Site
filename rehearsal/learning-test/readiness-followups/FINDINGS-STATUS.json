@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-30T06:37:58.594255+00:00",
+  "at": "2026-10-30T06:40:21.980552+00:00",
   "production": "70052ad3ea4de0fc42beac53bb0138f640d7bd8c",
   "deployment": "3a46672b-b999-4d10-a1da-a674028ff754",
   "native": "0.1.0(17)",
@@ -23,7 +23,7 @@
     {
       "finding": "Singular/plural count labels",
       "status": "Fixed SOURCE ONLY in draft PR26 fbcebb5; aggregate CI41013346892 SUCCESS",
-      "evidence": "24 focused desktop/phone plus full aggregate 378/434/10/6/11 and static checks passed. Integration66e7e46: 48 focused plus lint/types passed; aggregate41013759893 running."
+      "evidence": "PR26 all aggregate stages passed (378/434/10/6/11 plus static). Integration66e7e46 all aggregate stages passed (487/496/10/20/11 plus static). Focused24/48 overlap and are not added. Neither copy fix is live."
     },
     {
       "finding": "Representative product demonstration",
@@ -33,7 +33,7 @@
     {
       "finding": "Package-incomplete ready gate / weekly reminders and history",
       "status": "Draft PR13/PR24; no production activation",
-      "evidence": "022 counts and024 overrides source tested; old integrated18176fd CI41007130150 green; new copy follow-up pending final-head CI"
+      "evidence": "022 counts and024 override source tests passed; final integration66e7e46 CI41013759893 green; hosted gates remain."
     },
     {
       "finding": "Full physical/private-role/delivery/restore certification",
@@ -53,10 +53,11 @@
       "result": "success"
     },
     "PR24": {
-      "head": "18176fd093b38a595213ba69a1847c9743475901",
-      "run": 41007130150,
+      "head": "66e7e460dd88ea85b9dcf6781d6048546ab4350b",
+      "run": 41013759893,
       "result": "success",
-      "current_copy_followup": "66e7e46; aggregate pending; previous green not attributed to this head"
+      "production_activated": false,
+      "preview_still": "18176fd"
     },
     "PR26": {
       "head": "fbcebb5ab998fc552b439a13b673d6d3d0ec4bd6",

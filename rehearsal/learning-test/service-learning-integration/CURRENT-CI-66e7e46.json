@@ -1,0 +1,22 @@
+{
+  "recorded_at": "2026-10-30T06:40:21.980552+00:00",
+  "head": "66e7e460dd88ea85b9dcf6781d6048546ab4350b",
+  "pr": 24,
+  "base": "feat/weekly-learning-plans",
+  "ci": {
+    "id": 41013759893,
+    "result": "success",
+    "unit_database": 487,
+    "website": 496,
+    "app_offline": 10,
+    "private_preview": 20,
+    "python": 11,
+    "lint_types_three_functions_build": "passed"
+  },
+  "local_counts_not_added": {
+    "affected_browser": 48,
+    "lint_forced_types": "passed"
+  },
+  "backend_public_diff_from_18176fd": "empty",
+  "status": "draft source only; no production/preview refresh or activation"
+}
