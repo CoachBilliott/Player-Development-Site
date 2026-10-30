@@ -103,8 +103,12 @@ test("overdue review is the Owner's primary next action while assignment remains
   page,
   context,
 }) => {
-  await staffFixture(context, staffState());
+  const data = staffState();
+  data.rows[0].overdue_reviews = 2;
+  data.rows[0].pending_reviews = 2;
+  await staffFixture(context, data);
   await page.goto("./?source=app#workspace");
+  await expect(page.getByText("2 reviews overdue", { exact: true })).toBeVisible();
   await page
     .getByRole("button", { name: /Review overdue task for Fictional Jordan/ })
     .click();
@@ -187,7 +191,7 @@ test("roster last page is bounded and a smaller refreshed scope cannot leave a b
     .click();
   await expect(page.locator(".staff-service-table tbody tr")).toHaveCount(1);
   await expect(
-    page.getByText("Showing 1 of 1 matching records", { exact: true }),
+    page.getByText("Showing 1 of 1 matching record", { exact: true }),
   ).toBeVisible();
   await expect(pages).toHaveCount(0);
 });

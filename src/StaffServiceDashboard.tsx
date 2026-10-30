@@ -255,7 +255,7 @@ export function StaffServiceDashboard({
           <h2>Athlete roster</h2>
           <p>
             {data
-              ? `${data.rows.filter((r) => r.athlete_id).length} athletes · ${new Set(data.rows.map((r) => r.client_id)).size} clients`
+              ? `Athletes: ${data.rows.filter((r) => r.athlete_id).length} · Clients: ${new Set(data.rows.map((r) => r.client_id)).size}`
               : "Loading your scope"}
             {role === "coach" ? " · assigned to you" : " · all clients"}
           </p>
@@ -432,7 +432,7 @@ export function StaffServiceDashboard({
             {rows.length > pageSize
               ? `${pageStart + 1}–${pageStart + visibleRows.length}`
               : rows.length}{" "}
-            of {rows.length} matching records
+            of {rows.length} matching {rows.length === 1 ? "record" : "records"}
             {rows.length !== total ? ` (${total} in your scope)` : ""}
             {query.trim() ? ` for “${query.trim()}”` : ""}
           </p>
@@ -531,7 +531,7 @@ export function StaffServiceDashboard({
                         </strong>
                         <small>
                           {r.overdue_reviews
-                            ? `${r.overdue_reviews} review overdue`
+                            ? `${r.overdue_reviews} review${r.overdue_reviews === 1 ? "" : "s"} overdue`
                             : r.pending_reviews
                               ? `${r.pending_reviews} review${r.pending_reviews === 1 ? "" : "s"} pending`
                               : "No pending reviews"}

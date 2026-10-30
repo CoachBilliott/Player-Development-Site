@@ -22,6 +22,18 @@ for (const { label, role, actor } of scenarios) {
       exact: true,
     });
     await expect(card.locator(".staff-result-count")).toBeVisible();
+    const athletes = role === "coach" ? (actor === coachA ? 1 : 0) : 3;
+    const clients = role === "coach" ? athletes : 2;
+    await expect(header.locator("p")).toContainText(
+      `Athletes: ${athletes} · Clients: ${clients}`,
+    );
+    await expect(card.locator(".staff-result-count")).toContainText(
+      `of ${athletes} matching ${athletes === 1 ? "record" : "records"}`,
+    );
+    if (athletes)
+      await expect(
+        card.getByText("1 review overdue", { exact: true }),
+      ).toBeVisible();
     await page.evaluate(() => document.fonts.ready);
     for (const width of [320, 375, 390, 768, 1440]) {
       await page.setViewportSize({ width, height: 568 });
