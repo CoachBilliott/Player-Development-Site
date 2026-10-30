@@ -1059,7 +1059,8 @@ function SimpleWorkout({
         <>
           {workoutTitle && <h3>{workoutTitle}</h3>}
           <p>
-            {profile.name} · {items.length} drills ·{" "}
+            {profile.name} · {items.length}{" "}
+            {items.length === 1 ? "drill" : "drills"} ·{" "}
             {items.reduce((n, d) => n + d.minutes, 0)} planned minutes
           </p>
           <ol className="workout-outline" aria-label="Workout order">

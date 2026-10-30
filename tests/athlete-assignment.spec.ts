@@ -62,6 +62,9 @@ test("Owner assigns inside the athlete record without choosing another customer;
     .first()
     .click();
   const dialog = page.getByRole("dialog");
+  await expect(
+    dialog.locator("summary").filter({ hasText: /^Training plan/ }),
+  ).toHaveText("Training plan 1 drill");
   await dialog
     .getByRole("button", { name: "Assign training", exact: true })
     .click();
@@ -71,6 +74,9 @@ test("Owner assigns inside the athlete record without choosing another customer;
     }),
   ).toBeFocused();
   await dialog.getByRole("button", { name: new RegExp(workout.title) }).click();
+  await expect(dialog.locator(".workflow-selection p")).toHaveText(
+    "2 drills · saved version 1",
+  );
   await expect(page.getByLabel("Assign to customer account")).toHaveCount(0);
   await expect(page.getByLabel("Assign to athlete")).toHaveCount(0);
   await dialog

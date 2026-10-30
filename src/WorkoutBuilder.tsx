@@ -278,7 +278,9 @@ function Builder({ shared }: { shared: SharedState }) {
                 >
                   <strong>{w.title}</strong>
                   <small>
-                    {w.resource_ids.length} drills · version {w.version}
+                    {w.resource_ids.length}{" "}
+                    {w.resource_ids.length === 1 ? "drill" : "drills"} · version{" "}
+                    {w.version}
                   </small>
                 </button>
               </li>
@@ -386,7 +388,7 @@ function Builder({ shared }: { shared: SharedState }) {
               </ol>
               <div className="builder-summary">
                 <strong>
-                  {ids.length} drills ·{" "}
+                  {ids.length} {ids.length === 1 ? "drill" : "drills"} ·{" "}
                   {items.reduce((sum, d) => sum + (d?.minutes || 0), 0)} planned
                   minutes
                 </strong>
@@ -666,8 +668,8 @@ function WorkoutPreview({
       <Tag>STAFF PREVIEW · NO PRACTICE RECORDED</Tag>
       <p>{summary}</p>
       <p>
-        {items.length} drills · {items.reduce((sum, d) => sum + d.minutes, 0)}{" "}
-        planned minutes
+        {items.length} {items.length === 1 ? "drill" : "drills"} ·{" "}
+        {items.reduce((sum, d) => sum + d.minutes, 0)} planned minutes
       </p>
       <ol className="workout-outline" aria-label="Preview workout order">
         {items.map((d, n) => (
@@ -1052,7 +1054,7 @@ export function AssignWorkout({
           </p>
           <p>
             {confirm === "assign"
-              ? `${workout.title} · version ${workout.version} · ${workout.resource_ids.length} ordered drills`
+              ? `${workout.title} · version ${workout.version} · ${workout.resource_ids.length} ordered ${workout.resource_ids.length === 1 ? "drill" : "drills"}`
               : assignment.workout_title}
           </p>
           <p>

@@ -226,7 +226,9 @@ function TrainingHome({ shared }: { shared: SharedState }) {
                 <div>
                   <h2>{w.title}</h2>
                   <p>
-                    {w.resource_ids.length} drills · saved version {w.version}
+                    {w.resource_ids.length}{" "}
+                    {w.resource_ids.length === 1 ? "drill" : "drills"} · saved
+                    version {w.version}
                   </p>
                 </div>
                 <div className="actions">
@@ -438,8 +440,9 @@ function ChooseAssignment({ shared }: { shared: SharedState }) {
               <div>
                 <strong>{selected.title}</strong>
                 <p>
-                  {selected.resource_ids.length} ordered drills · version{" "}
-                  {selected.version}
+                  {selected.resource_ids.length} ordered{" "}
+                  {selected.resource_ids.length === 1 ? "drill" : "drills"} ·
+                  version {selected.version}
                 </p>
               </div>
               <button className="text-button" onClick={() => choose("")}>
@@ -480,7 +483,9 @@ function ChooseAssignment({ shared }: { shared: SharedState }) {
                     <span>
                       <strong>{w.title}</strong>
                       <small>
-                        {w.resource_ids.length} drills · version {w.version}
+                        {w.resource_ids.length}{" "}
+                        {w.resource_ids.length === 1 ? "drill" : "drills"} ·
+                        version {w.version}
                       </small>
                     </span>
                     <ArrowRight size={18} />

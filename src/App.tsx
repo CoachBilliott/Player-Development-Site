@@ -1132,7 +1132,7 @@ function Dashboard({
               </span>
               <span>
                 <BookOpen size={17} />
-                {plan.length} drills
+                {plan.length} {plan.length === 1 ? "drill" : "drills"}
               </span>
               <span>
                 <ShieldCheck size={17} />

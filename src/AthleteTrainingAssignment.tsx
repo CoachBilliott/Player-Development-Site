@@ -105,8 +105,9 @@ export function AthleteTrainingAssignment({
               <div>
                 <strong>{selected.title}</strong>
                 <p>
-                  {selected.resource_ids.length} drills · saved version{" "}
-                  {selected.version}
+                  {selected.resource_ids.length}{" "}
+                  {selected.resource_ids.length === 1 ? "drill" : "drills"} ·
+                  saved version {selected.version}
                 </p>
               </div>
               <button
@@ -159,7 +160,9 @@ export function AthleteTrainingAssignment({
                   <span>
                     <strong>{w.title}</strong>
                     <small>
-                      {w.resource_ids.length} drills · version {w.version}
+                      {w.resource_ids.length}{" "}
+                      {w.resource_ids.length === 1 ? "drill" : "drills"} ·
+                      version {w.version}
                     </small>
                   </span>
                   <span>Choose</span>
