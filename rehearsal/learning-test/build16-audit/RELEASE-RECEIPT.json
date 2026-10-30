@@ -1,0 +1,50 @@
+{
+  "verified_at": "2026-10-30T04:42:46.973021+00:00",
+  "source": "51841292d0f286fe916155633d39506c742d47e9",
+  "website": {
+    "url": "https://repformed.com",
+    "deployment": "448dc0cd-2b6a-41ed-ae0f-5b7d1c57586b",
+    "success_at": "2026-10-30T03:50:56.678187Z",
+    "entry": "assets/index-Dx3RR7Rj.js"
+  },
+  "native": {
+    "version": "0.1.0",
+    "build": 16,
+    "signed_workflow": 41002907123,
+    "attempt": 2,
+    "result": "success",
+    "first_attempt": "DNS github.com failed before archive/export; Apple upload skipped, no IPA; cleanup passed",
+    "apple_status_workflow": 41004145719,
+    "apple_checked_at": "2026-10-30T04:40:03.195Z",
+    "apple_build_id": "9c10d60e-fbb4-4052-aa50-c0fee9159bb1",
+    "processing": "VALID",
+    "internal_state": "IN_BETA_TESTING",
+    "group": "Owner Testing",
+    "group_explicitly_includes_build": true,
+    "external_state": "READY_FOR_BETA_SUBMISSION; not externally released",
+    "ipa_sha256": "f794bd059e236602ad81d48a44744142bbac59899e3833648a78eb410c3320d0",
+    "ipa_bytes": 16368248
+  },
+  "configuration_sha256": "bce7ca9fc4b5806db2b10d51e0ef06a04c455bf36d145d331409bb94b0f1c39c",
+  "critical_application_assets_identical": true,
+  "sw_difference": "same logic and asset set; font-list order and derived cache key differ between build platforms",
+  "source_checks": {
+    "main_ci": 40998246749,
+    "native_validation": 40998267444,
+    "native_attempt": 2,
+    "native_tests": 6,
+    "all_required_results": "success"
+  },
+  "post_release_audit": {
+    "390px_fixture_checks": 15,
+    "role_presentations": 7,
+    "appearance_views": 26,
+    "axe_violations": 0,
+    "overflow_views": 0,
+    "320x568_status": "running",
+    "physical_device": "unverified",
+    "live_role_acceptance": "unverified",
+    "hosted_learning": "unreleased/unaccepted"
+  },
+  "production_learning_paging_security_or_credentials_changed": false
+}

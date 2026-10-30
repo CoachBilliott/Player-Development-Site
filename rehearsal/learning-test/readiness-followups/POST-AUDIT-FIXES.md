@@ -1,3 +1,11 @@
+## Website AND internal TestFlight published — October 30, 04:41 UTC
+
+Website source **51841292d0f286fe916155633d39506c742d47e9**, CF **448dc0cd-2b6a-41ed-ae0f-5b7d1c57586b**, is production since 03:50:56 UTC. Signed run **41002907123 attempt 2 SUCCESS** published the same source as **Repformed 0.1.0 (16)**. Apple status run **41004145719**, checked 04:40:03 UTC, confirms **VALID / IN_BETA_TESTING** and explicitly lists 16 in existing Owner Testing. No public App Store release or tester/credential changes. No duplicate upload. See [exact receipt](../build16-audit/RELEASE-RECEIPT.json).
+
+IPA SHA-256 f794bd059e236602ad81d48a44744142bbac59899e3833648a78eb410c3320d0; size 16,368,248 bytes. All critical application assets and normal Auth/interest config match the website artifact. SW logic/asset set match; only font asset ordering and derived cache key differ. Six simulator tests passed separately. First exact-IPA fixture audit passed 15 checks across seven role presentations at 390px, 26 route views with zero detected axe violations/overflow; 320x568 audit is running. These are fixture/Debug-simulator observations, NOT physical-iPhone/live-role acceptance or full WCAG certification. Incomplete automatic checks remain recorded. No overall A-grade is claimed.
+
+Final integration PR #24 remains source-only GREEN at 0d7479a, CI40999740486; hosted paging/new-probe sign-in, weekly Auth/Storage/scoring/history/recovery and exact security/activation approvals remain separate. Production learning and server paging were not enabled. Six existing hosted tabs remain untouched.
+
 ## Final integration source GREEN — October 30
 
 Draft PR #24 head 0d7479a0aff805fb205a413143b09aaab2853069 passed full CI 40999740486: **487 unit/database, 486 website, 10 app/offline, 20 private-preview, 11 Python**, plus lint, types, three Deno checks and build. Every required stage completed. Focused historical totals are not added. The isolated bridge now supports the real component's cancellable SDK reads; failed weekly-roster assertions were retained and passed after repair. Source/fixture success does not close hosted Auth/Storage/scoring/history or migration/security/recovery gates. PR #24 remains draft, based on PR #13, and is not a production activation. Original PR #13/#21 branches remain preserved.

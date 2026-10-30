@@ -1,0 +1,56 @@
+{
+  "checkedAt": "2026-10-30T04:40:03.195Z",
+  "appId": "6826677846",
+  "bundleId": "com.coachbilliott.playerdevelopment",
+  "appName": "Player Development Test",
+  "requestedBuildNumber": "16",
+  "builds": [
+    {
+      "id": "9c10d60e-fbb4-4052-aa50-c0fee9159bb1",
+      "buildNumber": "16",
+      "version": "0.1.0",
+      "uploadedDate": "2026-10-29T21:38:55-07:00",
+      "processingState": "VALID",
+      "expired": false,
+      "expirationDate": "2027-01-27T20:38:55-08:00",
+      "usesNonExemptEncryption": false,
+      "internalBuildState": "IN_BETA_TESTING",
+      "externalBuildState": "READY_FOR_BETA_SUBMISSION"
+    }
+  ],
+  "betaGroups": [
+    {
+      "id": "aba46520-648d-4978-8fe5-f55f8bac676c",
+      "name": "Owner Testing",
+      "isInternalGroup": true,
+      "hasAccessToAllBuilds": true,
+      "buildNumbers": [
+        "16",
+        "15",
+        "14",
+        "13",
+        "12",
+        "11",
+        "10",
+        "9",
+        "8",
+        "7",
+        "6",
+        "5",
+        "4",
+        "3"
+      ],
+      "publicLinkEnabled": null,
+      "publicLink": null
+    }
+  ],
+  "reviewDetails": {
+    "hasContactFirstName": false,
+    "hasContactLastName": false,
+    "hasContactPhone": false,
+    "hasContactEmail": false,
+    "hasReviewNotes": false,
+    "demoAccountRequired": null,
+    "hasDemoAccountName": false
+  }
+}
