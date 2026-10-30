@@ -59,9 +59,19 @@ test("motion control remains readable and separate from hero actions on narrow s
       .getByRole("button", { name: "See how it works", exact: true })
       .boundingBox();
     const hero = await page.locator(".hero").boundingBox();
-    expect(button!.width).toBeGreaterThan(160);
+    expect(button!.width).toBeGreaterThanOrEqual(44);
+    expect(button!.width).toBeLessThanOrEqual(48);
     expect(button!.height).toBeGreaterThanOrEqual(44);
-    expect(button!.y + button!.height).toBeLessThanOrEqual(next!.y);
+    expect(
+      button!.x + button!.width <= next!.x ||
+        button!.x >= next!.x + next!.width ||
+        button!.y + button!.height <= next!.y ||
+        button!.y >= next!.y + next!.height,
+    ).toBe(true);
+    expect(button!.x).toBeGreaterThanOrEqual(hero!.x);
+    expect(button!.x + button!.width).toBeLessThanOrEqual(
+      hero!.x + hero!.width,
+    );
     expect(button!.y + button!.height).toBeLessThanOrEqual(
       hero!.y + hero!.height,
     );

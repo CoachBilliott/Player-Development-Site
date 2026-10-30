@@ -407,17 +407,30 @@
   }
 }
 
-/* A deliberate user action pauses the decorative film without changing content. */
+/* Keep film controls with the film, away from the package/interest actions. */
 .hero-motion-control {
-  margin-top: 18px;
-  padding: 10px 14px;
+  position: absolute;
+  right: 24px;
+  bottom: 24px;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
   min-height: 44px;
-  border: 1px solid #e1c385;
-  border-radius: 4px;
+  margin: 0;
+  padding: 10px;
+  border: 1px solid #c7a45c;
+  border-radius: 50%;
   background: #181818;
   color: #faf5ea;
-  font: inherit;
   cursor: pointer;
+}
+@media (max-width: 760px) {
+  .hero-motion-control {
+    right: 16px;
+    bottom: 16px;
+  }
 }
 .hero-motion-control:focus-visible,
 .skip-to-content:focus-visible {
