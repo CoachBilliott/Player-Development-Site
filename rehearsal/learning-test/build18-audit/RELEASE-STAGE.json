@@ -1,5 +1,5 @@
 {
-  "observed_at": "2026-10-30T07:10:51.788234+00:00",
+  "observed_at": "2026-10-30T07:16:51.432279+00:00",
   "source": "b54fd92fdaf7d19bb742f3566d569072cc16a1db",
   "merged_pr": 26,
   "merge_at": "2026-10-30T06:42:36Z",
@@ -40,6 +40,9 @@
   "signed18": {
     "id": 41018447424,
     "source": "b54fd92fdaf7d19bb742f3566d569072cc16a1db",
-    "status": "requested once; queued/running; no Apple18 availability claim"
-  }
+    "status": "success; validation/upload/artifact/cleanup passed; Apple first check not yet listed",
+    "artifact_id": 12960319201,
+    "ipa_sha256": "d57777b69c92e341010a49001bc76740c69677c17733c466f20928c8cc75bd0c"
+  },
+  "exact_ipa_audit": "390px suite running; 320px and geometry queued locally; no physical/live-private claims"
 }

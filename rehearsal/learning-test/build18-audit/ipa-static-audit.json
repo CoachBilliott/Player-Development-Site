@@ -1,0 +1,43 @@
+{
+  "source": "b54fd92fdaf7d19bb742f3566d569072cc16a1db",
+  "ipa_sha256": "d57777b69c92e341010a49001bc76740c69677c17733c466f20928c8cc75bd0c",
+  "ipa_bytes": 16368261,
+  "uncompressed_payload_bytes": 18175178,
+  "bundle": {
+    "CFBundleIdentifier": "com.coachbilliott.playerdevelopment",
+    "CFBundleDisplayName": "Repformed",
+    "CFBundleShortVersionString": "0.1.0",
+    "CFBundleVersion": "18",
+    "MinimumOSVersion": "15.0",
+    "ITSAppUsesNonExemptEncryption": false,
+    "NSCameraUsageDescription": "Record a practice video only when you choose to submit it privately for coach review.",
+    "NSMicrophoneUsageDescription": "Include audio only when you choose to record a practice video for coach review.",
+    "NSPhotoLibraryUsageDescription": "Choose a practice video for private coach review or a training resource to upload."
+  },
+  "config_sha256": "bce7ca9fc4b5806db2b10d51e0ef06a04c455bf36d145d331409bb94b0f1c39c",
+  "config_flags": {
+    "enabled": true,
+    "membersEnabled": true,
+    "membersSignupEnabled": false,
+    "accountLifecycleEnabled": true,
+    "serviceTrackingEnabled": true,
+    "staffRosterEnabled": true,
+    "deliveryMonitoringEnabled": true,
+    "interestIntakeEnabled": true,
+    "staffNotificationEmailsEnabled": true,
+    "learningPlansEnabled": false
+  },
+  "private_signing_files_found": [],
+  "web_files": 74,
+  "compared_web_release_files": 72,
+  "missing_web_release_files": [],
+  "different_web_release_files": [
+    "sw.js"
+  ],
+  "extra_native_web_files": [
+    "cordova.js",
+    "cordova_plugins.js"
+  ],
+  "entry": "./assets/index-DoaRe2Xm.js",
+  "limits": "Archive size is not installed footprint; static inspection is not physical-device or hosted-role acceptance."
+}
