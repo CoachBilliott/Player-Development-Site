@@ -1,6 +1,35 @@
 import { describe, expect, it, vi } from "vitest";
-import { keychainStorage } from "./nativeStorage";
+import { Capacitor } from "@capacitor/core";
+import { SecureStoragePlugin } from "capacitor-secure-storage-plugin";
+import { keychainStorage, nativeAuthStorage } from "./nativeStorage";
 import { mobileNavigation } from "./mobile";
+
+vi.mock("@capacitor/core", () => ({
+  Capacitor: { isNativePlatform: vi.fn(() => false) },
+}));
+vi.mock("capacitor-secure-storage-plugin", () => ({
+  SecureStoragePlugin: { get: vi.fn(), set: vi.fn(), remove: vi.fn() },
+}));
+
+it("uses the native secure adapter without falling back when a device write fails", async () => {
+  vi.mocked(Capacitor.isNativePlatform).mockReturnValue(false);
+  expect(await nativeAuthStorage()).toBeUndefined();
+  vi.mocked(Capacitor.isNativePlatform).mockReturnValue(true);
+  vi.mocked(SecureStoragePlugin.set).mockResolvedValue({ value: false });
+  try {
+    const storage = await nativeAuthStorage();
+    await expect(
+      storage!.setItem("session", "fictional-session"),
+    ).rejects.toThrow("securely");
+    expect(SecureStoragePlugin.set).toHaveBeenCalledWith({
+      key: "pd-native:session",
+      value: "fictional-session",
+    });
+  } finally {
+    vi.mocked(Capacitor.isNativePlatform).mockReturnValue(false);
+    vi.clearAllMocks();
+  }
+});
 
 describe("native credential storage", () => {
   it("scopes session keys and round-trips only through the secure store", async () => {

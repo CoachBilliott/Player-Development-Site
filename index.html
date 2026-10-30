@@ -29,7 +29,32 @@
     />
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <main
+        aria-label="Repformed website loading"
+        style="
+          max-width: 42rem;
+          margin: 10vh auto;
+          padding: 2rem;
+          font:
+            1rem/1.6 system-ui,
+            sans-serif;
+          color: #181818;
+        "
+      >
+        <h1>Repformed</h1>
+        <p role="status">Loading the website…</p>
+        <p>
+          JavaScript is needed to use the interest form and account pages. You
+          can still contact the team by email.
+        </p>
+        <p>
+          If the website does not load, <a href="./">reload the website</a> or
+          <a href="mailto:Repformed@gmail.com">email Repformed@gmail.com</a>.
+        </p>
+        <p>Opening an email link does not send a message or submit interest.</p>
+      </main>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

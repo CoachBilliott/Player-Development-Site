@@ -81,6 +81,75 @@ async function fill(page: import("@playwright/test").Page) {
   await form.getByLabel("I’m 18 or older.").check();
   return form;
 }
+test("reading privacy keeps the original adult draft and consent without persistent contact storage", async ({
+  page,
+  context,
+}) => {
+  const d = await intake(context);
+  await page.goto("./#membership");
+  const form = await fill(page);
+  await form.getByRole("combobox").selectOption("elite-coaching");
+  await form.getByLabel("Email me when Repformed launches").check();
+  const privacy = form.getByRole("link", {
+    name: "Interest privacy (opens in a new tab)",
+    exact: true,
+  });
+  await expect(privacy).toHaveAttribute("rel", "noopener noreferrer");
+  const popupPromise = page.waitForEvent("popup");
+  await privacy.click();
+  const popup = await popupPromise;
+  await expect(popup.getByRole("heading", { level: 1 })).toHaveText(
+    "Your interest. Your information.",
+  );
+  await popup
+    .getByRole("link", { name: "Back to packages", exact: true })
+    .click();
+  await expect(
+    popup.getByRole("form", { name: "Send adult package interest" }),
+  ).toBeVisible();
+  await popup.close();
+  await page.bringToFront();
+  await expect(form.getByLabel("Adult name")).toHaveValue("Fictional Adult");
+  await expect(form.getByLabel("Adult email")).toHaveValue(
+    "fictional-adult@example.test",
+  );
+  await expect(form.getByRole("combobox")).toHaveValue("elite-coaching");
+  await expect(form.getByLabel("I’m 18 or older.")).toBeChecked();
+  await expect(
+    form.getByLabel("Email me when Repformed launches"),
+  ).toBeChecked();
+  const storage = await page.evaluate(() =>
+    JSON.stringify([
+      Object.entries(localStorage),
+      Object.entries(sessionStorage),
+    ]),
+  );
+  expect(storage).not.toContain("fictional-adult@example.test");
+  expect(storage).not.toContain("Fictional Adult");
+  expect(d.requests).toHaveLength(0);
+});
+test("native invalid-email focus stays visible below the sticky navigation", async ({
+  page,
+  context,
+}) => {
+  const d = await intake(context);
+  await page.goto("./#membership");
+  const form = await fill(page);
+  const email = form.getByLabel("Adult email");
+  await email.fill("not-an-email");
+  await form
+    .getByRole("button", { name: "Send interest", exact: true })
+    .click();
+  await expect(email).toBeFocused();
+  await expect
+    .poll(async () => {
+      const box = await email.boundingBox();
+      const header = await page.locator(".header").boundingBox();
+      return box!.y >= (header ? header.y + header.height : 0) + 8;
+    })
+    .toBe(true);
+  expect(d.requests).toHaveLength(0);
+});
 test("short adult interest works by keyboard without account or email-app launch", async ({
   page,
   context,

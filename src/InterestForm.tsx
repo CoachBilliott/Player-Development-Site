@@ -179,9 +179,14 @@ export function InterestForm({
         <p className="interest-privacy">
           Stored privately for Owner/Manager follow-up. Staff alerts:
           Repformed@gmail.com. Launch-email preference is separate.{" "}
-          <a href={`${import.meta.env.BASE_URL}interest-privacy.html`}>
-            Interest privacy
-          </a>
+          <a
+            href={`${import.meta.env.BASE_URL}interest-privacy.html`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Interest privacy (opens in a new tab)
+          </a>{" "}
+          Your form stays open in this tab.
         </p>
         {error && <p role="alert">{error}</p>}
         <button

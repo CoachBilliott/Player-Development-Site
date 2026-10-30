@@ -786,6 +786,9 @@ test("member forms and private dashboard fit small phones and pass automated acc
   await page
     .getByRole("button", { name: "Profile privacy details", exact: true })
     .click();
+  await expect(page.getByRole("dialog")).toContainText(
+    "Your login session is saved in this browser.",
+  );
   await check();
 });
 
