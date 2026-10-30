@@ -6,6 +6,7 @@ import {
   saveAccountName,
   type AccountNameState,
 } from "./accountNames";
+import { StaffAccountSetup } from "./StaffAccountSetup";
 import { isStaff } from "./roles";
 import type { SharedState } from "./useSharedContent";
 
@@ -18,6 +19,7 @@ export function AccountName({ shared }: { shared: SharedState }) {
       client={client}
       userId={user.id}
       staff={isStaff(shared.role)}
+      email={user.email || ""}
     />
   ) : null;
 }
@@ -25,10 +27,12 @@ function NameEditor({
   client,
   userId,
   staff,
+  email,
 }: {
   client: SupabaseClient;
   userId: string;
   staff: boolean;
+  email: string;
 }) {
   const [state, setState] = useState<AccountNameState | null>(null);
   const [draft, setDraft] = useState("");
@@ -122,11 +126,32 @@ function NameEditor({
           accounts and accounts closing cannot edit an adult name.
         </p>
       )}
-      {state?.eligible === false && staff && (
+      {state?.staff_setup && staff && (
+        <StaffAccountSetup
+          key={`${userId}:${state.staff_setup.role_version}`}
+          client={client}
+          userId={userId}
+          email={email}
+          setup={state.staff_setup}
+          online={online}
+          onState={(value, completed) => {
+            setState(value);
+            setDraft(value.display_name || "");
+            setReloadRequired(false);
+            setError("");
+            setMessage(
+              completed
+                ? "Adult/privacy setup recorded. Your staff role is unchanged."
+                : "",
+            );
+          }}
+        />
+      )}
+      {state?.eligible === false && staff && !state.staff_setup && (
         <p>
-          Staff accounts without adult/privacy setup remain blocked from name
-          entry. This screen cannot complete adult/privacy setup. Ask Repformed
-          to review an approved self-service setup path.
+          This account is not eligible for self-service adult/privacy setup.
+          Verify your email or ask Repformed to review its onboarding, family
+          access or closure status.
         </p>
       )}
       {state?.eligible && (

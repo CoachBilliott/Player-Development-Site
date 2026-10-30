@@ -261,6 +261,177 @@ try {
   console.log(
     "PASS name-first: save commits before closure, later writes denied, cleanup cascades name; role unchanged",
   );
+
+  // Missing-consent staff are pre-existing verified identities with legacy
+  // admission. These are synthetic fixture rows, never hosted account backfill.
+  for (const [n, role] of [
+    [3, "owner"],
+    [4, "manager"],
+    [5, "coach"],
+    [6, "owner"],
+    [7, "owner"],
+  ]) {
+    await sql(
+      `insert into auth.users(id,email,email_confirmed_at,created_at) values('${uid(n)}','fictional-staff-${n}@example.test',now(),(select legacy_before-interval '1 second' from public.account_onboarding_settings));insert into public.account_roles(user_id,role) values('${uid(n)}','${role}');`,
+    );
+  }
+  await sql(
+    `insert into public.member_accounts(user_id,account_type) values('${uid(7)}','adult');`,
+  );
+  const staffSetup = (user, version = 1) =>
+    `select public.complete_my_staff_account_setup('${user}',${version},true,true,'adult-pilot-lifecycle-2026-10');`;
+
+  const staffClosing = session("staff-setup-closing-holder");
+  await marker(
+    staffClosing,
+    `begin;select pg_advisory_xact_lock(hashtextextended('${uid(3)}',1011));insert into public.account_closures(id,user_id,state) values('${uid(23)}','${uid(3)}','cleaning');`,
+    "STAFF_CLOSURE_MARKED",
+  );
+  const deniedSetup = session("staff-setup-closing-writer");
+  deniedSetup.child.stdin.end(
+    `begin;set local statement_timeout='10s';${auth(uid(3))}${staffSetup(uid(3))}commit;`,
+  );
+  await waitingOnAdvisory("staff-setup-closing-writer");
+  assert.equal(
+    (
+      await sql(
+        "select count(*) from pg_locks l join pg_stat_activity a on a.pid=l.pid where a.application_name='staff-setup-closing-writer' and l.relation='public.member_accounts'::regclass and l.granted;",
+      )
+    ).trim(),
+    "0",
+  );
+  await finish(staffClosing);
+  await assert.rejects(deniedSetup.done, /Verified staff access/);
+  assert.equal(
+    (
+      await sql(
+        `select count(*) from public.member_accounts where user_id='${uid(3)}';`,
+      )
+    ).trim(),
+    "0",
+  );
+  console.log(
+    "PASS staff setup closure-first: waits before member locks, then denies without recording consent",
+  );
+
+  // Pause the old setup between its member INSERT and role-trigger lock.
+  // The new wrapper must fail NOWAIT, releasing its lifecycle lock, rather
+  // than deadlocking against that existing opposite-order primitive.
+  const legacy = session("legacy-member-before-role-trigger");
+  await marker(
+    legacy,
+    `begin;insert into public.member_accounts(user_id,account_type) values('${uid(4)}','adult');`,
+    "LEGACY_MEMBER_INSERTED",
+  );
+  const startedAt = Date.now();
+  await assert.rejects(
+    sql(
+      `begin;set local statement_timeout='5s';${auth(uid(4))}${staffSetup(uid(4))}commit;`,
+    ),
+    /could not obtain lock on relation/,
+  );
+  assert(
+    Date.now() - startedAt < 5000,
+    "legacy conflict must fail fast rather than deadlock",
+  );
+  await marker(
+    legacy,
+    `${auth(uid(4))}select public.complete_member_account('adult',true,true);`,
+    "LEGACY_SETUP_FINISHED",
+  );
+  await finish(legacy);
+  const legacyConsent = JSON.parse(
+    (
+      await sql(
+        `select to_jsonb(a) from public.member_accounts a where user_id='${uid(4)}';`,
+      )
+    ).trim(),
+  );
+  await sql(`begin;${auth(uid(4))}${staffSetup(uid(4))}commit;`);
+  assert.deepEqual(
+    JSON.parse(
+      (
+        await sql(
+          `select to_jsonb(a) from public.member_accounts a where user_id='${uid(4)}';`,
+        )
+      ).trim(),
+    ),
+    legacyConsent,
+  );
+  console.log(
+    "PASS legacy setup collision: NOWAIT avoids the lock-order cycle; retry preserves existing consent",
+  );
+
+  const firstSetup = session("first-staff-setup");
+  await marker(
+    firstSetup,
+    `begin;${auth(uid(5))}${staffSetup(uid(5))}select to_jsonb(a) from public.member_accounts a where user_id='${uid(5)}';`,
+    "FIRST_STAFF_SETUP",
+  );
+  const firstConsent = firstSetup
+    .output()
+    .split("\n")
+    .filter((line) => line.startsWith("{"))
+    .map((line) => JSON.parse(line))
+    .find((row) => row.user_id === uid(5));
+  assert(firstConsent);
+  const repeatedSetup = session("repeated-staff-setup");
+  repeatedSetup.child.stdin.end(
+    `begin;set local statement_timeout='10s';${auth(uid(5))}${staffSetup(uid(5))}commit;`,
+  );
+  await waitingOnAdvisory("repeated-staff-setup");
+  await finish(firstSetup);
+  await repeatedSetup.done;
+  assert.deepEqual(
+    JSON.parse(
+      (
+        await sql(
+          `select to_jsonb(a) from public.member_accounts a where user_id='${uid(5)}';`,
+        )
+      ).trim(),
+    ),
+    firstConsent,
+  );
+  assert.equal(
+    (
+      await sql(
+        `select role||':'||version from public.account_roles where user_id='${uid(5)}';`,
+      )
+    ).trim(),
+    "coach:1",
+  );
+  console.log(
+    "PASS concurrent repeated staff acceptance: one consent record, unchanged timestamps/version and exact Coach role",
+  );
+
+  const setupBeforeRole = session("staff-setup-before-role-change");
+  await marker(
+    setupBeforeRole,
+    `begin;${auth(uid(6))}${staffSetup(uid(6))}`,
+    "STAFF_SETUP_ROLE_PRESERVED",
+  );
+  const roleChange = session("approved-role-change-after-staff-setup");
+  roleChange.child.stdin.end(
+    `begin;set local statement_timeout='10s';${auth(uid(7))}select public.assign_account_role('${uid(6)}','manager',1);commit;`,
+  );
+  await waitingOnAdvisory("approved-role-change-after-staff-setup");
+  await finish(setupBeforeRole);
+  await roleChange.done;
+  await assert.rejects(
+    sql(`begin;${auth(uid(6))}${staffSetup(uid(6))}commit;`),
+    /staff access changed/,
+  );
+  assert.equal(
+    (
+      await sql(
+        `select role||':'||version from public.account_roles where user_id='${uid(6)}';`,
+      )
+    ).trim(),
+    "manager:2",
+  );
+  console.log(
+    "PASS staff setup/role administration: role change serializes after acceptance; stale setup retry is rejected",
+  );
 } finally {
   if (started) await command(["rm", "-f", container]);
 }

@@ -8,7 +8,7 @@ select current_database() as database_name, current_setting('server_version') as
 
 with required(name) as (values
   ('public.member_accounts'), ('public.account_roles'),
-  ('public.guardian_managed_athletes'), ('public.account_closures'))
+  ('public.guardian_managed_athletes'), ('public.family_athlete_links'), ('public.account_closures'))
 select name, to_regclass(name) is not null as present from required order by name;
 
 with required(signature) as (values
@@ -19,7 +19,7 @@ select signature, to_regprocedure(signature) is not null as present from require
 select table_name,column_name,data_type,is_nullable,column_default
 from information_schema.columns
 where table_schema='public' and table_name in
-  ('member_accounts','account_roles','guardian_managed_athletes','account_closures','account_names')
+  ('member_accounts','account_roles','guardian_managed_athletes','family_athlete_links','account_closures','account_names')
 order by table_name,ordinal_position;
 
 -- Owner scope/authorization is inherited from the installed v1 listing.
@@ -29,30 +29,33 @@ select p.oid::regprocedure::text as signature, p.prosecdef, p.proconfig,
 from pg_proc p join pg_namespace n on n.oid=p.pronamespace
 where n.nspname='public' and p.proname in
   ('list_account_access','current_account_role','account_is_closing',
+   'can_complete_staff_account_setup','complete_my_staff_account_setup',
    'can_save_account_name','get_my_account_name','save_my_account_name','list_account_access_v2')
 order by signature;
 
 select schemaname,tablename,policyname,roles,cmd,qual,with_check
 from pg_policies
 where schemaname='public' and tablename in
-  ('member_accounts','account_roles','guardian_managed_athletes','account_closures','account_names')
+  ('member_accounts','account_roles','guardian_managed_athletes','family_athlete_links','account_closures','account_names')
 order by tablename,policyname;
 
 select c.relname,c.relrowsecurity,c.relforcerowsecurity
 from pg_class c join pg_namespace n on n.oid=c.relnamespace
 where n.nspname='public' and c.relname in
-  ('member_accounts','account_roles','guardian_managed_athletes','account_closures','account_names')
+  ('member_accounts','account_roles','guardian_managed_athletes','family_athlete_links','account_closures','account_names')
 order by c.relname;
 
 select table_name,grantee,privilege_type from information_schema.role_table_grants
 where table_schema='public' and table_name in
-  ('member_accounts','account_roles','guardian_managed_athletes','account_closures','account_names')
+  ('member_accounts','account_roles','guardian_managed_athletes','family_athlete_links','account_closures','account_names')
 order by table_name,grantee,privilege_type;
 
 select conname,pg_get_constraintdef(oid) as definition from pg_constraint
 where conrelid=to_regclass('public.account_names') order by conname;
 
 select to_regclass('public.account_names') as existing_names_table,
+       to_regprocedure('public.complete_my_staff_account_setup(uuid,integer,boolean,boolean,text)') as existing_staff_setup,
+       to_regprocedure('public.can_complete_staff_account_setup()') as existing_staff_setup_helper,
        to_regprocedure('public.can_save_account_name()') as existing_eligibility_helper,
        to_regprocedure('public.get_my_account_name()') as existing_name_reader,
        to_regprocedure('public.save_my_account_name(text,integer,uuid)') as existing_name_writer,

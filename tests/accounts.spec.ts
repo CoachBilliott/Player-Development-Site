@@ -59,6 +59,7 @@ function fixture(
     password: 0,
     resend: 0,
     roleWrites: 0,
+    staffSetups: 0,
     workoutWrites: 0,
     parentReviews: 0,
   };
@@ -366,6 +367,47 @@ function fixture(
           return route.fulfill({
             json: {
               eligible: accounts.has(id) && !guardianAccounts.has(id),
+              display_name: names.get(id)?.display_name || null,
+              version: names.get(id)?.version || 0,
+              ...(!accounts.has(id) &&
+              !guardianAccounts.has(id) &&
+              ["owner", "manager", "coach"].includes(levelFor(id)?.role || "")
+                ? {
+                    staff_setup: {
+                      role_version: levelFor(id)!.version,
+                      privacy_version: "adult-pilot-lifecycle-2026-10",
+                    },
+                  }
+                : {}),
+            },
+          });
+        }
+        if (url.pathname.endsWith("/rpc/complete_my_staff_account_setup")) {
+          if (
+            body.expected_user_id !== id ||
+            !["owner", "manager", "coach"].includes(levelFor(id)?.role || "") ||
+            body.expected_role_version !== levelFor(id)?.version ||
+            guardianAccounts.has(id) ||
+            body.adult_confirmed !== true ||
+            body.privacy_acknowledged !== true ||
+            body.accepted_privacy_version !== "adult-pilot-lifecycle-2026-10"
+          )
+            return route.fulfill({
+              status: 409,
+              json: { message: "Setup denied" },
+            });
+          counts.staffSetups++;
+          if (!accounts.has(id))
+            accounts.set(id, {
+              user_id: id,
+              account_type: "adult",
+              privacy_version: body.accepted_privacy_version,
+              adult_confirmed_at: "2026-10-30T12:00:00Z",
+              privacy_acknowledged_at: "2026-10-30T12:00:00Z",
+            });
+          return route.fulfill({
+            json: {
+              eligible: true,
               display_name: names.get(id)?.display_name || null,
               version: names.get(id)?.version || 0,
             },
@@ -1726,7 +1768,10 @@ for (const role of ["owner", "manager", "coach"] as const) {
       page.getByRole("textbox", { name: "Your name (optional)", exact: true }),
     ).toHaveCount(0);
     await expect(
-      page.getByText(/This screen cannot complete adult\/privacy setup/),
+      page.getByRole("button", {
+        name: "Review adult/privacy setup",
+        exact: true,
+      }),
     ).toBeVisible();
     await expect(
       page.getByRole("button", { name: "Finish account setup", exact: true }),
@@ -2103,4 +2148,287 @@ test("adult name load errors can be retried and unfinished setup cannot edit nam
   failed = false;
   await panel.getByRole("button", { name: "Reload your name" }).click();
   await expect(panel.getByRole("textbox")).toHaveValue("");
+});
+
+for (const role of ["owner", "manager", "coach"] as const) {
+  test(`${role} explicitly completes personal adult/privacy setup without changing staff access`, async ({
+    page,
+    context,
+  }) => {
+    const backend = fixture(false, false, role);
+    await backend.install(context);
+    await signIn(page);
+    await page.goto("./#account");
+    const panel = page.getByRole("region", { name: "Your name", exact: true });
+    await expect(panel.getByRole("textbox")).toHaveCount(0);
+    await panel
+      .getByRole("button", { name: "Review adult/privacy setup", exact: true })
+      .click();
+    const form = page.getByRole("form", {
+      name: "Complete your adult/privacy setup",
+    });
+    const adult = form.getByRole("checkbox", {
+      name: "I am 18 or older and will only add adult players.",
+      exact: true,
+    });
+    const privacy = form.getByRole("checkbox", {
+      name: /I understand what is stored and how to delete profile data/,
+    });
+    const complete = form.getByRole("button", {
+      name: "Complete my adult/privacy setup",
+      exact: true,
+    });
+    await expect(adult).not.toBeChecked();
+    await expect(privacy).not.toBeChecked();
+    await expect(complete).toBeDisabled();
+    expect(backend.counts.staffSetups).toBe(0);
+    expect(backend.accounts.size).toBe(0);
+    await adult.check();
+    await expect(complete).toBeDisabled();
+    await form
+      .getByRole("button", { name: "Read profile privacy details" })
+      .click();
+    await expect(page.getByRole("dialog")).toContainText(
+      "version adult-pilot-lifecycle-2026-10",
+    );
+    await expect(page.getByRole("dialog")).toContainText(
+      "Staff content and guardian-managed closure use assisted review",
+    );
+    await page.getByRole("button", { name: "Close privacy details" }).click();
+    await privacy.check();
+    await expect(complete).toBeEnabled();
+    await form
+      .getByRole("button", { name: "Cancel adult/privacy setup" })
+      .click();
+    expect(backend.counts.staffSetups).toBe(0);
+    expect(backend.accounts.size).toBe(0);
+    await panel
+      .getByRole("button", { name: "Review adult/privacy setup", exact: true })
+      .click();
+    await expect(adult).not.toBeChecked();
+    await expect(privacy).not.toBeChecked();
+    await adult.check();
+    await privacy.check();
+    await context.setOffline(true);
+    await expect(complete).toBeDisabled();
+    await context.setOffline(false);
+    await expect(complete).toBeEnabled();
+    await complete.evaluate((button) => {
+      (button as HTMLButtonElement).click();
+      (button as HTMLButtonElement).click();
+    });
+    const name = panel.getByRole("textbox", {
+      name: "Your name (optional)",
+      exact: true,
+    });
+    await expect(name).toBeEnabled();
+    await expect(
+      panel.getByText(
+        "Adult/privacy setup recorded. Your staff role is unchanged.",
+        { exact: true },
+      ),
+    ).toBeVisible();
+    expect(backend.counts.staffSetups).toBe(1);
+    expect(backend.counts.roleWrites).toBe(0);
+    expect(backend.counts.signup).toBe(0);
+    expect(backend.counts.writes).toBe(0);
+    expect(backend.players.size).toBe(0);
+    expect(backend.accounts.get(parentId)?.privacy_version).toBe(
+      "adult-pilot-lifecycle-2026-10",
+    );
+    expect(
+      backend.accounts.get(parentId)?.privacy_acknowledged_at,
+    ).toBeTruthy();
+    await expect(
+      page.getByRole("heading", {
+        name:
+          role === "owner" ? "Owner" : role === "manager" ? "Manager" : "Coach",
+        exact: true,
+      }),
+    ).toBeVisible();
+    expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
+    await name.fill("Fictional staff adult");
+    await panel.getByRole("button", { name: "Save name", exact: true }).click();
+    await expect(
+      panel.getByText("Your name is saved.", { exact: true }),
+    ).toBeVisible();
+    const saved = JSON.stringify(backend.accounts.get(parentId));
+    await page.reload();
+    await expect(name).toHaveValue("Fictional staff adult");
+    expect(JSON.stringify(backend.accounts.get(parentId))).toBe(saved);
+    expect(backend.counts.staffSetups).toBe(1);
+    await expect(
+      panel.getByRole("button", {
+        name: "Review adult/privacy setup",
+        exact: true,
+      }),
+    ).toHaveCount(0);
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+  });
+}
+
+test("failed or stale staff setup requires reload and fresh unchecked acceptance", async ({
+  page,
+  context,
+}) => {
+  const backend = fixture(false, false, "owner");
+  await backend.install(context);
+  await signIn(page);
+  await page.goto("./#account");
+  const panel = page.getByRole("region", { name: "Your name", exact: true });
+  const fail = async (route: import("@playwright/test").Route) =>
+    route.fulfill({ status: 409, json: { message: "Stale identity or role" } });
+  await context.route("**/rest/v1/rpc/complete_my_staff_account_setup", fail);
+  await panel
+    .getByRole("button", { name: "Review adult/privacy setup", exact: true })
+    .click();
+  const form = page.getByRole("form", {
+    name: "Complete your adult/privacy setup",
+  });
+  await form.getByRole("checkbox").nth(0).check();
+  await form.getByRole("checkbox").nth(1).check();
+  await form
+    .getByRole("button", {
+      name: "Complete my adult/privacy setup",
+      exact: true,
+    })
+    .click();
+  await expect(panel.getByRole("alert")).toContainText("not confirmed");
+  await expect(form.getByRole("checkbox").nth(0)).toBeDisabled();
+  expect(backend.accounts.size).toBe(0);
+  expect(backend.counts.roleWrites).toBe(0);
+  await context.unroute("**/rest/v1/rpc/complete_my_staff_account_setup", fail);
+  await panel.getByRole("button", { name: "Reload account setup" }).click();
+  await panel
+    .getByRole("button", { name: "Review adult/privacy setup", exact: true })
+    .click();
+  await expect(form.getByRole("checkbox").nth(0)).not.toBeChecked();
+  await expect(form.getByRole("checkbox").nth(1)).not.toBeChecked();
+  await expect(
+    form.getByRole("button", {
+      name: "Complete my adult/privacy setup",
+      exact: true,
+    }),
+  ).toBeDisabled();
+});
+
+test("staff consent drafts clear on sign-out and switching to another account", async ({
+  page,
+  context,
+}) => {
+  const backend = fixture(false, false, "owner");
+  await backend.install(context);
+  await signIn(page);
+  await page.goto("./#account");
+  await page
+    .getByRole("button", { name: "Review adult/privacy setup", exact: true })
+    .click();
+  const form = page.getByRole("form", {
+    name: "Complete your adult/privacy setup",
+  });
+  await form.getByRole("checkbox").nth(0).check();
+  await form.getByRole("checkbox").nth(1).check();
+  await signOut(page);
+  await signIn(page, "fictional-adult@example.test");
+  await page.goto("./#account");
+  await expect(form).toHaveCount(0);
+  expect(backend.counts.staffSetups).toBe(0);
+  expect(backend.accounts.size).toBe(0);
+  await signOut(page);
+  await signIn(page);
+  await page.goto("./#account");
+  await page
+    .getByRole("button", { name: "Review adult/privacy setup", exact: true })
+    .click();
+  await expect(form.getByRole("checkbox").nth(0)).not.toBeChecked();
+  await expect(form.getByRole("checkbox").nth(1)).not.toBeChecked();
+});
+
+test("staff setup is not offered when backend eligibility is blocked", async ({
+  page,
+  context,
+}) => {
+  const backend = fixture(false, false, "owner");
+  await backend.install(context);
+  await context.route("**/rest/v1/rpc/get_my_account_name", (route) =>
+    route.fulfill({
+      json: { eligible: false, display_name: null, version: 0 },
+    }),
+  );
+  await signIn(page);
+  await page.goto("./#account");
+  const panel = page.getByRole("region", { name: "Your name", exact: true });
+  await expect(panel.getByText(/not eligible for self-service/)).toBeVisible();
+  await expect(
+    panel.getByRole("button", {
+      name: "Review adult/privacy setup",
+      exact: true,
+    }),
+  ).toHaveCount(0);
+  expect(backend.counts.staffSetups).toBe(0);
+});
+
+test("lost staff setup response is confirmed by reload without a second acceptance or timestamp reset", async ({
+  page,
+  context,
+}) => {
+  const backend = fixture(false, false, "owner");
+  await backend.install(context);
+  let requests = 0;
+  await context.route(
+    "**/rest/v1/rpc/complete_my_staff_account_setup",
+    async (route) => {
+      requests++;
+      const body = route.request().postDataJSON();
+      expect(body).toEqual({
+        expected_user_id: parentId,
+        expected_role_version: 1,
+        adult_confirmed: true,
+        privacy_acknowledged: true,
+        accepted_privacy_version: "adult-pilot-lifecycle-2026-10",
+      });
+      backend.accounts.set(parentId, {
+        user_id: parentId,
+        account_type: "adult",
+        privacy_version: body.accepted_privacy_version,
+        adult_confirmed_at: "2026-10-30T12:00:00Z",
+        privacy_acknowledged_at: "2026-10-30T12:00:00Z",
+      });
+      return route.fulfill({
+        status: 503,
+        json: { message: "Fictional lost response after commit" },
+      });
+    },
+  );
+  await signIn(page);
+  await page.goto("./#account");
+  const panel = page.getByRole("region", { name: "Your name", exact: true });
+  await panel
+    .getByRole("button", { name: "Review adult/privacy setup", exact: true })
+    .click();
+  const form = page.getByRole("form", {
+    name: "Complete your adult/privacy setup",
+  });
+  await form.getByRole("checkbox").nth(0).check();
+  await form.getByRole("checkbox").nth(1).check();
+  await form
+    .getByRole("button", {
+      name: "Complete my adult/privacy setup",
+      exact: true,
+    })
+    .click();
+  await expect(panel.getByRole("alert")).toContainText("not confirmed");
+  const saved = JSON.stringify(backend.accounts.get(parentId));
+  await panel.getByRole("button", { name: "Reload account setup" }).click();
+  await expect(
+    panel.getByRole("textbox", { name: "Your name (optional)", exact: true }),
+  ).toBeEnabled();
+  expect(requests).toBe(1);
+  expect(JSON.stringify(backend.accounts.get(parentId))).toBe(saved);
+  expect(backend.counts.roleWrites).toBe(0);
+  await expect(form).toHaveCount(0);
 });

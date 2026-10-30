@@ -1,4 +1,4 @@
-# Optional adult account names — draft, blocked release plan
+# Optional adult account names — draft incremental release plan
 
 No production migration, merge, deployment, settings change, account backfill or
 hosted database query is authorized by this task. This is a reviewable draft.
@@ -9,14 +9,14 @@ The names delta is **`backend/025-account-names.sql`**, not migration 019. Do no
 edit or renumber installed migrations or the separately staged learning/roster
 migrations. Repository metadata was inspected without accessing any database:
 
-| Number | Reserved migration |
-| --- | --- |
-| 019 | `019-weekly-learning.sql` |
-| 020 | `020-learning-media-retention.sql` |
-| 021 | `021-learning-service-workflows.sql` |
-| 022 | `022-package-week-completeness.sql` |
-| 023 | `023-staff-roster-pages.sql` |
-| 024 | `024-weekly-notification-overrides.sql` |
+| Number | Reserved migration                      |
+| ------ | --------------------------------------- |
+| 019    | `019-weekly-learning.sql`               |
+| 020    | `020-learning-media-retention.sql`      |
+| 021    | `021-learning-service-workflows.sql`    |
+| 022    | `022-package-week-completeness.sql`     |
+| 023    | `023-staff-roster-pages.sql`            |
+| 024    | `024-weekly-notification-overrides.sql` |
 
 All six are present on the inspected
 [integration ref `66e7e460dd88ea85b9dcf6781d6048546ab4350b`](https://github.com/repformed/Player-Development-Site/tree/66e7e460dd88ea85b9dcf6781d6048546ab4350b/backend).
@@ -61,34 +61,61 @@ rules, consent records or any existing RPC definition/grant.
 Drafts stay only in component memory keyed by user, with late-result guards,
 cancel/removal, offline write blocking and reload after unconfirmed writes.
 
-## Unresolved consent blocker — do not represent this as release-ready
+## Explicit staff adult/privacy setup
 
-**Owners, Managers and Coaches with no `member_accounts` record cannot enter a
-name in this draft. There is no normal staff self-service consent route here.**
-`MemberAccount.tsx` returns the staff account screen before the normal two-checkbox
-adult/profile-privacy setup form. A direct call to `complete_member_account` is
-not a normal user consent flow. Its existing wrapper also requires legacy
-onboarding eligibility or an accepted invitation, verified email and actual
-adult/privacy acceptance; guardian/closure guards remain in force.
+Verified existing Owners, Managers and Coaches without a member-account consent
+record can choose **Review adult/privacy setup** in Account settings → Your name.
+This does not interrupt staff tools or force the customer profile workflow. The
+form starts with both checkboxes unchecked, shows the signed-in email, and
+requires the person to accept themselves:
 
-No production records were queried, so the identities/counts of affected staff
-are unknown. The exact name-save predicate remains:
+- “I am 18 or older and will only add adult players.”
+- “I understand what is stored and how to delete profile data. I will use
+  nicknames and keep identifying child information out of profiles.”
 
-- Signed-in identity must match the request's expected user ID.
-- Auth email confirmation must exist.
-- A matching member account with both adult confirmation and privacy
-  acknowledgement timestamps must exist; neither can be fabricated or backfilled.
-- Guardian-managed accounts are ineligible, including staff-like role records.
-- `account_is_closing` must be false (cleaning/failed closures block writes).
+The profile privacy dialog is the existing disclosure extracted verbatim into
+`ProfilePrivacy.tsx`, shared with the normal setup UI. The new route uses its
+existing current `adult-pilot-lifecycle-2026-10` version, exactly matching the
+server-validated acceptance version. It explains separately that these profile
+rules concern player profiles, while the optional account name remains visible
+to its holder and Repformed Owners. No policy text or new legal version is
+invented. Adult status remains self-attested, as the existing disclosure says.
 
-The UI explicitly explains the staff setup limitation. Eligible adults can edit
-their own optional name; other accounts continue to display email fallback.
-An approved self-service adult/privacy completion path, with actual unchecked
-consent controls and the existing admission/guardian/closure protections, still
-needs implementation/review before releasing this feature for staff without
-setup. Do not work around this by creating member accounts, timestamps or consent
-versions on behalf of staff, changing roles, weakening guards or linking them to
-the customer profile form. This draft deliberately leaves that blocker open.
+The new `complete_my_staff_account_setup` RPC targets only `auth.uid()` and
+requires its matching expected user ID, verified email, an existing staff role
+and matching role version, both true acceptance values, the current disclosure
+version, no guardian/active family link and no cleaning/failed closure. The existing verified staff role is the admission boundary: this route also
+serves already-approved staff created after the customer legacy cutoff, without
+creating an Auth identity or assigning a role. General customer/invitation setup
+rules remain unchanged; this route never opens signup or repairs inconsistent
+records. Staff access establishes eligibility to accept, never consent itself.
+
+The existing general setup RPC can create a new customer's first role and has
+different admission rules. The scoped RPC therefore reuses the existing member
+record schema and disclosure rather than calling that broader operation. It
+creates only the missing member/consent record for that already existing staff
+identity after explicit acceptance, and records the existing current disclosure
+version on that new self-created row. It creates no Auth user, changes no role,
+role version, role audit or publishing membership, and creates no player profile.
+Existing valid consent records return idempotently without changing timestamps,
+account type or privacy version. Existing incomplete records require review;
+missing timestamps are never inferred or filled in bulk/on someone else's behalf.
+
+Lock order is the existing role-administration advisory lock `73024001`, then
+per-account lifecycle advisory lock (seed 1011), then a short **NOWAIT SHARE**
+member-table guard and the own member row. The NOWAIT guard is necessary because
+the installed legacy setup primitive inserts a member before its role trigger
+acquires the lifecycle lock. It refuses an already-in-flight legacy member DML
+instead of waiting in the opposite order and creating a deadlock. The existing
+primitive and closure functions are unchanged. Under contention the UI requires
+a reload and fresh unchecked acceptance; it does not automatically retry.
+
+Successful setup unlocks the separate optional name field. Names are not saved
+as part of acceptance. Cancel, reload, sign-out, role-version changes and account
+switches clear draft acceptance. Offline writes are blocked, repeated clicks are
+locked, and a lost/unconfirmed response requires a read before another attempt.
+No production records were queried, so actual affected identities/counts remain
+unknown. TEST rehearsal, release review and physical iPhone testing remain gates.
 
 ## Existing hosted TEST project — incremental rehearsal only
 
@@ -124,8 +151,10 @@ substitute production or an environment's default configured project.
    permission for any test data writes. Verify own/cross-user/anonymous access,
    stale saves, closure serialization, email fallback, Owner scope and v1
    compatibility. Do not use existing real account names as test data or invent
-   consent for current staff. The missing staff consent route remains a release
-   blocker even if migration rehearsal succeeds.
+   consent for current staff. Verify the new explicit staff consent route with existing approved staff
+   both before/after the customer legacy cutoff and with invitation histories.
+   Nonstaff, unverified, guardian/family-linked and closing cases remain blocked. Consent must be accepted by the person testing their own
+   identity; it must not be pre-populated for existing staff.
 7. Production remains outside this task. Any later reviewed production plan must
    likewise apply only the approved names delta after metadata/target checks.
    **Apply and verify 025 before publishing the frontend**: no missing-RPC
@@ -143,14 +172,16 @@ preflight is syntax-checked locally before/after the delta.
 
 A separate local PGlite compatibility run also applied the pinned staged
 019–024 files from integration ref `66e7e460dd88ea85b9dcf6781d6048546ab4350b`
-to fresh local 001–018, populated a fictional consented Owner, then applied only
-025. Metadata pre/postflight, existing RPC/grant/member/role preservation and
+to fresh local 001–018, populated a fictional consented Owner, then applied only 025. Metadata pre/postflight, existing RPC/grant/member/role preservation and
 consented own-name save passed. No staged migration source was copied into this
 feature branch, and no hosted project was involved. This is local evidence only.
 
 The Docker test uses pinned PostgreSQL 17 on the managed local daemon, no host
-ports and no hosted connection. Both race orders observe actual advisory-lock
-waits, eligibility re-checks and cleanup cascade without role changes. Its
+ports and no hosted connection. The six concurrency scenarios observe name/closure ordering, staff
+setup/closure ordering, fail-fast legacy setup collisions, idempotent overlapping
+acceptance and serialized role changes with stale-version rejection. They verify
+actual advisory waits, consent preservation and cleanup cascade without granting
+new authority. Its
 throwaway container/database is removed afterward. Other tests cover nullable,
 duplicate and Unicode names, grants, staff missing setup, stale versions,
 account switching, offline behavior, invitations and responsive layout.
