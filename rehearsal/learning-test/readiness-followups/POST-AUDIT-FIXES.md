@@ -1,3 +1,7 @@
+## Current test-preview release stage —2026-10-30T01:37:21.440972+00:00
+
+Source **6d0975b86a0dc1ac9f128da244c02b08eb9e91ff** remains frozen; no publication attempted. Static/unit/policy checks passed. Final accessibility desktop/phone both passed separately at unchanged30second timeout. A four-worker attempt exceeded local resource/timing limits in long multi-step cases, so only that failed batch was stopped. The remaining364website cases are now running at the repository's normal2workers, then app/offline/private-preview/harness follow. Test discovery confirms the two exhaustive groups are2+364, not omitted cases. No timeout/assertion/protection was changed. No new audit/features, production, credentials, permissions, flags, emails or native changes. Hosted role/023migration acceptance remains blocked because no fictional session is available and private sign-in was declined. Existing operator retains ownership; no credential requests or impersonation.
+
 ## October30 01:25UTC: test-preview release current checkpoint
 
 Exact head **6d0975b86a0dc1ac9f128da244c02b08eb9e91ff** on test/roster-023-harness; the only change after01b3cc5is one test synchronization: wait for the same exact athlete ID rather than reading the captured request before it arrives. Application src/preview/public/scripts are unchanged from01b3cc5. No new features or speculative audit.
