@@ -67,3 +67,7 @@ The 1,000-row fake roster displayed 25 rows/32 buttons. First-page ready was 468
 5. Physical installation/keyboard/safe areas/camera/playback/upload/offline and authorized production roles need their real acceptance path. No production test accounts/roles or credentials are created by this audit.
 
 The existing public interest/consent/signup notification and approved package terms remain unchanged. Conditional publication covers ordinary tested repairs; security-sensitive activation still requires its exact approval.
+
+## Subsequent independent live public evidence
+
+The parent supplied an actual desktop spectator pass at 05:12–05:14 UTC: compact pause/play operation and keyboard focus, skip-to-main, correct package terms, unchanged consent during plan preselection, help/Escape/focus restoration and privacy/footer navigation worked. No new concrete public regression was observed. See INDEPENDENT-PUBLIC-OBSERVATIONS.md for exact scope. This closes that limited public-observation gap, not mobile/private/native/security coverage or the Coach-card defect. No form was submitted or email sent in the pass.
