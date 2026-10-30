@@ -1,3 +1,9 @@
+## October30:023test-preview publication authorized, checks running
+
+Parent authorized test-preview-only publication of source01b3cc53331f08986466a5429c764899fe799bc5 through existing Cloudflare Direct Upload, no production/security/credential/flag changes. Source diff remains exactly the seven intended harness/test/docs files. **No upload yet.** Required local aggregate validation is running on the exact head. Lint/types,426unit/database,11Python,3Deno checks,build and15focused harness-policy checks passed. Website/app/offline/private-preview/final harness-browser stages must finish. A first local website attempt encountered a30second accessibility-test timeout and Vite font-file denial caused by linked dependencies outside this worktree. Only the already-failed suite was stopped; fresh local npm ci fixed the dependency layout without any security/proxy/source change. Both affected cases then passed with original timeouts/assertions. Clean aggregate rerun has no failures so far; partial results are not a final pass.
+
+Existing production Cloudflare metadata still identifies0816c343/bab6aa19 and old isolated harnessee ea6899/source1bb3. No migration ran; existing browser operator owns023preflight/install/test/rollback after one coordinated preview refresh/private sign-in. Keep current Owner tab until deployment receipt is confirmed.
+
 ## October30:023acceptance control prepared; browser access restored
 
 Parent's existing authorized browser operator now reports ordinary rehearsal page access restored, exact023/rollback hashes and six UUID/email pairs verified, prerequisite helpers present,023RPCabsent and all4flagsOFF. Public configuration loaded; fictional Owner private sign-in is being coordinated. **No migration ran.** This supersedes the earlier transport-blocked status below, which remains dated history.
