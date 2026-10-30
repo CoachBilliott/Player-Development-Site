@@ -35,3 +35,5 @@ __pycache__/
 *.pyc
 
 test-results-private-preview/
+
+dist-meet-the-staff/
