@@ -198,10 +198,13 @@ test("enabled household training uses selected profile and server draft endpoint
   await expect(
     page.getByRole("heading", { name: "Your released library." }),
   ).toBeVisible();
-  expect(
-    calls.filter((c) => c.name === "learning_athlete").at(-1)?.body
-      .target_profile,
-  ).toBe(profileId);
+  await expect
+    .poll(
+      () =>
+        calls.filter((c) => c.name === "learning_athlete").at(-1)?.body
+          .target_profile,
+    )
+    .toBe(profileId);
   await page.getByRole("button", { name: "Open week", exact: true }).click();
   await page.getByRole("button", { name: "Take quiz", exact: true }).click();
   await page.getByLabel("START", { exact: true }).check();
