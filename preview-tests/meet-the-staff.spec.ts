@@ -12,6 +12,15 @@ for (const width of [320, 390, 768, 1440]) {
     );
     await expect(page.getByRole("article")).toHaveCount(2);
     await expect(page.getByText("Headshot pending")).toHaveCount(2);
+    const devyn = page.getByRole("article", { name: "Devyn Billiott" });
+    await expect(devyn.getByText("Co-Owner", { exact: true })).toBeVisible();
+    await expect(devyn.locator(".staff-bio")).toHaveCount(1);
+    await expect(devyn.locator(".staff-bio")).toContainText(
+      "Cypress Creek High School",
+    );
+    await expect(
+      page.getByRole("heading", { name: "Relevant experience" }),
+    ).toHaveCount(0);
     expect(
       await page.evaluate(
         () => document.documentElement.scrollWidth <= innerWidth,

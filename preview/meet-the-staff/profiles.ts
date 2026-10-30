@@ -7,13 +7,21 @@ export type PublicStaffProfile = {
   photo?: { src: string; alt: string };
 };
 
-// Review fixtures only. Never connect this list to account records or production.
-export const previewProfiles: PublicStaffProfile[] = [1, 2].map((number) => ({
-  id: `preview-${number}`,
-  name: `Profile ${number} · name pending`,
-  title: "Public title pending approval",
-  bio: "A short introduction will describe this person’s work at Repformed, their approach to supporting athletes, and what families can expect from them.",
-  experience: [
-    "Relevant experience will appear here after verification and approval.",
-  ],
-}));
+// Public content only. Claims are self-reported in Devyn’s submitted form,
+// not independently verified. This entire entry point remains unpublished.
+export const previewProfiles: PublicStaffProfile[] = [
+  {
+    id: "devyn-billiott",
+    name: "Devyn Billiott",
+    title: "Co-Owner",
+    bio: "Devyn Billiott brings four years of varsity Texas high school coaching experience and currently coaches at Cypress Creek High School. A former All-State center at La Marque High School, he specializes in offensive and defensive line development, blocking, pass rush, and strength and conditioning. He helped start Repformed to make quality coaching more accessible to young athletes and families. His approach emphasizes understanding the “why” behind each technique, building confidence, and developing accountability, consistency, and a love for improvement.",
+    experience: [],
+  },
+  {
+    id: "partner-pending",
+    name: "Partner profile pending",
+    title: "Public title pending approval",
+    bio: "This unpublished preview slot is reserved for the partner’s submitted biography and headshot. No name or experience has been added.",
+    experience: [],
+  },
+];

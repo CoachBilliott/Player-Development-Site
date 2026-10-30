@@ -7,7 +7,7 @@ export function MeetTheStaff({ profiles }: { profiles: PublicStaffProfile[] }) {
         Skip to staff profiles
       </a>
       <aside className="review-banner" aria-label="Preview status">
-        LAYOUT REVIEW <span>Preview profiles only · Not published</span>
+        LAYOUT REVIEW <span>Profile review · Not published</span>
       </aside>
       <header className="staff-header">
         <div className="staff-brand">
@@ -81,8 +81,9 @@ export function MeetTheStaff({ profiles }: { profiles: PublicStaffProfile[] }) {
           <p className="eyebrow">BEFORE PUBLICATION</p>
           <h2 id="review-title">Real people. Approved profiles.</h2>
           <p>
-            Names, public titles, biographies, verified experience and headshots
-            will be added after the team’s questionnaire and profile review.
+            Devyn’s biography uses his submitted questionnaire. His headshot is
+            pending, and the partner profile is awaiting submission. All
+            profiles remain unpublished until final review.
           </p>
         </section>
       </main>
