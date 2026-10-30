@@ -1,3 +1,11 @@
+## Final combined source and same fictional preview refreshed — October 30
+
+PR #24 head **18176fd093b38a595213ba69a1847c9743475901** passed complete CI **41007130150**: 487 unit/database, 496 website, 10 app/offline, 20 private-preview, 11 Python plus all static/function/build stages. It merges current tested UI; no backend/learning-module diff from previous0d. This draft is not a production learning release.
+
+The **same existing** fictional workspace preview is refreshed at https://private-workspace-ux.repformed.pages.dev/#weekly-demo, deployment **8798e8e8-5de3-486e-b5cf-95aae3511ec5**, success05:31:44.918451UTC/source18176fd. Backend disconnected, CSP connect-src none, noindex, strong fictional/simulation labels. Provider preview alias/source/stage verified. Production70052ad/3a46672b and actual Auth rehearsal3ea85dec/965069fe verified unchanged; no tabs refreshed, no DB operations. Exact receipt ../service-learning-integration/PREVIEW-RECEIPT.json. Independent public rendering not performed by this executor.
+
+App remains TestFlight16. Native17 validation41006712872 attempt2 is running after a first-attempt runner DNS failure before tests. No signed17 upload. All physical/live-role, hosted paging, weekly learning, recovery and exact security-approval gates remain explicit.
+
 ## Coach-header website repair published — October 30, 05:24 UTC
 
 PR #25 merged as **70052ad3ea4de0fc42beac53bb0138f640d7bd8c**. Exact-main CI **41006659216 SUCCESS**: 378 unit/database, 434 website, 10 app/offline, 6 private-preview, 11 Python plus all static/function/build stages. Fresh normal-auth build and eight header-boundary/Refresh cases passed against the compiled artifact. One Cloudflare production upload completed **05:23:21.448131 UTC**, deployment **3a46672b-b999-4d10-a1da-a674028ff754**; canonical metadata/source verified, config hash unchanged. See ../roster-card-repair/web-deployment-receipt.json.

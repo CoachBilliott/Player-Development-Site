@@ -1,0 +1,38 @@
+{
+  "verified_at": "2026-10-30T05:33:37.754913+00:00",
+  "source": "18176fd093b38a595213ba69a1847c9743475901",
+  "deployment_id": "8798e8e8-5de3-486e-b5cf-95aae3511ec5",
+  "environment": "preview",
+  "url": "https://8798e8e8.repformed.pages.dev",
+  "alias": "https://private-workspace-ux.repformed.pages.dev/#weekly-demo",
+  "created_on": "2026-10-30T05:31:43.343956Z",
+  "stage": {
+    "name": "deploy",
+    "started_on": null,
+    "ended_on": "2026-10-30T05:31:44.918451Z",
+    "status": "success"
+  },
+  "backend": "disconnected; CSP connect-src none; fictional browser-only data",
+  "files": 45,
+  "uploads": 1,
+  "final_ci": {
+    "id": 41007130150,
+    "result": "success",
+    "unit_database": 487,
+    "website": 496,
+    "app_offline": 10,
+    "private_preview": 20,
+    "python": 11,
+    "static_function_build": "passed"
+  },
+  "production_unchanged": {
+    "id": "3a46672b-b999-4d10-a1da-a674028ff754",
+    "source": "70052ad3ea4de0fc42beac53bb0138f640d7bd8c"
+  },
+  "auth_rehearsal_unchanged": {
+    "id": "965069fe-c47c-473a-a70e-a09fa6d8a29f",
+    "source": "3ea85dec40e4723d514713ff264939893424fc04",
+    "tabs_refreshed": false
+  },
+  "hosted_or_physical_acceptance": "not implied"
+}
