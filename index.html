@@ -27,21 +27,45 @@
       name="apple-mobile-web-app-status-bar-style"
       content="black-translucent"
     />
+    <style>
+      .startup-fallback {
+        max-width: 42rem;
+        margin: 10vh auto;
+        padding: 2rem;
+        background: #181818;
+        color: #f5f1e8;
+        border-top: 3px solid #c7a45c;
+        font:
+          1rem/1.6 system-ui,
+          sans-serif;
+      }
+      .startup-fallback h1 {
+        margin: 0 0 1rem;
+        color: #f5f1e8;
+        font:
+          700 2rem/1.2 system-ui,
+          sans-serif;
+      }
+      .startup-fallback p {
+        margin: 0.75rem 0;
+        color: inherit;
+        font: inherit;
+      }
+      .startup-fallback a {
+        color: #e5c978;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+        overflow-wrap: anywhere;
+      }
+      .startup-fallback a:focus-visible {
+        outline: 3px solid #e5c978;
+        outline-offset: 4px;
+      }
+    </style>
   </head>
   <body>
     <div id="root">
-      <main
-        aria-label="Repformed website loading"
-        style="
-          max-width: 42rem;
-          margin: 10vh auto;
-          padding: 2rem;
-          font:
-            1rem/1.6 system-ui,
-            sans-serif;
-          color: #181818;
-        "
-      >
+      <main class="startup-fallback" aria-label="Repformed website loading">
         <h1>Repformed</h1>
         <p role="status">Loading the website…</p>
         <p>

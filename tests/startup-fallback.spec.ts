@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import AxeBuilder from "@axe-core/playwright";
 import { disableBackend } from "./backendFixture";
 
 test("blocked main entry retains useful contact and retry without claiming submission", async ({
@@ -22,6 +23,10 @@ test("blocked main entry retains useful contact and retry without claiming submi
   await expect(page.getByRole("main")).toContainText(
     "does not send a message or submit interest",
   );
+  expect(
+    (await new AxeBuilder({ page }).include(".startup-fallback").analyze())
+      .violations,
+  ).toEqual([]);
 });
 
 test("JavaScript-disabled visitors receive an honest contact alternative", async ({
