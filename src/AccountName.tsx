@@ -6,21 +6,29 @@ import {
   saveAccountName,
   type AccountNameState,
 } from "./accountNames";
+import { isStaff } from "./roles";
 import type { SharedState } from "./useSharedContent";
 
 export function AccountName({ shared }: { shared: SharedState }) {
   const client = shared.service?.client,
     user = shared.session?.user;
   return client && user ? (
-    <NameEditor key={user.id} client={client} userId={user.id} />
+    <NameEditor
+      key={user.id}
+      client={client}
+      userId={user.id}
+      staff={isStaff(shared.role)}
+    />
   ) : null;
 }
 function NameEditor({
   client,
   userId,
+  staff,
 }: {
   client: SupabaseClient;
   userId: string;
+  staff: boolean;
 }) {
   const [state, setState] = useState<AccountNameState | null>(null);
   const [draft, setDraft] = useState("");
@@ -112,6 +120,13 @@ function NameEditor({
         <p>
           Verified email and completed adult setup are required. Parent-managed
           accounts and accounts closing cannot edit an adult name.
+        </p>
+      )}
+      {state?.eligible === false && staff && (
+        <p>
+          Staff accounts without adult/privacy setup remain blocked from name
+          entry. This screen cannot complete adult/privacy setup. Ask Repformed
+          to review an approved self-service setup path.
         </p>
       )}
       {state?.eligible && (

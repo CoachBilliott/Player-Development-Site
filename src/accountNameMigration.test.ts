@@ -2,7 +2,7 @@ import { PGlite } from "@electric-sql/pglite";
 import { readFileSync, readdirSync } from "node:fs";
 import { expect, it } from "vitest";
 
-it("019 applies after the complete 001–018 chain and leaves installed-client RPC definitions and grants untouched", async () => {
+it("025 applies incrementally to a populated local fixture without changing installed-client RPCs, grants or existing records", async () => {
   const db = new PGlite();
   try {
     await db.exec(`create role anon; create role authenticated; create role service_role bypassrls;
@@ -17,18 +17,39 @@ it("019 applies after the complete 001–018 chain and leaves installed-client R
       grant select on storage.objects to anon; grant select,insert,delete on storage.objects to authenticated;`);
     const backend = new URL("../backend/", import.meta.url);
     const files = readdirSync(backend)
-      .filter((file) => /^\d{3}-.*\.sql$/.test(file))
+      .filter(
+        (file) => /^\d{3}-.*\.sql$/.test(file) && Number(file.slice(0, 3)) < 25,
+      )
       .sort();
-    expect(files).toHaveLength(19);
-    for (const file of files.slice(0, 18))
+    expect(files.filter((file) => Number(file.slice(0, 3)) <= 18)).toHaveLength(
+      18,
+    );
+    expect(new Set(files.map((file) => file.slice(0, 3))).size).toBe(
+      files.length,
+    );
+    for (const file of files)
       await db.exec(readFileSync(new URL(file, backend), "utf8"));
+    // Only a fresh local test DB is bootstrapped above. Hosted test instructions
+    // explicitly prohibit replaying base migrations on an existing project.
+    const user = "d2000000-0000-4000-8000-000000000001";
+    await db.exec(`insert into auth.users(id,email,email_confirmed_at) values('${user}','fictional-existing@example.test',now());
+      insert into public.member_accounts(user_id,account_type) values('${user}','adult');
+      insert into public.account_roles(user_id,role) values('${user}','owner');`);
+    await db.exec(
+      readFileSync(new URL("account-names-preflight.sql", backend), "utf8"),
+    );
+    const accountsBefore = (
+      await db.query("select * from public.member_accounts")
+    ).rows;
+    const rolesBefore = (await db.query("select * from public.account_roles"))
+      .rows;
     const snapshot = () =>
       db.query(
         "select proname,prosrc,proacl::text from pg_proc where pronamespace='public'::regnamespace order by proname,oid",
       );
     const before = (await snapshot()).rows;
     await db.exec(
-      readFileSync(new URL("019-account-names.sql", backend), "utf8"),
+      readFileSync(new URL("025-account-names.sql", backend), "utf8"),
     );
     const after = (await snapshot()).rows;
     for (const fn of before) expect(after).toContainEqual(fn);
@@ -36,7 +57,13 @@ it("019 applies after the complete 001–018 chain and leaves installed-client R
       [],
     );
     expect((await db.query("select * from public.account_roles")).rows).toEqual(
-      [],
+      rolesBefore,
+    );
+    expect(
+      (await db.query("select * from public.member_accounts")).rows,
+    ).toEqual(accountsBefore);
+    await db.exec(
+      readFileSync(new URL("account-names-preflight.sql", backend), "utf8"),
     );
   } finally {
     await db.close();

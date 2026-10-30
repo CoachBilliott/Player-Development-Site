@@ -151,16 +151,22 @@ try {
   const backend = new URL("../backend/", import.meta.url);
   const files = readdirSync(backend)
     .filter(
-      (file) => /^\d{3}-.*\.sql$/.test(file) && Number(file.slice(0, 3)) <= 19,
+      (file) => /^\d{3}-.*\.sql$/.test(file) && Number(file.slice(0, 3)) < 25,
     )
     .sort();
-  assert.equal(files.length, 19);
+  assert.equal(
+    files.filter((file) => Number(file.slice(0, 3)) <= 18).length,
+    18,
+  );
   for (const file of files)
     await sql(readFileSync(new URL(file, backend), "utf8"));
   for (const user of [uid(1), uid(2)])
     await sql(
       `insert into auth.users(id,email,email_confirmed_at) values('${user}','fictional-${user}@example.test',now()); insert into public.member_accounts(user_id,account_type) values('${user}','adult'); insert into public.account_roles(user_id,role) values('${user}','athlete');`,
     );
+
+  // Apply only the new delta after the existing synthetic accounts are populated.
+  await sql(readFileSync(new URL("025-account-names.sql", backend), "utf8"));
 
   // Closure holds the shared lock; the name writer must wait BEFORE locking
   // member_accounts. Once closure commits, a fresh eligibility read must deny it.

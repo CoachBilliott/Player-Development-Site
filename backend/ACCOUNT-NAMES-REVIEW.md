@@ -1,121 +1,168 @@
-# Optional adult account names — review and deployment plan
+# Optional adult account names — draft, blocked release plan
 
-Draft feature only. Do not run migration 019, merge, or deploy until the release
-owner reviews and authorizes this scope. No production data was read or populated
-for this implementation. All test people are fictional.
+No production migration, merge, deployment, settings change, account backfill or
+hosted database query is authorized by this task. This is a reviewable draft.
+
+## Migration reservation and scope
+
+The names delta is **`backend/025-account-names.sql`**, not migration 019. Do not
+edit or renumber installed migrations or the separately staged learning/roster
+migrations. Repository metadata was inspected without accessing any database:
+
+| Number | Reserved migration |
+| --- | --- |
+| 019 | `019-weekly-learning.sql` |
+| 020 | `020-learning-media-retention.sql` |
+| 021 | `021-learning-service-workflows.sql` |
+| 022 | `022-package-week-completeness.sql` |
+| 023 | `023-staff-roster-pages.sql` |
+| 024 | `024-weekly-notification-overrides.sql` |
+
+All six are present on the inspected
+[integration ref `66e7e460dd88ea85b9dcf6781d6048546ab4350b`](https://github.com/repformed/Player-Development-Site/tree/66e7e460dd88ea85b9dcf6781d6048546ab4350b/backend).
+019–022/024 were also verified on `feat/weekly-learning-plans`, and 023 on
+`feat/scoped-roster-pages`. These are **reservations, not proof of installation**.
+This feature branch does not import or change that staged feature work. Its
+names delta uses the existing account/lifecycle contracts from 001–018 and is
+independent of 019–024. It was originally generated with
+`supabase migration new adult_account_names`, then renamed to this repository's
+reserved number before any hosted application.
 
 ## Behavior and privacy
 
-Account settings offers **Your name**, optional, with a disclosure that the name
-is visible to the account holder and Repformed Owners. It is a self-entered label,
-not verified identity. Owners cannot edit another person's name. We do not derive
-names from email, child profiles, interest submissions or staff biographies.
+Account settings offers optional **Your name**, disclosed as visible to the
+account holder and Repformed Owners. It is self-entered, not verified identity.
+Owners cannot edit other names. No names are inferred from emails, interest
+responses, children, staff biographies or existing accounts. No records are
+populated by this migration.
 
-People & roles shows the supplied name first and the email underneath. Missing
-names retain the email display. Duplicate names stay separate by UUID and email;
-confirmation includes name, exact email, UUID and the existing role version.
-Email-only search, order, limit and account scope are unchanged. Assignment and
-training callers keep using the old directory RPC; installed clients keep all
-existing signatures.
+People & roles shows a supplied name first and its exact email underneath.
+Missing names retain email fallback. Duplicate names remain separate by UUID and
+email; role confirmation includes exact email, UUID and existing access version.
+Email search, order, limit and scope are inherited from the unchanged v1 RPC.
+Installed clients and training/assignment callers keep their existing signatures.
+The isolated private preview supports both directory versions and own-name reads
+while explicitly refusing name/role writes.
 
-## Migration 019
+025 adds an RLS-protected names table keyed to `member_accounts`, own-row SELECT,
+nullable space-trimmed names, 100 Unicode codepoint/control validation, a separate
+optimistic name version/timestamp and erasure cascade. Clients cannot directly
+INSERT/UPDATE/DELETE. No Owner table-read exception is introduced. The v2 Owner
+RPC joins nullable names after v1's account selection and limit.
 
-Apply after the numbered backend migrations through 018. Generated using
-`supabase migration new adult_account_names`, then stored as
-`backend/019-account-names.sql` to follow this repository's deployment sequence.
-The transaction adds only a private, RLS-protected `public.account_names` table
-and name-related functions. The authenticated table grant permits own-row SELECT
-only; no client has INSERT/UPDATE/DELETE. No Owner table-read exception is added.
-The Owner-only v2 RPC delegates account selection/authorization to v1, and joins
-nullable names after its limit. The old function is untouched.
+Self-save derives its write target from `auth.uid()`, verifies the matching
+expected user ID, and requires verified email, an existing adult-confirmed member
+account with a privacy acknowledgement timestamp, no guardian management and
+no cleaning/failed closure. Both timestamps are checked explicitly. It acquires the
+same lifecycle advisory lock (seed 1011) before member/name row locks and checks
+eligibility afterward. It does not change roles, role versions/audits, onboarding
+rules, consent records or any existing RPC definition/grant.
 
-Names are space-trimmed, optional/null, at most 100 Unicode code points, and reject
-C0/C1 controls, Unicode format controls and line/paragraph separators. Whitespace
-removal stores NULL while retaining and incrementing the version (no reset/ABA).
-Records cascade away when the member account is erased. No backfill occurs.
+Drafts stay only in component memory keyed by user, with late-result guards,
+cancel/removal, offline write blocking and reload after unconfirmed writes.
 
-The self-save RPC derives ownership from `auth.uid()` and checks a matching
-expected user ID, verified email, completed adult setup, no guardian management,
-and no cleaning/failed account closure. The extra expected ID rejects a request
-that starts while the browser changes users. A member-account row lock serializes
-first saves; a separate name version rejects stale writes. Saves acquire the
-same per-account lifecycle advisory lock (hash seed 1011) before member/name
-row locks, so closure initiation and cleanup serialize without reversing their
-lock order. Eligibility is checked after acquiring those locks. It does not alter role
-versions, invitations, role audits, authority or privacy settings. SQL-definer
-functions use an empty search path and explicit authenticated-only EXECUTE;
-the internal eligibility helper is not callable by application roles.
+## Unresolved consent blocker — do not represent this as release-ready
 
-The UI keeps drafts only in component memory, keyed by signed-in user. It ignores
-late results after unmount, disables writes offline, allows cancel, and requires
-a reload after an unconfirmed server write. Local validation errors remain
-editable. No browser persistence or offline write queue is introduced.
+**Owners, Managers and Coaches with no `member_accounts` record cannot enter a
+name in this draft. There is no normal staff self-service consent route here.**
+`MemberAccount.tsx` returns the staff account screen before the normal two-checkbox
+adult/profile-privacy setup form. A direct call to `complete_member_account` is
+not a normal user consent flow. Its existing wrapper also requires legacy
+onboarding eligibility or an accepted invitation, verified email and actual
+adult/privacy acceptance; guardian/closure guards remain in force.
 
-## Review before release
+No production records were queried, so the identities/counts of affected staff
+are unknown. The exact name-save predicate remains:
 
-1. Review the code and privacy copy, particularly the Owner directory audience and
-   the treatment of existing staff who have not completed adult setup. Such users
-   cannot save a name; this feature does not bypass setup or create a new setup
-   route. Guardian-managed accounts cannot use this adult field.
-2. Rehearse 001–019 against a disposable Supabase project at the deployed Postgres
-   version. Run the actual Supabase advisors there; PGlite catalog assertions and
-   policy tests are local evidence, not a hosted advisor run. Confirm grants,
-   RPC response shapes, migration order and erasure cascade.
-3. When separately authorized, apply 019 transactionally, then verify self read/
-   save, non-Owner directory denial, Owner scope, stale writes and unchanged v1
-   using synthetic accounts on that rehearsal project. Do not use real names.
-4. Publish the web bundle only after the RPCs are available, using the existing
-   release owner's workflow. Rebuild installed clients separately as appropriate.
-   This branch performs no publication, mobile build upload, or database change.
-5. Confirm with a real Owner/adult in the authorized release that optional name
-   entry and email fallback behave correctly at phone and desktop sizes. Native
-   physical iPhone testing is not covered by browser emulation.
+- Signed-in identity must match the request's expected user ID.
+- Auth email confirmation must exist.
+- A matching member account with both adult confirmation and privacy
+  acknowledgement timestamps must exist; neither can be fabricated or backfilled.
+- Guardian-managed accounts are ineligible, including staff-like role records.
+- `account_is_closing` must be false (cleaning/failed closures block writes).
 
-## Rollback
+The UI explicitly explains the staff setup limitation. Eligible adults can edit
+their own optional name; other accounts continue to display email fallback.
+An approved self-service adult/privacy completion path, with actual unchecked
+consent controls and the existing admission/guardian/closure protections, still
+needs implementation/review before releasing this feature for staff without
+setup. Do not work around this by creating member accounts, timestamps or consent
+versions on behalf of staff, changing roles, weakening guards or linking them to
+the customer profile form. This draft deliberately leaves that blocker open.
 
-First restore the preceding frontend bundle. Existing installed clients still
-use v1 and remain compatible. Prefer retaining the new name table until the
-release owner decides how supplied personal data should be handled.
+## Existing hosted TEST project — incremental rehearsal only
 
-If separately approved, stop all new-client use, export/retain any supplied names
-according to the approved privacy policy, then remove only the new objects in a
-transaction, in this order:
+The intended existing TEST project is `ojcfrfpeftvngyluomex`. Release-owner review
+reported that it is populated and not accessible with the current connector.
+No hosted database has been inspected by this implementation. Stop until an
+explicitly authorized connection to **that TEST project** is available; do not
+substitute production or an environment's default configured project.
 
-```sql
-begin;
-drop function public.list_account_access_v2(text);
-drop function public.save_my_account_name(text,integer,uuid);
-drop function public.get_my_account_name();
-drop function public.can_save_account_name();
-drop table public.account_names;
-commit;
-```
+1. Confirm target project identity through the authorized project/connection
+   metadata. A database name such as `postgres` does not identify a project.
+2. Under separate read-only authorization, run
+   **`backend/account-names-preflight.sql`** against the verified existing TEST
+   target. It reads catalog metadata only, not names/emails/accounts/profiles.
+   Review required table/column contracts, v1 Owner scope and function grants,
+   RLS policies, existing names-object collisions and migration-ledger presence.
+   Review the existing installation ledger separately if available; reservations
+   in this repository are not evidence of what has been applied.
+3. If prerequisites differ, objects collide or target/access is uncertain, stop
+   and obtain a reviewed delta plan. Do not replay base migrations to repair it.
+4. Only after separate migration approval, apply **ONLY
+   `backend/025-account-names.sql`**, once, transactionally, to that existing TEST
+   project. Preserve its populated data, auth/accounts, settings and migration
+   history. Do not run `01-empty-test-atomic-install.sql`, replay 001–024, reset,
+   seed, rebuild or replace the existing hosted TEST database. Do not apply a
+   separate learning migration as part of this names rehearsal.
+5. Re-run the catalog metadata preflight as a postflight and compare the approved
+   baseline: unchanged pre-existing function definitions/grants and audience,
+   correct new own-row policy/function grants, erasure FK and validation rules.
+   Run Supabase advisors on TEST when that access is separately authorized.
+6. Functional TEST checks require separately approved synthetic test accounts,
+   with real self-service consent for those fictional test identities, and clear
+   permission for any test data writes. Verify own/cross-user/anonymous access,
+   stale saves, closure serialization, email fallback, Owner scope and v1
+   compatibility. Do not use existing real account names as test data or invent
+   consent for current staff. The missing staff consent route remains a release
+   blocker even if migration rehearsal succeeds.
+7. Production remains outside this task. Any later reviewed production plan must
+   likewise apply only the approved names delta after metadata/target checks.
+   **Apply and verify 025 before publishing the frontend**: no missing-RPC
+   fallback exists. No web/mobile publication is performed by this branch.
 
-Dropping the table erases names. No rollback should alter `account_roles`, v1
-RPCs, invitations, setup, auth credentials, or grants on existing objects.
+## Local verification is not a hosted installation procedure
 
-## Validation
+Vitest/PGlite and the optional
+`node scripts/test-account-name-closure-lock.mjs` bootstrap **fresh disposable
+local fixtures only**, then incrementally apply 025 to pre-existing synthetic
+accounts. They must not be used as an install/reset/seed script for the existing
+hosted TEST project. The compatibility test verifies that the delta preserves
+populated member/role records and existing RPC definitions/grants. The metadata
+preflight is syntax-checked locally before/after the delta.
 
-Local PGlite tests verify own/cross-user grants, anonymous denial, verified/adult/
-guardian/closing guards, stale versions, account-switch mismatch, optional removal,
-Unicode/control/length rules, duplicate names, erasure cascade, exact directory
-scope/limit/search parity, and function privilege/search-path configuration.
-The full existing Vitest suite covers role and invitation regressions. The latest
-migration is also applied after the complete 001–018 chain in the migration
-compatibility test, which verifies existing RPC definitions and grants are unchanged.
+A separate local PGlite compatibility run also applied the pinned staged
+019–024 files from integration ref `66e7e460dd88ea85b9dcf6781d6048546ab4350b`
+to fresh local 001–018, populated a fictional consented Owner, then applied only
+025. Metadata pre/postflight, existing RPC/grant/member/role preservation and
+consented own-name save passed. No staged migration source was copied into this
+feature branch, and no hosted project was involved. This is local evidence only.
 
-Playwright covers name edit/save/cancel/removal, validation, offline behavior,
-reload after failure, user switching, duplicate-name disambiguation and unchanged
-role confirmation/cancellation, at desktop and iPhone viewport sizes. Existing
-account, lifecycle, private workspace and staff-workflow suites are run alongside.
+The Docker test uses pinned PostgreSQL 17 on the managed local daemon, no host
+ports and no hosted connection. Both race orders observe actual advisory-lock
+waits, eligibility re-checks and cleanup cascade without role changes. Its
+throwaway container/database is removed afterward. Other tests cover nullable,
+duplicate and Unicode names, grants, staff missing setup, stale versions,
+account switching, offline behavior, invitations and responsive layout.
+Local fixtures do not prove compatibility with uninspected hosted metadata or
+replace hosted advisors, approved TEST rehearsal or physical iPhone testing.
 
-The optional real-Postgres concurrency regression is
-`node scripts/test-account-name-closure-lock.mjs`. It uses a pinned Postgres 17
-Docker image on the managed local daemon, with no host ports or production
-connection. It applies 001–019 to synthetic schema/accounts, observes actual
-advisory-lock waits in both race directions, verifies name writers wait before
-member row locks, re-checks closure eligibility after wake-up, and confirms
-cleanup cascades the name while leaving the role unchanged. The container and
-its temporary database are removed afterward. This does not replace hosted
-Supabase rehearsal/advisors. Migration 019 must still be applied and verified
-before publishing the frontend; no missing-RPC fallback is introduced.
+## Rollback plan
+
+No rollback operation is authorized or performed here. If a later release needs
+rollback, restore the preceding frontend first; installed clients remain on v1.
+Prefer retaining any supplied name data until the approved privacy decision.
+A separately reviewed database rollback may remove only the names objects, in
+reverse dependency order, after stopping new-client use and deciding how supplied
+names must be retained/erased. Never reset the database or alter old migrations,
+roles, onboarding, consent, invitations, v1 functions or existing grants.

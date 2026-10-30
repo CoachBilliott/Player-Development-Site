@@ -1723,6 +1723,12 @@ for (const role of ["owner", "manager", "coach"] as const) {
       0,
     );
     await expect(
+      page.getByRole("textbox", { name: "Your name (optional)", exact: true }),
+    ).toHaveCount(0);
+    await expect(
+      page.getByText(/This screen cannot complete adult\/privacy setup/),
+    ).toBeVisible();
+    await expect(
       page.getByRole("button", { name: "Finish account setup", exact: true }),
     ).toHaveCount(0);
     await expect(

@@ -68,7 +68,7 @@ beforeAll(async () => {
   );
   await db.exec(
     readFileSync(
-      new URL("../backend/019-account-names.sql", import.meta.url),
+      new URL("../backend/025-account-names.sql", import.meta.url),
       "utf8",
     ),
   );
@@ -594,4 +594,63 @@ it("rejects a save from a switched session rather than storing the previous adul
       [parent],
     ),
   ).rejects.toThrow(/signed-in account changed/);
+});
+
+for (const [label, user] of [
+  ["Owner", owner],
+  ["Manager", manager],
+  ["Coach", coach],
+] as const) {
+  it(`${label} without a member-account consent record stays blocked without backfill or role changes`, async () => {
+    const before = (
+      await db.query("select * from public.account_roles where user_id=$1", [
+        user,
+      ])
+    ).rows;
+    await as(user);
+    expect(await value("public.get_my_account_name()")).toEqual({
+      eligible: false,
+      display_name: null,
+      version: 0,
+    });
+    await db.exec("savepoint blocked_staff_name");
+    await expect(
+      db.query("select public.save_my_account_name('Cannot save',0,$1)", [
+        user,
+      ]),
+    ).rejects.toThrow(/Verified adult setup/);
+    await db.exec("rollback to savepoint blocked_staff_name");
+    expect(
+      (await db.query("select * from public.member_accounts")).rows,
+    ).toEqual([]);
+    expect((await db.query("select * from public.account_names")).rows).toEqual(
+      [],
+    );
+    expect(
+      (
+        await db.query("select * from public.account_roles where user_id=$1", [
+          user,
+        ])
+      ).rows,
+    ).toEqual(before);
+  });
+}
+
+it("names remain ineligible if a drifted member record has no privacy acknowledgement", async () => {
+  // Simulate unexpected legacy metadata in this disposable fixture only.
+  await db.exec(
+    "alter table public.member_accounts alter column privacy_acknowledged_at drop not null",
+  );
+  await db.query(
+    "update public.member_accounts set privacy_acknowledged_at=null where user_id=$1",
+    [parent],
+  );
+  await as(parent);
+  expect(
+    (await value<{ eligible: boolean }>("public.get_my_account_name()"))
+      .eligible,
+  ).toBe(false);
+  await expect(
+    db.query("select public.save_my_account_name('No consent',0,$1)", [parent]),
+  ).rejects.toThrow(/Verified adult setup/);
 });

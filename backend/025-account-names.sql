@@ -1,4 +1,7 @@
--- Forward-only addition after 018. Does not modify existing role/directory RPCs.
+-- Apply ONLY this forward migration to an existing, preflight-verified database.
+-- 019–024 are reserved for staged learning/roster work; do not renumber those files.
+-- Requires the existing 001–018 account/lifecycle contracts; independent of 019–024.
+-- Does not modify existing role/directory RPCs.
 -- Generated with `supabase migration new adult_account_names`, stored in this
 -- repository's numbered backend sequence. No records are populated here.
 begin;
@@ -23,7 +26,7 @@ create function public.can_save_account_name() returns boolean
 language sql stable security definer set search_path='' as $$
   select auth.uid() is not null
     and exists(select 1 from auth.users u join public.member_accounts a on a.user_id=u.id
-      where u.id=auth.uid() and u.email_confirmed_at is not null and a.adult_confirmed_at is not null)
+      where u.id=auth.uid() and u.email_confirmed_at is not null and a.adult_confirmed_at is not null and a.privacy_acknowledged_at is not null)
     and not exists(select 1 from public.guardian_managed_athletes where user_id=auth.uid())
     and not public.account_is_closing(auth.uid());
 $$;
