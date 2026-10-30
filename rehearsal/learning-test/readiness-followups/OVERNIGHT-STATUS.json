@@ -1,5 +1,5 @@
 {
-  "observed_at": "2026-10-30T06:05:33.707424+00:00",
+  "observed_at": "2026-10-30T06:37:58.594255+00:00",
   "public_hero": {
     "pr": 23,
     "tested_head": "7900940ab584c062753bfe741b361ec24dfda0f4",
@@ -30,8 +30,12 @@
   },
   "integration": {
     "pr": 24,
-    "head": "18176fd093b38a595213ba69a1847c9743475901",
-    "ci": {
+    "head": "66e7e460dd88ea85b9dcf6781d6048546ab4350b",
+    "status": "draft copy follow-up; final aggregate running; preview remains old green18176fd",
+    "preview_deployment": "8798e8e8-5de3-486e-b5cf-95aae3511ec5",
+    "preview_url": "https://private-workspace-ux.repformed.pages.dev/#weekly-demo",
+    "production_learning": "not activated",
+    "last_green_ci": {
       "id": 41007130150,
       "result": "success",
       "unit_database": 487,
@@ -41,10 +45,10 @@
       "python": 11,
       "lint_types_three_functions_build": "passed"
     },
-    "status": "draft source final green; same disconnected preview refreshed",
-    "preview_deployment": "8798e8e8-5de3-486e-b5cf-95aae3511ec5",
-    "preview_url": "https://private-workspace-ux.repformed.pages.dev/#weekly-demo",
-    "production_learning": "not activated"
+    "current_ci": {
+      "id": 41013759893,
+      "status": "running website E2E"
+    }
   },
   "test_probe": {
     "source": "3ea85dec40e4723d514713ff264939893424fc04",
@@ -131,5 +135,47 @@
     "production_private_roles": "unverified",
     "physical_device": "unverified",
     "weekly_learning": "draft/off/hosted-unaccepted"
+  },
+  "source_only_copy_correction": {
+    "observed_at": "2026-10-30T06:37:58.594255+00:00",
+    "pr": 26,
+    "head": "fbcebb5ab998fc552b439a13b673d6d3d0ec4bd6",
+    "branch": "fix/roster-count-copy",
+    "status": "draft, source only; not merged/deployed/uploaded",
+    "changes": [
+      "Athletes/Clients invariant count headings",
+      "singular matching record",
+      "singular/plural overdue review label"
+    ],
+    "ci": {
+      "id": 41013346892,
+      "result": "success",
+      "unit_database": 378,
+      "website": 434,
+      "app_offline": 10,
+      "private_preview": 6,
+      "python": 11,
+      "lint_types_three_functions_build": "passed"
+    },
+    "local": {
+      "focused_browser": 24,
+      "lint_types_build": "passed"
+    },
+    "integration_followup": {
+      "pr": 24,
+      "head": "66e7e460dd88ea85b9dcf6781d6048546ab4350b",
+      "ci": 41013759893,
+      "status": "running website E2E; earlier stages passed; no failure annotations as of06:37",
+      "focused_browser": 48,
+      "lint_forced_types": "passed",
+      "backend_migrations_diff_from_18176fd": "empty"
+    },
+    "actual_release": {
+      "website_source": "70052ad3ea4de0fc42beac53bb0138f640d7bd8c",
+      "deployment": "3a46672b-b999-4d10-a1da-a674028ff754",
+      "native_build": 17,
+      "copy_correction_live": false
+    },
+    "permissions_data_credentials_learning_flags_changed": false
   }
 }

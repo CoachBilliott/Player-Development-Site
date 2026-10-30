@@ -1,0 +1,37 @@
+
+Running 24 tests using 2 workers
+
+(node:25348) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:25349) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 [desktop] › tests/build14-remediation.spec.ts:8:1 › app login removes the duplicate support row and keeps header help keyboard reachable (3.0s)
+  ✓   3 [desktop] › tests/build14-remediation.spec.ts:102:1 › overdue review is the Owner's primary next action while assignment remains secondary (3.5s)
+  ✓   4 [desktop] › tests/build14-remediation.spec.ts:129:3 › owner review empty state names current staff permissions without granting extra access (2.1s)
+  ✓   2 [desktop] › tests/build14-remediation.spec.ts:36:1 › 1000 athletes render in bounded pages; search, back and filter reset preserve exact context (10.4s)
+  ✓   5 [desktop] › tests/build14-remediation.spec.ts:129:3 › manager review empty state names current staff permissions without granting extra access (1.9s)
+  ✓   6 [desktop] › tests/build14-remediation.spec.ts:129:3 › coach review empty state names current staff permissions without granting extra access (2.3s)
+  ✓   7 [desktop] › tests/build14-remediation.spec.ts:153:1 › paged coach roster never includes another coach's athlete (2.6s)
+  ✓   8 [desktop] › tests/build14-remediation.spec.ts:168:1 › roster last page is bounded and a smaller refreshed scope cannot leave a blank stale page (3.0s)
+  ✓   9 [desktop] › tests/roster-header-layout.spec.ts:11:3 › Owner roster header contains Refresh at small widths and keeps it usable (3.8s)
+  ✓  10 [desktop] › tests/roster-header-layout.spec.ts:11:3 › Manager roster header contains Refresh at small widths and keeps it usable (3.5s)
+  ✓  11 [desktop] › tests/roster-header-layout.spec.ts:11:3 › assigned Coach roster header contains Refresh at small widths and keeps it usable (3.2s)
+(node:26047) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  12 [desktop] › tests/roster-header-layout.spec.ts:11:3 › unassigned Coach roster header contains Refresh at small widths and keeps it usable (2.7s)
+(node:26180) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  13 [phone] › tests/build14-remediation.spec.ts:8:1 › app login removes the duplicate support row and keeps header help keyboard reachable (2.5s)
+  ✓  15 [phone] › tests/build14-remediation.spec.ts:102:1 › overdue review is the Owner's primary next action while assignment remains secondary (2.8s)
+  ✓  16 [phone] › tests/build14-remediation.spec.ts:129:3 › owner review empty state names current staff permissions without granting extra access (2.1s)
+  ✓  17 [phone] › tests/build14-remediation.spec.ts:129:3 › manager review empty state names current staff permissions without granting extra access (1.7s)
+  ✓  18 [phone] › tests/build14-remediation.spec.ts:129:3 › coach review empty state names current staff permissions without granting extra access (1.7s)
+  ✓  14 [phone] › tests/build14-remediation.spec.ts:36:1 › 1000 athletes render in bounded pages; search, back and filter reset preserve exact context (9.4s)
+  ✓  19 [phone] › tests/build14-remediation.spec.ts:153:1 › paged coach roster never includes another coach's athlete (2.4s)
+  ✓  20 [phone] › tests/build14-remediation.spec.ts:168:1 › roster last page is bounded and a smaller refreshed scope cannot leave a blank stale page (3.1s)
+  ✓  21 [phone] › tests/roster-header-layout.spec.ts:11:3 › Owner roster header contains Refresh at small widths and keeps it usable (3.3s)
+  ✓  22 [phone] › tests/roster-header-layout.spec.ts:11:3 › Manager roster header contains Refresh at small widths and keeps it usable (3.3s)
+  ✓  23 [phone] › tests/roster-header-layout.spec.ts:11:3 › assigned Coach roster header contains Refresh at small widths and keeps it usable (2.8s)
+  ✓  24 [phone] › tests/roster-header-layout.spec.ts:11:3 › unassigned Coach roster header contains Refresh at small widths and keeps it usable (2.3s)
+
+  24 passed (43.5s)

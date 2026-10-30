@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-30T06:23:38.025645+00:00",
+  "at": "2026-10-30T06:37:58.594255+00:00",
   "production": "70052ad3ea4de0fc42beac53bb0138f640d7bd8c",
   "deployment": "3a46672b-b999-4d10-a1da-a674028ff754",
   "native": "0.1.0(17)",
@@ -22,8 +22,8 @@
     },
     {
       "finding": "Singular/plural count labels",
-      "status": "Fixed SOURCE ONLY in PR26 fbcebb5; final aggregate CI41013346892 running",
-      "evidence": "24 focused browser, lint, forced types, build passed; 48 focused integration checks passed; new integration66e7e46 aggregate pending"
+      "status": "Fixed SOURCE ONLY in draft PR26 fbcebb5; aggregate CI41013346892 SUCCESS",
+      "evidence": "24 focused desktop/phone plus full aggregate 378/434/10/6/11 and static checks passed. Integration66e7e46: 48 focused plus lint/types passed; aggregate41013759893 running."
     },
     {
       "finding": "Representative product demonstration",
@@ -57,6 +57,12 @@
       "run": 41007130150,
       "result": "success",
       "current_copy_followup": "66e7e46; aggregate pending; previous green not attributed to this head"
+    },
+    "PR26": {
+      "head": "fbcebb5ab998fc552b439a13b673d6d3d0ec4bd6",
+      "run": 41013346892,
+      "result": "success",
+      "released": false
     }
   }
 }
