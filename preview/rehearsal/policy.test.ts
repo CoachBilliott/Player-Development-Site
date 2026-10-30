@@ -106,3 +106,23 @@ describe("isolated real-service harness boundaries", () => {
     });
   });
 });
+
+it("redacted roster subchecks export fixed case names without notes or visible field values", () => {
+  const row = {
+    check: "roster search Other",
+    role: "owner",
+    result: "failed",
+    at: "2026-10-30T00:00:00Z",
+    note: "never-export",
+    client_label: "never-export",
+    expected: ["never-export"],
+  } as Receipt;
+  const value = receiptJson([row]);
+  expect(value).not.toContain("never-export");
+  expect(JSON.parse(value).checks[0]).toEqual({
+    check: "roster search Other",
+    role: "owner",
+    result: "failed",
+    at: "2026-10-30T00:00:00Z",
+  });
+});

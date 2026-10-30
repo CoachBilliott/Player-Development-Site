@@ -1,6 +1,6 @@
 import { z } from "zod";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Receipt } from "./policy";
+import type { Receipt, RosterSubcheck } from "./policy";
 export const profiles = [
   "93000000-0000-4000-8000-000000000010",
   "93000000-0000-4000-8000-000000000011",
@@ -29,7 +29,15 @@ const pageSchema = z.object({
   source: z.literal("account_backend"),
   scope: z.enum(["assigned_athletes", "all_repformed_clients"]),
   rows: z.array(
-    z.object({ athlete_id: z.string().uuid(), client_id: z.string().uuid() }),
+    z.object({
+      athlete_id: z.string().uuid(),
+      client_id: z.string().uuid(),
+      athlete_name: z.string(),
+      client_label: z.string(),
+      coach_label: z.string().nullable().optional(),
+      position: z.string().optional(),
+      workout_title: z.string().nullish(),
+    }),
   ),
   coaches: z.array(z.object({ id: z.string().uuid(), label: z.string() })),
   page: z.object({
@@ -122,7 +130,9 @@ async function guarded(action: () => Promise<string>): Promise<ProbeResult> {
     return e instanceof ProbeFailure
       ? {
           result: "failed",
-          note: "Observed response contradicted the approved fictional scope or page contract. Stop and inspect.",
+          note:
+            e.message ||
+            "Observed response contradicted the approved fictional scope or page contract. Stop and inspect.",
         }
       : {
           result: "blocked",
@@ -167,56 +177,187 @@ export function rosterScope(client: SupabaseClient, actor: Actor) {
     return `Confirmed ${data.page.total} scoped fictional athletes, ${data.page.clients} clients; ${data.scope}. Only counts and fixed outcomes are retained.`;
   });
 }
-export function rosterPages(client: SupabaseClient, actor: Actor) {
+export type VisibleRosterRow = z.infer<typeof pageSchema>["rows"][number];
+export function visibleRosterSearch(row: VisibleRosterRow, query: string) {
+  const normalize = (value: string) =>
+    value
+      .normalize("NFKD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase();
+  const visible = normalize(
+    [
+      row.athlete_name,
+      row.client_label,
+      row.position,
+      row.coach_label,
+      row.workout_title,
+    ]
+      .filter((v) => v != null)
+      .join(" "),
+  );
+  return normalize(query)
+    .split(/\s+/)
+    .filter(Boolean)
+    .every((word) => visible.includes(word));
+}
+const fixtureLabels = new Map<string, string>(
+  profiles.map((p, i) => [
+    p,
+    ["Fictional Avery", "Fictional Jordan", "Fictional Other"][i],
+  ]),
+);
+function safeSelection(selected: readonly string[]) {
+  return selected.length
+    ? selected
+        .map((id) => fixtureLabels.get(id) || "Unexpected profile")
+        .sort()
+        .join(", ")
+    : "none";
+}
+export function rosterPages(
+  client: SupabaseClient,
+  actor: Actor,
+  report: (check: RosterSubcheck, result: Receipt["result"]) => void = () => {},
+) {
   return guarded(async () => {
     const expected = await verified(client, actor);
     if (!expected.allowed.length) throw Error();
-    const first = await page(client, { page_size: 1 });
-    const found = [...ids(first.rows)];
-    for (let n = 2; n <= expected.allowed.length; n++)
-      found.push(
-        ...ids((await page(client, { page_size: 1, page_number: n })).rows),
-      );
-    requireCheck(same(found.sort(), [...expected.allowed].sort()));
-    const retry = await page(client, { page_size: 1 });
-    requireCheck(
-      same(ids(first.rows), ids(retry.rows)) && same(first.page, retry.page),
-    );
-    const last = await page(client, { page_size: 1, page_number: 999999 });
-    requireCheck(last.page.number === expected.allowed.length);
-    for (const search of [
-      "Avery",
-      "Jordan",
-      "Other",
-      "no-such-fictional-athlete",
-      "Avery'",
-      '"Avery"',
-    ]) {
-      const result = await page(client, { search_text: search });
-      const target = profiles[["Avery", "Jordan", "Other"].indexOf(search)];
-      const wanted =
-        target && expected.allowed.includes(target) ? [target] : [];
-      requireCheck(
-        same(ids(result.rows), wanted) &&
-          result.page.matched === wanted.length &&
-          result.page.total === expected.allowed.length,
-      );
+    async function check(name: RosterSubcheck, action: () => Promise<void>) {
+      try {
+        await action();
+        report(name, "passed");
+      } catch (e) {
+        report(name, e instanceof ProbeFailure ? "failed" : "blocked");
+        throw e;
+      }
     }
-    const combined = await page(client, {
-      search_text: "Avéry",
-      age_filter: "18+",
-      position_filter: "Quarterback",
-      coach_filter: coachIds[0],
+    function selection(
+      name: RosterSubcheck,
+      actual: string[],
+      wanted: readonly string[],
+      matched: number,
+      total: number,
+    ) {
+      if (
+        !same([...actual].sort(), [...wanted].sort()) ||
+        matched !== wanted.length ||
+        total !== expected.allowed.length
+      )
+        throw new ProbeFailure(
+          `${name}: expected ${safeSelection(wanted)} (${wanted.length} matches); observed ${safeSelection(actual)} (${matched} matches). Scoped total must remain ${expected.allowed.length}.`,
+        );
+    }
+    let baseline: z.infer<typeof pageSchema>;
+    await check("roster baseline scope", async () => {
+      baseline = await page(client);
+      selection(
+        "roster baseline scope",
+        ids(baseline.rows),
+        expected.allowed,
+        baseline.page.matched,
+        baseline.page.total,
+      );
+      if (actor.role === "coach")
+        requireCheck(
+          baseline.rows.every(
+            (r) => r.client_label === `Client ${r.client_id.slice(0, 8)}`,
+          ),
+        );
     });
-    requireCheck(
-      same(
-        ids(combined.rows),
-        expected.allowed.includes(profiles[0]) ? [profiles[0]] : [],
+    const first = await page(client, { page_size: 1 });
+    await check("roster page traversal", async () => {
+      const found = [...ids(first.rows)];
+      for (let n = 2; n <= expected.allowed.length; n++)
+        found.push(
+          ...ids((await page(client, { page_size: 1, page_number: n })).rows),
+        );
+      selection(
+        "roster page traversal",
+        found,
+        expected.allowed,
+        found.length,
+        first.page.total,
+      );
+    });
+    await check("roster repeated read", async () => {
+      const retry = await page(client, { page_size: 1 });
+      requireCheck(
+        same(ids(first.rows), ids(retry.rows)) && same(first.page, retry.page),
+      );
+    });
+    await check("roster last page", async () =>
+      requireCheck(
+        (await page(client, { page_size: 1, page_number: 999999 })).page
+          .number === expected.allowed.length,
       ),
     );
-    const unassigned = await page(client, { status_filter: "unassigned" });
-    requireCheck(unassigned.page.matched === 0 && unassigned.rows.length === 0);
-    return "Read-only one-row paging, last-page clamp, identical retry, quoted/accent search, combined filters and no-results match the existing fixtures. This is not a hosted load test.";
+    const cases: [RosterSubcheck, string][] = [
+      ["roster search Avery", "Avery"],
+      ["roster search Jordan", "Jordan"],
+      ["roster search Other", "Other"],
+      ["roster search no result", "no-such-fictional-athlete"],
+      ["roster quoted search", "Avery'"],
+      ["roster quoted phrase", '"Avery"'],
+      [
+        "roster visible coach label",
+        "repformed-learning-other-coach@example.test",
+      ],
+      ["roster primary client label", "repformed-learning-parent@example.test"],
+      [
+        "roster other client label",
+        "repformed-learning-other-parent@example.test",
+      ],
+    ];
+    for (const [name, search] of cases)
+      await check(name, async () => {
+        const wanted = baseline!.rows
+          .filter((row) => visibleRosterSearch(row, search))
+          .map((row) => row.athlete_id);
+        // Client emails are intentionally absent from Coach-visible fields.
+        if (
+          actor.role === "coach" &&
+          (name === "roster primary client label" ||
+            name === "roster other client label")
+        )
+          requireCheck(wanted.length === 0);
+        const result = await page(client, { search_text: search });
+        selection(
+          name,
+          ids(result.rows),
+          wanted,
+          result.page.matched,
+          result.page.total,
+        );
+      });
+    await check("roster combined filters", async () => {
+      const result = await page(client, {
+        search_text: "Avéry",
+        age_filter: "18+",
+        position_filter: "Quarterback",
+        coach_filter: coachIds[0],
+      });
+      const wanted = expected.allowed.includes(profiles[0])
+        ? [profiles[0]]
+        : [];
+      selection(
+        "roster combined filters",
+        ids(result.rows),
+        wanted,
+        result.page.matched,
+        result.page.total,
+      );
+    });
+    await check("roster unassigned filter", async () => {
+      const result = await page(client, { status_filter: "unassigned" });
+      selection(
+        "roster unassigned filter",
+        ids(result.rows),
+        [],
+        result.page.matched,
+        result.page.total,
+      );
+    });
+    return "Each redacted subcheck is recorded separately. Search matches authorized athlete, client, position, coach and workout labels; hidden client emails do not match a Coach. No hosted load or changed-assignment claim.";
   });
 }
 export function rosterDetails(client: SupabaseClient, actor: Actor) {

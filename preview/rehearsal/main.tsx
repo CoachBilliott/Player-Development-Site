@@ -407,7 +407,7 @@ export function App() {
     );
     const a = document.createElement("a");
     a.href = url;
-    a.download = "repformed-test-acceptance.json";
+    a.download = `repformed-test-acceptance-roster-v2-${new Date().toISOString().replace(/[:.]/g, "-")}.json`;
     a.click();
     URL.revokeObjectURL(url);
   }
@@ -569,6 +569,7 @@ export function App() {
                 anonymous={connection.anonymous}
                 actor={actor}
                 busy={busy}
+                observe={record}
                 run={(name, action) => void run(name, action)}
               />
               <div className="harness-grid">

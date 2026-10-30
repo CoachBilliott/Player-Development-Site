@@ -1,5 +1,6 @@
 import { test, expect, type BrowserContext, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import { readFile } from "node:fs/promises";
 import { TEST_REF, TEST_URL, SAMPLE_TEXT } from "../preview/rehearsal/policy";
 import { profiles, coachIds } from "../preview/rehearsal/rosterProbe";
 const id = "93000000-0000-4000-8000-000000000001";
@@ -145,17 +146,64 @@ async function fixture(context: BrowserContext, roster = false) {
       if (rosterFailure === "malformed") return respond({ rows: [] });
       const base = rosterFailure === "leak" ? profiles : allowed;
       let found = [...base];
+      const rowFor = (profile: string) => {
+        const n = profiles.indexOf(profile as (typeof profiles)[number]);
+        const clientId =
+          n === 2
+            ? "2a566ee0-dd1f-4244-a16f-2c086bc1c6a2"
+            : "dc6804e6-fc2f-4bb0-a7ca-de8514e09024";
+        return {
+          athlete_id: profile,
+          client_id: clientId,
+          athlete_name: [
+            "Fictional Avery",
+            "Fictional Jordan",
+            "Fictional Other",
+          ][n],
+          client_label:
+            role === "coach"
+              ? `Client ${clientId.slice(0, 8)}`
+              : n === 2
+                ? "repformed-learning-other-parent@example.test"
+                : "repformed-learning-parent@example.test",
+          position: "Quarterback",
+          coach_label:
+            n === 0
+              ? "repformed-learning-coach@example.test"
+              : "repformed-learning-other-coach@example.test",
+          workout_title: "",
+        };
+      };
       if (body.search_text)
-        found = found.filter(
-          (p) =>
-            ["Avery", "Jordan", "Other"][
-              profiles.indexOf(p as (typeof profiles)[number])
-            ].toLowerCase() ===
-            body.search_text
-              .normalize("NFKD")
-              .replace(/[\u0300-\u036f]/g, "")
-              .toLowerCase(),
-        );
+        found = found.filter((profile) => {
+          const row = rowFor(profile),
+            hiddenEmail =
+              profile === profiles[2]
+                ? "repformed-learning-other-parent@example.test"
+                : "repformed-learning-parent@example.test";
+          const text =
+            rosterFailure === "nickname-search"
+              ? row.athlete_name
+              : [
+                  row.athlete_name,
+                  row.client_label,
+                  row.position,
+                  row.coach_label,
+                  row.workout_title,
+                  rosterFailure === "hidden-search" ? hiddenEmail : "",
+                ].join(" ");
+          const normalized = text
+            .normalize("NFKD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .toLowerCase();
+          return body.search_text
+            .normalize("NFKD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .toLowerCase()
+            .split(/\s+/)
+            .filter(Boolean)
+            .every((word: string) => normalized.includes(word));
+        });
       if (body.coach_filter)
         found = found.filter(
           (p) =>
@@ -169,9 +217,7 @@ async function fixture(context: BrowserContext, roster = false) {
       return respond({
         source: "account_backend",
         scope: role === "coach" ? "assigned_athletes" : "all_repformed_clients",
-        rows: found
-          .slice((number - 1) * size, number * size)
-          .map((athlete_id) => ({ athlete_id, client_id: id })),
+        rows: found.slice((number - 1) * size, number * size).map(rowFor),
         coaches: [],
         page: {
           number,
@@ -590,4 +636,101 @@ test("023 coach cannot pass an unscoped leaked roster", async ({
   await expect(
     page.getByRole("row").filter({ hasText: "roster scope" }),
   ).toContainText("failed");
+});
+
+for (const role of ["owner", "manager", "coach", "other-coach"] as const)
+  test(`version2 authorized-label search and hidden-client privacy match for ${role}`, async ({
+    page,
+    context,
+  }) => {
+    await fixture(context, true);
+    await page.goto("./");
+    await connect(page);
+    await login(page, role);
+    await page
+      .getByRole("button", {
+        name: "Check roster paging and filters",
+        exact: true,
+      })
+      .click();
+    for (const name of [
+      "roster search Other",
+      "roster visible coach label",
+      "roster primary client label",
+      "roster other client label",
+      "roster pages and filters",
+    ])
+      await expect(
+        page.getByRole("row").filter({ hasText: name }),
+      ).toContainText("passed");
+    await expect(
+      page.getByText("Search probe version 2", { exact: false }),
+    ).toBeVisible();
+  });
+test("version2 exposes a nickname-only mismatch as a specific safe subcheck rather than a blind pass", async ({
+  page,
+  context,
+}) => {
+  const f = await fixture(context, true);
+  await page.goto("./");
+  await connect(page);
+  await login(page);
+  f.setRosterFailure("nickname-search");
+  await page
+    .getByRole("button", {
+      name: "Check roster paging and filters",
+      exact: true,
+    })
+    .click();
+  await expect(
+    page.getByRole("row").filter({ hasText: "roster search Other" }),
+  ).toContainText("failed");
+  await expect(
+    page.getByText(/expected Fictional Jordan, Fictional Other/),
+  ).toBeVisible();
+  await expect(page.getByText(/observed Fictional Other/)).toBeVisible();
+  const [download] = await Promise.all([
+    page.waitForEvent("download"),
+    page
+      .getByRole("button", { name: "Download redacted receipt", exact: true })
+      .click(),
+  ]);
+  expect(download.suggestedFilename()).toMatch(
+    /^repformed-test-acceptance-roster-v2-/,
+  );
+  const json = await readFile((await download.path())!, "utf8");
+  const receipt = JSON.parse(json);
+  expect(receipt.toolVersion).toBe("roster-search-v2");
+  expect(receipt.checks).toContainEqual(
+    expect.objectContaining({
+      check: "roster search Other",
+      result: "failed",
+      role: "owner",
+    }),
+  );
+  expect(json).not.toMatch(
+    /@example\.test|Bearer|access_token|refresh_token|client_label|Fictional Jordan/,
+  );
+});
+test("version2 rejects matching a hidden client email for a Coach", async ({
+  page,
+  context,
+}) => {
+  const f = await fixture(context, true);
+  await page.goto("./");
+  await connect(page);
+  await login(page, "coach");
+  f.setRosterFailure("hidden-search");
+  await page
+    .getByRole("button", {
+      name: "Check roster paging and filters",
+      exact: true,
+    })
+    .click();
+  await expect(
+    page.getByRole("row").filter({ hasText: "roster primary client label" }),
+  ).toContainText("failed");
+  await expect(
+    page.getByText(/expected none.*observed Fictional Avery/),
+  ).toBeVisible();
 });

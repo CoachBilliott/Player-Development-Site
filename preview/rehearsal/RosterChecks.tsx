@@ -15,11 +15,13 @@ export function RosterChecks({
   actor,
   busy,
   run,
+  observe,
 }: {
   client: SupabaseClient;
   anonymous: SupabaseClient;
   actor: Actor | null;
   busy: boolean;
+  observe: (name: CheckName, result: Receipt["result"]) => void;
   run: (name: CheckName, action: () => Promise<Receipt["result"]>) => void;
 }) {
   const [note, setNote] = useState("");
@@ -33,6 +35,7 @@ export function RosterChecks({
   return (
     <section aria-label="Migration 023 read-only roster acceptance">
       <h2>Migration 023 · roster acceptance</h2>
+      <p>Search probe version 2 · authorized labels and redacted subchecks</p>
       <p>
         Uses this page's ordinary signed-in SDK client and the existing three
         adult fixtures only. Keep learning and all automation flags OFF. Run
@@ -53,7 +56,9 @@ export function RosterChecks({
         }
         onClick={() =>
           actor &&
-          check("roster pages and filters", () => rosterPages(client, actor))
+          check("roster pages and filters", () =>
+            rosterPages(client, actor, observe),
+          )
         }
       >
         Check roster paging and filters

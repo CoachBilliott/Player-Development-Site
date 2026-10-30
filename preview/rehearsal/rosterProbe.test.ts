@@ -7,6 +7,7 @@ import {
   anonymousRoster,
   profiles,
   coachIds,
+  visibleRosterSearch,
 } from "./rosterProbe";
 const owner = { id: "17054a51-d756-4b9e-8048-c82973fe0c55", role: "owner" };
 const manager = { id: "134e7d0b-e54d-488b-8848-8254db86757c", role: "manager" };
@@ -60,18 +61,64 @@ function fixture(actor = owner, failure = "") {
       else {
         const base = failure === "leak" ? profiles : allowed;
         let ids = [...base];
-        const names = ["Avery", "Jordan", "Other"];
+        const rowFor = (profile: string) => {
+          const i = profiles.indexOf(profile as (typeof profiles)[number]);
+          const ownerId =
+            i === 2 ? "2a566ee0-dd1f-4244-a16f-2c086bc1c6a2" : parent.id;
+          const email =
+            i === 2
+              ? "repformed-learning-other-parent@example.test"
+              : "repformed-learning-parent@example.test";
+          return {
+            athlete_id: profile,
+            client_id: ownerId,
+            athlete_name: [
+              "Fictional Avery",
+              "Fictional Jordan",
+              "Fictional Other",
+            ][i],
+            client_label:
+              actor.role === "coach" && failure !== "client-label-leak"
+                ? `Client ${ownerId.slice(0, 8)}`
+                : email,
+            coach_label:
+              i === 0
+                ? "repformed-learning-coach@example.test"
+                : "repformed-learning-other-coach@example.test",
+            position: "Quarterback",
+            workout_title: "",
+          };
+        };
         if (args.search_text)
-          ids = ids.filter(
-            (id) =>
-              names[
-                profiles.indexOf(id as (typeof profiles)[number])
-              ].toLowerCase() ===
-              String(args.search_text)
-                .normalize("NFKD")
-                .replace(/[\u0300-\u036f]/g, "")
-                .toLowerCase(),
-          );
+          ids = ids.filter((id) => {
+            const row = rowFor(id);
+            const hiddenEmail =
+              id === profiles[2]
+                ? "repformed-learning-other-parent@example.test"
+                : "repformed-learning-parent@example.test";
+            const text =
+              failure === "nickname-search"
+                ? row.athlete_name
+                : [
+                    row.athlete_name,
+                    row.client_label,
+                    row.coach_label,
+                    row.position,
+                    row.workout_title,
+                    failure === "hidden-search" ? hiddenEmail : "",
+                  ].join(" ");
+            const normalized = text
+              .normalize("NFKD")
+              .replace(/[\u0300-\u036f]/g, "")
+              .toLowerCase();
+            return String(args.search_text)
+              .normalize("NFKD")
+              .replace(/[\u0300-\u036f]/g, "")
+              .toLowerCase()
+              .split(/\s+/)
+              .filter(Boolean)
+              .every((w) => normalized.includes(w));
+          });
         if (args.coach_filter)
           ids = ids.filter(
             (id) =>
@@ -82,9 +129,7 @@ function fixture(actor = owner, failure = "") {
         const size = Number(args.page_size),
           pages = Math.max(1, Math.ceil(ids.length / size)),
           number = Math.min(Number(args.page_number), pages);
-        const rows = ids
-          .slice((number - 1) * size, number * size)
-          .map((athlete_id) => ({ athlete_id, client_id: parent.id }));
+        const rows = ids.slice((number - 1) * size, number * size).map(rowFor);
         result = {
           error: null,
           data:
@@ -216,4 +261,68 @@ describe("023 ordinary-client read-only acceptance", () => {
       "failed",
     );
   });
+});
+
+it("Other matches a permitted coach label as well as the athlete nickname", () => {
+  const row = {
+    athlete_id: profiles[1],
+    client_id: parent.id,
+    athlete_name: "Fictional Jordan",
+    client_label: "repformed-learning-parent@example.test",
+    position: "Quarterback",
+    coach_label: "repformed-learning-other-coach@example.test",
+    workout_title: "",
+  };
+  expect(visibleRosterSearch(row, "Other")).toBe(true);
+  expect(visibleRosterSearch(row, "Jordan other-coach")).toBe(true);
+  expect(
+    visibleRosterSearch(
+      { ...row, coach_label: "repformed-learning-coach@example.test" },
+      "Other",
+    ),
+  ).toBe(false);
+  expect(
+    visibleRosterSearch(
+      {
+        ...row,
+        client_label: `Client ${parent.id.slice(0, 8)}`,
+        coach_label: "repformed-learning-coach@example.test",
+      },
+      "repformed-learning-parent@example.test",
+    ),
+  ).toBe(false);
+});
+it("reproduces nickname-only oracle mismatch and records exact redacted failing subcheck", async () => {
+  const events: { check: string; result: string }[] = [];
+  const result = await rosterPages(
+    fixture(owner, "nickname-search").client,
+    owner,
+    (check, result) => events.push({ check, result }),
+  );
+  expect(result.result).toBe("failed");
+  expect(events.at(-1)).toEqual({
+    check: "roster search Other",
+    result: "failed",
+  });
+  expect(result.note).toContain("expected Fictional Jordan, Fictional Other");
+  expect(result.note).toContain("observed Fictional Other");
+  expect(result.note).not.toContain("@example.test");
+});
+it("a hidden-email search leak fails rather than treating authorized label matching as blanket access", async () => {
+  const actor = { id: coachIds[0], role: "coach" };
+  const events: string[] = [];
+  const result = await rosterPages(
+    fixture(actor, "hidden-search").client,
+    actor,
+    (check, outcome) => {
+      if (outcome === "failed") events.push(check);
+    },
+  );
+  expect(result.result).toBe("failed");
+  expect(events).toEqual(["roster primary client label"]);
+  const disclosed = await rosterPages(
+    fixture(actor, "client-label-leak").client,
+    actor,
+  );
+  expect(disclosed.result).toBe("failed");
 });

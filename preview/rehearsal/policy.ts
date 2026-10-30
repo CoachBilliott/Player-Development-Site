@@ -79,7 +79,24 @@ export function learnerKeysAbsent(value: unknown): boolean {
       learnerKeysAbsent(child),
   );
 }
+export type RosterSubcheck =
+  | "roster baseline scope"
+  | "roster page traversal"
+  | "roster repeated read"
+  | "roster last page"
+  | "roster search Avery"
+  | "roster search Jordan"
+  | "roster search Other"
+  | "roster search no result"
+  | "roster quoted search"
+  | "roster quoted phrase"
+  | "roster visible coach label"
+  | "roster primary client label"
+  | "roster other client label"
+  | "roster combined filters"
+  | "roster unassigned filter";
 export type CheckName =
+  | RosterSubcheck
   | "roster scope"
   | "roster pages and filters"
   | "roster direct details"
@@ -105,6 +122,7 @@ export function receiptJson(rows: Receipt[]) {
   return JSON.stringify(
     {
       project: TEST_REF,
+      toolVersion: "roster-search-v2",
       scope: "test-only manual acceptance",
       checks: rows.map(({ check, role, result, at }) => ({
         check,
