@@ -202,7 +202,8 @@ export function ServiceDesk({
             {row.is_grouped && !row.group_erased && (
               <p>
                 One grouped review · {row.uploaded_clips || 0} of{" "}
-                {row.clip_count} clips uploaded
+                {row.clip_count} {row.clip_count === 1 ? "clip" : "clips"}{" "}
+                uploaded
               </p>
             )}
             {row.group_erased && (

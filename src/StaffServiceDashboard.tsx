@@ -808,7 +808,11 @@ export function StaffServiceDashboard({
                   }
                 >
                   <summary>
-                    Training plan <span>{current.resources.length} drills</span>
+                    Training plan{" "}
+                    <span>
+                      {current.resources.length}{" "}
+                      {current.resources.length === 1 ? "drill" : "drills"}
+                    </span>
                   </summary>
                   <p>
                     <strong>

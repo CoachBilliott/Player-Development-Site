@@ -174,7 +174,7 @@ export function GroupedReviewPanel({
           <p>
             {g.erased
               ? "Review media removed"
-              : `${g.clip_count} clips · ${Math.round(g.total_seconds)} seconds total · One review`}
+              : `${g.clip_count} ${g.clip_count === 1 ? "clip" : "clips"} · ${Math.round(g.total_seconds)} seconds total · One review`}
           </p>
           <p>
             {g.due_at
@@ -556,8 +556,8 @@ export function GroupedCoachReviews({
           <Tag>{SERVICE_LABELS[g.state]}</Tag>
           <h2>{g.drill_title}</h2>
           <p>
-            {g.clip_count} clips · {Math.round(g.total_seconds)} seconds total ·
-            One response
+            {g.clip_count} {g.clip_count === 1 ? "clip" : "clips"} ·{" "}
+            {Math.round(g.total_seconds)} seconds total · One response
           </p>
           <p>{g.due_at && `Target: ${reviewDate(g.due_at)}`}</p>
           <button
