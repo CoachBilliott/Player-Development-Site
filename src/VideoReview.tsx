@@ -267,7 +267,7 @@ export function AthleteVideoReview({
                       await requests.cancel(row);
                       await refresh();
                       setMessage(
-                        "Review request cancelled. No charge was made.",
+                        "Review request canceled. No charge was made.",
                       );
                     })
                   }
@@ -362,7 +362,7 @@ export function AthleteVideoReview({
                   <Tag>{REVIEW_STATUS[review.status]}</Tag>
                   <h4>{review.drill_title}</h4>
                   <p>
-                    {new Date(review.created_at).toLocaleDateString()} ·{" "}
+                    {new Date(review.created_at).toLocaleDateString("en-US")} ·{" "}
                     {Math.round(review.duration_seconds)} sec
                   </p>
                   {state.service_tracking &&
@@ -799,7 +799,7 @@ function CoachQueue({
             <Tag>{REVIEW_STATUS[row.status]}</Tag>
             <h2>{row.drill_title}</h2>
             <p>
-              {new Date(row.created_at).toLocaleDateString()} ·{" "}
+              {new Date(row.created_at).toLocaleDateString("en-US")} ·{" "}
               {Math.round(row.duration_seconds)} sec · Submission{" "}
               {row.id.slice(0, 8)}
             </p>

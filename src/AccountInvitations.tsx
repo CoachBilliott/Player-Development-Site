@@ -15,12 +15,12 @@ const labels: Record<string, string> = {
   sent: "Awaiting recipient",
   failed: "Email request failed",
   accepted: "Account activated",
-  cancelled: "Cancelled",
+  cancelled: "Canceled",
   expired: "Expired",
 };
 const deliveryText = (state: string, code?: string) =>
   state === "cancelled"
-    ? "Invitation cancelled. An email already in transit might still arrive, but it cannot activate the cancelled access."
+    ? "Invitation canceled. An email already in transit might still arrive, but it cannot activate the canceled access."
     : code === "existing_account"
       ? "This verified account can sign in and accept its approved setup invitation. No new email was requested. Existing account password recovery remains available."
       : code === "mail_setup_required"
@@ -30,14 +30,16 @@ const deliveryText = (state: string, code?: string) =>
           : state === "sent"
             ? "The email service accepted the invitation request. Ask the recipient to check their inbox and spam folder; this is not proof of delivery or acceptance."
             : "Delivery has not been confirmed. Refresh invitations before retrying. Failed requests wait at least 60 seconds between retries.";
-const date = (value: string) => new Date(value).toLocaleString();
+const date = (value: string) => new Date(value).toLocaleString("en-US");
 export function OwnerAccountInvitations({ shared }: { shared: SharedState }) {
   const client = shared.service?.client;
   const [checkedAt, setCheckedAt] = useState(() => Date.now());
   const [rows, setRows] = useState<AccountInvitation[]>([]);
   const [requests, setRequests] = useState<ClosureHelpRequest[]>([]);
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState<InvitationRole>("parent");
+  const [role, setRole] = useState<InvitationRole>("coach");
+  const [audience, setAudience] = useState<"staff" | "member">("staff");
+  const [historyOpen, setHistoryOpen] = useState(false);
   const [ready, setReady] = useState(false),
     [busy, setBusy] = useState(false);
   const [error, setError] = useState(""),
@@ -107,6 +109,7 @@ export function OwnerAccountInvitations({ shared }: { shared: SharedState }) {
     const { invitation } = await service.invite(id, address, level);
     setMessage(deliveryText(invitation.state, invitation.delivery_code));
     setConfirm(false);
+    setHistoryOpen(true);
     if (invitation.state === "sent") {
       setEmail("");
       requestId.current = crypto.randomUUID();
@@ -118,14 +121,15 @@ export function OwnerAccountInvitations({ shared }: { shared: SharedState }) {
       <div className="access-heading">
         <MailPlus size={24} />
         <div>
-          <p className="eyebrow">OWNER · PRIVATE ADULT PILOT</p>
-          <h2 id="invite-heading">Invite someone to Repformed</h2>
+          <p className="eyebrow">OWNER · TEAM ACCESS</p>
+          <h2 id="invite-heading">
+            {audience === "staff" ? "Invite staff" : "Invite an adult member"}
+          </h2>
         </div>
       </div>
       <p>
-        Choose their intended access. They set their own password and confirm
-        their adult pilot setup. Invitations do not assign workouts, start
-        billing or open junior enrollment.
+        Enter their email and choose a role. They set their own password and
+        complete the required adult setup.
       </p>
       <form
         className="member-form"
@@ -138,7 +142,7 @@ export function OwnerAccountInvitations({ shared }: { shared: SharedState }) {
       >
         <fieldset disabled={busy || !ready}>
           <label>
-            Adult invitation email
+            Email address
             <input
               type="email"
               required
@@ -152,7 +156,7 @@ export function OwnerAccountInvitations({ shared }: { shared: SharedState }) {
             />
           </label>
           <label>
-            Invited account level
+            Role
             <select
               value={role}
               onChange={(e) => {
@@ -160,18 +164,42 @@ export function OwnerAccountInvitations({ shared }: { shared: SharedState }) {
                 requestId.current = crypto.randomUUID();
               }}
             >
-              <option value="parent">Parent</option>
-              <option value="athlete">Athlete · individual adult</option>
-              <option value="coach">Coach</option>
-              <option value="manager">Manager</option>
+              {audience === "staff" ? (
+                <>
+                  <option value="coach">Coach</option>
+                  <option value="manager">Manager</option>
+                </>
+              ) : (
+                <>
+                  <option value="parent">Parent</option>
+                  <option value="athlete">Athlete · individual adult</option>
+                </>
+              )}
             </select>
           </label>
           <button className="button" type="submit">
-            Review invitation
+            Send invite
           </button>
         </fieldset>
       </form>
       <div className="actions">
+        <button
+          className="text-button"
+          type="button"
+          disabled={busy}
+          onClick={() => {
+            const next = audience === "staff" ? "member" : "staff";
+            setAudience(next);
+            setRole(next === "staff" ? "coach" : "parent");
+            requestId.current = crypto.randomUUID();
+            setMessage("");
+            setError("");
+          }}
+        >
+          {audience === "staff"
+            ? "Invite an adult member instead"
+            : "Back to staff invitations"}
+        </button>
         <button
           className="button secondary"
           disabled={busy}
@@ -186,14 +214,19 @@ export function OwnerAccountInvitations({ shared }: { shared: SharedState }) {
         </p>
       )}
       {message && <p role="status">{message}</p>}
-      <Notice>
-        A dedicated email sender is needed for reliable customer invitations.
-        Email links have the provider’s expiry, which can be shorter than the
-        seven-day access invitation. A cancelled/expired invitation cannot
-        activate access. Existing accounts use Manage account access.
-      </Notice>
       {ready && (
-        <>
+        <details
+          className="workflow-secondary"
+          open={historyOpen}
+          onToggle={(event) => setHistoryOpen(event.currentTarget.open)}
+        >
+          <summary>Invitation history & account requests</summary>
+          <Notice>
+            The status below records the email service response, not inbox
+            delivery. Email links may expire before the seven-day access
+            invitation. Canceled or expired invitations cannot activate access.
+            Existing accounts use Accounts & roles.
+          </Notice>
           <h3>Recent invitations</h3>
           {!rows.length ? (
             <p>No invitations yet.</p>
@@ -295,11 +328,11 @@ export function OwnerAccountInvitations({ shared }: { shared: SharedState }) {
               ))}
             </ul>
           )}
-        </>
+        </details>
       )}
       {confirm && (
         <Modal
-          title="Send this account invitation?"
+          title="Confirm invitation"
           onClose={() => {
             if (!busy) setConfirm(false);
           }}
@@ -308,10 +341,9 @@ export function OwnerAccountInvitations({ shared }: { shared: SharedState }) {
             <strong className="lifecycle-email">{email.trim()}</strong>
           </p>
           <p>
-            Intended level: <strong>{ROLE_LABELS[role]}</strong>. The recipient
-            must be 18 or older, verify the invitation and acknowledge the pilot
-            privacy information. No Owner role or paid training access is
-            granted.
+            Role: <strong>{ROLE_LABELS[role]}</strong>. They must verify their
+            email and complete adult/privacy setup before access activates. This
+            does not grant Owner access or assign training.
           </p>
           {error && (
             <p className="form-error" role="alert">
@@ -326,9 +358,7 @@ export function OwnerAccountInvitations({ shared }: { shared: SharedState }) {
                 void act(() => send(requestId.current, email, role))
               }
             >
-              {busy
-                ? "Requesting invitation…"
-                : "Confirm & request invitation email"}
+              {busy ? "Requesting invitation…" : "Confirm invite"}
             </button>
             <button
               className="button secondary"
@@ -351,7 +381,7 @@ export function OwnerAccountInvitations({ shared }: { shared: SharedState }) {
             This stops the pending access invitation for{" "}
             <strong className="lifecycle-email">{cancel.email}</strong>. An
             email already sent might still arrive; it will not activate the
-            cancelled invitation.
+            canceled invitation.
           </p>
           {error && (
             <p role="alert" className="form-error">
@@ -366,7 +396,7 @@ export function OwnerAccountInvitations({ shared }: { shared: SharedState }) {
                 void act(async () => {
                   await service.cancel(cancel);
                   setCancel(null);
-                  setMessage("Invitation cancelled.");
+                  setMessage("Invitation canceled.");
                   await refresh();
                 })
               }

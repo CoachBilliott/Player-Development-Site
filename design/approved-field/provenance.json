@@ -1,0 +1,18 @@
+{
+  "sourceSha256": "2403ef999a7d8432dab81cb2ce9e1a9eb969643774837da38e70c3db2201f0df",
+  "optimizedSha256": "9f70becc1ce972c5005af801f9d585d992b9efc0447321473eb2159fcda52c8f",
+  "sourceBytes": 2163457,
+  "optimizedBytes": 1644006,
+  "dimensions": [
+    1672,
+    941
+  ],
+  "decodedPixelsIdentical": true,
+  "method": "Lossless WebP encoding only; no crop, redraw, regeneration or resize",
+  "libraryId": "libfile_d7ca8f16de8c8191bc24bc8c30d67624",
+  "version": 1,
+  "gitBlob": "2da18b8ebc92c2c66c0b3d70cda24075d9e0e0ed",
+  "sourceFile": "design/approved-field/repformed-horizontal-football-field.png",
+  "publicFile": "public/media/repformed-horizontal-football-field.webp",
+  "decodedRgbaSha256": "0be832c4e056ea541aa6f227595c36e3eaf0427534a9264602078b4d2141ce3e"
+}

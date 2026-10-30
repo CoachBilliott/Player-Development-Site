@@ -89,7 +89,7 @@ export function Home() {
       <div className="training-principles" aria-label="The training approach">
         {[
           "Understand the game.",
-          "Practise with purpose.",
+          "Practice with purpose.",
           "Keep the next step clear.",
         ].map((text, i) => (
           <div key={text}>
@@ -167,7 +167,7 @@ export function Home() {
               </h2>
             </div>
             <p>
-              See what the athlete is learning, what to practise and where to
+              See what the athlete is learning, what to practice and where to
               help. Parent-managed and individual adult accounts use the same
               platform.
             </p>
@@ -278,11 +278,11 @@ export function Home() {
           aria-labelledby="about-repformed-title"
         >
           <img
-            src={`${media}football-field.jpg`}
-            alt=""
+            src={`${media}repformed-horizontal-football-field.webp`}
+            alt="Repformed-branded football field illustration"
             loading="lazy"
-            width={1280}
-            height={720}
+            width={1672}
+            height={941}
           />
           <div>
             <span className="eyebrow">ABOUT REPFORMED</span>

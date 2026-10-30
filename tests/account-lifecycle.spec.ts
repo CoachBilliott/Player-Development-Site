@@ -190,22 +190,20 @@ test("Owner reviews an invitation, canceling is harmless, repeated confirmation 
   const data = await lifecycle(context);
   await account(page);
   await page.goto("./?source=app&accessSection=invites#access");
-  await page.getByLabel("Adult invitation email").fill("partner@example.test");
-  await page.getByLabel("Invited account level").selectOption("coach");
+  await page.getByLabel("Email address").fill("partner@example.test");
+  await expect(page.getByLabel("Role").locator("option")).toHaveText([
+    "Coach",
+    "Manager",
+  ]);
+  await page.getByLabel("Role").selectOption("coach");
   await expect(
-    page.getByLabel("Invited account level").locator('option[value="owner"]'),
+    page.getByLabel("Role").locator('option[value="owner"]'),
   ).toHaveCount(0);
-  await page
-    .getByRole("button", { name: "Review invitation", exact: true })
-    .click();
+  await page.getByRole("button", { name: "Send invite", exact: true }).click();
   await page.getByRole("button", { name: "Keep editing invitation" }).click();
   expect(data.sent).toBe(0);
-  await page
-    .getByRole("button", { name: "Review invitation", exact: true })
-    .click();
-  await page
-    .getByRole("button", { name: "Confirm & request invitation email" })
-    .dblclick();
+  await page.getByRole("button", { name: "Send invite", exact: true }).click();
+  await page.getByRole("button", { name: "Confirm invite" }).dblclick();
   await expect(
     page.getByText("Awaiting recipient", { exact: true }),
   ).toBeVisible();
@@ -217,6 +215,9 @@ test("Owner reviews an invitation, canceling is harmless, repeated confirmation 
   await expect(
     page.getByRole("button", { name: "Invite staff", exact: true }),
   ).toHaveAttribute("aria-pressed", "true");
+  await page
+    .getByText("Invitation history & account requests", { exact: true })
+    .click();
   await expect(
     page.getByText("Awaiting recipient", { exact: true }),
   ).toBeVisible();
@@ -231,8 +232,102 @@ test("Owner reviews an invitation, canceling is harmless, repeated confirmation 
     .getByRole("button", { name: "Cancel invitation for partner@example.test" })
     .click();
   await page.getByRole("button", { name: "Confirm cancel invitation" }).click();
-  await expect(page.getByText("Cancelled", { exact: true })).toBeVisible();
+  await expect(page.getByText("Canceled", { exact: true })).toBeVisible();
   expect(data.cancels).toBe(1);
+  expect(data.invites[0].state).toBe("cancelled");
+});
+
+test("Owner can invite a Manager through the concise staff form", async ({
+  page,
+  context,
+}) => {
+  const data = await lifecycle(context);
+  await account(page);
+  await page.goto("./?source=app&accessSection=invites#access");
+  await page.getByLabel("Email address").fill("fictional-manager@example.test");
+  await page
+    .getByRole("combobox", { name: "Role", exact: true })
+    .selectOption("manager");
+  await page.getByRole("button", { name: "Send invite", exact: true }).click();
+  await expect(page.getByRole("dialog")).toContainText("Manager");
+  await page
+    .getByRole("button", { name: "Confirm invite", exact: true })
+    .dblclick();
+  await expect(
+    page.getByText("Awaiting recipient", { exact: true }),
+  ).toBeVisible();
+  expect(data.sent).toBe(1);
+  expect(data.invites[0].intended_role).toBe("manager");
+});
+for (const role of ["parent", "athlete"]) {
+  test(`separate adult-member invitation retains ${role} access without adding Owner invitation`, async ({
+    page,
+    context,
+  }) => {
+    const data = await lifecycle(context);
+    await account(page);
+    await page.goto("./?source=app&accessSection=invites#access");
+    await page
+      .getByRole("button", {
+        name: "Invite an adult member instead",
+        exact: true,
+      })
+      .click();
+    await expect(page.getByLabel("Role").locator("option")).toHaveText([
+      "Parent",
+      "Athlete · individual adult",
+    ]);
+    await page
+      .getByLabel("Email address")
+      .fill(`fictional-${role}@example.test`);
+    await page
+      .getByRole("combobox", { name: "Role", exact: true })
+      .selectOption(role);
+    await page
+      .getByRole("button", { name: "Send invite", exact: true })
+      .click();
+    await page
+      .getByRole("button", { name: "Confirm invite", exact: true })
+      .click();
+    await expect(
+      page.getByText("Awaiting recipient", { exact: true }),
+    ).toBeVisible();
+    expect(data.sent).toBe(1);
+    expect(data.invites[0].intended_role).toBe(role);
+  });
+}
+
+test.describe("US display formats preserve the browser time zone", () => {
+  test.use({ locale: "en-GB", timezoneId: "America/Chicago" });
+  test("invitation history uses month/day/year and Chicago local time even with a British device locale", async ({
+    page,
+    context,
+  }) => {
+    const data = await lifecycle(context);
+    data.invites.push({
+      id: inviteId,
+      email: "fictional-staff@example.test",
+      intended_role: "coach",
+      state: "sent",
+      delivery_code: "sent",
+      created_at: "2026-04-13T18:00:00Z",
+      updated_at: "2026-04-13T18:00:00Z",
+      expires_at: "2026-04-20T18:00:00Z",
+      version: 1,
+    });
+    await account(page);
+    await page.goto("./?source=app&accessSection=invites#access");
+    await page
+      .getByText("Invitation history & account requests", { exact: true })
+      .click();
+    const record = page
+      .locator(".lifecycle-list li")
+      .filter({ hasText: "fictional-staff@example.test" });
+    await expect(record).toContainText("Requested 4/13/2026");
+    await expect(record).toContainText(/1:00:00\s?PM/);
+    expect(data.invites[0].created_at).toBe("2026-04-13T18:00:00Z");
+    expect(data.sent).toBe(0);
+  });
 });
 test("email service failure does not pretend delivery succeeded", async ({
   page,
@@ -242,13 +337,9 @@ test("email service failure does not pretend delivery succeeded", async ({
   data.deliveryFailure = true;
   await account(page);
   await page.goto("./?source=app&accessSection=invites#access");
-  await page.getByLabel("Adult invitation email").fill("partner@example.test");
-  await page
-    .getByRole("button", { name: "Review invitation", exact: true })
-    .click();
-  await page
-    .getByRole("button", { name: "Confirm & request invitation email" })
-    .click();
+  await page.getByLabel("Email address").fill("partner@example.test");
+  await page.getByRole("button", { name: "Send invite", exact: true }).click();
+  await page.getByRole("button", { name: "Confirm invite" }).click();
   await expect(
     page.getByText("Email request failed", { exact: true }),
   ).toBeVisible();
@@ -391,7 +482,7 @@ test("a failed cleanup keeps a retryable deletion request and does not display s
   );
   await page
     .getByRole("button", {
-      name: "Close without cancelling deletion",
+      name: "Close without canceling deletion",
       exact: true,
     })
     .click();
@@ -437,7 +528,7 @@ test("invitation and account controls fit phones and pass WCAG checks", async ({
   await account(page);
   await page.goto("./?source=app&accessSection=invites#access");
   await page
-    .getByLabel("Adult invitation email")
+    .getByLabel("Email address")
     .fill("fictional-partner-with-a-long-email@example.test");
   for (const width of [320, 390, 768]) {
     await page.setViewportSize({ width, height: 900 });

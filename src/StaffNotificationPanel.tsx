@@ -100,8 +100,8 @@ export function StaffNotificationPanel({
                     {j.attempts === 1 ? "" : "s"}
                   </p>
                   <p>
-                    Target: {new Date(j.due_at).toLocaleString()}. Last update:{" "}
-                    {new Date(j.updated_at).toLocaleString()}.
+                    Target: {new Date(j.due_at).toLocaleString("en-US")}. Last
+                    update: {new Date(j.updated_at).toLocaleString("en-US")}.
                   </p>
                   {j.code && <p>Result: {j.code.replaceAll("_", " ")}</p>}
                   {j.provider_id && (

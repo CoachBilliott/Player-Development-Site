@@ -76,7 +76,7 @@
       "title": "Review before anyone trains.",
       "intro": "Saving a shared draft does not publish it. Owner or Manager approval is a separate release decision.",
       "image": "approval.jpg",
-      "imageAlt": "The staff approval dialog showing a fictional drill, release acknowledgement and Confirm approval and publish button.",
+      "imageAlt": "The staff approval dialog showing a fictional drill, release acknowledgment and Confirm approval and publish button.",
       "caption": "Approval dialog · fictional attachment, instructions and audience.",
       "steps": [
         "Open Content → Drafts & approvals. Find the saved drill and choose Preview & review.",
@@ -128,9 +128,9 @@
       "caption": "Saved practice · position retained, completion not yet reported.",
       "steps": [
         "Open Today. Check the session, equipment and planned time. Select the practice/start button; for a parent it can read Guide and record practice.",
-        "Review the practice acknowledgement and select Begin workout. Each drill shows its attached media, instructions, equipment and coaching cue.",
+        "Review the practice acknowledgment and select Begin workout. Each drill shows its attached media, instructions, equipment and coaching cue.",
         "After practicing a drill, choose Complete drill · Next. Previous drill lets you revisit instructions. Watching a video alone does not record completion.",
-        "To stop for now, choose Save & leave workout. Reopen or refresh, select the same athlete and choose Resume workout, then Resume practice after the acknowledgement.",
+        "To stop for now, choose Save & leave workout. Reopen or refresh, select the same athlete and choose Resume workout, then Resume practice after the acknowledgment.",
         "After completing the session, choose Finish workout. Open Progress to see the participation record and any applicable parent review."
       ],
       "tip": "Saved practice needs a connection, expires after seven days and rechecks access and content versions. Discard saved practice requires confirmation. Reports and parent reviews describe participation, not measured athletic improvement. Live junior use remains closed."

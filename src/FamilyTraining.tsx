@@ -503,8 +503,8 @@ export function AthleteTraining({
                       <p>{workout.titles.join(" · ")}</p>
                     )}
                     <p>
-                      {new Date(workout.created_at).toLocaleDateString()} ·{" "}
-                      {workout.minutes} planned minutes
+                      {new Date(workout.created_at).toLocaleDateString("en-US")}{" "}
+                      · {workout.minutes} planned minutes
                     </p>
                     {state.is_parent && workout.status === "pending_parent" && (
                       <div className="actions">
