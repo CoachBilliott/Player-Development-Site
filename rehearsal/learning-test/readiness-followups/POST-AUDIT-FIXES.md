@@ -1,3 +1,11 @@
+## TERMINAL: test-preview published01:52:19UTC October30
+
+**Complete.** Rehearsal https://learning-auth-rehearsal.repformed.pages.dev/ now has source6d0975b86a0dc1ac9f128da244c02b08eb9e91ff, previewdeployment0ac900a0-e7a9-4d53-a49d-0c9deb221020. [Exact release/validation/readiness receipt](../roster-023-preview-release/RECEIPT.md). One upload attempt, successful CLI and provider metadata read-back. Production0816c343/bab6aa19andTestFlight15 unchanged. No active check/upload remains.
+
+Final source local validation passed426unit/database,all366website cases(2+364exhaustive groups),8app/offline,20private-preview,16harness,15focusedpolicy,11Python+lint/types/3Deno/build. Source6d differs from reviewed01b only in one test's asynchronous synchronization; application unchanged. No omitted cases or changed timeouts/assertions. Historical failures below are superseded, not counted as passes.
+
+**Hosted roles/023installation/rollback NOTRUN:** no fictional session/autofill and private sign-in declined. Existing operator may refresh once to see the prepared controls; no authentication/permission result is implied. No production/security/credential/flags/scheduler/email/native changes and no new work started.
+
 ## Current test-preview release stage —2026-10-30T01:37:21.440972+00:00
 
 Source **6d0975b86a0dc1ac9f128da244c02b08eb9e91ff** remains frozen; no publication attempted. Static/unit/policy checks passed. Final accessibility desktop/phone both passed separately at unchanged30second timeout. A four-worker attempt exceeded local resource/timing limits in long multi-step cases, so only that failed batch was stopped. The remaining364website cases are now running at the repository's normal2workers, then app/offline/private-preview/harness follow. Test discovery confirms the two exhaustive groups are2+364, not omitted cases. No timeout/assertion/protection was changed. No new audit/features, production, credentials, permissions, flags, emails or native changes. Hosted role/023migration acceptance remains blocked because no fictional session is available and private sign-in was declined. Existing operator retains ownership; no credential requests or impersonation.

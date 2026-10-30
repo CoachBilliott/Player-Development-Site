@@ -1,0 +1,71 @@
+{
+  "source": "6d0975b86a0dc1ac9f128da244c02b08eb9e91ff",
+  "method": "all366website cases exhaustively partitioned into2passedaccessibility+364others at normal2workers; no omissions/timeout/assertion changes",
+  "stages": [
+    {
+      "stage": "website-accessibility",
+      "command": [
+        "npx",
+        "playwright",
+        "test",
+        "tests/accessibility.spec.ts",
+        "--workers=1"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-10-30T01:33:12.950130+00:00",
+      "ended_at": "2026-10-30T01:33:36.657326+00:00"
+    },
+    {
+      "stage": "website-main",
+      "command": [
+        "npm",
+        "run",
+        "test:e2e",
+        "--",
+        "--workers=2",
+        "--grep-invert",
+        "main screens have no detected WCAG A/AA violations"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-10-30T01:36:33.518501+00:00",
+      "ended_at": "2026-10-30T01:49:18.125995+00:00"
+    },
+    {
+      "stage": "app-offline",
+      "command": [
+        "npm",
+        "run",
+        "test:app"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-10-30T01:49:18.129397+00:00",
+      "ended_at": "2026-10-30T01:49:55.727861+00:00"
+    },
+    {
+      "stage": "private-preview",
+      "command": [
+        "npx",
+        "playwright",
+        "test",
+        "--config",
+        "playwright.private-preview.config.ts"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-10-30T01:49:55.729698+00:00",
+      "ended_at": "2026-10-30T01:50:26.717620+00:00"
+    },
+    {
+      "stage": "roster-harness",
+      "command": [
+        "npx",
+        "playwright",
+        "test",
+        "--config",
+        "playwright.learning-rehearsal.config.ts"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-10-30T01:50:26.718899+00:00",
+      "ended_at": "2026-10-30T01:50:51.366289+00:00"
+    }
+  ]
+}

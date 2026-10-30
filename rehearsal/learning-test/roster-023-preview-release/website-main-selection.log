@@ -1,0 +1,366 @@
+Listing tests:
+  [desktop] › account-lifecycle.spec.ts:186:1 › Owner reviews an invitation, canceling is harmless, repeated confirmation sends one request
+  [desktop] › account-lifecycle.spec.ts:237:1 › email service failure does not pretend delivery succeeded
+  [desktop] › account-lifecycle.spec.ts:262:1 › an invited Coach accepts exactly the invited access without choosing Parent or Athlete
+  [desktop] › account-lifecycle.spec.ts:291:1 › cancelled invitations cannot fall through to profile setup
+  [desktop] › account-lifecycle.spec.ts:305:1 › customer deletion requires confirmation and password, with no action on cancel or incorrect password
+  [desktop] › account-lifecycle.spec.ts:341:1 › confirmed deletion clears private UI and produces one request on repeated clicks
+  [desktop] › account-lifecycle.spec.ts:370:1 › a failed cleanup keeps a retryable deletion request and does not display success
+  [desktop] › account-lifecycle.spec.ts:408:1 › Owner closure creates a review request and never calls automatic deletion
+  [desktop] › account-lifecycle.spec.ts:432:1 › invitation and account controls fit phones and pass WCAG checks
+  [desktop] › accounts.spec.ts:526:1 › unconfigured public member entry is honest and collects no profile data
+  [desktop] › accounts.spec.ts:544:1 › parent profiles support private create, edit, cancel, repeated clicks, refresh, cross-device access and deletion
+  [desktop] › accounts.spec.ts:636:1 › signup verifies email, recovery updates a password and adult accounts cannot add minors
+  [desktop] › accounts.spec.ts:684:1 › failed saves preserve drafts; signout and switching accounts expose no previous profiles; member deletion is explicit
+  [desktop] › accounts.spec.ts:734:1 › member forms and private dashboard fit small phones and pass automated accessibility checks
+  [desktop] › accounts.spec.ts:792:1 › expired email callbacks recover safely and the closed under-18 gate is reflected in the editor
+  [desktop] › accounts.spec.ts:825:1 › private pilot accepts a verified email session, removes URL credentials and sets a password without opening signup
+  [desktop] › accounts.spec.ts:864:1 › Owner manages five levels with protected self access, confirmation, cancellation, failure and refresh persistence
+  [desktop] › accounts.spec.ts:941:3 › manager sees the correct level without Owner access controls
+  [desktop] › accounts.spec.ts:941:3 › coach sees the correct level without Owner access controls
+  [desktop] › accounts.spec.ts:941:3 › parent sees the correct level without Owner access controls
+  [desktop] › accounts.spec.ts:941:3 › athlete sees the correct level without Owner access controls
+  [desktop] › accounts.spec.ts:961:1 › a private family athlete joins with a parent code, reports practice without adult setup, and remains under parent review and revocation
+  [desktop] › accounts.spec.ts:1109:3 › owner receives the matching authenticated workspace and old preview links do not elevate permissions
+  [desktop] › accounts.spec.ts:1109:3 › manager receives the matching authenticated workspace and old preview links do not elevate permissions
+  [desktop] › accounts.spec.ts:1109:3 › coach receives the matching authenticated workspace and old preview links do not elevate permissions
+  [desktop] › accounts.spec.ts:1152:1 › Parent and adult Athlete workspaces use private profiles; inactive memberships never unlock protected training
+  [desktop] › accounts.spec.ts:1295:1 › member app separates Today, Workouts, Progress and Account and keeps family selection and reviews private
+  [desktop] › accounts.spec.ts:1461:1 › solo app training reports survive navigation and refresh while failed reads and signout expose no previous profile
+  [desktop] › accounts.spec.ts:1554:1 › a connected junior app sees one athlete and respects parent recording permission
+  [desktop] › accounts.spec.ts:1615:1 › staff app navigation stays on authorized content tools rather than member or public marketing screens
+  [desktop] › accounts.spec.ts:1648:3 › owner account opens staff tools without household setup, including delayed access checks and app refresh
+  [desktop] › accounts.spec.ts:1648:3 › manager account opens staff tools without household setup, including delayed access checks and app refresh
+  [desktop] › accounts.spec.ts:1648:3 › coach account opens staff tools without household setup, including delayed access checks and app refresh
+  [desktop] › accounts.spec.ts:1750:1 › Owner password setup finishes on the staff account without creating a Parent or Athlete account
+  [desktop] › accounts.spec.ts:1788:1 › failed role checks never fall back to customer setup and can be retried
+  [desktop] › accounts.spec.ts:1823:1 › new passwords accept eight characters with all required groups and reject missing groups before sending
+  [desktop] › adult-household-journey.spec.ts:6:1 › approved adult household completes assigned practice, receives private coach feedback and retains progress
+  [desktop] › athlete-assignment.spec.ts:47:1 › Owner assigns inside the athlete record without choosing another customer; cancel/repeated clicks preserve the sibling
+  [desktop] › athlete-assignment.spec.ts:122:1 › missing fixed athlete never falls back to account-wide assignment
+  [desktop] › athlete-assignment.spec.ts:144:1 › roster filters by existing age, position and coach without introducing group membership
+  [desktop] › contact.spec.ts:7:1 › Contact is reachable from the website navigation and footer and survives refresh
+  [desktop] › contact.spec.ts:44:1 › contact email topics prepare a message without claiming to send or storing a request
+  [desktop] › contact.spec.ts:77:1 › approved FAQ answers can be searched, opened, cleared and followed to account help
+  [desktop] › contact.spec.ts:111:1 › Contact fits phones and passes automated accessibility checks with expanded answers
+  [desktop] › contact.spec.ts:139:1 › app help links to the public Contact page without a separate sign-in
+  [desktop] › delivery.spec.ts:150:1 › Owner delivery settings and manual queue are explicit, scoped and refresh-safe
+  [desktop] › delivery.spec.ts:220:1 › Coach has no configuration authority; parent sees private read/unread inbox and no staff queue
+  [desktop] › demo.spec.ts:50:1 › homepage is responsive and sample demo is obvious
+  [desktop] › demo.spec.ts:118:1 › parent onboarding, cancellation, and profile persistence
+  [desktop] › demo.spec.ts:140:1 › all selections build a usable adult profile
+  [desktop] › demo.spec.ts:164:1 › guided practice survives refresh, requires practice, records once, and isolates profiles
+  [desktop] › demo.spec.ts:214:1 › end session and reset canceled actions preserve state
+  [desktop] › demo.spec.ts:240:1 › library combines filters, clears empty results, and previews age restrictions
+  [desktop] › demo.spec.ts:292:1 › phone upload reveals details, keeps a valid file after a canceled or rejected replacement, and previews the chosen audience
+  [desktop] › demo.spec.ts:363:1 › coach previews matches, cancels edits, publishes once, and persists attachment
+  [desktop] › demo.spec.ts:417:1 › invalid file, canceled file picker, discard and browser storage failure are handled
+  [desktop] › demo.spec.ts:472:1 › corrupted data falls back safely and future memberships have no checkout
+  [desktop] › demo.spec.ts:490:1 › all screens fit mobile and navigation is keyboard accessible
+  [desktop] › demo.spec.ts:539:1 › failed publishing keeps the draft and does not create a library entry
+  [desktop] › demo.spec.ts:570:1 › original uploaded video plays and remains available after refresh
+  [desktop] › demo.spec.ts:640:1 › small phones and tablets have no horizontal overflow
+  [desktop] › demo.spec.ts:666:1 › uploaded resource edits preserve its file, support cancellation, and persist
+  [desktop] › demo.spec.ts:728:1 › replacement-file failure preserves the published attachment and removal requires confirmation
+  [desktop] › demo.spec.ts:803:1 › staff publishing destinations can be switched or canceled without publishing a draft
+  [desktop] › family.spec.ts:27:1 › family athletes have separate permissions, reports and parent approvals that survive refresh
+  [desktop] › family.spec.ts:108:1 › individual athletes self-report without parent approval; unfinished workouts and repeat requests are honest
+  [desktop] › family.spec.ts:161:1 › failed permission saves preserve parent control, and the family demo fits phones and passes accessibility checks
+  [desktop] › grouped-reviews.spec.ts:5:1 › one three-clip review survives partial upload and refresh, starts one deadline and receives one private response
+  [desktop] › grouped-reviews.spec.ts:110:1 › canceled selection creates no service; group deletion is explicit and storage remains a finite account cap
+  [desktop] › help-socials.spec.ts:7:1 › quick help answers approved questions and closes without storing a conversation
+  [desktop] › help-socials.spec.ts:49:1 › unanswered questions hand off to the real inbox without claiming delivery
+  [desktop] › help-socials.spec.ts:76:1 › quick help remains readable, keyboard accessible and usable in app help
+  [desktop] › help-socials.spec.ts:104:1 › unconfigured socials stay unpublished
+  [desktop] › help-socials.spec.ts:114:1 › shared social configuration reaches website, app help and guides with safe external links
+  [desktop] › home-package-journey.spec.ts:10:1 › home connects the four shared package stages to learning, practice and parent visibility
+  [desktop] › home-package-journey.spec.ts:48:1 › hero compares proposals while express interest opens and focuses the existing email section
+  [desktop] › home-package-journey.spec.ts:92:1 › interest intent consumes only its own query flag and remains a usable route after refresh
+  [desktop] › home-package-journey.spec.ts:110:1 › home is readable on narrow screens, accessible, honest about availability and retains working demo
+  [desktop] › interest-intake.spec.ts:84:1 › short adult interest works by keyboard without account or email-app launch
+  [desktop] › interest-intake.spec.ts:136:1 › repeated clicks and a refreshed resubmission produce one saved interest and one alert
+  [desktop] › interest-intake.spec.ts:159:1 › lost response retains the draft and reuses the exact idempotency reference on retry
+  [desktop] › interest-intake.spec.ts:185:1 › service/limit failures preserve inputs and leave manual email as an explicit secondary fallback
+  [desktop] › interest-intake.spec.ts:217:1 › optional launch choice survives an uncertain retry and a changed choice receives a fresh reference
+  [desktop] › interest-intake.spec.ts:254:1 › adult declaration is required and navigating away never shows false success on another page
+  [desktop] › interest-intake.spec.ts:279:1 › disabled intake retains the existing honest mailto flow and never submits data
+  [desktop] › interest-intake.spec.ts:296:1 › interest privacy names the minimal data, staff scope, optional alerts and removal contact
+  [desktop] › mobile.spec.ts:6:1 › the app opens private account access and keeps the customer demo on the website
+  [desktop] › mobile.spec.ts:39:1 › app navigation and forms fit small phones while the normal website stays intact
+  [desktop] › motion.spec.ts:4:1 › real training footage automatically loops silently without any playback or motion buttons
+  [desktop] › motion.spec.ts:46:1 › device reduced motion automatically shows a real still with no motion buttons and usable training
+  [desktop] › motion.spec.ts:91:1 › unavailable hero videos retain a real poster and never block the website or demo
+  [desktop] › motion.spec.ts:124:1 › WebM footage plays if the MP4 request is unavailable
+  [desktop] › official-socials.spec.ts:4:1 › owner-verified social links are available on the website, Contact, app help and online guides
+  [desktop] › official-socials.spec.ts:46:1 › homepage copy stays concise while licensed imagery credits remain reachable
+  [desktop] › package-proposals.spec.ts:10:1 › four future proposals distinguish cadence, price and review terms without checkout
+  [desktop] › package-proposals.spec.ts:66:1 › interest scroll preserves route, package selection prepares only an adult email
+  [desktop] › package-proposals.spec.ts:113:1 › copy address handles repeated clicks and clipboard denial without a submitted request
+  [desktop] › package-proposals.spec.ts:152:1 › availability is above the fold and packages fit narrow screens with accessible controls
+  [desktop] › private-workspace.spec.ts:8:1 › one login surface supports recovery, verification and password visibility without a second coach form
+  [desktop] › private-workspace.spec.ts:70:3 › owner workspace navigation keeps daily tools and personal settings distinct
+  [desktop] › private-workspace.spec.ts:70:3 › manager workspace navigation keeps daily tools and personal settings distinct
+  [desktop] › private-workspace.spec.ts:70:3 › coach workspace navigation keeps daily tools and personal settings distinct
+  [desktop] › private-workspace.spec.ts:129:1 › Owner access directory is absent in settings and protected self access stays disabled
+  [desktop] › private-workspace.spec.ts:175:1 › Owner directory separates loading, failed reads and retry from an empty result
+  [desktop] › private-workspace.spec.ts:225:1 › parent training, family profiles and credentials have separate screens with canceled edits
+  [desktop] › private-workspace.spec.ts:282:1 › public homepage retains its existing header, hero and footer
+  [desktop] › professional-prelaunch.spec.ts:9:1 › public conversion is packages and interest with one clearly fictional optional preview
+  [desktop] › professional-prelaunch.spec.ts:44:1 › package progression remains readable at 375/390px and enlarged text without clipping
+  [desktop] › professional-prelaunch.spec.ts:95:1 › help scopes operational pilot review limits separately from proposed Elite terms
+  [desktop] › professional-prelaunch.spec.ts:120:1 › web-app entry/help use account language and keep TestFlight guidance out of public primary navigation
+  [desktop] › release-schedule.spec.ts:4:1 › Owner previews Sunday clock changes, saves a device-only draft and discards edits without scheduling
+  [desktop] › release-schedule.spec.ts:54:1 › coaches can read readiness but cannot configure the Owner schedule draft
+  [desktop] › review-service.spec.ts:35:1 › one-review request is shared, survives reload and repeated taps, and can be cancelled without payment
+  [desktop] › review-service.spec.ts:67:1 › record, preview and send creates one tracked submission with a 48-hour target
+  [desktop] › review-service.spec.ts:92:1 › Owner and Manager service desk tracks deadlines, filters, assignments, cancelled edits and refresh
+  [desktop] › review-service.spec.ts:184:1 › failed stale service updates stay open and never claim delivery
+  [desktop] › review-service.spec.ts:199:1 › opening a review starts work, feedback alone marks shared service delivered
+  [desktop] › review-service.spec.ts:242:1 › Owner can open the exact requesting account without searching or retyping
+  [desktop] › shared.spec.ts:35:1 › configured shared publishing saves, edits across visitors, and removes a sample resource
+  [desktop] › shared.spec.ts:115:1 › signed-in accounts without coach membership never receive publishing controls
+  [desktop] › shared.spec.ts:133:1 › staff publishing requires sign-in and allows authorized staff to cancel local destination changes
+  [desktop] › shared.spec.ts:175:1 › protected uploads stay out of public demo pages and disappear immediately after sign-out
+  [desktop] › sibling-workouts.spec.ts:12:1 › Owner assigns distinct sibling plans; parent completion, selection and history stay separate after refresh
+  [desktop] › site-chrome.spec.ts:6:1 › public header and mobile menu show Log in without a universal status strip
+  [desktop] › site-chrome.spec.ts:45:3 › owner session restores Dashboard and signout clears header, menu and footer
+  [desktop] › site-chrome.spec.ts:45:3 › manager session restores Dashboard and signout clears header, menu and footer
+  [desktop] › site-chrome.spec.ts:45:3 › coach session restores Dashboard and signout clears header, menu and footer
+  [desktop] › site-chrome.spec.ts:45:3 › parent session restores Dashboard and signout clears header, menu and footer
+  [desktop] › site-chrome.spec.ts:45:3 › athlete session restores Dashboard and signout clears header, menu and footer
+  [desktop] › site-chrome.spec.ts:125:1 › footer groups navigation and retains five compact accessible social targets on narrow phones
+  [desktop] › staff-notifications.spec.ts:154:1 › Owner status separates provider acceptance, uncertain outcomes and disabled capabilities
+  [desktop] › staff-notifications.spec.ts:196:1 › interest inbox works without roster rollout and separates loading, empty and retryable error
+  [desktop] › staff-notifications.spec.ts:229:1 › Coach direct interest URL is denied before a private inbox read
+  [desktop] › staff-notifications.spec.ts:244:1 › Manager sees the shared inbox status and private interest without recipient-edit controls
+  [desktop] › staff-notifications.spec.ts:271:1 › Coach renders only scoped jobs and clears revoked assignment results on refresh
+  [desktop] › staff-notifications.spec.ts:294:1 › private interest distinguishes unrecorded, unchecked and earlier affirmative launch choices
+  [desktop] › staff-notifications.spec.ts:328:1 › Status read failures are retryable and do not retain stale job data
+  [desktop] › staff-notifications.spec.ts:356:1 › Parent workspace never loads the staff email projection even with its UI feature flag enabled
+  [desktop] › staff-service.spec.ts:12:1 › Owner landing shows all clients, overdue service and private athlete drilldown with honest telemetry
+  [desktop] › staff-service.spec.ts:93:1 › Manager can change service coaches; Coach sees assigned athlete and direct sibling URL is denied
+  [desktop] › staff-workflows.spec.ts:26:1 › legacy workout links retain guarded assignment, cancellation and replacement confirmation
+  [desktop] › staff-workflows.spec.ts:92:3 › manager sees three clear jobs without gaining owner assignment or role administration
+  [desktop] › staff-workflows.spec.ts:92:3 › coach sees three clear jobs without gaining owner assignment or role administration
+  [desktop] › staff-workflows.spec.ts:127:1 › Owner staff administration expands one account and a canceled change leaves permissions intact
+  [desktop] › staff-workflows.spec.ts:162:1 › athlete service keeps assignment context and uncommon settings out of the daily roster
+  [desktop] › staff-workflows.spec.ts:204:3 › parent cannot open staff training, assignments or people through copied URLs
+  [desktop] › staff-workflows.spec.ts:204:3 › athlete cannot open staff training, assignments or people through copied URLs
+  [desktop] › studio-drafts.spec.ts:31:1 › a saved staff draft restores the original file and coaching details after refresh, then publishes once
+  [desktop] › studio-drafts.spec.ts:108:1 › incomplete drafts can be saved, removal can be canceled, and sign-out clears device drafts
+  [desktop] › studio-drafts.spec.ts:149:1 › device storage failures retain the open form and retry can save without publishing
+  [desktop] › studio-drafts.spec.ts:192:1 › a different saved draft requires confirmation before replacement
+  [desktop] › studio-drafts.spec.ts:222:1 › editing retains existing purpose, equipment, cue and drill kind
+  [desktop] › studio-drafts.spec.ts:264:1 › saved draft metadata is account-scoped and contains neither rights consent nor signed media URLs
+  [desktop] › training-workflow.spec.ts:6:1 › a coach submits privately, an Owner reviews, then builds and assigns the approved session
+  [desktop] › training-workflow.spec.ts:97:1 › unfinished practice resumes after refresh at the saved drill and finishes exactly once
+  [desktop] › training-workflow.spec.ts:154:1 › saved-practice deletion is explicit and cancel keeps the saved place
+  [desktop] › training-workflow.spec.ts:194:1 › review queue fits phone widths and keeps accessibility controls readable
+  [desktop] › video-review.spec.ts:14:1 › real drill viewer shows media and all steps together and records one completion
+  [desktop] › video-review.spec.ts:36:1 › recording can be canceled and unsupported files never upload
+  [desktop] › video-review.spec.ts:69:1 › video preview, repeated send clicks and refresh preserve exactly one private submission
+  [desktop] › video-review.spec.ts:111:1 › failed upload retries the same submission and deletion requires confirmation
+  [desktop] › video-review.spec.ts:141:1 › assigned coach can open a private clip and save feedback once
+  [desktop] › video-review.spec.ts:176:1 › Owner can separately assign workouts and optional review access without charging
+  [desktop] › video-review.spec.ts:204:1 › multi-drill practice shows the order and next activity, allows review, and never treats playback or canceled practice as completion
+  [desktop] › views.spec.ts:24:1 › the public website has one customer demo entry, with parent and solo journeys and no staff gallery
+  [desktop] › views.spec.ts:119:1 › old staff preview links require real sign-in and public uploads have no anonymous editor
+  [desktop] › views.spec.ts:169:1 › the single parent journey teaches permissions, athlete reporting and parent review with isolated persistent history
+  [desktop] › weekly-learning.spec.ts:156:1 › enabled Owner plan opens inside selected athlete, preserves account context and can reach quiz import
+  [desktop] › weekly-learning.spec.ts:191:1 › enabled household training uses selected profile and server draft endpoint without posting a trusted grade
+  [desktop] › weekly-learning.spec.ts:227:1 › server-backed group choices settle and do not refetch on checkbox changes
+  [desktop] › weekly-learning.spec.ts:257:1 › weekly member navigation separates current week, library and recorded grades
+  [desktop] › workouts.spec.ts:14:1 › staff composes, reorders, previews and saves a protected workout; Owner assigns the whole session and the athlete records it once
+  [desktop] › workouts.spec.ts:137:1 › incompatible drills block preview and never publish a workout
+  [desktop] › workouts.spec.ts:157:1 › saved workouts survive refresh; lost save responses retry the same ID and unsaved edits can be kept
+  [desktop] › workouts.spec.ts:192:1 › ineligible and conflicting assignments keep existing access unchanged
+  [desktop] › workouts.spec.ts:222:1 › removing a template or current assignment requires confirmation
+  [desktop] › workouts.spec.ts:268:1 › coach can build own workouts without an account directory or assignment controls
+  [desktop] › workouts.spec.ts:280:1 › workout builder fits small phones and has no detected WCAG A/AA violations
+  [desktop] › workouts.spec.ts:304:1 › editing a template does not silently replace an account assignment and unsaved changes cannot be assigned
+  [desktop] › workouts.spec.ts:356:3 › owner app uses the same three staff jobs and connected training tools
+  [desktop] › workouts.spec.ts:356:3 › manager app uses the same three staff jobs and connected training tools
+  [desktop] › workouts.spec.ts:356:3 › coach app uses the same three staff jobs and connected training tools
+  [phone] › account-lifecycle.spec.ts:186:1 › Owner reviews an invitation, canceling is harmless, repeated confirmation sends one request
+  [phone] › account-lifecycle.spec.ts:237:1 › email service failure does not pretend delivery succeeded
+  [phone] › account-lifecycle.spec.ts:262:1 › an invited Coach accepts exactly the invited access without choosing Parent or Athlete
+  [phone] › account-lifecycle.spec.ts:291:1 › cancelled invitations cannot fall through to profile setup
+  [phone] › account-lifecycle.spec.ts:305:1 › customer deletion requires confirmation and password, with no action on cancel or incorrect password
+  [phone] › account-lifecycle.spec.ts:341:1 › confirmed deletion clears private UI and produces one request on repeated clicks
+  [phone] › account-lifecycle.spec.ts:370:1 › a failed cleanup keeps a retryable deletion request and does not display success
+  [phone] › account-lifecycle.spec.ts:408:1 › Owner closure creates a review request and never calls automatic deletion
+  [phone] › account-lifecycle.spec.ts:432:1 › invitation and account controls fit phones and pass WCAG checks
+  [phone] › accounts.spec.ts:526:1 › unconfigured public member entry is honest and collects no profile data
+  [phone] › accounts.spec.ts:544:1 › parent profiles support private create, edit, cancel, repeated clicks, refresh, cross-device access and deletion
+  [phone] › accounts.spec.ts:636:1 › signup verifies email, recovery updates a password and adult accounts cannot add minors
+  [phone] › accounts.spec.ts:684:1 › failed saves preserve drafts; signout and switching accounts expose no previous profiles; member deletion is explicit
+  [phone] › accounts.spec.ts:734:1 › member forms and private dashboard fit small phones and pass automated accessibility checks
+  [phone] › accounts.spec.ts:792:1 › expired email callbacks recover safely and the closed under-18 gate is reflected in the editor
+  [phone] › accounts.spec.ts:825:1 › private pilot accepts a verified email session, removes URL credentials and sets a password without opening signup
+  [phone] › accounts.spec.ts:864:1 › Owner manages five levels with protected self access, confirmation, cancellation, failure and refresh persistence
+  [phone] › accounts.spec.ts:941:3 › manager sees the correct level without Owner access controls
+  [phone] › accounts.spec.ts:941:3 › coach sees the correct level without Owner access controls
+  [phone] › accounts.spec.ts:941:3 › parent sees the correct level without Owner access controls
+  [phone] › accounts.spec.ts:941:3 › athlete sees the correct level without Owner access controls
+  [phone] › accounts.spec.ts:961:1 › a private family athlete joins with a parent code, reports practice without adult setup, and remains under parent review and revocation
+  [phone] › accounts.spec.ts:1109:3 › owner receives the matching authenticated workspace and old preview links do not elevate permissions
+  [phone] › accounts.spec.ts:1109:3 › manager receives the matching authenticated workspace and old preview links do not elevate permissions
+  [phone] › accounts.spec.ts:1109:3 › coach receives the matching authenticated workspace and old preview links do not elevate permissions
+  [phone] › accounts.spec.ts:1152:1 › Parent and adult Athlete workspaces use private profiles; inactive memberships never unlock protected training
+  [phone] › accounts.spec.ts:1295:1 › member app separates Today, Workouts, Progress and Account and keeps family selection and reviews private
+  [phone] › accounts.spec.ts:1461:1 › solo app training reports survive navigation and refresh while failed reads and signout expose no previous profile
+  [phone] › accounts.spec.ts:1554:1 › a connected junior app sees one athlete and respects parent recording permission
+  [phone] › accounts.spec.ts:1615:1 › staff app navigation stays on authorized content tools rather than member or public marketing screens
+  [phone] › accounts.spec.ts:1648:3 › owner account opens staff tools without household setup, including delayed access checks and app refresh
+  [phone] › accounts.spec.ts:1648:3 › manager account opens staff tools without household setup, including delayed access checks and app refresh
+  [phone] › accounts.spec.ts:1648:3 › coach account opens staff tools without household setup, including delayed access checks and app refresh
+  [phone] › accounts.spec.ts:1750:1 › Owner password setup finishes on the staff account without creating a Parent or Athlete account
+  [phone] › accounts.spec.ts:1788:1 › failed role checks never fall back to customer setup and can be retried
+  [phone] › accounts.spec.ts:1823:1 › new passwords accept eight characters with all required groups and reject missing groups before sending
+  [phone] › adult-household-journey.spec.ts:6:1 › approved adult household completes assigned practice, receives private coach feedback and retains progress
+  [phone] › athlete-assignment.spec.ts:47:1 › Owner assigns inside the athlete record without choosing another customer; cancel/repeated clicks preserve the sibling
+  [phone] › athlete-assignment.spec.ts:122:1 › missing fixed athlete never falls back to account-wide assignment
+  [phone] › athlete-assignment.spec.ts:144:1 › roster filters by existing age, position and coach without introducing group membership
+  [phone] › contact.spec.ts:7:1 › Contact is reachable from the website navigation and footer and survives refresh
+  [phone] › contact.spec.ts:44:1 › contact email topics prepare a message without claiming to send or storing a request
+  [phone] › contact.spec.ts:77:1 › approved FAQ answers can be searched, opened, cleared and followed to account help
+  [phone] › contact.spec.ts:111:1 › Contact fits phones and passes automated accessibility checks with expanded answers
+  [phone] › contact.spec.ts:139:1 › app help links to the public Contact page without a separate sign-in
+  [phone] › delivery.spec.ts:150:1 › Owner delivery settings and manual queue are explicit, scoped and refresh-safe
+  [phone] › delivery.spec.ts:220:1 › Coach has no configuration authority; parent sees private read/unread inbox and no staff queue
+  [phone] › demo.spec.ts:50:1 › homepage is responsive and sample demo is obvious
+  [phone] › demo.spec.ts:118:1 › parent onboarding, cancellation, and profile persistence
+  [phone] › demo.spec.ts:140:1 › all selections build a usable adult profile
+  [phone] › demo.spec.ts:164:1 › guided practice survives refresh, requires practice, records once, and isolates profiles
+  [phone] › demo.spec.ts:214:1 › end session and reset canceled actions preserve state
+  [phone] › demo.spec.ts:240:1 › library combines filters, clears empty results, and previews age restrictions
+  [phone] › demo.spec.ts:292:1 › phone upload reveals details, keeps a valid file after a canceled or rejected replacement, and previews the chosen audience
+  [phone] › demo.spec.ts:363:1 › coach previews matches, cancels edits, publishes once, and persists attachment
+  [phone] › demo.spec.ts:417:1 › invalid file, canceled file picker, discard and browser storage failure are handled
+  [phone] › demo.spec.ts:472:1 › corrupted data falls back safely and future memberships have no checkout
+  [phone] › demo.spec.ts:490:1 › all screens fit mobile and navigation is keyboard accessible
+  [phone] › demo.spec.ts:539:1 › failed publishing keeps the draft and does not create a library entry
+  [phone] › demo.spec.ts:570:1 › original uploaded video plays and remains available after refresh
+  [phone] › demo.spec.ts:640:1 › small phones and tablets have no horizontal overflow
+  [phone] › demo.spec.ts:666:1 › uploaded resource edits preserve its file, support cancellation, and persist
+  [phone] › demo.spec.ts:728:1 › replacement-file failure preserves the published attachment and removal requires confirmation
+  [phone] › demo.spec.ts:803:1 › staff publishing destinations can be switched or canceled without publishing a draft
+  [phone] › family.spec.ts:27:1 › family athletes have separate permissions, reports and parent approvals that survive refresh
+  [phone] › family.spec.ts:108:1 › individual athletes self-report without parent approval; unfinished workouts and repeat requests are honest
+  [phone] › family.spec.ts:161:1 › failed permission saves preserve parent control, and the family demo fits phones and passes accessibility checks
+  [phone] › grouped-reviews.spec.ts:5:1 › one three-clip review survives partial upload and refresh, starts one deadline and receives one private response
+  [phone] › grouped-reviews.spec.ts:110:1 › canceled selection creates no service; group deletion is explicit and storage remains a finite account cap
+  [phone] › help-socials.spec.ts:7:1 › quick help answers approved questions and closes without storing a conversation
+  [phone] › help-socials.spec.ts:49:1 › unanswered questions hand off to the real inbox without claiming delivery
+  [phone] › help-socials.spec.ts:76:1 › quick help remains readable, keyboard accessible and usable in app help
+  [phone] › help-socials.spec.ts:104:1 › unconfigured socials stay unpublished
+  [phone] › help-socials.spec.ts:114:1 › shared social configuration reaches website, app help and guides with safe external links
+  [phone] › home-package-journey.spec.ts:10:1 › home connects the four shared package stages to learning, practice and parent visibility
+  [phone] › home-package-journey.spec.ts:48:1 › hero compares proposals while express interest opens and focuses the existing email section
+  [phone] › home-package-journey.spec.ts:92:1 › interest intent consumes only its own query flag and remains a usable route after refresh
+  [phone] › home-package-journey.spec.ts:110:1 › home is readable on narrow screens, accessible, honest about availability and retains working demo
+  [phone] › interest-intake.spec.ts:84:1 › short adult interest works by keyboard without account or email-app launch
+  [phone] › interest-intake.spec.ts:136:1 › repeated clicks and a refreshed resubmission produce one saved interest and one alert
+  [phone] › interest-intake.spec.ts:159:1 › lost response retains the draft and reuses the exact idempotency reference on retry
+  [phone] › interest-intake.spec.ts:185:1 › service/limit failures preserve inputs and leave manual email as an explicit secondary fallback
+  [phone] › interest-intake.spec.ts:217:1 › optional launch choice survives an uncertain retry and a changed choice receives a fresh reference
+  [phone] › interest-intake.spec.ts:254:1 › adult declaration is required and navigating away never shows false success on another page
+  [phone] › interest-intake.spec.ts:279:1 › disabled intake retains the existing honest mailto flow and never submits data
+  [phone] › interest-intake.spec.ts:296:1 › interest privacy names the minimal data, staff scope, optional alerts and removal contact
+  [phone] › mobile.spec.ts:6:1 › the app opens private account access and keeps the customer demo on the website
+  [phone] › mobile.spec.ts:39:1 › app navigation and forms fit small phones while the normal website stays intact
+  [phone] › motion.spec.ts:4:1 › real training footage automatically loops silently without any playback or motion buttons
+  [phone] › motion.spec.ts:46:1 › device reduced motion automatically shows a real still with no motion buttons and usable training
+  [phone] › motion.spec.ts:91:1 › unavailable hero videos retain a real poster and never block the website or demo
+  [phone] › motion.spec.ts:124:1 › WebM footage plays if the MP4 request is unavailable
+  [phone] › official-socials.spec.ts:4:1 › owner-verified social links are available on the website, Contact, app help and online guides
+  [phone] › official-socials.spec.ts:46:1 › homepage copy stays concise while licensed imagery credits remain reachable
+  [phone] › package-proposals.spec.ts:10:1 › four future proposals distinguish cadence, price and review terms without checkout
+  [phone] › package-proposals.spec.ts:66:1 › interest scroll preserves route, package selection prepares only an adult email
+  [phone] › package-proposals.spec.ts:113:1 › copy address handles repeated clicks and clipboard denial without a submitted request
+  [phone] › package-proposals.spec.ts:152:1 › availability is above the fold and packages fit narrow screens with accessible controls
+  [phone] › private-workspace.spec.ts:8:1 › one login surface supports recovery, verification and password visibility without a second coach form
+  [phone] › private-workspace.spec.ts:70:3 › owner workspace navigation keeps daily tools and personal settings distinct
+  [phone] › private-workspace.spec.ts:70:3 › manager workspace navigation keeps daily tools and personal settings distinct
+  [phone] › private-workspace.spec.ts:70:3 › coach workspace navigation keeps daily tools and personal settings distinct
+  [phone] › private-workspace.spec.ts:129:1 › Owner access directory is absent in settings and protected self access stays disabled
+  [phone] › private-workspace.spec.ts:175:1 › Owner directory separates loading, failed reads and retry from an empty result
+  [phone] › private-workspace.spec.ts:225:1 › parent training, family profiles and credentials have separate screens with canceled edits
+  [phone] › private-workspace.spec.ts:282:1 › public homepage retains its existing header, hero and footer
+  [phone] › professional-prelaunch.spec.ts:9:1 › public conversion is packages and interest with one clearly fictional optional preview
+  [phone] › professional-prelaunch.spec.ts:44:1 › package progression remains readable at 375/390px and enlarged text without clipping
+  [phone] › professional-prelaunch.spec.ts:95:1 › help scopes operational pilot review limits separately from proposed Elite terms
+  [phone] › professional-prelaunch.spec.ts:120:1 › web-app entry/help use account language and keep TestFlight guidance out of public primary navigation
+  [phone] › release-schedule.spec.ts:4:1 › Owner previews Sunday clock changes, saves a device-only draft and discards edits without scheduling
+  [phone] › release-schedule.spec.ts:54:1 › coaches can read readiness but cannot configure the Owner schedule draft
+  [phone] › review-service.spec.ts:35:1 › one-review request is shared, survives reload and repeated taps, and can be cancelled without payment
+  [phone] › review-service.spec.ts:67:1 › record, preview and send creates one tracked submission with a 48-hour target
+  [phone] › review-service.spec.ts:92:1 › Owner and Manager service desk tracks deadlines, filters, assignments, cancelled edits and refresh
+  [phone] › review-service.spec.ts:184:1 › failed stale service updates stay open and never claim delivery
+  [phone] › review-service.spec.ts:199:1 › opening a review starts work, feedback alone marks shared service delivered
+  [phone] › review-service.spec.ts:242:1 › Owner can open the exact requesting account without searching or retyping
+  [phone] › shared.spec.ts:35:1 › configured shared publishing saves, edits across visitors, and removes a sample resource
+  [phone] › shared.spec.ts:115:1 › signed-in accounts without coach membership never receive publishing controls
+  [phone] › shared.spec.ts:133:1 › staff publishing requires sign-in and allows authorized staff to cancel local destination changes
+  [phone] › shared.spec.ts:175:1 › protected uploads stay out of public demo pages and disappear immediately after sign-out
+  [phone] › sibling-workouts.spec.ts:12:1 › Owner assigns distinct sibling plans; parent completion, selection and history stay separate after refresh
+  [phone] › site-chrome.spec.ts:6:1 › public header and mobile menu show Log in without a universal status strip
+  [phone] › site-chrome.spec.ts:45:3 › owner session restores Dashboard and signout clears header, menu and footer
+  [phone] › site-chrome.spec.ts:45:3 › manager session restores Dashboard and signout clears header, menu and footer
+  [phone] › site-chrome.spec.ts:45:3 › coach session restores Dashboard and signout clears header, menu and footer
+  [phone] › site-chrome.spec.ts:45:3 › parent session restores Dashboard and signout clears header, menu and footer
+  [phone] › site-chrome.spec.ts:45:3 › athlete session restores Dashboard and signout clears header, menu and footer
+  [phone] › site-chrome.spec.ts:125:1 › footer groups navigation and retains five compact accessible social targets on narrow phones
+  [phone] › staff-notifications.spec.ts:154:1 › Owner status separates provider acceptance, uncertain outcomes and disabled capabilities
+  [phone] › staff-notifications.spec.ts:196:1 › interest inbox works without roster rollout and separates loading, empty and retryable error
+  [phone] › staff-notifications.spec.ts:229:1 › Coach direct interest URL is denied before a private inbox read
+  [phone] › staff-notifications.spec.ts:244:1 › Manager sees the shared inbox status and private interest without recipient-edit controls
+  [phone] › staff-notifications.spec.ts:271:1 › Coach renders only scoped jobs and clears revoked assignment results on refresh
+  [phone] › staff-notifications.spec.ts:294:1 › private interest distinguishes unrecorded, unchecked and earlier affirmative launch choices
+  [phone] › staff-notifications.spec.ts:328:1 › Status read failures are retryable and do not retain stale job data
+  [phone] › staff-notifications.spec.ts:356:1 › Parent workspace never loads the staff email projection even with its UI feature flag enabled
+  [phone] › staff-service.spec.ts:12:1 › Owner landing shows all clients, overdue service and private athlete drilldown with honest telemetry
+  [phone] › staff-service.spec.ts:93:1 › Manager can change service coaches; Coach sees assigned athlete and direct sibling URL is denied
+  [phone] › staff-workflows.spec.ts:26:1 › legacy workout links retain guarded assignment, cancellation and replacement confirmation
+  [phone] › staff-workflows.spec.ts:92:3 › manager sees three clear jobs without gaining owner assignment or role administration
+  [phone] › staff-workflows.spec.ts:92:3 › coach sees three clear jobs without gaining owner assignment or role administration
+  [phone] › staff-workflows.spec.ts:127:1 › Owner staff administration expands one account and a canceled change leaves permissions intact
+  [phone] › staff-workflows.spec.ts:162:1 › athlete service keeps assignment context and uncommon settings out of the daily roster
+  [phone] › staff-workflows.spec.ts:204:3 › parent cannot open staff training, assignments or people through copied URLs
+  [phone] › staff-workflows.spec.ts:204:3 › athlete cannot open staff training, assignments or people through copied URLs
+  [phone] › studio-drafts.spec.ts:31:1 › a saved staff draft restores the original file and coaching details after refresh, then publishes once
+  [phone] › studio-drafts.spec.ts:108:1 › incomplete drafts can be saved, removal can be canceled, and sign-out clears device drafts
+  [phone] › studio-drafts.spec.ts:149:1 › device storage failures retain the open form and retry can save without publishing
+  [phone] › studio-drafts.spec.ts:192:1 › a different saved draft requires confirmation before replacement
+  [phone] › studio-drafts.spec.ts:222:1 › editing retains existing purpose, equipment, cue and drill kind
+  [phone] › studio-drafts.spec.ts:264:1 › saved draft metadata is account-scoped and contains neither rights consent nor signed media URLs
+  [phone] › training-workflow.spec.ts:6:1 › a coach submits privately, an Owner reviews, then builds and assigns the approved session
+  [phone] › training-workflow.spec.ts:97:1 › unfinished practice resumes after refresh at the saved drill and finishes exactly once
+  [phone] › training-workflow.spec.ts:154:1 › saved-practice deletion is explicit and cancel keeps the saved place
+  [phone] › training-workflow.spec.ts:194:1 › review queue fits phone widths and keeps accessibility controls readable
+  [phone] › video-review.spec.ts:14:1 › real drill viewer shows media and all steps together and records one completion
+  [phone] › video-review.spec.ts:36:1 › recording can be canceled and unsupported files never upload
+  [phone] › video-review.spec.ts:69:1 › video preview, repeated send clicks and refresh preserve exactly one private submission
+  [phone] › video-review.spec.ts:111:1 › failed upload retries the same submission and deletion requires confirmation
+  [phone] › video-review.spec.ts:141:1 › assigned coach can open a private clip and save feedback once
+  [phone] › video-review.spec.ts:176:1 › Owner can separately assign workouts and optional review access without charging
+  [phone] › video-review.spec.ts:204:1 › multi-drill practice shows the order and next activity, allows review, and never treats playback or canceled practice as completion
+  [phone] › views.spec.ts:24:1 › the public website has one customer demo entry, with parent and solo journeys and no staff gallery
+  [phone] › views.spec.ts:119:1 › old staff preview links require real sign-in and public uploads have no anonymous editor
+  [phone] › views.spec.ts:169:1 › the single parent journey teaches permissions, athlete reporting and parent review with isolated persistent history
+  [phone] › weekly-learning.spec.ts:156:1 › enabled Owner plan opens inside selected athlete, preserves account context and can reach quiz import
+  [phone] › weekly-learning.spec.ts:191:1 › enabled household training uses selected profile and server draft endpoint without posting a trusted grade
+  [phone] › weekly-learning.spec.ts:227:1 › server-backed group choices settle and do not refetch on checkbox changes
+  [phone] › weekly-learning.spec.ts:257:1 › weekly member navigation separates current week, library and recorded grades
+  [phone] › workouts.spec.ts:14:1 › staff composes, reorders, previews and saves a protected workout; Owner assigns the whole session and the athlete records it once
+  [phone] › workouts.spec.ts:137:1 › incompatible drills block preview and never publish a workout
+  [phone] › workouts.spec.ts:157:1 › saved workouts survive refresh; lost save responses retry the same ID and unsaved edits can be kept
+  [phone] › workouts.spec.ts:192:1 › ineligible and conflicting assignments keep existing access unchanged
+  [phone] › workouts.spec.ts:222:1 › removing a template or current assignment requires confirmation
+  [phone] › workouts.spec.ts:268:1 › coach can build own workouts without an account directory or assignment controls
+  [phone] › workouts.spec.ts:280:1 › workout builder fits small phones and has no detected WCAG A/AA violations
+  [phone] › workouts.spec.ts:304:1 › editing a template does not silently replace an account assignment and unsaved changes cannot be assigned
+  [phone] › workouts.spec.ts:356:3 › owner app uses the same three staff jobs and connected training tools
+  [phone] › workouts.spec.ts:356:3 › manager app uses the same three staff jobs and connected training tools
+  [phone] › workouts.spec.ts:356:3 › coach app uses the same three staff jobs and connected training tools
+Total: 364 tests in 32 files

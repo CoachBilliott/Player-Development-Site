@@ -1,0 +1,17 @@
+{
+  "source": "6d0975b86a0dc1ac9f128da244c02b08eb9e91ff",
+  "path": "/workspace/deliverables/roster-023-preview-6d0975b",
+  "files": {
+    "_headers": "40fb4d3f392a65e9287767d12a14e2b3f65ce962ee98d92105efc671c983d6cc",
+    "weekly-learning-help.html": "37fad5ce02394ebbe9ad09558351de76be3b497ece9df9e8679858e5b29643ae",
+    "index.html": "8f25bf33b3eeab94da7c92cb8b4cb7adcf724d777c942f728ea5f7e780972010",
+    "assets/barlow-condensed-latin-700-normal-v1xN8_Wq.woff2": "3787a5a419171630e6890cfa47c4da067474d005cd0ff8dc11ec090fdc3ee2b8",
+    "assets/dm-sans-latin-400-normal-BwCSEQnW.woff": "38702875fe179437d200e7ba6f7fab4d497ffe48117ef332029b2081751186ad",
+    "assets/index-D3I5W15i.css": "73e7717e3db95d75f8630b1b1376f1c4c1268595e240144eaffc4869a722a18b",
+    "assets/index-ClcXfiPk.js": "377b701a924fb2dba1c591ea948dea45e7cc6541788cd4681aa2dbac4b2b53f3",
+    "assets/dm-sans-latin-400-normal-CW0RaeGs.woff2": "4ab51eb2cd7305d177187908d6397474d4520663f6c6e572feb0a64f4fa80006",
+    "assets/barlow-condensed-latin-700-normal-Dmwat-ge.woff": "bd414ee6698edb13ec58b3084b68c1804eeb55acb6b65f628822320dcd1e5431",
+    "templates/repformed-quiz-example.csv": "e3b2029f09b353ec6ab37fc4c4247155f0490f2e144419d7b79ca149de05013a",
+    "templates/repformed-quiz-blank.csv": "8c2cb53971fd8c44aff1310b6662a04d81a883c8820325bd0a98fcbc0bf5befb"
+  }
+}

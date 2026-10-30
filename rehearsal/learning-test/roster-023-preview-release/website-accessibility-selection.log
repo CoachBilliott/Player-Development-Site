@@ -1,0 +1,4 @@
+Listing tests:
+  [desktop] › accessibility.spec.ts:8:1 › main screens have no detected WCAG A/AA violations
+  [phone] › accessibility.spec.ts:8:1 › main screens have no detected WCAG A/AA violations
+Total: 2 tests in 1 file

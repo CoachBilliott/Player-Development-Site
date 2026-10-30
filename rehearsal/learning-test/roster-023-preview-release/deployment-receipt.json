@@ -1,0 +1,34 @@
+{
+  "observed_at": "2026-10-30T01:52:43.625025+00:00",
+  "project": "repformed",
+  "deployment": {
+    "id": "0ac900a0-e7a9-4d53-a49d-0c9deb221020",
+    "environment": "preview",
+    "url": "https://0ac900a0.repformed.pages.dev",
+    "aliases": [
+      "https://learning-auth-rehearsal.repformed.pages.dev"
+    ],
+    "created_on": "2026-10-30T01:52:18.166026Z",
+    "latest_stage": {
+      "name": "deploy",
+      "started_on": null,
+      "ended_on": "2026-10-30T01:52:19.475669Z",
+      "status": "success"
+    }
+  },
+  "source": {
+    "branch": "learning-auth-rehearsal",
+    "commit_hash": "6d0975b86a0dc1ac9f128da244c02b08eb9e91ff",
+    "commit_message": "Read-only roster rehearsal controls",
+    "commit_dirty": false
+  },
+  "production_after": {
+    "id": "bab6aa19-838c-424e-8aa1-d562cb7a88c2",
+    "source": "0816c343a99a76e03ad2e48c7e16207058624c02"
+  },
+  "testflight": "15 unchanged; no native action",
+  "provider_metadata_verified": true,
+  "actual_role_acceptance": "NOT RUN: no fictional session; private sign-in declined",
+  "migration_023": "NOT RUN",
+  "flags_credentials_security_changes": false
+}

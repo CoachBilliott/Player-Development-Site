@@ -1,0 +1,115 @@
+{
+  "source": "6d0975b86a0dc1ac9f128da244c02b08eb9e91ff",
+  "dependency_setup": "npm ci passed in isolated worktree",
+  "stages": [
+    {
+      "stage": "lint",
+      "command": [
+        "npm",
+        "run",
+        "lint"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-10-30T01:23:46.683486+00:00",
+      "ended_at": "2026-10-30T01:23:59.488631+00:00"
+    },
+    {
+      "stage": "types",
+      "command": [
+        "npm",
+        "run",
+        "typecheck"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-10-30T01:23:59.489247+00:00",
+      "ended_at": "2026-10-30T01:24:10.040755+00:00"
+    },
+    {
+      "stage": "unit",
+      "command": [
+        "npm",
+        "test"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-10-30T01:24:10.041122+00:00",
+      "ended_at": "2026-10-30T01:24:49.253772+00:00"
+    },
+    {
+      "stage": "python",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts/tests"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-10-30T01:24:49.254194+00:00",
+      "ended_at": "2026-10-30T01:24:49.723529+00:00"
+    },
+    {
+      "stage": "deno-account",
+      "command": [
+        "npx",
+        "--yes",
+        "deno@2.5.6",
+        "check",
+        "backend/functions/account-lifecycle/index.ts"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-10-30T01:24:49.723855+00:00",
+      "ended_at": "2026-10-30T01:24:51.670103+00:00"
+    },
+    {
+      "stage": "deno-staff",
+      "command": [
+        "npx",
+        "--yes",
+        "deno@2.5.6",
+        "check",
+        "backend/functions/staff-notifications/index.ts"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-10-30T01:24:51.670598+00:00",
+      "ended_at": "2026-10-30T01:24:53.184956+00:00"
+    },
+    {
+      "stage": "deno-intake",
+      "command": [
+        "npx",
+        "--yes",
+        "deno@2.5.6",
+        "check",
+        "backend/functions/interest-intake/index.ts"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-10-30T01:24:53.185328+00:00",
+      "ended_at": "2026-10-30T01:24:54.484762+00:00"
+    },
+    {
+      "stage": "build",
+      "command": [
+        "npm",
+        "run",
+        "build"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-10-30T01:24:54.488399+00:00",
+      "ended_at": "2026-10-30T01:25:10.226618+00:00"
+    },
+    {
+      "stage": "harness-policy",
+      "command": [
+        "npx",
+        "vitest",
+        "run",
+        "--config",
+        "vitest.learning-rehearsal.config.ts"
+      ],
+      "exit_code": 0,
+      "started_at": "2026-10-30T01:25:10.228377+00:00",
+      "ended_at": "2026-10-30T01:25:11.349320+00:00"
+    }
+  ]
+}
