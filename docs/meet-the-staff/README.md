@@ -35,3 +35,9 @@ Before release, the release owner should reconcile any newer main changes, revie
 - Isolated preview suite: 5/5 pass, including six-profile growth.
 - Built production offline reload verified both profiles and both photos available after service-worker activation.
 - Final phone and desktop screenshots visually inspected: complete photos, readable bios and official site branding.
+
+## CI grouped-review test race investigation
+
+At staff commit `484d3aa`, CI run `41102324655` passed 477 browser checks but failed the grouped-review resume test. The downloaded failure trace shows clip 2 file selection beginning at trace time 180491ms and clip 3 at 180646ms while validation still disabled both inputs. The test's `setInputFiles` can populate a disabled input without waiting for the asynchronous handler; the component's existing operation lock correctly ignored the second event. Network trace confirms the retry uploaded only clip 2, leaving clip 3 uploading and submission correctly disabled. No submission-gate regression was found.
+
+Reproduction: adding 250ms to the resumed file metadata read caused the original test to fail at the same Send complete review assertion. Without the delay, 16 repeated baseline cases passed, so repetition alone was insufficient evidence. The corrected test keeps the deliberate slow read, waits for each resume input to be enabled, selects the file, then waits for its existing selected confirmation before proceeding to the next clip. The original 5-second submission assertion is unchanged. Production review logic, safety locks, request limits, deadlines, privacy checks and staff content/photos are unchanged.

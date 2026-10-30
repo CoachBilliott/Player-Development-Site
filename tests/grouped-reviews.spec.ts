@@ -39,8 +39,26 @@ test("one three-clip review survives partial upload and refresh, starts one dead
     .getByRole("button", { name: "Open grouped review", exact: true })
     .click();
   const resumed = page.getByRole("dialog");
-  await resumed.getByLabel("Choose clip 2 to resume").setInputFiles(file);
-  await resumed.getByLabel("Choose clip 3 to resume").setInputFiles(file);
+  // Exercise asynchronous file validation, including slower device/file reads.
+  await page.evaluate(() => {
+    const read = Blob.prototype.arrayBuffer;
+    Blob.prototype.arrayBuffer = async function () {
+      await new Promise((resolve) => setTimeout(resolve, 250));
+      return read.call(this);
+    };
+  });
+  // setInputFiles does not wait for the asynchronous validation handler and can
+  // set disabled inputs. Follow the same enabled/confirmed steps as a user.
+  for (const ordinal of [2, 3]) {
+    const input = resumed.getByLabel(`Choose clip ${ordinal} to resume`);
+    await expect(input).toBeEnabled();
+    await input.setInputFiles(file);
+    await expect(
+      page.getByText(`Clip ${ordinal} selected. Retry remaining uploads.`, {
+        exact: true,
+      }),
+    ).toBeVisible();
+  }
   await resumed
     .getByRole("button", { name: "Retry remaining uploads" })
     .click();
