@@ -1,5 +1,5 @@
 {
-  "observed_at": "2026-10-30T05:35:57.137083+00:00",
+  "observed_at": "2026-10-30T05:55:05.840715+00:00",
   "public_hero": {
     "pr": 23,
     "tested_head": "7900940ab584c062753bfe741b361ec24dfda0f4",
@@ -70,8 +70,14 @@
   },
   "security_credentials_flags_emails_changed": false,
   "native_candidate": {
-    "status": "published internal TestFlight build16",
-    "audit": "390px fixture pass; 320px running; actual live-role/device acceptance unverified"
+    "build": 17,
+    "source": "70052ad3ea4de0fc42beac53bb0138f640d7bd8c",
+    "native_validation": 41006712872,
+    "native_attempt": 2,
+    "native_result": "success incl artifacts",
+    "signed_run": 41010880664,
+    "status": "running; Apple17 not yet confirmed",
+    "duplicate_requests": false
   },
   "post_release_finding": {
     "id": "P2-01",

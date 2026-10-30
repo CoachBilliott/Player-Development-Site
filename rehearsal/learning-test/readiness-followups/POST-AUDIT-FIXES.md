@@ -1,3 +1,11 @@
+## Build17 signed request started after all exact-source gates — October 30
+
+Source **70052ad3**, website **3a46672b**, remains published. Native validation **41006712872 attempt2 SUCCESS**, including simulator, unsigned archive and artifact upload. Exact full artifact12957671018 has six passed/zero failed/skipped tests. Earlier failed-attempt artifact15650bytes was not confused with the successful46MB evidence.
+
+One signed build17 request is now running: **41010880664**, source70052ad. **Apple17 availability not yet confirmed; actual distributed build remains16.** No duplicate upload. After upload success, verify Apple record/internal group, inspect exact IPA/config/asset hashes, rerun the original Coach geometry failure and role fixture audits. No physical/live-role pass is inferred.
+
+Final draft integration18176fd CI41007130150 and same disconnected preview8798e8e8 are complete; production learning, hosted paging, security/recovery and role/device gates remain unchanged.
+
 ## Final combined source and same fictional preview refreshed — October 30
 
 PR #24 head **18176fd093b38a595213ba69a1847c9743475901** passed complete CI **41007130150**: 487 unit/database, 496 website, 10 app/offline, 20 private-preview, 11 Python plus all static/function/build stages. It merges current tested UI; no backend/learning-module diff from previous0d. This draft is not a production learning release.

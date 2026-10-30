@@ -1,0 +1,29 @@
+{
+  "observed_at": "2026-10-30T05:55:05.840715+00:00",
+  "source": "70052ad3ea4de0fc42beac53bb0138f640d7bd8c",
+  "current_website": {
+    "deployment": "3a46672b-b999-4d10-a1da-a674028ff754",
+    "result": "production verified"
+  },
+  "native_validation": {
+    "run": 41006712872,
+    "attempt": 2,
+    "result": "success",
+    "tests": 6,
+    "skipped": 0,
+    "failed": 0,
+    "artifact_id": 12957671018,
+    "artifact_bytes": 46635054,
+    "first_attempt": "DNS failure before tests; normal same-source failed-job retry"
+  },
+  "signed_workflow": {
+    "run": 41010880664,
+    "requested_build": 17,
+    "status": "running",
+    "requests": 1
+  },
+  "current_distributed_build": 16,
+  "apple17_record": "not confirmed",
+  "physical_device": "unverified",
+  "hosted_roles": "unverified"
+}
