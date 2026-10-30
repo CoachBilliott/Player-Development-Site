@@ -42,7 +42,9 @@ const input = {
 };
 function client(reply: unknown, error: unknown = null) {
   const abortSignal = vi.fn().mockResolvedValue({ data: reply, error });
-  const rpc = vi.fn(() => ({ abortSignal }));
+  const rpc = vi.fn((_name: string, _args?: Record<string, unknown>) => ({
+    abortSignal,
+  }));
   return {
     api: new StaffService({ rpc } as unknown as SupabaseClient),
     rpc,
