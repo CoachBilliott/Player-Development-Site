@@ -3,6 +3,7 @@ export default defineConfig({
   testDir: "./preview-tests",
   testMatch: "meet-the-staff.spec.ts",
   workers: 1,
+  outputDir: "test-results-meet-the-staff-preview",
   use: {
     baseURL: "http://127.0.0.1:5177",
     launchOptions: {

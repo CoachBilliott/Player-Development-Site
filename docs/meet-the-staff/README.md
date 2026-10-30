@@ -1,58 +1,37 @@
-# Meet the Staff — unpublished layout review
+# Meet the Staff — production integration awaiting release handoff
 
-Branch: `preview/meet-the-staff`, based on live-main commit `cef1a8c8736e1a8384f2499b3ea15d44716aa7f8`.
+Branch: `preview/meet-the-staff`, rebased onto `9b8caac` on main (approved field/offline image work included). Account-names PR #32 is not included. The user authorized adding both supplied photographs/bios and publishing; the original release owner coordinates merge and production deployment after checks. This worktree does not deploy.
 
-## Review locally
+## Public behavior
 
-- `npx vite --config vite.meet-the-staff.config.ts` → http://127.0.0.1:5177
-- `npx vite build --config vite.meet-the-staff.config.ts` → `dist-meet-the-staff/`
-- `npx playwright test --config playwright.meet-the-staff.config.ts`
-- Screenshots: `artifacts/meet-the-staff/staff-{320,390,768,1440}.png`
+`#staff` renders Victor Bennett (Owner) first, then Devyn Billiott (Co-Owner), in source/read order on every viewport. Access from main/mobile website navigation, the homepage's existing About Repformed section, and footer. Shared site shell supplies the existing official logo, fonts, navigation and footer. Option 09 colors and a two-column desktop/single-column phone grid are retained. Both biographies are one paragraph, using the exact concise copy supplied and approved through the parent conversation. No questionnaire, preview banner, placeholder, duplicate experience panel or private contact details appear on the public page.
 
-This is a separate entry point, excluded from the normal website build. No production routes, navigation, account permissions or backend configuration change. Nothing is deployed. Noindex is an indexing request, not access control; do not host this publicly without separate authorization.
+Public titles are content only and do not grant or modify account roles. No backend, enrollment, account settings or permission changes. Self-reported experience comes from the actual submitted forms, not independent credential verification. Victor's biography says more than 20 years developing young athletes; it does not claim 25 years coaching or guaranteed outcomes. No school endorsement is asserted.
 
-## Design and content
+## Photo provenance and quality
 
-Uses the exact existing `public/brand/repformed-mark.svg`, DM Sans, Barlow Condensed and Option 09 palette. Two profiles stack on phones and form two columns on larger screens. Additional profiles wrap in the same grid. Headshots use a stable crop with face-friendly upper positioning. Profile text stays visible without expansion controls.
+Both photo-to-repository copies were explicitly approved by the user. Exact supplied bytes are preserved without AI alteration, stretching, sharpening or recompression. Actual source pixels were visually inspected before placement. CSS `object-fit: cover` preserves proportions, with separate positions for each portrait: Victor center 15%, Devyn center 56%. The maximum card width is below both native image widths. Photographs join the approved static public shell cache so staff content is complete offline; no private uploads/API records are cached.
 
-Devyn Billiott’s Co-Owner title and one-paragraph biography now come from his submitted questionnaire, as provided by the parent thread. Experience claims are self-reported and have not been independently verified. His verified Drive-rendered WEBP rendition is included without recompression. The partner remains an explicitly unpublished pending slot with no invented identity or credentials. `PublicStaffProfile` includes only approved public content; never derive its title from an authenticated account role. Do not include private email, phone, access level or account identifiers.
+- Victor: exact JPEG, 942 × 1536, 245,413 bytes. GitHub blob `b1b2b997125bb161acc963499cda95c57d71ebac`; SHA256 `e06cf73e6782e287a0e7fbf90f1d78073f7b9292c0c57e7268a3f6a253e41c47`. Supplied Library identity `libfile_2fa7c80fdb6c8191834aa57f24f7df6c`, version 0.
+- Devyn: verified Drive-rendered WEBP rendition of his uploaded JPEG, 1067 × 1600, 87,804 bytes. GitHub blob `e400eb1a07b6113ed4c6e5bb7873d9f6f3bfa222`; SHA256 `13e1fb44ff1ef7ed7fb6174b9000eca7cd3aabec22c8bdf32e5dd804bb432aa7`. Supplied Library identity `libfile_a615367c2a6081919bc884b86b990330`, version 0. This is not represented as the original JPEG.
 
-## Proposed integration after approval
+## Review and validation
 
-Add a “Meet the staff” link in the homepage's existing `#about-repformed` section and introduce a dedicated public page. Keep “Meet the Staff” broad enough for owners, coaches, managers and support staff. Production navigation remains untouched in this draft.
+- Website: `npm run dev` → `http://127.0.0.1:5173/#staff`
+- Build: `npm run build`
+- Focused browser checks: `npx playwright test tests/meet-the-staff.spec.ts`
+- Isolated internal review entry: `npx vite --config vite.meet-the-staff.config.ts`. Only that isolated wrapper labels itself unpublished. Its page component and staff data are shared with production; no duplicate biographies.
+- Full production screenshot artifacts: `artifacts/meet-the-staff/production-{320,390,768,1024,1440}.png`
+- Saved [phone](screenshots/phone.png) and [desktop](screenshots/desktop.png) images show the actual integrated site.
 
-Before integration, review Devyn’s photo framing and replace the partner slot with their questionnaire response and approved headshot; verify each experience claim, public title, spelling, photo consent and concise bio with each person. Remove preview-only banner/note only when real profiles are approved. Reuse the component's content contract, retain the semantic headings and responsive grid, then review it in the actual shared site shell. No backend changes are needed for this layout.
+Before release, the release owner should reconcile any newer main changes, review the final screenshots and CI, merge through normal repository gates, and deploy once. This document is not a claim of production publication.
 
-## Validation
+## Completed checks for release handoff
 
-- TypeScript and ESLint pass.
-- Existing unit suite: 35 files, 379 tests pass.
-- Normal website build and isolated preview build pass.
-- Five Playwright checks pass: 320/390/768/1440px layouts and six-profile growth.
-- Axe reports zero violations at all four widths; no horizontal overflow or page errors.
-- Phone screenshot visually reviewed; screenshots are local review artifacts, not deployed pages.
-
-## Saved screenshots
-
-- [Phone, 390px](screenshots/phone.png)
-- [Desktop, 1440px](screenshots/desktop.png)
-
-These contain preview placeholders only. They are review artifacts, not published staff profiles.
-
-## Devyn profile revision
-
-Uses the exact biography supplied for review, as one paragraph. No repeated experience panel or private contact/account details. The supplied Drive-rendered rendition is integrated; no substitute portrait is used. The partner has no invented name, title or credentials. Nothing is published.
-
-## Approved order
-
-Victor Bennett appears first and Devyn Billiott second in source/reading order at every viewport. Victor’s name and placement were supplied by the user; his title, biography and headshot remain pending. Devyn’s biography is approved. No profiles are published.
-
-## Devyn photo provenance and quality
-
-User authorized copying his uploaded headshot to this repository. The included file is the verified Drive-rendered rendition of that upload, not the original JPEG. Bytes were retrieved from GitHub blob `e400eb1a07b6113ed4c6e5bb7873d9f6f3bfa222`, verified and copied unchanged. WEBP, 1067 × 1600, 87,804 bytes; SHA256 `13e1fb44ff1ef7ed7fb6174b9000eca7cd3aabec22c8bdf32e5dd804bb432aa7`. Library identity supplied by parent: `libfile_a615367c2a6081919bc884b86b990330`, version 0.
-
-Actual pixels were inspected before integration. CSS object-fit preserves proportions; center 56% framing removes excess upper background while retaining face and headset. No AI alteration, sharpening, stretching or recompression. Maximum desktop card width is below the available image width; higher-density screens may reveal the rendition’s native detail limit. Responsive checks verify successful 1067 × 1600 image loading and no CSS enlargement beyond native width. Victor remains first with pending photo and content; Devyn remains second with approved biography. Still no merge or deployment.
-
-## Victor submitted biography
-
-Victor Bennett’s first profile now uses the exact supplied concise biography and public title Owner. Experience is self-reported in verified form response 2 of 2; the copy says more than 20 years developing young athletes, not 25 years coaching, and makes no guaranteed college-outcome claim. No account roles change. Devyn remains second and unchanged. Victor’s photo is still pending explicit repository-copy approval and exact bytes from the parent; no retrieval or upload has been attempted. Final responsive/test/screenshot refresh is intentionally deferred until that photo arrives, per the assignment.
+- Full TypeScript and ESLint pass; 35 unit files / 379 tests pass; 11 Python script tests pass.
+- Production and isolated builds pass (existing bundle-size warning remains).
+- Production staff + mobile-app regression run: 16/16 pass, covering five widths (320/390/768/1024/1440), both profiles/photos, route focus, navigation/footer/About links, no placeholder copy, and axe WCAG checks.
+- Homepage/package, Contact and approved-field regression checks pass on desktop and phone. Initial browser-output folder collision was corrected by giving the isolated suite its own output directory; affected mobile tests and the corrected mobile-nav assertion were rerun successfully.
+- Isolated preview suite: 5/5 pass, including six-profile growth.
+- Built production offline reload verified both profiles and both photos available after service-worker activation.
+- Final phone and desktop screenshots visually inspected: complete photos, readable bios and official site branding.

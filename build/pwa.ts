@@ -13,6 +13,8 @@ export function appShell(): Plugin {
         "manifest.webmanifest",
         "favicon.svg",
         "brand/repformed-mark.svg",
+        "staff/victor-bennett.jpg",
+        "staff/devyn-billiott.webp",
         "media/training-poster.jpg",
         "media/family-football.jpg",
         "media/solo-football.jpg",

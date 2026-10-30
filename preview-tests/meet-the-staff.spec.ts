@@ -17,7 +17,7 @@ for (const width of [320, 390, 768, 1440]) {
     await expect(page.getByRole("article").nth(1)).toHaveAccessibleName(
       "Devyn Billiott",
     );
-    await expect(page.getByText("Headshot pending")).toHaveCount(1);
+    await expect(page.getByText("Headshot pending")).toHaveCount(0);
     const devyn = page.getByRole("article", { name: "Devyn Billiott" });
     await expect(devyn.getByText("Co-Owner", { exact: true })).toBeVisible();
     await expect(devyn.locator(".staff-bio")).toHaveCount(1);
