@@ -1,0 +1,11 @@
+
+Running 4 tests using 1 worker
+
+(node:37867) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  1 .player-development-setup/build18-roster-geometry-tests/geometry.spec.ts:5:66 › owner: Refresh stays inside roster card content at small widths (791ms)
+  ✓  2 .player-development-setup/build18-roster-geometry-tests/geometry.spec.ts:5:66 › manager: Refresh stays inside roster card content at small widths (665ms)
+  ✓  3 .player-development-setup/build18-roster-geometry-tests/geometry.spec.ts:5:66 › coach: Refresh stays inside roster card content at small widths (613ms)
+  ✓  4 .player-development-setup/build18-roster-geometry-tests/geometry.spec.ts:5:66 › unassigned_coach: Refresh stays inside roster card content at small widths (647ms)
+
+  4 passed (3.8s)

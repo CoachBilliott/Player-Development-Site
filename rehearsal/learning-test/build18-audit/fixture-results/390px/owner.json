@@ -1,0 +1,92 @@
+{
+  "role": "owner",
+  "build": 18,
+  "source": "b54fd92fdaf7d19bb742f3566d569072cc16a1db",
+  "method": "Exact signed Build18 IPA web assets in local Chromium app-mode; fake backend and adults only; not physical iOS/live service acceptance",
+  "browser": "154.0.8037.57",
+  "viewport": "390×844",
+  "network": "loopback; service workers blocked; reduced motion; external requests denied; no real emails/accounts",
+  "samples": [
+    {
+      "ready_heading": "Athletes.",
+      "ready_ui_ms": 447.3,
+      "dom_content_loaded_ms": 172.30000000074506,
+      "load_ms": 172.40000000037253,
+      "first_contentful_paint_ms": 272,
+      "dom_elements": 206,
+      "scroll_width": 390,
+      "viewport_width": 390
+    },
+    {
+      "ready_heading": "Athletes.",
+      "ready_ui_ms": 369.9,
+      "dom_content_loaded_ms": 138.19999999925494,
+      "load_ms": 138.2999999988824,
+      "first_contentful_paint_ms": 208,
+      "dom_elements": 206,
+      "scroll_width": 390,
+      "viewport_width": 390
+    },
+    {
+      "ready_heading": "Athletes.",
+      "ready_ui_ms": 456.9,
+      "dom_content_loaded_ms": 172,
+      "load_ms": 172.10000000149012,
+      "first_contentful_paint_ms": 260,
+      "dom_elements": 206,
+      "scroll_width": 390,
+      "viewport_width": 390
+    },
+    {
+      "ready_heading": "Athletes.",
+      "ready_ui_ms": 440.7,
+      "dom_content_loaded_ms": 156.90000000037253,
+      "load_ms": 157,
+      "first_contentful_paint_ms": 256,
+      "dom_elements": 206,
+      "scroll_width": 390,
+      "viewport_width": 390
+    },
+    {
+      "ready_heading": "Athletes.",
+      "ready_ui_ms": 402.3,
+      "dom_content_loaded_ms": 145.90000000037253,
+      "load_ms": 146.09999999962747,
+      "first_contentful_paint_ms": 220,
+      "dom_elements": 206,
+      "scroll_width": 390,
+      "viewport_width": 390
+    }
+  ],
+  "median_ready_ui_ms": 440.7,
+  "journey": [
+    {
+      "task": "Default app navigation",
+      "links": [
+        "Athletes",
+        "Training",
+        "Staff",
+        "Account"
+      ]
+    },
+    {
+      "task": "Open assigned/authorized athlete detail",
+      "clicks": 1,
+      "focus": {
+        "tag": "BUTTON",
+        "text": "",
+        "inside": true
+      },
+      "actions": [
+        "",
+        "Assign training ",
+        "Back to athletes"
+      ]
+    },
+    {
+      "task": "Open account from role workspace",
+      "clicks": 3,
+      "heading": "Account settings."
+    }
+  ]
+}

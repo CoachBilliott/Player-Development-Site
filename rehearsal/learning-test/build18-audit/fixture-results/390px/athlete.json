@@ -1,0 +1,78 @@
+{
+  "role": "athlete",
+  "build": 18,
+  "source": "b54fd92fdaf7d19bb742f3566d569072cc16a1db",
+  "method": "Exact signed Build18 IPA web assets in local Chromium app-mode; fake backend and adults only; not physical iOS/live service acceptance",
+  "browser": "154.0.8037.57",
+  "viewport": "390×844",
+  "network": "loopback; service workers blocked; reduced motion; external requests denied; no real emails/accounts",
+  "samples": [
+    {
+      "ready_heading": "Today’s training.",
+      "ready_ui_ms": 463.9,
+      "dom_content_loaded_ms": 171.30000000074506,
+      "load_ms": 171.5,
+      "first_contentful_paint_ms": 276,
+      "dom_elements": 106,
+      "scroll_width": 390,
+      "viewport_width": 390
+    },
+    {
+      "ready_heading": "Today’s training.",
+      "ready_ui_ms": 433.9,
+      "dom_content_loaded_ms": 174.09999999962747,
+      "load_ms": 174.30000000074506,
+      "first_contentful_paint_ms": 280,
+      "dom_elements": 105,
+      "scroll_width": 390,
+      "viewport_width": 390
+    },
+    {
+      "ready_heading": "Today’s training.",
+      "ready_ui_ms": 456.2,
+      "dom_content_loaded_ms": 169.30000000074506,
+      "load_ms": 169.59999999962747,
+      "first_contentful_paint_ms": 268,
+      "dom_elements": 106,
+      "scroll_width": 390,
+      "viewport_width": 390
+    },
+    {
+      "ready_heading": "Today’s training.",
+      "ready_ui_ms": 541.6,
+      "dom_content_loaded_ms": 181.90000000037253,
+      "load_ms": 182.30000000074506,
+      "first_contentful_paint_ms": 280,
+      "dom_elements": 106,
+      "scroll_width": 390,
+      "viewport_width": 390
+    },
+    {
+      "ready_heading": "Today’s training.",
+      "ready_ui_ms": 462.3,
+      "dom_content_loaded_ms": 167.80000000074506,
+      "load_ms": 167.90000000037253,
+      "first_contentful_paint_ms": 268,
+      "dom_elements": 106,
+      "scroll_width": 390,
+      "viewport_width": 390
+    }
+  ],
+  "median_ready_ui_ms": 462.3,
+  "journey": [
+    {
+      "task": "Default app navigation",
+      "links": [
+        "Today",
+        "Workouts",
+        "Progress",
+        "Account"
+      ]
+    },
+    {
+      "task": "Open account from role workspace",
+      "clicks": 1,
+      "heading": "Account settings."
+    }
+  ]
+}

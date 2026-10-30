@@ -1,0 +1,84 @@
+{
+  "role": "signed_out",
+  "build": 18,
+  "source": "b54fd92fdaf7d19bb742f3566d569072cc16a1db",
+  "method": "Exact signed Build18 IPA web assets in local Chromium app-mode; fake backend and adults only; not physical iOS/live service acceptance",
+  "browser": "154.0.8037.57",
+  "viewport": "390×844",
+  "network": "loopback; service workers blocked; reduced motion; external requests denied; no real emails/accounts",
+  "samples": [
+    {
+      "ready_heading": "YOUR TRAINING\nSTARTS HERE.",
+      "ready_ui_ms": 391,
+      "dom_content_loaded_ms": 199.7000000011176,
+      "load_ms": 199.90000000037253,
+      "first_contentful_paint_ms": 344,
+      "dom_elements": 75,
+      "scroll_width": 390,
+      "viewport_width": 390
+    },
+    {
+      "ready_heading": "YOUR TRAINING\nSTARTS HERE.",
+      "ready_ui_ms": 313.7,
+      "dom_content_loaded_ms": 156.30000000074506,
+      "load_ms": 156.40000000037253,
+      "first_contentful_paint_ms": null,
+      "dom_elements": 75,
+      "scroll_width": 390,
+      "viewport_width": 390
+    },
+    {
+      "ready_heading": "YOUR TRAINING\nSTARTS HERE.",
+      "ready_ui_ms": 332.4,
+      "dom_content_loaded_ms": 183.5,
+      "load_ms": 183.80000000074506,
+      "first_contentful_paint_ms": null,
+      "dom_elements": 75,
+      "scroll_width": 390,
+      "viewport_width": 390
+    },
+    {
+      "ready_heading": "YOUR TRAINING\nSTARTS HERE.",
+      "ready_ui_ms": 329.5,
+      "dom_content_loaded_ms": 198.2000000011176,
+      "load_ms": 198.40000000037253,
+      "first_contentful_paint_ms": null,
+      "dom_elements": 75,
+      "scroll_width": 390,
+      "viewport_width": 390
+    },
+    {
+      "ready_heading": "YOUR TRAINING\nSTARTS HERE.",
+      "ready_ui_ms": 335.1,
+      "dom_content_loaded_ms": 185.69999999925494,
+      "load_ms": 185.90000000037253,
+      "first_contentful_paint_ms": 308,
+      "dom_elements": 75,
+      "scroll_width": 390,
+      "viewport_width": 390
+    }
+  ],
+  "median_ready_ui_ms": 332.4,
+  "journey": [
+    {
+      "task": "Header help remains separate from account heading",
+      "help": {
+        "x": 326,
+        "y": 12,
+        "width": 44,
+        "height": 44
+      },
+      "tag": {
+        "x": 20,
+        "y": 97,
+        "width": 123.78125,
+        "height": 14
+      },
+      "same_line": false
+    },
+    {
+      "task": "Welcome → login → help; no credentials sent",
+      "clicks": 2
+    }
+  ]
+}

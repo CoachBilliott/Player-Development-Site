@@ -1,5 +1,5 @@
 {
-  "observed_at": "2026-10-30T06:56:02.296259+00:00",
+  "observed_at": "2026-10-30T07:47:36.967767+00:00",
   "public_hero": {
     "pr": 23,
     "tested_head": "7900940ab584c062753bfe741b361ec24dfda0f4",
@@ -70,21 +70,11 @@
   },
   "actual_native": {
     "version": "0.1.0",
-    "build": 17,
-    "signed_workflow": 41010880664,
-    "attempt": 1,
-    "result": "success",
-    "apple_status_workflow": 41011715032,
-    "apple_checked_at": "2026-10-30T06:02:13.313Z",
-    "apple_build_id": "e46dceaa-762e-4831-bac9-236325c3a78e",
-    "processing": "VALID",
-    "internal_state": "IN_BETA_TESTING",
-    "group": "Owner Testing",
-    "group_explicitly_includes_build": true,
-    "external_state": "READY_FOR_BETA_SUBMISSION; not externally released",
-    "ipa_sha256": "39d0df3309292d9569160a3176edd438e70652281c44f37676817644a6aaaf58",
-    "ipa_bytes": 16368251,
-    "source": "70052ad3ea4de0fc42beac53bb0138f640d7bd8c",
+    "build": 18,
+    "source": "b54fd92fdaf7d19bb742f3566d569072cc16a1db",
+    "signed_run": 41018447424,
+    "apple_receipt_run": 41019263982,
+    "apple_status": "VALID / IN_BETA_TESTING",
     "physical_install": "unverified"
   },
   "security_credentials_flags_emails_changed": false,
@@ -92,7 +82,7 @@
     "build": 18,
     "source": "b54fd92fdaf7d19bb742f3566d569072cc16a1db",
     "native_validation": 41015701802,
-    "status": "native validation success; single signed41018447424 running; Apple18 not confirmed",
+    "status": "Build18 released and accessible audit complete; newP3 drill-label correction running locally",
     "signed_run": 41018447424
   },
   "post_release_finding": {
@@ -131,7 +121,7 @@
     "geometry": 4,
     "native_simulator": 6,
     "new_p2_regressions": 0,
-    "remaining_minor_copy": "fixed in source-only PR26; not yet website/native release",
+    "remaining_minor_copy": "P3 one-drill/clip resource labels; small source-only correction in progress",
     "production_private_roles": "unverified",
     "physical_device": "unverified",
     "weekly_learning": "draft/off/hosted-unaccepted"
