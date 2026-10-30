@@ -1,0 +1,58 @@
+{
+  "role": "guardian",
+  "build": 16,
+  "source": "51841292d0f286fe916155633d39506c742d47e9",
+  "method": "Exact signed Build16 IPA web assets in local Chromium app-mode; fake backend and adults only; not physical iOS/live service acceptance",
+  "browser": "154.0.8037.57",
+  "viewport": "320×568",
+  "network": "loopback; service workers blocked; reduced motion; external requests denied; no real emails/accounts",
+  "samples": [
+    {
+      "ready_heading": "Today’s training.",
+      "ready_ui_ms": 469.8,
+      "dom_content_loaded_ms": 176.6999999997206,
+      "load_ms": 177.1999999997206,
+      "first_contentful_paint_ms": 260,
+      "dom_elements": 106,
+      "scroll_width": 320,
+      "viewport_width": 320
+    },
+    {
+      "ready_heading": "Today’s training.",
+      "ready_ui_ms": 524,
+      "dom_content_loaded_ms": 178.5,
+      "load_ms": 178.70000000018626,
+      "first_contentful_paint_ms": 248,
+      "dom_elements": 106,
+      "scroll_width": 320,
+      "viewport_width": 320
+    },
+    {
+      "ready_heading": "Today’s training.",
+      "ready_ui_ms": 427.2,
+      "dom_content_loaded_ms": 185.10000000009313,
+      "load_ms": 185.3000000002794,
+      "first_contentful_paint_ms": 272,
+      "dom_elements": 105,
+      "scroll_width": 320,
+      "viewport_width": 320
+    }
+  ],
+  "median_ready_ui_ms": 469.8,
+  "journey": [
+    {
+      "task": "Default app navigation",
+      "links": [
+        "Today",
+        "Workouts",
+        "Progress",
+        "Account"
+      ]
+    },
+    {
+      "task": "Open account from role workspace",
+      "clicks": 1,
+      "heading": "Account settings."
+    }
+  ]
+}

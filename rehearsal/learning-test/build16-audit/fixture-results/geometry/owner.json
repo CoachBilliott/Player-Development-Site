@@ -1,0 +1,40 @@
+{
+  "role": "owner",
+  "source": "51841292d0f286fe916155633d39506c742d47e9",
+  "method": "Exact signed IPA assets; loopback/fictional fixture, not live role",
+  "rows": [
+    {
+      "width": 320,
+      "card_left": 20,
+      "card_right": 300,
+      "content_left": 36,
+      "content_right": 284,
+      "refresh_left": 185.84375,
+      "refresh_right": 283,
+      "refresh_height": 44,
+      "page_overflow": false
+    },
+    {
+      "width": 375,
+      "card_left": 20,
+      "card_right": 355,
+      "content_left": 36,
+      "content_right": 339,
+      "refresh_left": 240.84375,
+      "refresh_right": 338,
+      "refresh_height": 44,
+      "page_overflow": false
+    },
+    {
+      "width": 390,
+      "card_left": 20,
+      "card_right": 370,
+      "content_left": 36,
+      "content_right": 354,
+      "refresh_left": 255.84375,
+      "refresh_right": 353,
+      "refresh_height": 44,
+      "page_overflow": false
+    }
+  ]
+}
