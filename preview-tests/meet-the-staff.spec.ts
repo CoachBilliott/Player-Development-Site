@@ -11,6 +11,12 @@ for (const width of [320, 390, 768, 1440]) {
       "Meet the staff",
     );
     await expect(page.getByRole("article")).toHaveCount(2);
+    await expect(page.getByRole("article").nth(0)).toHaveAccessibleName(
+      "Victor Bennett",
+    );
+    await expect(page.getByRole("article").nth(1)).toHaveAccessibleName(
+      "Devyn Billiott",
+    );
     await expect(page.getByText("Headshot pending")).toHaveCount(2);
     const devyn = page.getByRole("article", { name: "Devyn Billiott" });
     await expect(devyn.getByText("Co-Owner", { exact: true })).toBeVisible();

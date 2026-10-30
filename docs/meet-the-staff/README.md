@@ -42,3 +42,7 @@ These contain preview placeholders only. They are review artifacts, not publishe
 ## Devyn profile revision
 
 Uses the exact biography supplied for review, as one paragraph. No repeated experience panel or private contact/account details. Awaiting the original headshot bytes before final visual completion; no substitute portrait is used. The partner has no invented name, title or credentials. Nothing is published.
+
+## Approved order
+
+Victor Bennett appears first and Devyn Billiott second in source/reading order at every viewport. Victor’s name and placement were supplied by the user; his title, biography and headshot remain pending. Devyn’s biography is approved. No profiles are published.

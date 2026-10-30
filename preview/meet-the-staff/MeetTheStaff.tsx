@@ -82,8 +82,8 @@ export function MeetTheStaff({ profiles }: { profiles: PublicStaffProfile[] }) {
           <h2 id="review-title">Real people. Approved profiles.</h2>
           <p>
             Devyn’s biography uses his submitted questionnaire. His headshot is
-            pending, and the partner profile is awaiting submission. All
-            profiles remain unpublished until final review.
+            pending, and Victor’s profile is awaiting submission. All profiles
+            remain unpublished until final review.
           </p>
         </section>
       </main>
