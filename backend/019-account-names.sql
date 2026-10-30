@@ -47,6 +47,9 @@ declare current_version integer;
 begin
   if auth.uid() is null then raise exception 'Sign in is required.'; end if;
   if expected_user_id is distinct from auth.uid() then raise exception 'The signed-in account changed. Reload before saving.'; end if;
+  -- Match lifecycle ordering: closure advisory lock before the member/name rows.
+  -- A save that waits for closure must re-check eligibility after that commit.
+  perform pg_advisory_xact_lock(hashtextextended(auth.uid()::text,1011));
   -- Serialize first saves too; only auth.uid() determines the write target.
   perform 1 from public.member_accounts where user_id=auth.uid() for update;
   if not public.can_save_account_name() then raise exception 'Verified adult setup is required and this account must not be closing or parent-managed.'; end if;

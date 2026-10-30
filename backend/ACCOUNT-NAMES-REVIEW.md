@@ -38,7 +38,10 @@ The self-save RPC derives ownership from `auth.uid()` and checks a matching
 expected user ID, verified email, completed adult setup, no guardian management,
 and no cleaning/failed account closure. The extra expected ID rejects a request
 that starts while the browser changes users. A member-account row lock serializes
-first saves; a separate name version rejects stale writes. It does not alter role
+first saves; a separate name version rejects stale writes. Saves acquire the
+same per-account lifecycle advisory lock (hash seed 1011) before member/name
+row locks, so closure initiation and cleanup serialize without reversing their
+lock order. Eligibility is checked after acquiring those locks. It does not alter role
 versions, invitations, role audits, authority or privacy settings. SQL-definer
 functions use an empty search path and explicit authenticated-only EXECUTE;
 the internal eligibility helper is not callable by application roles.
@@ -105,3 +108,14 @@ Playwright covers name edit/save/cancel/removal, validation, offline behavior,
 reload after failure, user switching, duplicate-name disambiguation and unchanged
 role confirmation/cancellation, at desktop and iPhone viewport sizes. Existing
 account, lifecycle, private workspace and staff-workflow suites are run alongside.
+
+The optional real-Postgres concurrency regression is
+`node scripts/test-account-name-closure-lock.mjs`. It uses a pinned Postgres 17
+Docker image on the managed local daemon, with no host ports or production
+connection. It applies 001–019 to synthetic schema/accounts, observes actual
+advisory-lock waits in both race directions, verifies name writers wait before
+member row locks, re-checks closure eligibility after wake-up, and confirms
+cleanup cascades the name while leaving the role unchanged. The container and
+its temporary database are removed afterward. This does not replace hosted
+Supabase rehearsal/advisors. Migration 019 must still be applied and verified
+before publishing the frontend; no missing-RPC fallback is introduced.
