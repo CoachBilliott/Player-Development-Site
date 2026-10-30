@@ -1,0 +1,33 @@
+{
+  "verified_at": "2026-10-30T03:51:22.583640+00:00",
+  "source": "51841292d0f286fe916155633d39506c742d47e9",
+  "deployment_id": "448dc0cd-2b6a-41ed-ae0f-5b7d1c57586b",
+  "url": "https://448dc0cd.repformed.pages.dev",
+  "canonical_url": "https://repformed.com",
+  "environment": "production",
+  "created_on": "2026-10-30T03:50:55.092494Z",
+  "stage": {
+    "name": "deploy",
+    "started_on": null,
+    "ended_on": "2026-10-30T03:50:56.678187Z",
+    "status": "success"
+  },
+  "entry": "./assets/index-Dx3RR7Rj.js",
+  "config_sha256": "bce7ca9fc4b5806db2b10d51e0ef06a04c455bf36d145d331409bb94b0f1c39c",
+  "normal_auth": true,
+  "public_signup": false,
+  "learning": false,
+  "main_ci": {
+    "id": 40998246749,
+    "result": "success"
+  },
+  "artifact_smoke": {
+    "desktop_phone": 8,
+    "result": "passed"
+  },
+  "upload_attempts": 1,
+  "testflight_build": 15,
+  "native_release": "not uploaded; exact-main simulator gate running",
+  "public_browser": "not verified by this executor; known frontend restriction not retried or bypassed",
+  "backend_security_credentials_changed": false
+}

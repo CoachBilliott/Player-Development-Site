@@ -1,3 +1,9 @@
+## Production publication confirmed — October 30, 03:51 UTC
+
+The public hero cleanup is now production source `51841292`, Cloudflare `448dc0cd-2b6a-41ed-ae0f-5b7d1c57586b`, successful at 03:50:56 UTC. Exact main CI 40998246749 is GREEN in all stages; 378 unit/database, 426 website, 10 app/offline, 6 private-preview, 11 Python plus static/function/build gates. Fresh normal-auth build and eight artifact smoke checks passed; config hash unchanged. See [exact receipt](../hero-control-release/README.md). Independent live browser QA remains pending, not inferred from provider metadata. TestFlight still 15; exact-main native validation runs before any upload.
+
+Integration CI 40997249659 passed website/app but failed two private-preview roster cases because the fictional bridge lacked the SDK cancellation interface. The isolated bridge is repaired; all 20 private-preview checks plus lint and clean types now pass locally. Final source/aggregate CI follows. This draft is not deployed. Active hosted sessions and test flags remain untouched; corrected 023 real-role paging acceptance is still open.
+
 ## Latest release stage — October 30
 
 PR #23 has merged as `51841292d0f286fe916155633d39506c742d47e9`. Exact branch CI 40996856102 passed 378 unit/database, 426 website, 10 app/offline, 6 private-preview and 11 Python checks plus lint/types/functions/build. The merged tree is identical to that tested head. Fresh normal-Auth production build and eight built-artifact desktop/phone smoke cases passed; config hash remains `bce7ca9...f1c39c`. Main CI 40998246749 and exact-main native validation 40998267444 are running. **No production upload yet; website remains 0816c343/bab6aa19 and TestFlight remains 15.**
