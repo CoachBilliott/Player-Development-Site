@@ -41,6 +41,7 @@ function StaffDashboard({
         actor={shared.session!.user.id}
         role={role}
         enabled={shared.staffRosterEnabled}
+        serverPaging={shared.staffRosterPagingEnabled}
         monitoring={shared.deliveryMonitoringEnabled}
         operationalEmails={shared.staffNotificationEmailsEnabled}
         learningEnabled={shared.learningPlansEnabled}

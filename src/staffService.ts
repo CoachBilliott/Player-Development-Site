@@ -124,12 +124,53 @@ export const rosterSchema = z.object({
     .optional(),
 });
 export type ServiceRoster = z.infer<typeof rosterSchema>;
+export const rosterPageInput = z.object({
+  search: z.string().trim().max(160),
+  status: z.enum(["all", "overdue", "blocked", "ready", "unassigned"]),
+  age: z.string().max(80),
+  position: z.string().max(80),
+  coach: z.union([z.literal(""), z.literal("none"), z.string().uuid()]),
+  number: z.number().int().min(1).max(1000000),
+  size: z.number().int().min(1).max(100),
+});
+export type RosterPageInput = z.infer<typeof rosterPageInput>;
+const count = z.number().int().nonnegative();
+export const rosterPageSchema = rosterSchema
+  .extend({
+    page: z.object({
+      number: z.number().int().positive(),
+      size: z.number().int().min(1).max(100),
+      pages: z.number().int().positive(),
+      total: count,
+      matched: count,
+      athletes: count,
+      clients: count,
+      counts: z.object({ overdue: count, attention: count, ready: count }),
+      ages: z.array(z.string()),
+      positions: z.array(z.string()),
+      coaches: z.array(z.object({ id: z.string().uuid(), label: z.string() })),
+    }),
+  })
+  .refine(
+    ({ rows, page }) =>
+      page.number <= page.pages &&
+      page.matched <= page.total &&
+      page.pages === Math.max(1, Math.ceil(page.matched / page.size)) &&
+      rows.length ===
+        Math.min(
+          page.size,
+          Math.max(0, page.matched - (page.number - 1) * page.size),
+        ),
+    "The roster page response is inconsistent. Refresh before continuing.",
+  );
+export type ServiceRosterPage = z.infer<typeof rosterPageSchema>;
 export class StaffService {
   constructor(readonly client: SupabaseClient) {}
-  async roster() {
-    const { data, error } = await this.client.rpc(
-      "staff_client_service_roster",
-    );
+  async roster(signal?: AbortSignal) {
+    const request = this.client.rpc("staff_client_service_roster");
+    const { data, error } = await (signal
+      ? request.abortSignal(signal)
+      : request);
     if (error)
       throw new Error(
         "Client service records could not be loaded. The reviewed dashboard migration and connection are required.",
@@ -140,19 +181,20 @@ export class StaffService {
     filters: RosterFilters,
     cursor: RosterCursor | null = null,
     size = 25,
+    signal?: AbortSignal,
   ) {
-    const { data, error } = await this.client.rpc(
-      "staff_learning_roster_page",
-      {
-        search_text: filters.query,
-        status_filter: filters.filter,
-        age_filter: filters.age,
-        position_filter: filters.position,
-        coach_filter: filters.coach,
-        after_cursor: cursor,
-        page_size: size,
-      },
-    );
+    const request = this.client.rpc("staff_learning_roster_page", {
+      search_text: filters.query,
+      status_filter: filters.filter,
+      age_filter: filters.age,
+      position_filter: filters.position,
+      coach_filter: filters.coach,
+      after_cursor: cursor,
+      page_size: size,
+    });
+    const { data, error } = await (signal
+      ? request.abortSignal(signal)
+      : request);
     if (error)
       throw Error(
         "Weekly service records could not be loaded. Retry or check the reviewed learning connection.",
@@ -170,6 +212,38 @@ export class StaffService {
         "This athlete is outside your service roster or access changed. Refresh your workspace.",
       );
     return staffAthleteSchema.parse(data);
+  }
+  async rosterPage(input: RosterPageInput, signal: AbortSignal) {
+    const parsed = rosterPageInput.safeParse(input);
+    if (!parsed.success)
+      throw new Error(
+        "Choose valid roster filters and a page size from 1 to 100.",
+      );
+    const p = parsed.data;
+    const { data, error } = await this.client
+      .rpc("staff_client_service_roster_page", {
+        search_text: p.search,
+        status_filter: p.status,
+        age_filter: p.age,
+        position_filter: p.position,
+        coach_filter: p.coach,
+        page_number: p.number,
+        page_size: p.size,
+      })
+      .abortSignal(signal);
+    // A missing capability supports staged rollout/rollback. An authorization
+    // failure, malformed response or other server error must NEVER fall back.
+    if (error?.code === "PGRST202") return this.roster(signal);
+    if (error)
+      throw new Error(
+        "The roster page could not be loaded. Reconnect and refresh; your filters are preserved.",
+      );
+    const result = rosterPageSchema.safeParse(data);
+    if (!result.success)
+      throw new Error(
+        "The roster response could not be verified. Refresh before continuing.",
+      );
+    return result.data;
   }
   async assign(profile: string, coach: string | null, version: number) {
     const { error } = await this.client.rpc("assign_athlete_service_coach", {

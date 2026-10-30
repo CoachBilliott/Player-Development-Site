@@ -17,6 +17,8 @@ export function useSharedContent() {
   const [interestLoading, setInterestLoading] = useState(true);
   const [serviceTrackingEnabled, setServiceTrackingEnabled] = useState(false);
   const [staffRosterEnabled, setStaffRosterEnabled] = useState(false);
+  const [staffRosterPagingEnabled, setStaffRosterPagingEnabled] =
+    useState(false);
   const [staffNotificationEmailsEnabled, setStaffNotificationEmailsEnabled] =
     useState(false);
   const [deliveryMonitoringEnabled, setDeliveryMonitoringEnabled] =
@@ -80,6 +82,7 @@ export function useSharedContent() {
         setServiceTrackingEnabled(raw.serviceTrackingEnabled === true);
         setStaffRosterEnabled(raw.staffRosterEnabled === true);
         setLearningPlansEnabled(raw.learningPlansEnabled === true);
+        setStaffRosterPagingEnabled(raw.staffRosterPagingEnabled === true);
         setStaffNotificationEmailsEnabled(
           raw.staffNotificationEmailsEnabled === true,
         );
@@ -255,6 +258,7 @@ export function useSharedContent() {
     accountLifecycleEnabled,
     serviceTrackingEnabled,
     staffRosterEnabled,
+    staffRosterPagingEnabled,
     staffNotificationEmailsEnabled,
     deliveryMonitoringEnabled,
     accountNotice,

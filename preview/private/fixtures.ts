@@ -182,150 +182,155 @@ export function previewShared(
       };
       return q;
     },
-    async rpc(name: string, body: Record<string, unknown> = {}) {
-      let data: unknown;
-      if (name === "workout_assignment_profiles" && role === "owner")
-        data = sample
-          .filter((r) => r.client_id === body.target_account)
-          .map((r) => ({
-            id: r.athlete_id,
-            nickname: r.athlete_name,
-            age_group: r.age_group,
-            position: r.position,
-          }));
-      else if (name === "profile_workout_assignment" && role === "owner") {
-        const row = sample.find(
-          (r) =>
-            r.client_id === body.target_account &&
-            r.athlete_id === body.target_profile,
-        );
-        if (!row) return disabled();
-        data = row.workout_id
-          ? {
-              ...noAssignment,
-              workout_id: row.workout_id,
-              workout_title: row.workout_title,
-              resource_ids: row.resources.map((r) => r.id),
-              workout_version: row.workout_version,
-              version: 1,
-            }
-          : noAssignment;
-      } else if (name === "profile_workout_preview" && role === "owner")
-        data = {
-          eligible:
-            sample.some(
-              (r) =>
-                r.client_id === body.target_account &&
-                r.athlete_id === body.target_profile,
-            ) && savedWorkouts.some((w) => w.id === body.workout),
-        };
-      else if (name === "staff_client_service_roster" && isStaff(role))
-        data = {
-          source: "account_backend",
-          scope:
-            role === "coach" ? "assigned_athletes" : "all_repformed_clients",
-          rows: sample.filter(allowed).map(view),
-          coaches:
-            role === "coach"
-              ? []
-              : [
-                  { id: coachA, label: "Fictional Coach Alex" },
-                  { id: coachB, label: "Fictional Coach Blair" },
-                ],
-        };
-      else if (name === "staff_athlete_service" && isStaff(role)) {
-        const row = sample.find(
-          (r) => r.athlete_id === body.target_profile && allowed(r),
-        );
-        return row ? { data: view(row), error: null } : disabled();
-      } else if (name === "list_account_access" && role === "owner")
-        data = (["owner", "manager", "coach", "parent", "athlete"] as const)
-          .map((r, i) => ({
-            user_id: r === "coach" ? coachA : uid(i + 1),
-            email: `fictional-${r}@example.test`,
-            role: r,
-            version: 1,
-            email_verified: true,
-            adult_setup: true,
-          }))
-          .concat([
-            {
-              user_id: uid(50),
-              email: "fictional-family@example.test",
-              role: "parent",
+    rpc(name: string, body: Record<string, unknown> = {}) {
+      const response = (async () => {
+        let data: unknown;
+        if (name === "workout_assignment_profiles" && role === "owner")
+          data = sample
+            .filter((r) => r.client_id === body.target_account)
+            .map((r) => ({
+              id: r.athlete_id,
+              nickname: r.athlete_name,
+              age_group: r.age_group,
+              position: r.position,
+            }));
+        else if (name === "profile_workout_assignment" && role === "owner") {
+          const row = sample.find(
+            (r) =>
+              r.client_id === body.target_account &&
+              r.athlete_id === body.target_profile,
+          );
+          if (!row) return disabled();
+          data = row.workout_id
+            ? {
+                ...noAssignment,
+                workout_id: row.workout_id,
+                workout_title: row.workout_title,
+                resource_ids: row.resources.map((r) => r.id),
+                workout_version: row.workout_version,
+                version: 1,
+              }
+            : noAssignment;
+        } else if (name === "profile_workout_preview" && role === "owner")
+          data = {
+            eligible:
+              sample.some(
+                (r) =>
+                  r.client_id === body.target_account &&
+                  r.athlete_id === body.target_profile,
+              ) && savedWorkouts.some((w) => w.id === body.workout),
+          };
+        else if (name === "staff_client_service_roster" && isStaff(role))
+          data = {
+            source: "account_backend",
+            scope:
+              role === "coach" ? "assigned_athletes" : "all_repformed_clients",
+            rows: sample.filter(allowed).map(view),
+            coaches:
+              role === "coach"
+                ? []
+                : [
+                    { id: coachA, label: "Fictional Coach Alex" },
+                    { id: coachB, label: "Fictional Coach Blair" },
+                  ],
+          };
+        else if (name === "staff_athlete_service" && isStaff(role)) {
+          const row = sample.find(
+            (r) => r.athlete_id === body.target_profile && allowed(r),
+          );
+          return row ? { data: view(row), error: null } : disabled();
+        } else if (name === "list_account_access" && role === "owner")
+          data = (["owner", "manager", "coach", "parent", "athlete"] as const)
+            .map((r, i) => ({
+              user_id: r === "coach" ? coachA : uid(i + 1),
+              email: `fictional-${r}@example.test`,
+              role: r,
               version: 1,
               email_verified: true,
               adult_setup: true,
-            },
+            }))
+            .concat([
+              {
+                user_id: uid(50),
+                email: "fictional-family@example.test",
+                role: "parent",
+                version: 1,
+                email_verified: true,
+                adult_setup: true,
+              },
+              {
+                user_id: uid(51),
+                email: "fictional-solo@example.test",
+                role: "athlete",
+                version: 1,
+                email_verified: true,
+                adult_setup: true,
+              },
+            ])
+            .filter((r) => r.email.includes(String(body.search_text || "")));
+        else if (
+          name === "interest_staff_inbox" &&
+          (role === "owner" || role === "manager")
+        )
+          data = [
             {
-              user_id: uid(51),
-              email: "fictional-solo@example.test",
-              role: "athlete",
-              version: 1,
-              email_verified: true,
-              adult_setup: true,
+              id: uid(240),
+              adult_name: "Fictional Adult",
+              email: "fictional-adult@example.test",
+              package_interest: "foundation",
+              created_at: "2026-10-28T12:00:00Z",
+              email_state: "disabled",
+              launch_choice: false,
+              launch_choice_at: "2026-10-28T12:00:00Z",
+              launch_notice_version: "repformed-launch-notice-v1",
             },
-          ])
-          .filter((r) => r.email.includes(String(body.search_text || "")));
-      else if (
-        name === "interest_staff_inbox" &&
-        (role === "owner" || role === "manager")
-      )
-        data = [
-          {
-            id: uid(240),
-            adult_name: "Fictional Adult",
-            email: "fictional-adult@example.test",
-            package_interest: "foundation",
-            created_at: "2026-10-28T12:00:00Z",
-            email_state: "disabled",
-            launch_choice: false,
-            launch_choice_at: "2026-10-28T12:00:00Z",
-            launch_notice_version: "repformed-launch-notice-v1",
-          },
-        ];
-      else if (name === "athlete_account_context")
-        data = { guardian_managed: false, linked_profile_id: null };
-      else if (name === "family_profile_state" && !isStaff(role))
-        data = {
-          guardian_managed: false,
-          is_family: role === "parent",
-          is_parent: role === "parent",
-          can_record: true,
-          self_recording_allowed: false,
-          permission_version: 0,
-          has_link: false,
-          child_access_ready: false,
-          workouts: [],
-          assigned_workout: null,
-        };
-      else if (
-        ["list_account_invitations", "list_account_closure_requests"].includes(
-          name,
-        ) &&
-        role === "owner"
-      )
-        data = [];
-      else if (name === "my_account_invitation") data = null;
-      else if (name === "account_lifecycle_state")
-        data = {
-          eligible: !isStaff(role),
-          reason: isStaff(role) ? "owner_transfer" : "",
-          request_id: null,
-          state: "none",
-          profile_count: isStaff(role) ? 0 : 1,
-          video_count: 0,
-        };
-      else if (
-        [
-          "athlete_training_resources",
-          "member_training_resources",
-          "staff_training_resources",
-        ].includes(name)
-      )
-        data = [];
-      else return disabled();
-      return { data, error: null };
+          ];
+        else if (name === "athlete_account_context")
+          data = { guardian_managed: false, linked_profile_id: null };
+        else if (name === "family_profile_state" && !isStaff(role))
+          data = {
+            guardian_managed: false,
+            is_family: role === "parent",
+            is_parent: role === "parent",
+            can_record: true,
+            self_recording_allowed: false,
+            permission_version: 0,
+            has_link: false,
+            child_access_ready: false,
+            workouts: [],
+            assigned_workout: null,
+          };
+        else if (
+          [
+            "list_account_invitations",
+            "list_account_closure_requests",
+          ].includes(name) &&
+          role === "owner"
+        )
+          data = [];
+        else if (name === "my_account_invitation") data = null;
+        else if (name === "account_lifecycle_state")
+          data = {
+            eligible: !isStaff(role),
+            reason: isStaff(role) ? "owner_transfer" : "",
+            request_id: null,
+            state: "none",
+            profile_count: isStaff(role) ? 0 : 1,
+            video_count: 0,
+          };
+        else if (
+          [
+            "athlete_training_resources",
+            "member_training_resources",
+            "staff_training_resources",
+          ].includes(name)
+        )
+          data = [];
+        else return disabled();
+        return { data, error: null };
+      })();
+      // Match the supported Supabase read builder used by cancellable roster loads.
+      return Object.assign(response, { abortSignal: () => response });
     },
   } as unknown as SupabaseClient;
   const session: Session | null = role
@@ -351,6 +356,7 @@ export function previewShared(
     accountLifecycleEnabled: true,
     serviceTrackingEnabled: false,
     staffRosterEnabled: true,
+    staffRosterPagingEnabled: false,
     staffNotificationEmailsEnabled: false,
     deliveryMonitoringEnabled: false,
     accountNotice: "",
