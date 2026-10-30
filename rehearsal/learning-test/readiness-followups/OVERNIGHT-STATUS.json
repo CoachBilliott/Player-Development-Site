@@ -1,0 +1,51 @@
+{
+  "observed_at": "2026-10-30T03:37:44.352420+00:00",
+  "public_hero": {
+    "pr": 23,
+    "tested_head": "7900940ab584c062753bfe741b361ec24dfda0f4",
+    "branch_ci": {
+      "id": 40996856102,
+      "result": "success",
+      "unit_database": 378,
+      "website": 426,
+      "app_offline": 10,
+      "private_preview": 6,
+      "python": 11
+    },
+    "merged_source": "51841292d0f286fe916155633d39506c742d47e9",
+    "fresh_normal_auth_build": "passed",
+    "artifact_smoke": 8,
+    "main_ci": {
+      "id": 40998246749,
+      "status": "running"
+    },
+    "main_native_validation": {
+      "id": 40998267444,
+      "status": "running"
+    },
+    "production_upload": "NOT ATTEMPTED; waiting for post-merge checks"
+  },
+  "integration": {
+    "pr": 24,
+    "head": "7025bc1c93cd76901fc08f0725a6d95f3dd979b2",
+    "ci": 40997249659,
+    "status": "running",
+    "production": "not merged or activated"
+  },
+  "test_probe": {
+    "source": "3ea85dec40e4723d514713ff264939893424fc04",
+    "deployment": "965069fe-c47c-473a-a70e-a09fa6d8a29f",
+    "status": "published test only",
+    "existing_operator_tabs_refreshed": false,
+    "final_hosted_retest": "pending supported ordinary sessions"
+  },
+  "actual_website": {
+    "source": "0816c343a99a76e03ad2e48c7e16207058624c02",
+    "deployment": "bab6aa19-838c-424e-8aa1-d562cb7a88c2"
+  },
+  "actual_native": {
+    "version": "0.1.0",
+    "build": 15
+  },
+  "security_credentials_flags_emails_changed": false
+}

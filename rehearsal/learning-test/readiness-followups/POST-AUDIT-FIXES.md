@@ -1,3 +1,9 @@
+## Latest release stage — October 30
+
+PR #23 has merged as `51841292d0f286fe916155633d39506c742d47e9`. Exact branch CI 40996856102 passed 378 unit/database, 426 website, 10 app/offline, 6 private-preview and 11 Python checks plus lint/types/functions/build. The merged tree is identical to that tested head. Fresh normal-Auth production build and eight built-artifact desktop/phone smoke cases passed; config hash remains `bce7ca9...f1c39c`. Main CI 40998246749 and exact-main native validation 40998267444 are running. **No production upload yet; website remains 0816c343/bab6aa19 and TestFlight remains 15.**
+
+The corrected test-only roster probe is published at source 3ea85dec / deployment 965069fe; operator sessions were not refreshed and final hosted paging acceptance remains open. Draft integration PR #24 final head 7025bc1 has CI 40997249659 running. The strict post-release rubric is prepared, not executed. See OVERNIGHT-STATUS.json for machine-readable stages. Earlier snapshots below are historical.
+
 ## Current overnight checkpoint — October 30, 03:21 UTC
 
 The six fictional normal sessions were subsequently signed in. The first hosted migration-023 rehearsal passed scope, anonymous denial, six legacy detail boundaries and exact rollback, but Owner/Manager/Other Coach paging aggregates failed. Old failed receipts are preserved; the old nickname-only search oracle was wrong for permitted coach labels. Corrected source `3ea85dec` passed 19 unit and 28 desktop/phone harness checks and is now published only to the isolated [test preview](../roster-search-v2/README.md), deployment `965069fe-c47c-473a-a70e-a09fa6d8a29f`. No operator tab was refreshed; final real-role paging acceptance remains open. Earlier NOT RUN/no-session/QUIC snapshots below are historical and no longer describe the first rehearsal.
