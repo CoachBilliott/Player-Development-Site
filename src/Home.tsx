@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { ArrowDown, ArrowRight, ArrowUpRight, ShieldCheck } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowRight,
+  ArrowUpRight,
+  ShieldCheck,
+  Pause,
+  Play,
+} from "lucide-react";
 import { AthleteScene } from "./AthleteScene";
 import { Reveal } from "./Experience";
 import { PACKAGE_PROPOSALS } from "./packageProposals";
@@ -40,18 +47,6 @@ export function Home() {
               Express interest <ArrowRight size={18} />
             </a>
           </div>
-          {enabled && (
-            <button
-              className="hero-motion-control"
-              type="button"
-              aria-pressed={videoPaused}
-              onClick={() => setVideoPaused((value) => !value)}
-            >
-              {videoPaused
-                ? "Resume background video"
-                : "Pause background video"}
-            </button>
-          )}
           <div className="hero-how-link">
             <button
               className="text-button"
@@ -65,6 +60,26 @@ export function Home() {
             </button>
           </div>
         </div>
+        {enabled && (
+          <button
+            className="hero-motion-control"
+            type="button"
+            aria-label={
+              videoPaused ? "Resume background video" : "Pause background video"
+            }
+            title={
+              videoPaused ? "Resume background video" : "Pause background video"
+            }
+            aria-pressed={videoPaused}
+            onClick={() => setVideoPaused((value) => !value)}
+          >
+            {videoPaused ? (
+              <Play size={16} aria-hidden="true" />
+            ) : (
+              <Pause size={16} aria-hidden="true" />
+            )}
+          </button>
+        )}
         <div className="hero-edition" aria-hidden="true">
           <span>REPFORMED</span>
           <span>THE WORK STARTS HERE / 01</span>
