@@ -16,7 +16,7 @@ export function appShell(): Plugin {
         "media/training-poster.jpg",
         "media/family-football.jpg",
         "media/solo-football.jpg",
-        "media/football-field.jpg",
+        "media/repformed-horizontal-football-field.webp",
         "media/credits.txt",
         "icons/app-192.png",
         "icons/app-512.png",
