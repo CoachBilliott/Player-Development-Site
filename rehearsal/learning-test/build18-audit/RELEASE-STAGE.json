@@ -1,5 +1,5 @@
 {
-  "observed_at": "2026-10-30T06:56:02.296259+00:00",
+  "observed_at": "2026-10-30T07:10:51.788234+00:00",
   "source": "b54fd92fdaf7d19bb742f3566d569072cc16a1db",
   "merged_pr": 26,
   "merge_at": "2026-10-30T06:42:36Z",
@@ -14,7 +14,12 @@
   },
   "native_validation": {
     "id": 41015701802,
-    "status": "running simulator"
+    "attempt": 1,
+    "status": "success; simulator/archive/reports/artifact upload passed",
+    "artifact_id": 12960845245,
+    "tests_passed": 6,
+    "failed": 0,
+    "skipped": 0
   },
   "build18_preflight": {
     "id": 41015704692,
@@ -28,8 +33,13 @@
   "actual_testflight_build": 17,
   "new_website_or_signed_upload_attempted": {
     "website": "one upload succeeded",
-    "signed18": false
+    "signed18": "one signed workflow requested; upload completion pending"
   },
   "learning_security_credentials_sessions_changed": false,
-  "actual_website_deployment": "71f46286-84fd-41de-8da6-85caa7e59f59"
+  "actual_website_deployment": "71f46286-84fd-41de-8da6-85caa7e59f59",
+  "signed18": {
+    "id": 41018447424,
+    "source": "b54fd92fdaf7d19bb742f3566d569072cc16a1db",
+    "status": "requested once; queued/running; no Apple18 availability claim"
+  }
 }

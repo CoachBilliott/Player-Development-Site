@@ -92,7 +92,8 @@
     "build": 18,
     "source": "b54fd92fdaf7d19bb742f3566d569072cc16a1db",
     "native_validation": 41015701802,
-    "status": "validation running; signed18 not yet requested; actualnative17"
+    "status": "native validation success; single signed41018447424 running; Apple18 not confirmed",
+    "signed_run": 41018447424
   },
   "post_release_finding": {
     "id": "P2-01",
