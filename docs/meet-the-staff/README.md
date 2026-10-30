@@ -31,3 +31,10 @@ Before integration, replace fixtures with questionnaire responses and approved h
 - Five Playwright checks pass: 320/390/768/1440px layouts and six-profile growth.
 - Axe reports zero violations at all four widths; no horizontal overflow or page errors.
 - Phone screenshot visually reviewed; screenshots are local review artifacts, not deployed pages.
+
+## Saved screenshots
+
+- [Phone, 390px](screenshots/phone.png)
+- [Desktop, 1440px](screenshots/desktop.png)
+
+These contain preview placeholders only. They are review artifacts, not published staff profiles.
