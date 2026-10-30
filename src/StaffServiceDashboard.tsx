@@ -667,7 +667,7 @@ export function StaffServiceDashboard({
                 {matching > pageSize
                   ? `${pageStart + 1}–${pageStart + visibleRows.length}`
                   : rows.length}{" "}
-                of {matching} matching records
+                of {matching} matching {matching === 1 ? "record" : "records"}
                 {matching !== total ? ` (${total} in your scope)` : ""}
                 {query.trim() ? ` for “${query.trim()}”` : ""}
               </>
@@ -803,7 +803,7 @@ export function StaffServiceDashboard({
                         </strong>
                         <small>
                           {r.overdue_reviews
-                            ? `${r.overdue_reviews} review overdue`
+                            ? `${r.overdue_reviews} review${r.overdue_reviews === 1 ? "" : "s"} overdue`
                             : r.pending_reviews
                               ? `${r.pending_reviews} review${r.pending_reviews === 1 ? "" : "s"} pending`
                               : "No pending reviews"}

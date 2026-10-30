@@ -208,7 +208,7 @@ test("server pages carry full-scope totals/facets, return only25rows and preserv
   await expect(table(page)).toContainText("Fictional Athlete 0999");
   await expect(
     page.getByText(
-      "Showing 1 of 1 matching records (1000 in your scope) for “0999”",
+      "Showing 1 of 1 matching record (1000 in your scope) for “0999”",
       {
         exact: true,
       },
@@ -378,7 +378,7 @@ test("server clamps a smaller refreshed scope to a valid last page", async ({
   await page.getByRole("button", { name: "Refresh client service" }).click();
   await expect(table(page).locator("tbody tr")).toHaveCount(1);
   await expect(
-    page.getByText("Showing 1 of 1 matching records", { exact: true }),
+    page.getByText("Showing 1 of 1 matching record", { exact: true }),
   ).toBeVisible();
   await expect(
     page.getByRole("navigation", { name: "Athlete roster pages" }),
