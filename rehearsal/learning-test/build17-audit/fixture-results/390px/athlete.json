@@ -1,0 +1,78 @@
+{
+  "role": "athlete",
+  "build": 17,
+  "source": "70052ad3ea4de0fc42beac53bb0138f640d7bd8c",
+  "method": "Exact signed Build17 IPA web assets in local Chromium app-mode; fake backend and adults only; not physical iOS/live service acceptance",
+  "browser": "154.0.8037.57",
+  "viewport": "390×844",
+  "network": "loopback; service workers blocked; reduced motion; external requests denied; no real emails/accounts",
+  "samples": [
+    {
+      "ready_heading": "Today’s training.",
+      "ready_ui_ms": 418.2,
+      "dom_content_loaded_ms": 145.29999999981374,
+      "load_ms": 145.5,
+      "first_contentful_paint_ms": 228,
+      "dom_elements": 106,
+      "scroll_width": 390,
+      "viewport_width": 390
+    },
+    {
+      "ready_heading": "Today’s training.",
+      "ready_ui_ms": 413.3,
+      "dom_content_loaded_ms": 182.1000000005588,
+      "load_ms": 182.70000000018626,
+      "first_contentful_paint_ms": 256,
+      "dom_elements": 105,
+      "scroll_width": 390,
+      "viewport_width": 390
+    },
+    {
+      "ready_heading": "Today’s training.",
+      "ready_ui_ms": 440.5,
+      "dom_content_loaded_ms": 176.40000000037253,
+      "load_ms": 176.5,
+      "first_contentful_paint_ms": 268,
+      "dom_elements": 106,
+      "scroll_width": 390,
+      "viewport_width": 390
+    },
+    {
+      "ready_heading": "Today’s training.",
+      "ready_ui_ms": 443.7,
+      "dom_content_loaded_ms": 176.6000000005588,
+      "load_ms": 176.80000000074506,
+      "first_contentful_paint_ms": 260,
+      "dom_elements": 106,
+      "scroll_width": 390,
+      "viewport_width": 390
+    },
+    {
+      "ready_heading": "Today’s training.",
+      "ready_ui_ms": 471.5,
+      "dom_content_loaded_ms": 185.5,
+      "load_ms": 186.20000000018626,
+      "first_contentful_paint_ms": 304,
+      "dom_elements": 105,
+      "scroll_width": 390,
+      "viewport_width": 390
+    }
+  ],
+  "median_ready_ui_ms": 440.5,
+  "journey": [
+    {
+      "task": "Default app navigation",
+      "links": [
+        "Today",
+        "Workouts",
+        "Progress",
+        "Account"
+      ]
+    },
+    {
+      "task": "Open account from role workspace",
+      "clicks": 1,
+      "heading": "Account settings."
+    }
+  ]
+}

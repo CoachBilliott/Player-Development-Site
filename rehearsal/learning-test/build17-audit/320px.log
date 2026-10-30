@@ -1,0 +1,22 @@
+
+Running 15 tests using 1 worker
+
+(node:21134) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 .player-development-setup/build17-exact-narrow-tests/roles.spec.ts:26:26 › signed_out: exact signed Build17 IPA assets, fictional role tasks and three cold local samples (2.0s)
+  ✓   2 .player-development-setup/build17-exact-narrow-tests/roles.spec.ts:26:26 › owner: exact signed Build17 IPA assets, fictional role tasks and three cold local samples (2.3s)
+  ✓   3 .player-development-setup/build17-exact-narrow-tests/roles.spec.ts:26:26 › manager: exact signed Build17 IPA assets, fictional role tasks and three cold local samples (2.3s)
+  ✓   4 .player-development-setup/build17-exact-narrow-tests/roles.spec.ts:26:26 › coach: exact signed Build17 IPA assets, fictional role tasks and three cold local samples (2.2s)
+  ✓   5 .player-development-setup/build17-exact-narrow-tests/roles.spec.ts:26:26 › unassigned_coach: exact signed Build17 IPA assets, fictional role tasks and three cold local samples (1.9s)
+  ✓   6 .player-development-setup/build17-exact-narrow-tests/roles.spec.ts:26:26 › guardian: exact signed Build17 IPA assets, fictional role tasks and three cold local samples (2.0s)
+  ✓   7 .player-development-setup/build17-exact-narrow-tests/roles.spec.ts:26:26 › athlete: exact signed Build17 IPA assets, fictional role tasks and three cold local samples (1.9s)
+  ✓   8 .player-development-setup/build17-exact-narrow-tests/roles.spec.ts:65:1 › Owner 1000-athlete local scaling probe: render/search cost and no real backend (791ms)
+  ✓   9 .player-development-setup/build17-exact-narrow-tests/roles.spec.ts:68:27 › signed_out: phone appearance and accessible role navigation (2.3s)
+  ✓  10 .player-development-setup/build17-exact-narrow-tests/roles.spec.ts:68:27 › owner: phone appearance and accessible role navigation (3.8s)
+  ✓  11 .player-development-setup/build17-exact-narrow-tests/roles.spec.ts:68:27 › manager: phone appearance and accessible role navigation (3.7s)
+  ✓  12 .player-development-setup/build17-exact-narrow-tests/roles.spec.ts:68:27 › coach: phone appearance and accessible role navigation (3.7s)
+  ✓  13 .player-development-setup/build17-exact-narrow-tests/roles.spec.ts:68:27 › unassigned_coach: phone appearance and accessible role navigation (3.5s)
+  ✓  14 .player-development-setup/build17-exact-narrow-tests/roles.spec.ts:68:27 › guardian: phone appearance and accessible role navigation (3.7s)
+  ✓  15 .player-development-setup/build17-exact-narrow-tests/roles.spec.ts:68:27 › athlete: phone appearance and accessible role navigation (3.7s)
+
+  15 passed (41.0s)

@@ -19,7 +19,7 @@ The page displays “Search probe version 2”. Failed searches identify a fixed
 
 Parent reports all six normal identities, staff scope, anonymous denial and legacy detail boundaries passed. Owner, Manager and Other Coach paging aggregates failed. Exact rollback passed; identities, counts, grants and old details were preserved. All four learning/scheduler/notices/youth flags are off. Actual failing historical subchecks were not captured, so the precise attribution remains an inference even though the source oracle defect is proven locally.
 
-No corrected hosted rerun has occurred. Production stays `0816c343` / deployment `bab6aa19`, and TestFlight stays build 15.
+No corrected hosted rerun has occurred. Current independently released interface repair is production `70052ad3` / deployment `3a46672b`, and TestFlight 17; this does not activate server paging or change this rehearsal gate.
 
 ## Operator handoff: preserve sessions
 

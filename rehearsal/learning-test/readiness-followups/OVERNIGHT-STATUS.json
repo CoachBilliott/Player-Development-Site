@@ -1,5 +1,5 @@
 {
-  "observed_at": "2026-10-30T06:02:44.645609+00:00",
+  "observed_at": "2026-10-30T06:05:33.707424+00:00",
   "public_hero": {
     "pr": 23,
     "tested_head": "7900940ab584c062753bfe741b361ec24dfda0f4",
@@ -85,7 +85,7 @@
     "native_attempt": 2,
     "native_result": "success incl artifacts",
     "signed_run": 41010880664,
-    "status": "released VALID / IN_BETA_TESTING; exact IPA fixture audit passed, physical/live private roles unverified",
+    "status": "distributed Build17; accessible exact-release audit consolidated; full launch not certified",
     "duplicate_requests": false,
     "signed_result": "success",
     "apple_first_check": 41011462935,
@@ -119,5 +119,17 @@
     "result": "limited affected public journeys passed; no new concrete public regression",
     "form_submitted": false,
     "private_native_mobile_security": "not tested"
+  },
+  "audit_report": "rehearsal/learning-test/build17-audit/AUDIT.md",
+  "audit_scope": {
+    "fixture_390": 15,
+    "fixture_320": 15,
+    "geometry": 4,
+    "native_simulator": 6,
+    "new_p2_regressions": 0,
+    "remaining_minor_copy": "singular roster count labels",
+    "production_private_roles": "unverified",
+    "physical_device": "unverified",
+    "weekly_learning": "draft/off/hosted-unaccepted"
   }
 }

@@ -1,3 +1,7 @@
+## October 30, 06:05 UTC — website70052ad and TestFlight17 verified; accessible audit finished
+
+Website deployment `3a46672b` remains current. Signed run `41010880664` succeeded; Apple `41011715032` confirms 0.1.0(17), VALID / IN_BETA_TESTING and Owner Testing. Exact IPA matches normal web assets/config. The Coach card fix passes four staff-role cases at 320/375/390px. Exact IPA phone fixtures: 15 cases at each of 390 and 320; 26 appearance views per width with zero detected violations/page overflow, incomplete checks retained. Six native-source simulator tests passed. See `build17-audit/AUDIT.md` and receipts. No physical/live-private/hosted-learning certification, no overall A/B grade, no new permission/credential/email/activation change. Minor singular-count wording remains P3. Draft integration final18176fd green; same disconnected preview refreshed. Corrected hosted023 probe still requires ordinary supported private authentication, and is not rerun.
+
 ## Build17 signed request started after all exact-source gates — October 30
 
 Source **70052ad3**, website **3a46672b**, remains published. Native validation **41006712872 attempt2 SUCCESS**, including simulator, unsigned archive and artifact upload. Exact full artifact12957671018 has six passed/zero failed/skipped tests. Earlier failed-attempt artifact15650bytes was not confused with the successful46MB evidence.

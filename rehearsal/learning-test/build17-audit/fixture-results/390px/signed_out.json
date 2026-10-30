@@ -1,0 +1,84 @@
+{
+  "role": "signed_out",
+  "build": 17,
+  "source": "70052ad3ea4de0fc42beac53bb0138f640d7bd8c",
+  "method": "Exact signed Build17 IPA web assets in local Chromium app-mode; fake backend and adults only; not physical iOS/live service acceptance",
+  "browser": "154.0.8037.57",
+  "viewport": "390×844",
+  "network": "loopback; service workers blocked; reduced motion; external requests denied; no real emails/accounts",
+  "samples": [
+    {
+      "ready_heading": "YOUR TRAINING\nSTARTS HERE.",
+      "ready_ui_ms": 479.3,
+      "dom_content_loaded_ms": 228.5,
+      "load_ms": 228.59999999962747,
+      "first_contentful_paint_ms": 420,
+      "dom_elements": 75,
+      "scroll_width": 390,
+      "viewport_width": 390
+    },
+    {
+      "ready_heading": "YOUR TRAINING\nSTARTS HERE.",
+      "ready_ui_ms": 349,
+      "dom_content_loaded_ms": 183.79999999981374,
+      "load_ms": 184.09999999962747,
+      "first_contentful_paint_ms": 316,
+      "dom_elements": 75,
+      "scroll_width": 390,
+      "viewport_width": 390
+    },
+    {
+      "ready_heading": "YOUR TRAINING\nSTARTS HERE.",
+      "ready_ui_ms": 360.9,
+      "dom_content_loaded_ms": 176.59999999962747,
+      "load_ms": 176.79999999981374,
+      "first_contentful_paint_ms": 344,
+      "dom_elements": 75,
+      "scroll_width": 390,
+      "viewport_width": 390
+    },
+    {
+      "ready_heading": "YOUR TRAINING\nSTARTS HERE.",
+      "ready_ui_ms": 412.4,
+      "dom_content_loaded_ms": 170.40000000037253,
+      "load_ms": 171,
+      "first_contentful_paint_ms": null,
+      "dom_elements": 75,
+      "scroll_width": 390,
+      "viewport_width": 390
+    },
+    {
+      "ready_heading": "YOUR TRAINING\nSTARTS HERE.",
+      "ready_ui_ms": 310.6,
+      "dom_content_loaded_ms": 158.59999999962747,
+      "load_ms": 158.70000000018626,
+      "first_contentful_paint_ms": 272,
+      "dom_elements": 75,
+      "scroll_width": 390,
+      "viewport_width": 390
+    }
+  ],
+  "median_ready_ui_ms": 360.9,
+  "journey": [
+    {
+      "task": "Header help remains separate from account heading",
+      "help": {
+        "x": 326,
+        "y": 12,
+        "width": 44,
+        "height": 44
+      },
+      "tag": {
+        "x": 20,
+        "y": 97,
+        "width": 123.78125,
+        "height": 14
+      },
+      "same_line": false
+    },
+    {
+      "task": "Welcome → login → help; no credentials sent",
+      "clicks": 2
+    }
+  ]
+}
