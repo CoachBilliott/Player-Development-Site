@@ -7,14 +7,14 @@ export type PublicStaffProfile = {
   photo?: { src: string; alt: string; objectPosition?: string };
 };
 
-// Public content only. Claims are self-reported in Devyn’s submitted form,
+// Public content only. Claims are self-reported in the submitted staff forms,
 // not independently verified. This entire entry point remains unpublished.
 export const previewProfiles: PublicStaffProfile[] = [
   {
     id: "victor-bennett",
     name: "Victor Bennett",
-    title: "Public title pending approval",
-    bio: "Victor’s biography and headshot are pending his questionnaire and profile review.",
+    title: "Owner",
+    bio: "Victor Bennett brings more than 20 years of experience training and developing young athletes. A former college football player and high school offensive coordinator, he specializes in position-specific training, game understanding, and athlete development. He also operates a youth basketball league that emphasizes confidence, teamwork, and sportsmanship. Victor helped start Repformed to help athletes understand their roles, make smarter decisions, and take ownership of their progress. His coaching centers on accountability, discipline, and developing the person first, building skills and character that last beyond sports.",
     experience: [],
   },
   {
