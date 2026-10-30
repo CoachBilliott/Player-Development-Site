@@ -1,3 +1,11 @@
+## Coach-header website repair published — October 30, 05:24 UTC
+
+PR #25 merged as **70052ad3ea4de0fc42beac53bb0138f640d7bd8c**. Exact-main CI **41006659216 SUCCESS**: 378 unit/database, 434 website, 10 app/offline, 6 private-preview, 11 Python plus all static/function/build stages. Fresh normal-auth build and eight header-boundary/Refresh cases passed against the compiled artifact. One Cloudflare production upload completed **05:23:21.448131 UTC**, deployment **3a46672b-b999-4d10-a1da-a674028ff754**; canonical metadata/source verified, config hash unchanged. See ../roster-card-repair/web-deployment-receipt.json.
+
+TestFlight remains **16**. Exact-main native **41006712872 attempt 1** failed fetching Swift dependencies because the runner could not resolve github.com, before app tests. One standard failed-job retry is **attempt 2 RUNNING**, with no workflow, dependency, credential or network change. **No signed build17 upload has started.** The App16 defect remains explicitly recorded until the replacement is actually released/re-audited.
+
+Draft integration now18176fd includes current main UI, has22affected/20preview/lint/types local passes and fullCI41007130150 running. No backend or learning-module diff versus prior0d. Same existing fictional workspace preview is identified but has not been refreshed yet. Actual Auth rehearsal tabs and all DB flags remain untouched. Hosted/privacy/device/recovery/learning activation gaps remain unverified or separately gated.
+
 ## Website AND internal TestFlight published — October 30, 04:41 UTC
 
 Website source **51841292d0f286fe916155633d39506c742d47e9**, CF **448dc0cd-2b6a-41ed-ae0f-5b7d1c57586b**, is production since 03:50:56 UTC. Signed run **41002907123 attempt 2 SUCCESS** published the same source as **Repformed 0.1.0 (16)**. Apple status run **41004145719**, checked 04:40:03 UTC, confirms **VALID / IN_BETA_TESTING** and explicitly lists 16 in existing Owner Testing. No public App Store release or tester/credential changes. No duplicate upload. See [exact receipt](../build16-audit/RELEASE-RECEIPT.json).

@@ -11,3 +11,9 @@ Eight local desktop/phone cases passed, covering Owner, Manager, assigned and un
 Final aggregate CI 41005538393 is running. Do not mark the released defect closed from this source screenshot. Website and TestFlight 16 remain source 51841292. Conditional ordinary repair release can proceed only after required terminal checks; a new internal build needs its existing signed workflow and exact-source gates. Read-only Apple preflight 41005953849 confirmed build 17 unused at 05:00:18 UTC. No new upload has started.
 
 The corrected hosted roster probe remains a different tool/project path; six retained sessions were not refreshed or altered. Learning/paging migrations and activation remain separately gated. No full-role/device grade is claimed.
+
+## Website publication update
+
+Exact-main CI 41006659216 passed all required stages. Merged source 70052ad3 and its normal-auth 72-file artifact are now production in Cloudflare 3a46672b-b999-4d10-a1da-a674028ff754, success 05:23:21 UTC. Eight built-artifact header checks passed; normal auth/interest config unchanged. Provider deployment/source was read back. This supersedes the preparation-only status above for the website.
+
+TestFlight is still 16. Native run 41006712872 attempt 1 encountered runner DNS failure before tests; one standard failed-job retry is attempt 2. No signed17 upload occurred. The App16 finding and physical/private-role limits are not retroactively marked passed.

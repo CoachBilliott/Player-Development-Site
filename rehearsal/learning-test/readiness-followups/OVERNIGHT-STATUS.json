@@ -1,5 +1,5 @@
 {
-  "observed_at": "2026-10-30T05:16:50.513278+00:00",
+  "observed_at": "2026-10-30T05:24:57.470121+00:00",
   "public_hero": {
     "pr": 23,
     "tested_head": "7900940ab584c062753bfe741b361ec24dfda0f4",
@@ -43,8 +43,9 @@
     "final_hosted_retest": "pending supported ordinary sessions"
   },
   "actual_website": {
-    "source": "51841292d0f286fe916155633d39506c742d47e9",
-    "deployment": "448dc0cd-2b6a-41ed-ae0f-5b7d1c57586b"
+    "source": "70052ad3ea4de0fc42beac53bb0138f640d7bd8c",
+    "deployment": "3a46672b-b999-4d10-a1da-a674028ff754",
+    "published_at": "2026-10-30T05:23:21.448131Z"
   },
   "actual_native": {
     "version": "0.1.0",
@@ -65,7 +66,7 @@
     "id": "P2-01",
     "actual_build": 16,
     "scope": "Coach roster Refresh escapes card at320; confirmed assigned/unassigned fixtures",
-    "status": "merged as70052ad; exact-main checks and publication pending",
+    "status": "web repair published; compiled fixture verified; App16 remains affected until17 actually released",
     "repair_pr": 25,
     "repair_head": "ea0fb3e1014aec2da6fe70db7fabf529ce2078c1",
     "focused_tests": 8,
@@ -77,7 +78,10 @@
       "unused_at": "2026-10-30T05:00:18.196Z"
     },
     "main_ci": 41006659216,
-    "native_validation": 41006712872
+    "native_validation": 41006712872,
+    "main_ci_result": "success",
+    "native_validation_attempt": 2,
+    "native_first_failure": "runner DNS github.com failed before tests; normal failed-job retry only"
   },
   "independent_public_observation": {
     "at": "2026-10-30T05:12\u201305:14Z",

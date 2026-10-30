@@ -1,0 +1,30 @@
+{
+  "verified_at": "2026-10-30T05:24:17.826058+00:00",
+  "source": "70052ad3ea4de0fc42beac53bb0138f640d7bd8c",
+  "deployment_id": "3a46672b-b999-4d10-a1da-a674028ff754",
+  "url": "https://3a46672b.repformed.pages.dev",
+  "canonical_url": "https://repformed.com",
+  "environment": "production",
+  "stage": {
+    "name": "deploy",
+    "started_on": null,
+    "ended_on": "2026-10-30T05:23:21.448131Z",
+    "status": "success"
+  },
+  "created_on": "2026-10-30T05:23:20.181486Z",
+  "main_ci": 41006659216,
+  "main_ci_result": "success",
+  "artifact_smoke": 8,
+  "config_sha256": "bce7ca9fc4b5806db2b10d51e0ef06a04c455bf36d145d331409bb94b0f1c39c",
+  "entry": "assets/index-BuPCLDfv.js",
+  "upload_attempts": 1,
+  "published_scope": "one CSS wrapping rule plus regression; no backend/roles/flags/credentials/packages/home/intake changes",
+  "testflight_current": 16,
+  "native_candidate": {
+    "build": 17,
+    "validation_run": 41006712872,
+    "attempt": 2,
+    "status": "running; first attempt dependency DNS failed before tests, no signed17 upload"
+  },
+  "physical_role_validation": "unverified"
+}
