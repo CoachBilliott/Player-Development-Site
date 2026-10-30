@@ -1,3 +1,11 @@
+## October30:023acceptance control prepared; browser access restored
+
+Parent's existing authorized browser operator now reports ordinary rehearsal page access restored, exact023/rollback hashes and six UUID/email pairs verified, prerequisite helpers present,023RPCabsent and all4flagsOFF. Public configuration loaded; fictional Owner private sign-in is being coordinated. **No migration ran.** This supersedes the earlier transport-blocked status below, which remains dated history.
+
+The deployed1bb3f5e harness lacks a023roster control. A narrow source-only branch based exactly on that deployed source is now pushed: **test/roster-023-harness,01b3cc53331f08986466a5429c764899fe799bc5**. [Instructions](https://github.com/repformed/Player-Development-Site/blob/01b3cc53331f08986466a5429c764899fe799bc5/docs/learning-rehearsal/ROSTER-023-PROBE.md). Uses existing ordinary in-memory SDK sessions and separate public client, no token/password extraction, privileged emulation, writes, new identities or permissions. Probe covers fixed real-role roster scope, one-row paging/retry/clamp/filters, direct existing015detail scope/rollback continuity and anonymous denial; missing function/transport/session is blocked, never pass. Current two Coach fixtures are both assigned; unassigned-Coach, changed roles/assignments and hosted large datasets remain outside approved mutations.
+
+15focused policy/unit and16desktop/phone HTTP-fixture checks passed, plus lint/types/harness build. No broad application suites were needlessly repeated. **Source only, not deployed, not hosted acceptance.** Preserve existing Owner tab until the existing operator coordinates test-only preview refresh/private re-sign-in. Production0816c343/TestFlight15 and weekly flags remain unchanged. No migration, credential/security/data/email change.
+
 ## Latest result: October29 23:00UTC
 
 PR13 head **1e2269fe72df886685c860308d9c17880d7288a2** is **GREEN**: [CI40968374045](https://github.com/repformed/Player-Development-Site/actions/runs/40968374045) finished22:59:13UTC with **466unit/database,450website browser,10compiled app/offline,20isolated private-preview,11Python** plus lint/types/3Deno checks/build. All required stages completed. No overlapping historical or focused totals are added to these counts.
