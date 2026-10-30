@@ -1,5 +1,5 @@
 {
-  "observed_at": "2026-10-30T04:30:02.685116+00:00",
+  "observed_at": "2026-10-30T04:33:47.551719+00:00",
   "source": "51841292d0f286fe916155633d39506c742d47e9",
   "native_validation": {
     "run": 40998267444,
@@ -15,9 +15,14 @@
   },
   "signed_workflow": {
     "run": 41002907123,
+    "attempt": 2,
     "requested_build": 16,
-    "status": "running; archive/export",
-    "upload_claim": "not yet confirmed"
+    "status": "running",
+    "prior_failure": "runner DNS could not resolve github.com fetching Swift packages; archive failed before export",
+    "prior_apple_upload": "skipped",
+    "prior_ipa_artifacts": 0,
+    "prior_private_material_cleanup": "success",
+    "retry": "one normal failed-job retry on same source/workflow; no network or credential changes"
   },
   "current_distributed_build": 15,
   "physical_device": "unverified",
