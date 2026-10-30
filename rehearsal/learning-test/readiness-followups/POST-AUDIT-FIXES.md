@@ -1,3 +1,13 @@
+## Current overnight checkpoint — October 30, 03:21 UTC
+
+The six fictional normal sessions were subsequently signed in. The first hosted migration-023 rehearsal passed scope, anonymous denial, six legacy detail boundaries and exact rollback, but Owner/Manager/Other Coach paging aggregates failed. Old failed receipts are preserved; the old nickname-only search oracle was wrong for permitted coach labels. Corrected source `3ea85dec` passed 19 unit and 28 desktop/phone harness checks and is now published only to the isolated [test preview](../roster-search-v2/README.md), deployment `965069fe-c47c-473a-a70e-a09fa6d8a29f`. No operator tab was refreshed; final real-role paging acceptance remains open. Earlier NOT RUN/no-session/QUIC snapshots below are historical and no longer describe the first rehearsal.
+
+Public hero fix [PR #23](https://github.com/repformed/Player-Development-Site/pull/23) is at `7900940`: the unwanted text button is replaced with a compact accessible icon control, preserving keyboard pause and reduced motion. Eight final affected desktop/phone checks passed. First CI caught an obsolete wide-button test; corrected head has [CI 40996856102](https://github.com/repformed/Player-Development-Site/actions/runs/40996856102) running. No production publication yet.
+
+Draft combined learning/roster [PR #24](https://github.com/repformed/Player-Development-Site/pull/24) is at `ee4bb37`, based on PR #13 rather than production. It reconciles shared dashboard/API modes and stale/canceled requests, without SQL permission changes. Local 62 focused browser and 58 API/database cases passed. Initial CI found a test mock typing error; clean forced types, lint and seven API cases passed after correction. [Final aggregate CI 40996856664](https://github.com/repformed/Player-Development-Site/actions/runs/40996856664) is running. Draft PR #13 and #21 remain preserved and unmerged. Hosted learning, recovery and exact migration/activation approvals remain gates.
+
+Production website `0816c343` / Cloudflare `bab6aa19` and TestFlight 15 are unchanged. No production schema, flags, roles, credentials, scheduler, emails, billing or child data changed. No physical-device or all-live-role grade is claimed.
+
 ## TERMINAL: test-preview published01:52:19UTC October30
 
 **Complete.** Rehearsal https://learning-auth-rehearsal.repformed.pages.dev/ now has source6d0975b86a0dc1ac9f128da244c02b08eb9e91ff, previewdeployment0ac900a0-e7a9-4d53-a49d-0c9deb221020. [Exact release/validation/readiness receipt](../roster-023-preview-release/RECEIPT.md). One upload attempt, successful CLI and provider metadata read-back. Production0816c343/bab6aa19andTestFlight15 unchanged. No active check/upload remains.

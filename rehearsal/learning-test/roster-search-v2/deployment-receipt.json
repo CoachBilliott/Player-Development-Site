@@ -1,0 +1,30 @@
+{
+  "verified_at": "2026-10-30T03:21:23.436642+00:00",
+  "source": "3ea85dec40e4723d514713ff264939893424fc04",
+  "deployment_id": "965069fe-c47c-473a-a70e-a09fa6d8a29f",
+  "url": "https://965069fe.repformed.pages.dev",
+  "aliases": [
+    "https://learning-auth-rehearsal.repformed.pages.dev"
+  ],
+  "created_on": "2026-10-30T03:20:47.507791Z",
+  "stage": {
+    "name": "deploy",
+    "started_on": null,
+    "ended_on": "2026-10-30T03:20:48.869498Z",
+    "status": "success"
+  },
+  "environment": "preview",
+  "production_unchanged": {
+    "id": "bab6aa19-838c-424e-8aa1-d562cb7a88c2",
+    "source": "0816c343a99a76e03ad2e48c7e16207058624c02"
+  },
+  "operator_tabs_refreshed": false,
+  "hosted_retest": "NOT RUN: existing six memory-only sessions intentionally preserved",
+  "local_checks": {
+    "harness_unit": 19,
+    "harness_browser": 28,
+    "lint": "passed",
+    "types": "passed",
+    "build": "passed"
+  }
+}
