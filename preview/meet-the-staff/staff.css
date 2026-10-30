@@ -162,14 +162,7 @@ h1 span {
   font-size: 12px;
   color: #c7a45c;
 }
-.photo-caption {
-  position: absolute;
-  bottom: 16px;
-  left: 30px;
-  color: #c7a45c;
-  font-size: 9px;
-  letter-spacing: 2px;
-}
+
 .staff-details {
   padding: 26px 0 0;
 }

@@ -58,7 +58,6 @@ export function MeetTheStaff({ profiles }: { profiles: PublicStaffProfile[] }) {
                     </p>
                   </div>
                 )}
-                <span className="photo-caption">REPFORMED / STAFF</span>
               </div>
               <div className="staff-details">
                 <p className="eyebrow">{profile.title}</p>
