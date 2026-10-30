@@ -119,7 +119,7 @@ export function learningBridge(
   const denied = () => {
     throw Error("This action is not part of the fictional weekly walkthrough.");
   };
-  return {
+  const transport = {
     rpc: async (name: string, args: Record<string, unknown> = {}) => {
       try {
         let data: unknown = null;
@@ -353,6 +353,29 @@ export function learningBridge(
           },
         }),
       }),
+    },
+  };
+  return {
+    ...transport,
+    rpc: (name: string, args: Record<string, unknown> = {}) => {
+      const request = transport.rpc(name, args);
+      return Object.assign(request, {
+        abortSignal: (signal: AbortSignal) =>
+          new Promise<Awaited<typeof request>>((resolve, reject) => {
+            const aborted = () =>
+              reject(
+                new DOMException("Fictional read canceled.", "AbortError"),
+              );
+            if (signal.aborted) {
+              aborted();
+              return;
+            }
+            signal.addEventListener("abort", aborted, { once: true });
+            request
+              .then(resolve, reject)
+              .finally(() => signal.removeEventListener("abort", aborted));
+          }),
+      });
     },
   } as unknown as SupabaseClient;
 }
