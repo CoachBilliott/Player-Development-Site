@@ -1,64 +1,62 @@
 {
-  "at": "2026-10-29T21:14:00Z",
-  "production": "0816c343a99a76e03ad2e48c7e16207058624c02",
-  "native": "0.1.0(15)",
+  "at": "2026-10-30T06:23:38.025645+00:00",
+  "production": "70052ad3ea4de0fc42beac53bb0138f640d7bd8c",
+  "deployment": "3a46672b-b999-4d10-a1da-a674028ff754",
+  "native": "0.1.0(17)",
+  "report": "../MORNING-REPORT-2026-10-30.md",
   "findings": [
     {
-      "finding": "Login help overlap",
-      "status": "Fixed in web and build15",
-      "evidence": "Exact-source iOS simulator + exact IPA static/browser presentation; physical device not verified"
+      "finding": "Login help overlap, overdue action priority and review-access navigation",
+      "status": "Fixed and released; source/fixture/simulator evidence",
+      "evidence": "build17-audit/AUDIT.md; physical and normal live-role acceptance unverified"
     },
     {
-      "finding": "Roster rendering scales poorly",
-      "status": "25-row client presentation released; server loading separately prepared PR21",
-      "evidence": "1000-row fixture bounded rendering; new scoped RPC PGlite/HTTP tests pass; hosted unverified"
+      "finding": "Coach Refresh exceeds 320px card content",
+      "status": "Fixed and released in website70052ad / TestFlight17",
+      "evidence": "Exact signed IPA 4 staff roles at 320/375/390 passed; historical Build16 failures retained"
     },
     {
-      "finding": "Overdue review next action",
-      "status": "Released repair",
-      "evidence": "Regression + exact-build presentation fixtures; real staff inbox unverified"
+      "finding": "Roster scalability",
+      "status": "25 visible rows released; server paging source green earlier, corrected hosted acceptance pending",
+      "evidence": "023 test scope/anonymous/details/rollback passed; old paging failed; new probe requires coordinated ordinary Auth"
     },
     {
-      "finding": "Outdated review-access navigation",
-      "status": "Released repair",
-      "evidence": "Owner link and Manager/Coach no extra action checked in fixtures"
+      "finding": "Singular/plural count labels",
+      "status": "Fixed SOURCE ONLY in PR26 fbcebb5; final aggregate CI41013346892 running",
+      "evidence": "24 focused browser, lint, forced types, build passed; 48 focused integration checks passed; new integration66e7e46 aggregate pending"
     },
     {
-      "finding": "No representative lesson/quiz demo",
-      "status": "Draft interactive PR22 isolated preview; reviewed video still missing",
-      "evidence": "Local sample checks and exact disconnected artifact3width; no trusted grades or assessment"
+      "finding": "Representative product demonstration",
+      "status": "PR22 sample source cfe3dce95ce90f2e1df8eab7a90ab0817bc9e923 green; fictional preview only",
+      "evidence": "CI40957228885 fixed earlier screenshot portability failure, including previously skipped stages; qualified-reviewed video not established"
     },
     {
-      "finding": "Package incomplete week ready gate",
-      "status": "Prepared PR13 migration022; not installed/active",
-      "evidence": "PR13 local/CI source tests only; hosted enrollment/scoring/library acceptance blocked"
+      "finding": "Package-incomplete ready gate / weekly reminders and history",
+      "status": "Draft PR13/PR24; no production activation",
+      "evidence": "022 counts and024 overrides source tested; old integrated18176fd CI41007130150 green; new copy follow-up pending final-head CI"
     },
     {
-      "finding": "Actual every-role/physical performance audit",
-      "status": "Unverified",
-      "evidence": "No fabrication of sessions, actors, network timings or device measurements"
+      "finding": "Full physical/private-role/delivery/restore certification",
+      "status": "Unverified; no launch grade",
+      "evidence": "No new actors, production roles, emails, credentials, security or learning activation"
     }
   ],
-  "terminalCI": {
+  "last_green_source": {
     "PR21": {
       "head": "d791232c91cbdfdcc00cb6a6d3d70d3ee98d0e53",
       "run": 40953863302,
-      "result": "success",
-      "unitDatabase": 395,
-      "web": 448,
-      "appOffline": 10,
-      "privatePreview": 6,
-      "python": 11
+      "result": "success"
     },
     "PR22": {
-      "head": "30601cd8cc89f38e5220be17506d22a793f0d765",
-      "run": 40954155710,
-      "result": "failure",
-      "webPassed": 436,
-      "webFailed": 2,
-      "cause": "Local-only screenshot output /workspace is not writable on GitHub runner; UI assertions passed before artifact write",
-      "appOffline": "skipped",
-      "privatePreview": "skipped"
+      "head": "cfe3dce95ce90f2e1df8eab7a90ab0817bc9e923",
+      "run": 40957228885,
+      "result": "success"
+    },
+    "PR24": {
+      "head": "18176fd093b38a595213ba69a1847c9743475901",
+      "run": 41007130150,
+      "result": "success",
+      "current_copy_followup": "66e7e46; aggregate pending; previous green not attributed to this head"
     }
   }
 }

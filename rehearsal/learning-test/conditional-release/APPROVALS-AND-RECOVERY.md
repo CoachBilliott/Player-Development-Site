@@ -1,3 +1,5 @@
+> Current operational summary: [October30 morning report](../MORNING-REPORT-2026-10-30.md). Source/release identities below are historical preparation snapshots; do not execute their old sequence as current readiness. Current drafts include022 completeness,023 standalone paging and024 notification inheritance; no new production authorization is inferred.
+
 # Conditional learning publication: exact remaining gates
 
 Update: a separate approved copy-only PR14 is now published at 3d35ccc / 6ba70ade. The learning candidate is reconciled with it at 05b2ecb, CI 40817611141 SUCCESS, unchanged backend/migration source. See [the latest receipt](../public-audit-followups/README.md); the initial preparation record below is historical. The specific learning security/recovery/activation gates remain unmet.
