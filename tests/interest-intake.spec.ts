@@ -1,4 +1,4 @@
-import { test, expect, type BrowserContext } from "@playwright/test";
+import { test, expect, type BrowserContext, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { mkdir } from "node:fs/promises";
 async function intake(context: BrowserContext, enabled = true) {
@@ -128,10 +128,7 @@ test("reading privacy keeps the original adult draft and consent without persist
   expect(storage).not.toContain("Fictional Adult");
   expect(d.requests).toHaveLength(0);
 });
-test("native invalid-email focus stays visible below the sticky navigation", async ({
-  page,
-  context,
-}) => {
+async function invalidEmailFocus(page: Page, context: BrowserContext) {
   const d = await intake(context);
   await page.goto("./#membership");
   const form = await fill(page);
@@ -149,7 +146,27 @@ test("native invalid-email focus stays visible below the sticky navigation", asy
     })
     .toBe(true);
   expect(d.requests).toHaveLength(0);
+}
+test("browser invalid-email focus stays visible below the sticky navigation", async ({
+  page,
+  context,
+}) => {
+  await invalidEmailFocus(page, context);
 });
+for (const [width, height] of [
+  [320, 568],
+  [375, 667],
+  [390, 700],
+  [1440, 720],
+]) {
+  test(`invalid-email focus is visible in the ${width}x${height} viewport`, async ({
+    page,
+    context,
+  }) => {
+    await page.setViewportSize({ width, height });
+    await invalidEmailFocus(page, context);
+  });
+}
 test("short adult interest works by keyboard without account or email-app launch", async ({
   page,
   context,

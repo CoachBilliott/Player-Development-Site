@@ -251,6 +251,12 @@
 .interest-form {
   min-width: 0;
 }
+/* Browser validation scrolls the invalid control, not the form's heading. */
+.interest-form input,
+.interest-form select {
+  scroll-margin-top: calc(120px + env(safe-area-inset-top, 0px));
+  scroll-margin-bottom: 24px;
+}
 .interest-form fieldset {
   margin: 0;
   padding: 0;
