@@ -28,7 +28,7 @@ import { isStaff } from "./roles";
 import { AccountAccess } from "./AccountAccess";
 import { FamilyTraining } from "./family";
 import { AthleteTraining } from "./FamilyTraining";
-import { appSurface } from "./mobile";
+import { appSurface, nativeApp } from "./mobile";
 import { WebsiteLink } from "./MobileApp";
 import { AccountClosure } from "./AccountClosure";
 import "./accountLifecycle.css";
@@ -1303,9 +1303,12 @@ function ConnectedAccount({
             identity checks still require separate launch work.
           </p>
           <p>
-            Your login session is saved in this browser. Profile details are
-            fetched online and are not saved into demo storage or the app’s
-            offline cache. The fictional demo remains separate.{" "}
+            {nativeApp()
+              ? "Your login session is saved in the iOS Keychain."
+              : "Your login session is saved in this browser."}{" "}
+            Profile details are fetched online and are not saved into demo
+            storage or the app’s offline cache. The fictional demo remains
+            separate.{" "}
             {shared.accountLifecycleEnabled
               ? "Customer account deletion includes the email login, owned profiles/history and private clips after password confirmation. Staff content and guardian-managed closure use assisted review. Other households keep their own records with your reporter identity removed. A minimal receipt retains the request ID, status, counts and dates without your email. Provider backups and already-downloaded copies follow their applicable retention rules."
               : "Profile deletion is available in your account; provider backup retention and complete email-login erasure require the project owner."}

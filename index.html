@@ -27,9 +27,58 @@
       name="apple-mobile-web-app-status-bar-style"
       content="black-translucent"
     />
+    <style>
+      .startup-fallback {
+        max-width: 42rem;
+        margin: 10vh auto;
+        padding: 2rem;
+        background: #181818;
+        color: #f5f1e8;
+        border-top: 3px solid #c7a45c;
+        font:
+          1rem/1.6 system-ui,
+          sans-serif;
+      }
+      .startup-fallback h1 {
+        margin: 0 0 1rem;
+        color: #f5f1e8;
+        font:
+          700 2rem/1.2 system-ui,
+          sans-serif;
+      }
+      .startup-fallback p {
+        margin: 0.75rem 0;
+        color: inherit;
+        font: inherit;
+      }
+      .startup-fallback a {
+        color: #e5c978;
+        text-decoration: underline;
+        text-underline-offset: 3px;
+        overflow-wrap: anywhere;
+      }
+      .startup-fallback a:focus-visible {
+        outline: 3px solid #e5c978;
+        outline-offset: 4px;
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <main class="startup-fallback" aria-label="Repformed website loading">
+        <h1>Repformed</h1>
+        <p role="status">Loading the website…</p>
+        <p>
+          JavaScript is needed to use the interest form and account pages. You
+          can still contact the team by email.
+        </p>
+        <p>
+          If the website does not load, <a href="./">reload the website</a> or
+          <a href="mailto:Repformed@gmail.com">email Repformed@gmail.com</a>.
+        </p>
+        <p>Opening an email link does not send a message or submit interest.</p>
+      </main>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
