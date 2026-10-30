@@ -52,6 +52,7 @@ beforeAll(async () => {
     "011-review-service-tracking.sql",
     "012-per-athlete-workout-assignments.sql",
     "015-staff-client-service-dashboard.sql",
+    "023-staff-roster-pages.sql",
   ])
     await db.exec(
       readFileSync(new URL("../backend/" + file, import.meta.url), "utf8"),
@@ -395,4 +396,303 @@ it("shows client setup without fabricating athletes and hides records frozen for
     false,
   );
   expect((await roster(coach)).rows).toEqual([]);
+});
+
+type PageResult = {
+  rows: Row[];
+  scope: string;
+  coaches: { id: string; label: string }[];
+  page: {
+    number: number;
+    size: number;
+    pages: number;
+    total: number;
+    matched: number;
+    athletes: number;
+    clients: number;
+    counts: { overdue: number; attention: number; ready: number };
+    ages: string[];
+    positions: string[];
+    coaches: { id: string; label: string }[];
+  };
+};
+async function pageRoster(
+  actor = owner,
+  query = "",
+  filter = "all",
+  age = "",
+  position = "",
+  coachFilter = "",
+  page = 1,
+  size = 25,
+) {
+  await as(actor);
+  return (
+    await db.query<{ result: PageResult }>(
+      "select public.staff_client_service_roster_page($1,$2,$3,$4,$5,$6,$7) result",
+      [query, filter, age, position, coachFilter, page, size],
+    )
+  ).rows[0].result;
+}
+it("paged roster retains Owner/Manager all-client scope and exact assigned-Coach scope", async () => {
+  await assign(profile, coach);
+  await assign(sibling, id(4));
+  await assign(otherProfile, id(4));
+  for (const actor of [owner, manager]) {
+    const r = await pageRoster(actor);
+    expect(r.page.total).toBe(3);
+    expect(r.page.clients).toBe(2);
+    expect(r.page.athletes).toBe(3);
+    expect(r.rows).toHaveLength(3);
+  }
+  const c = await pageRoster(coach);
+  expect(c.scope).toBe("assigned_athletes");
+  expect(c.rows.map((r) => r.athlete_id)).toEqual([profile]);
+  expect(c.page.total).toBe(1);
+  expect(c.coaches).toEqual([]);
+  expect(c.page.coaches.map((r) => r.id)).toEqual([coach]);
+  expect(c.rows[0].client_label).toBe(`Client ${parent.slice(0, 8)}`);
+  await deny(
+    "select public.staff_athlete_service($1)",
+    [sibling],
+    /outside your service roster/,
+  );
+});
+it("paged search cannot infer hidden client email through Coach match counts", async () => {
+  await assign();
+  const email = "fictional-workout-5@example.test";
+  expect((await pageRoster(owner, email)).page.matched).toBe(2);
+  const c = await pageRoster(coach, email);
+  expect(c.page.matched).toBe(0);
+  expect(c.rows).toEqual([]);
+  expect(c.page.total).toBe(1);
+  expect(
+    (await pageRoster(coach, `Client ${parent.slice(0, 8)}`)).page.matched,
+  ).toBe(1);
+});
+it("paged search normalizes accents, quoted words and whitespace without wildcard or SQL interpretation", async () => {
+  await db.query("update public.player_profiles set nickname=$1 where id=$2", [
+    "Ávery O'Neil",
+    sibling,
+  ]);
+  const r = await pageRoster(owner, "  AVERY  o'neil  ");
+  expect(r.page.matched).toBe(1);
+  expect(r.rows[0].athlete_id).toBe(sibling);
+  expect((await pageRoster(owner, "%")).rows).toEqual([]);
+  expect((await pageRoster(owner, "x' OR true --")).rows).toEqual([]);
+});
+it("server status counts require accessible uploaded training, not only a saved assignment", async () => {
+  await assign();
+  await training();
+  let r = await pageRoster(owner, "", "ready");
+  expect(r.page.matched).toBe(0);
+  expect(r.page.counts.ready).toBe(0);
+  await db.exec("reset role");
+  await db.query(
+    "insert into storage.objects(bucket_id,name,metadata) values('training-media',$1,$2)",
+    [`${coach}/${first}/${first}.txt`, { size: 12, mimetype: "text/plain" }],
+  );
+  r = await pageRoster(owner, "", "ready");
+  expect(r.page.matched).toBe(1);
+  expect(r.rows[0].athlete_id).toBe(profile);
+  expect(r.page.total).toBe(3);
+  expect(r.page.counts.ready).toBe(1);
+  await db.exec("reset role");
+  await db.exec(
+    'update storage.objects set metadata=\'{"size":0,"mimetype":"text/plain"}\'',
+  );
+  expect((await pageRoster(owner, "", "ready")).page.matched).toBe(0);
+});
+it("paged filters combine on the server and facets/counts remain within the full authorized scope", async () => {
+  await assign(profile, coach);
+  await assign(sibling, id(4));
+  const r = await pageRoster(owner, "", "all", "18+", "Defensive back", id(4));
+  expect(r.rows.map((r) => r.athlete_id)).toEqual([sibling]);
+  expect(r.page.matched).toBe(1);
+  expect(r.page.total).toBe(3);
+  expect(r.page.positions).toEqual(["Defensive back", "Quarterback"]);
+  expect(
+    (await pageRoster(owner, "", "unassigned")).rows.map((r) => r.athlete_id),
+  ).toEqual([otherProfile]);
+  expect((await pageRoster(coach, "", "all", "", "", id(4))).page.matched).toBe(
+    0,
+  );
+});
+it("review scope and overdue priority do not reveal another review coach's tasks", async () => {
+  await assign();
+  await training();
+  await db.exec("reset role");
+  await db.query(
+    "insert into storage.objects(bucket_id,name,metadata) values('training-media',$1,$2)",
+    [`${coach}/${first}/${first}.txt`, { size: 12, mimetype: "text/plain" }],
+  );
+  await db.query(
+    "insert into public.review_services(id,account_id,profile_id,assigned_to,state,due_at) values($1,$2,$3,$4,'queued',now()-interval '1 hour')",
+    [id(700), parent, profile, id(4)],
+  );
+  const o = await pageRoster(owner, "", "overdue");
+  expect(o.rows[0].athlete_id).toBe(profile);
+  expect(o.page.counts.overdue).toBe(1);
+  const c = await pageRoster(coach, "", "overdue");
+  expect(c.rows).toEqual([]);
+  expect(c.page.counts.overdue).toBe(0);
+  expect(c.page.counts.ready).toBe(1);
+});
+it("reassignment, unassignment and role changes revoke new page/detail reads immediately", async () => {
+  await assign();
+  expect((await pageRoster(coach)).rows).toHaveLength(1);
+  await assign(profile, id(4), 1);
+  expect((await pageRoster(coach)).rows).toEqual([]);
+  expect((await pageRoster(id(4))).rows).toHaveLength(1);
+  await assign(profile, null, 2);
+  expect((await pageRoster(id(4))).rows).toEqual([]);
+  await db.exec("reset role");
+  await db.query(
+    "update public.account_roles set role='parent' where user_id=$1",
+    [coach],
+  );
+  await as(coach);
+  await deny(
+    "select public.staff_client_service_roster_page()",
+    [],
+    /Staff access/,
+  );
+});
+it("anonymous, parents and other nonstaff cannot call the page RPC or its internal helper", async () => {
+  for (const actor of [parent, otherParent]) {
+    await as(actor);
+    await deny(
+      "select public.staff_client_service_roster_page()",
+      [],
+      /Staff access/,
+    );
+  }
+  await as(owner);
+  await deny(
+    "select public.staff_service_search('private')",
+    [],
+    /permission denied/,
+  );
+  await as("", "anon");
+  await deny(
+    "select public.staff_client_service_roster_page()",
+    [],
+    /permission denied/,
+  );
+});
+it("invalid page/filter requests fail before returning partial results", async () => {
+  await as(owner);
+  for (const args of [
+    ["", "all", "", "", "", 0, 25],
+    ["", "all", "", "", "", 1, 101],
+    ["x".repeat(161), "all", "", "", "", 1, 25],
+    ["", "all", "", "", "not-a-coach", 1, 25],
+    ["", "other", "", "", "", 1, 25],
+  ])
+    await deny(
+      "select public.staff_client_service_roster_page($1,$2,$3,$4,$5,$6,$7)",
+      args,
+      /valid roster filters/,
+    );
+});
+it("customers without profiles remain visible only to Owner/Manager with accurate household counts", async () => {
+  await db.query(
+    "insert into auth.users(id,email,email_confirmed_at) values($1,'fictional-no-athlete@example.test',now())",
+    [id(99)],
+  );
+  await db.query(
+    "insert into public.account_roles(user_id,role) values($1,'parent')",
+    [id(99)],
+  );
+  await db.query(
+    "insert into public.member_accounts(user_id,account_type) values($1,'parent')",
+    [id(99)],
+  );
+  const o = await pageRoster(owner);
+  expect(o.page.total).toBe(4);
+  expect(o.page.athletes).toBe(3);
+  expect(o.page.clients).toBe(3);
+  expect(o.rows.some((r) => r.athlete_id === null)).toBe(true);
+  expect((await pageRoster(coach)).rows).toEqual([]);
+});
+it("1000 extra athletes page without duplicate IDs, clamp stale pages, and expand rich details only for displayed rows", async () => {
+  await db.exec(`insert into public.player_profiles(id,owner_id,nickname,age_group,position,experience,goal)
+ select ('90000000-0000-4000-8000-'||lpad((1000+n)::text,12,'0'))::uuid,'${parent}','Scale fictional '||lpad(n::text,4,'0'),'18+','Quarterback','New to the game','Footwork' from generate_series(0,999) n;`);
+  const a = await pageRoster(owner),
+    b = await pageRoster(owner, "", "all", "", "", "", 2);
+  expect(a.page.total).toBe(1003);
+  expect(a.page.matched).toBe(1003);
+  expect(a.page.pages).toBe(41);
+  expect(a.rows).toHaveLength(25);
+  expect(b.rows).toHaveLength(25);
+  expect(new Set([...a.rows, ...b.rows].map((r) => r.athlete_id)).size).toBe(
+    50,
+  );
+  const last = await pageRoster(owner, "", "all", "", "", "", 999999);
+  expect(last.page.number).toBe(41);
+  expect(last.rows).toHaveLength(3);
+  const match = await pageRoster(
+    owner,
+    "Scale fictional 0999",
+    "all",
+    "",
+    "",
+    "",
+    40,
+  );
+  expect(match.page.number).toBe(1);
+  expect(match.page.matched).toBe(1);
+  expect(match.rows).toHaveLength(1);
+  await db.exec("reset role");
+  const definition = (
+    await db.query<{ definition: string }>(
+      "select pg_get_functiondef('public.staff_athlete_service(uuid)'::regprocedure) definition",
+    )
+  ).rows[0].definition;
+  await db.exec(
+    definition.replace(
+      /\bbegin\b/i,
+      "begin perform set_config('test.roster_expansions',(coalesce(nullif(current_setting('test.roster_expansions',true),''),'0')::integer+1)::text,true);",
+    ),
+  );
+  await db.query("select set_config('test.roster_expansions','0',true)");
+  await pageRoster(owner);
+  expect(
+    (
+      await db.query<{ calls: string }>(
+        "select current_setting('test.roster_expansions') calls",
+      )
+    ).rows[0].calls,
+  ).toBe("25");
+});
+it("the reviewed rollback removes only the new read capability and preserves legacy service/data", async () => {
+  const countBefore = (
+    await db.query<{ n: number }>(
+      "select count(*)::integer n from public.player_profiles",
+    )
+  ).rows[0].n;
+  const sql = readFileSync(
+    new URL("../backend/rollback/023-staff-roster-pages.sql", import.meta.url),
+    "utf8",
+  )
+    .replace(/^begin;$/m, "")
+    .replace(/^commit;$/m, "");
+  await db.exec(sql);
+  expect(
+    (
+      await db.query<{ missing: boolean }>(
+        "select to_regprocedure('public.staff_client_service_roster_page(text,text,text,text,text,integer,integer)') is null missing",
+      )
+    ).rows[0].missing,
+  ).toBe(true);
+  expect(
+    (
+      await db.query<{ n: number }>(
+        "select count(*)::integer n from public.player_profiles",
+      )
+    ).rows[0].n,
+  ).toBe(countBefore);
+  expect((await roster(owner)).rows).toHaveLength(3);
+  await as(parent);
+  await deny("select public.staff_client_service_roster()", [], /Staff access/);
 });

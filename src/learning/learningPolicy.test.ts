@@ -54,6 +54,7 @@ beforeAll(async () => {
     "020-learning-media-retention.sql",
     "021-learning-service-workflows.sql",
     "022-package-week-completeness.sql",
+    "023-staff-roster-pages.sql",
     "024-weekly-notification-overrides.sql",
   ];
   for (const file of files)
@@ -2064,4 +2065,78 @@ it("weekly override installation stops before DDL when learning flags are active
       "select count(*)::integer r from information_schema.columns where table_schema='public' and table_name='delivery_athlete_settings' and column_name='weekly_package_id'",
     ),
   ).toBe(1);
+});
+
+it("numeric manual and weekly cursor APIs coexist without widening coach or household scope", async () => {
+  await as(coach);
+  for (const name of [
+    "staff_client_service_roster_page",
+    "staff_learning_roster_page",
+  ]) {
+    const data = (await r(`select public.${name}() r`)) as {
+      rows: { athlete_id: string }[];
+      page: { total: number };
+    };
+    expect(data.page.total).toBe(1);
+    expect(data.rows.map((x) => x.athlete_id)).toEqual([profile]);
+  }
+  await blocked(
+    "select public.staff_athlete_service($1)",
+    [otherProfile],
+    /outside your service roster/i,
+  );
+  await as(manager);
+  for (const name of [
+    "staff_client_service_roster_page",
+    "staff_learning_roster_page",
+  ]) {
+    const data = (await r(`select public.${name}() r`)) as {
+      rows: { athlete_id: string }[];
+      page: { total: number };
+    };
+    expect(data.page.total).toBe(3);
+    expect(data.rows.map((x) => x.athlete_id).sort()).toEqual(
+      [profile, sibling, otherProfile].sort(),
+    );
+  }
+  await as(parent);
+  await blocked("select public.staff_client_service_roster_page()");
+  await blocked("select public.staff_learning_roster_page()");
+});
+it("023 searches permitted coach/client labels but never a hidden client email for Coaches", async () => {
+  await db.query(
+    "update auth.users set email='learning-other-coach@example.test' where id=$1",
+    [otherCoach],
+  );
+  await db.query(
+    "insert into public.athlete_service_coaches(profile_id,coach_id) values($1,$3),($2,$3)",
+    [sibling, otherProfile, otherCoach],
+  );
+  for (const actor of [owner, manager, otherCoach]) {
+    await as(actor);
+    const data = (await r(
+      "select public.staff_client_service_roster_page('other') r",
+    )) as { rows: { athlete_id: string }[]; page: { matched: number } };
+    expect(data.rows.map((x) => x.athlete_id).sort()).toEqual(
+      [sibling, otherProfile].sort(),
+    );
+    expect(data.page.matched).toBe(2);
+  }
+  await as(coach);
+  for (const query of ["other", "learning-5@example.test"]) {
+    const data = (await r(
+      "select public.staff_client_service_roster_page($1) r",
+      [query],
+    )) as { rows: unknown[]; page: { matched: number; total: number } };
+    expect(data.rows).toEqual([]);
+    expect(data.page.matched).toBe(0);
+    expect(data.page.total).toBe(1);
+  }
+  await as(owner);
+  const own = (await r(
+    "select public.staff_client_service_roster_page('learning-5@example.test') r",
+  )) as { rows: { athlete_id: string }[] };
+  expect(own.rows.map((x) => x.athlete_id).sort()).toEqual(
+    [profile, sibling].sort(),
+  );
 });
