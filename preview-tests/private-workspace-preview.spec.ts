@@ -223,3 +223,48 @@ test("three staff journeys show real components but reject fictional assignment 
   }
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);
 });
+
+test("optional names in the fictional preview stay read-only and clear on role changes", async ({
+  page,
+}) => {
+  const foreign: string[] = [];
+  await page.route("**/*", (route) => {
+    if (new URL(route.request().url()).hostname !== "127.0.0.1") {
+      foreign.push(route.request().url());
+      return route.abort();
+    }
+    return route.continue();
+  });
+  await page.goto("./#account");
+  const selector = page.getByLabel("Preview role");
+  await selector.selectOption("owner");
+  await page
+    .getByRole("link", { name: "Account settings", exact: true })
+    .click();
+  const panel = page.getByRole("region", { name: "Your name", exact: true });
+  const name = panel.getByRole("textbox", {
+    name: "Your name (optional)",
+    exact: true,
+  });
+  await expect(name).toHaveValue("");
+  await name.fill("Fictional review-only draft");
+  await panel.getByRole("button", { name: "Save name", exact: true }).click();
+  await expect(panel.getByRole("alert")).toContainText("not confirmed saved");
+  await expect(name).toHaveValue("Fictional review-only draft");
+  await panel.getByRole("button", { name: "Reload your name" }).click();
+  await expect(name).toHaveValue("");
+  await name.fill("Uncommitted fictional draft");
+  await selector.selectOption("manager");
+  await page
+    .getByRole("link", { name: "Account settings", exact: true })
+    .click();
+  await expect(name).toHaveValue("");
+  await expect(page.getByLabel("Find an account by email")).toHaveCount(0);
+  await page.reload();
+  await selector.selectOption("owner");
+  await page
+    .getByRole("link", { name: "Account settings", exact: true })
+    .click();
+  await expect(name).toHaveValue("");
+  expect(foreign).toEqual([]);
+});
