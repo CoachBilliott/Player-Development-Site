@@ -1,5 +1,5 @@
 {
-  "observed_at": "2026-10-30T05:55:05.840715+00:00",
+  "observed_at": "2026-10-30T06:00:25.724777+00:00",
   "public_hero": {
     "pr": 23,
     "tested_head": "7900940ab584c062753bfe741b361ec24dfda0f4",
@@ -76,8 +76,10 @@
     "native_attempt": 2,
     "native_result": "success incl artifacts",
     "signed_run": 41010880664,
-    "status": "running; Apple17 not yet confirmed",
-    "duplicate_requests": false
+    "status": "signed upload success; awaiting Apple availability, exact IPA fixture audit running",
+    "duplicate_requests": false,
+    "signed_result": "success",
+    "apple_first_check": 41011462935
   },
   "post_release_finding": {
     "id": "P2-01",
@@ -89,7 +91,7 @@
     "focused_tests": 8,
     "lint_clean_types": "passed",
     "aggregate_ci": 41005538393,
-    "aggregate_status": "running",
+    "aggregate_status": "success",
     "next_build17_preflight": {
       "run": 41005953849,
       "unused_at": "2026-10-30T05:00:18.196Z"

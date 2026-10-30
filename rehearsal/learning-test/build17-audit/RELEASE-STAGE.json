@@ -1,0 +1,14 @@
+{
+  "observed_at": "2026-10-30T06:00:25.724777+00:00",
+  "source": "70052ad3ea4de0fc42beac53bb0138f640d7bd8c",
+  "website_deployment": "3a46672b-b999-4d10-a1da-a674028ff754",
+  "signed_run": 41010880664,
+  "signed_attempt": 1,
+  "signed_result": "success at 05:58:09 UTC; export, validation, upload, artifacts and key cleanup passed",
+  "signed_artifact": 12957338967,
+  "apple_status_workflow": 41011462935,
+  "apple_result": "not yet listed at 05:59:35; processing availability not established",
+  "exact_ipa_assets": "critical application assets/config match website; service-worker asset set and logic match, font order/cache digest differ",
+  "post_release_audit": "running 390px, then 320px/geometry fixture groups; no physical or hosted-role certification",
+  "production_learning_security_credentials_changes": false
+}
