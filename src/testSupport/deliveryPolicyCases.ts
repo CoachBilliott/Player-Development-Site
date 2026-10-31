@@ -65,7 +65,9 @@ export function deliveryPolicyCases(
       ...(staffNotifications
         ? ["017-staff-operational-notifications.sql"]
         : []),
-      ...(interestIntake ? ["018-public-interest-and-shared-inbox.sql"] : []),
+      ...(interestIntake
+        ? ["018-public-interest-and-shared-inbox.sql", "025-account-names.sql"]
+        : []),
     ].filter((file) => grouped || !/^(013|014)-/.test(file)))
       await db.exec(
         readFileSync(new URL("../../backend/" + file, import.meta.url), "utf8"),

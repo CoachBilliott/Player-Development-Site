@@ -31,6 +31,7 @@ export const accessSchema = z.object({
 export const accessMemberSchema = z.object({
   user_id: z.string().uuid(),
   email: z.string(),
+  display_name: z.string().nullable().optional(),
   role: z.enum(ROLES).nullable(),
   version: z.number().int().nonnegative(),
   email_verified: z.boolean(),
@@ -39,8 +40,14 @@ export const accessMemberSchema = z.object({
 export type AccessMember = z.infer<typeof accessMemberSchema>;
 export const isStaff = (role: AccountRole | null) =>
   role === "owner" || role === "manager" || role === "coach";
-export async function listAccess(client: SupabaseClient, search: string) {
-  const { data, error } = await client.rpc("list_account_access", {
+export function listAccess(client: SupabaseClient, search: string) {
+  return readAccess(client, search, "list_account_access");
+}
+export function listNamedAccess(client: SupabaseClient, search: string) {
+  return readAccess(client, search, "list_account_access_v2");
+}
+async function readAccess(client: SupabaseClient, search: string, rpc: string) {
+  const { data, error } = await client.rpc(rpc, {
     search_text: search.trim(),
   });
   if (error)

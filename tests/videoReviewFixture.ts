@@ -402,7 +402,10 @@ export async function fixture(
       });
     if (p.includes("/storage/v1/object/sign/") && req.method() === "GET")
       return route.fulfill({ contentType: "video/webm", body: media });
-    if (p.endsWith("/rpc/list_account_access"))
+    if (
+      p.endsWith("/rpc/list_account_access") ||
+      p.endsWith("/rpc/list_account_access_v2")
+    )
       return json([
         {
           user_id: userId,

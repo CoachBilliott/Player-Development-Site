@@ -97,7 +97,7 @@ for (const role of ["manager", "coach"] as const)
     sampleWorkout(backend);
     await fixture(context, backend, role);
     let privileged = 0;
-    await context.route("**/rest/v1/rpc/list_account_access", (r) => {
+    await context.route("**/rest/v1/rpc/list_account_access_v2", (r) => {
       privileged++;
       return r.fallback();
     });
@@ -214,7 +214,7 @@ for (const role of ["parent", "athlete"] as const)
       bankReads++;
       return r.fallback();
     });
-    await context.route("**/rest/v1/rpc/list_account_access", (r) => {
+    await context.route("**/rest/v1/rpc/list_account_access_v2", (r) => {
       directoryReads++;
       return r.fallback();
     });

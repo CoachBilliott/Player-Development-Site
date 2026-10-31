@@ -132,7 +132,7 @@ test("Owner access directory is absent in settings and protected self access sta
 }, info) => {
   await staffFixture(context, staffState());
   let reads = 0;
-  await context.route("**/rest/v1/rpc/list_account_access", (r) => {
+  await context.route("**/rest/v1/rpc/list_account_access_v2", (r) => {
     reads++;
     return r.fulfill({
       json: [
@@ -182,16 +182,19 @@ test("Owner directory separates loading, failed reads and retry from an empty re
   const waiting = new Promise<void>((resolve) => {
     release = resolve;
   });
-  await context.route("**/rest/v1/rpc/list_account_access", async (route) => {
-    if (failed) {
-      await waiting;
-      return route.fulfill({
-        status: 503,
-        json: { message: "Directory temporarily unavailable" },
-      });
-    }
-    return route.fulfill({ json: [] });
-  });
+  await context.route(
+    "**/rest/v1/rpc/list_account_access_v2",
+    async (route) => {
+      if (failed) {
+        await waiting;
+        return route.fulfill({
+          status: 503,
+          json: { message: "Directory temporarily unavailable" },
+        });
+      }
+      return route.fulfill({ json: [] });
+    },
+  );
   await page.goto("./#access");
   await expect(
     page.getByRole("status").filter({ hasText: "Loading accounts…" }),

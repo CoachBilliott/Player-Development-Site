@@ -341,6 +341,7 @@ button.workflow-bank-row {
   min-width: 0;
 }
 .access-person > summary > span > small {
+  overflow-wrap: anywhere;
   color: #b9bdb1;
   font-size: 12px;
 }

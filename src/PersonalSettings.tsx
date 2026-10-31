@@ -1,4 +1,5 @@
 import { ArrowRight, KeyRound, LogOut, Users } from "lucide-react";
+import { AccountName } from "./AccountName";
 import { AccountAccess } from "./AccountAccess";
 import { AccountClosure } from "./AccountClosure";
 import { Tag } from "./components";
@@ -50,6 +51,7 @@ export function PersonalSettings({
           </a>
         </div>
       </section>
+      <AccountName shared={shared} />
       <AccountAccess shared={shared} />
       {!staff && (
         <section className="panel member-panel">

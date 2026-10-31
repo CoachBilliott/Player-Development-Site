@@ -238,7 +238,10 @@ export function previewShared(
           (r) => r.athlete_id === body.target_profile && allowed(r),
         );
         return row ? { data: view(row), error: null } : disabled();
-      } else if (name === "list_account_access" && role === "owner")
+      } else if (
+        ["list_account_access", "list_account_access_v2"].includes(name) &&
+        role === "owner"
+      )
         data = (["owner", "manager", "coach", "parent", "athlete"] as const)
           .map((r, i) => ({
             user_id: r === "coach" ? coachA : uid(i + 1),
@@ -266,7 +269,12 @@ export function previewShared(
               adult_setup: true,
             },
           ])
-          .filter((r) => r.email.includes(String(body.search_text || "")));
+          .filter((r) => r.email.includes(String(body.search_text || "")))
+          .map((row) =>
+            name === "list_account_access_v2"
+              ? { ...row, display_name: null }
+              : row,
+          );
       else if (
         name === "interest_staff_inbox" &&
         (role === "owner" || role === "manager")
@@ -284,6 +292,8 @@ export function previewShared(
             launch_notice_version: "repformed-launch-notice-v1",
           },
         ];
+      else if (name === "get_my_account_name" && role)
+        data = { eligible: true, display_name: null, version: 0 };
       else if (name === "athlete_account_context")
         data = { guardian_managed: false, linked_profile_id: null };
       else if (name === "family_profile_state" && !isStaff(role))

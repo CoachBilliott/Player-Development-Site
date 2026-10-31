@@ -6,7 +6,7 @@ import {
   ROLE_LABELS,
   ROLE_DETAILS,
   assignRole,
-  listAccess,
+  listNamedAccess,
   type AccountRole,
   type AccessMember,
 } from "./roles";
@@ -75,7 +75,7 @@ function AccessManager({ shared }: { shared: SharedState }) {
   const lock = useRef(false);
   useEffect(() => {
     let stopped = false;
-    void listAccess(client, "")
+    void listNamedAccess(client, "")
       .then((data) => {
         if (!stopped) {
           setRows(data);
@@ -140,7 +140,7 @@ function AccessManager({ shared }: { shared: SharedState }) {
         onSubmit={(e) => {
           e.preventDefault();
           void act(async () => {
-            setRows(await listAccess(client, search));
+            setRows(await listNamedAccess(client, search));
             setChoices({});
           });
         }}
@@ -170,7 +170,7 @@ function AccessManager({ shared }: { shared: SharedState }) {
             disabled={busy}
             onClick={() =>
               void act(async () => {
-                setRows(await listAccess(client, search));
+                setRows(await listNamedAccess(client, search));
                 setChoices({});
               })
             }
@@ -213,7 +213,8 @@ function AccessManager({ shared }: { shared: SharedState }) {
               <details className="access-person" key={member.user_id}>
                 <summary>
                   <span>
-                    <strong>{member.email}</strong>
+                    <strong>{member.display_name || member.email}</strong>
+                    {member.display_name && <small>{member.email}</small>}
                     <small>
                       {member.role ? ROLE_LABELS[member.role] : "Setup pending"}
                       {self ? " · You" : ""}
@@ -286,7 +287,14 @@ function AccessManager({ shared }: { shared: SharedState }) {
           }}
         >
           <p>
-            <strong>{pending.member.email}</strong>
+            <strong>
+              {pending.member.display_name || pending.member.email}
+            </strong>
+          </p>
+          <p>{pending.member.email}</p>
+          <p className="member-fineprint">
+            Account ID: {pending.member.user_id} · Access version:{" "}
+            {pending.member.version}
           </p>
           <p>
             {pending.member.role
@@ -311,7 +319,7 @@ function AccessManager({ shared }: { shared: SharedState }) {
                 void act(async () => {
                   await assignRole(client, pending.member, pending.role);
                   setPending(null);
-                  setRows(await listAccess(client, search));
+                  setRows(await listNamedAccess(client, search));
                   setChoices({});
                   setMessage(
                     "Account level updated. This person’s next access check will use the new permissions.",

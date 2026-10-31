@@ -66,6 +66,12 @@ beforeAll(async () => {
       "utf8",
     ),
   );
+  await db.exec(
+    readFileSync(
+      new URL("../backend/025-account-names.sql", import.meta.url),
+      "utf8",
+    ),
+  );
 }, 30000);
 afterAll(async () => db?.close());
 beforeEach(async () => db.exec("begin"));
@@ -342,4 +348,607 @@ it("does not mark deletion complete while the email login still exists", async (
   await expect(
     value("public.finish_account_closure($1,false)", [request]),
   ).rejects.toThrow(/Authentication deletion/);
+});
+
+it("adult names preserve own-row privacy, duplicate Unicode names and exact Owner directory scope", async () => {
+  await as(parent);
+  await value(`public.save_my_account_name('  José 李  ',0,'${parent}')`);
+  await as(other);
+  await value(`public.save_my_account_name('José 李',0,'${other}')`);
+  expect(
+    (await db.query("select user_id,display_name from public.account_names"))
+      .rows,
+  ).toEqual([{ user_id: other, display_name: "José 李" }]);
+  await as(owner);
+  const old = (await db.query("select * from public.list_account_access('')"))
+    .rows;
+  const named = (
+    await db.query<Record<string, unknown>>(
+      "select * from public.list_account_access_v2('')",
+    )
+  ).rows;
+  expect(
+    named.map((row) =>
+      Object.fromEntries(
+        Object.entries(row).filter(([key]) => key !== "display_name"),
+      ),
+    ),
+  ).toEqual(old);
+  expect(named.filter((row) => row.display_name === "José 李")).toHaveLength(2);
+  expect((await db.query("select * from public.account_names")).rows).toEqual(
+    [],
+  );
+});
+for (const actor of [manager, coach, parent, other]) {
+  it(`names do not grant directory access to ${actor}`, async () => {
+    await as(actor);
+    await expect(
+      db.query<Record<string, unknown>>(
+        "select * from public.list_account_access_v2('')",
+      ),
+    ).rejects.toThrow(/Owner access/);
+  });
+}
+it("name edits cannot target another account, write directly, or use stale versions", async () => {
+  await as(parent);
+  expect(await value("public.get_my_account_name()")).toEqual({
+    eligible: true,
+    display_name: null,
+    version: 0,
+  });
+  await value(`public.save_my_account_name('Alex',0,'${parent}')`);
+  await db.exec("savepoint rejected");
+  await expect(
+    value(`public.save_my_account_name('Overwrite',0,'${parent}')`),
+  ).rejects.toThrow(/another session/);
+  await db.exec("rollback to savepoint rejected");
+  await expect(
+    db.query("update public.account_names set display_name='Other'"),
+  ).rejects.toThrow(/permission denied/);
+  await db.exec("rollback to savepoint rejected");
+  expect(
+    await value(`public.save_my_account_name('  ',1,'${parent}')`),
+  ).toEqual({
+    eligible: true,
+    display_name: null,
+    version: 2,
+  });
+});
+for (const bad of [
+  "a".repeat(101),
+  "a\nb",
+  "a\tb",
+  "a\u007fb",
+  "a\u0085b",
+  "a\u200fb",
+  "a\u2028b",
+  "a\u{E0001}b",
+]) {
+  it(`rejects invalid name ${JSON.stringify(bad.slice(0, 12))}`, async () => {
+    await as(parent);
+    await expect(
+      db.query(`select public.save_my_account_name($1,0,'${parent}')`, [bad]),
+    ).rejects.toThrow(/account_name_valid/);
+  });
+}
+it("100 Unicode codepoints fit and account-data erasure cascades names", async () => {
+  await as(parent);
+  expect(
+    (
+      await value<{ display_name: string }>(
+        `public.save_my_account_name($1,0,'${parent}')`,
+        ["😀".repeat(100)],
+      )
+    ).display_name,
+  ).toHaveLength(200);
+  await as("", "postgres");
+  await db.query("delete from public.member_accounts where user_id=$1", [
+    parent,
+  ]);
+  expect((await db.query("select * from public.account_names")).rows).toEqual(
+    [],
+  );
+});
+for (const condition of [
+  "unverified",
+  "no setup",
+  "guardian",
+  "closing",
+  "failed closure",
+]) {
+  it(`rejects name saves for ${condition}`, async () => {
+    if (condition === "unverified")
+      await db.query(
+        "update auth.users set email_confirmed_at=null where id=$1",
+        [parent],
+      );
+    if (condition === "no setup")
+      await db.query("delete from public.member_accounts where user_id=$1", [
+        parent,
+      ]);
+    if (condition === "guardian")
+      await db.query(
+        "insert into public.guardian_managed_athletes(user_id) values($1)",
+        [parent],
+      );
+    if (condition === "closing" || condition === "failed closure")
+      await db.query(
+        "insert into public.account_closures(id,user_id,state) values($1,$2,$3)",
+        [request, parent, condition === "closing" ? "cleaning" : "failed"],
+      );
+    await as(parent);
+    expect(
+      (await value<{ eligible: boolean }>("public.get_my_account_name()"))
+        .eligible,
+    ).toBe(false);
+    await expect(
+      value(`public.save_my_account_name('Alex',0,'${parent}')`),
+    ).rejects.toThrow(/Verified adult/);
+  });
+}
+it("anonymous users cannot read names or call either name RPC", async () => {
+  await as("", "anon");
+  for (const sql of [
+    "select * from public.account_names",
+    "select public.get_my_account_name()",
+    `select public.save_my_account_name('Alex',0,'${parent}')`,
+    "select * from public.list_account_access_v2('')",
+  ]) {
+    await db.exec("savepoint denied_name");
+    await expect(db.query(sql)).rejects.toThrow(/permission denied/);
+    await db.exec("rollback to savepoint denied_name");
+  }
+});
+
+it("v2 keeps pending accounts, email-only search and the exact 50-account cap", async () => {
+  for (let n = 100; n < 160; n++)
+    await db.query(
+      "insert into auth.users(id,email,email_confirmed_at) values($1,$2,null)",
+      [id(n), `pending-${n}@example.test`],
+    );
+  await as(owner);
+  for (const search of ["", "pending-15", "José", "fictional"]) {
+    const old = (
+      await db.query<Record<string, unknown>>(
+        "select * from public.list_account_access($1)",
+        [search],
+      )
+    ).rows;
+    const named = (
+      await db.query<Record<string, unknown>>(
+        "select * from public.list_account_access_v2($1)",
+        [search],
+      )
+    ).rows;
+    expect(
+      named.map((row) =>
+        Object.fromEntries(
+          Object.entries(row).filter(([key]) => key !== "display_name"),
+        ),
+      ),
+    ).toEqual(old);
+    if (search === "") expect(named).toHaveLength(50);
+    if (search === "pending-15")
+      expect(named.every((row) => row.adult_setup === false)).toBe(true);
+  }
+});
+
+it("authenticated callers without a user cannot save and no client can invoke eligibility or write names directly", async () => {
+  await as("");
+  await expect(
+    value(`public.save_my_account_name('Fake',0,'${parent}')`),
+  ).rejects.toThrow(/Sign in/);
+});
+it("new privileged functions have fixed search paths and restricted grants", async () => {
+  const defs = (
+    await db.query<{
+      proname: string;
+      prosecdef: boolean;
+      proconfig: string[];
+    }>(
+      "select proname,prosecdef,proconfig from pg_proc where proname in ('get_my_account_name','save_my_account_name','list_account_access_v2','can_save_account_name','can_complete_staff_account_setup','complete_my_staff_account_setup')",
+    )
+  ).rows;
+  expect(defs).toHaveLength(6);
+  for (const fn of defs) {
+    expect(fn.prosecdef).toBe(true);
+    expect(fn.proconfig).toContain('search_path=""');
+    const sig =
+      fn.proname +
+      (fn.proname === "complete_my_staff_account_setup"
+        ? "(uuid,integer,boolean,boolean,text)"
+        : fn.proname === "save_my_account_name"
+          ? "(text,integer,uuid)"
+          : fn.proname === "list_account_access_v2"
+            ? "(text)"
+            : "()");
+    expect(
+      await value("has_function_privilege('anon',$1,'EXECUTE')", [sig]),
+    ).toBe(false);
+    expect(
+      await value("has_function_privilege('authenticated',$1,'EXECUTE')", [
+        sig,
+      ]),
+    ).toBe(
+      !["can_save_account_name", "can_complete_staff_account_setup"].includes(
+        fn.proname,
+      ),
+    );
+  }
+  expect(
+    await value(
+      "has_table_privilege('authenticated','public.account_names','INSERT')",
+    ),
+  ).toBe(false);
+  expect(
+    await value(
+      "has_table_privilege('authenticated','public.account_names','UPDATE')",
+    ),
+  ).toBe(false);
+  expect(
+    await value(
+      "has_table_privilege('authenticated','public.account_names','DELETE')",
+    ),
+  ).toBe(false);
+});
+
+it("rejects a save from a switched session rather than storing the previous adult's draft", async () => {
+  await as(other);
+  await expect(
+    db.query(
+      "select public.save_my_account_name('Previous adult draft',0,$1)",
+      [parent],
+    ),
+  ).rejects.toThrow(/signed-in account changed/);
+});
+
+for (const [label, user] of [
+  ["Owner", owner],
+  ["Manager", manager],
+  ["Coach", coach],
+] as const) {
+  it(`${label} is offered self-service setup but name saving stays blocked until consent`, async () => {
+    const before = (
+      await db.query("select * from public.account_roles where user_id=$1", [
+        user,
+      ])
+    ).rows;
+    await as(user);
+    expect(await value("public.get_my_account_name()")).toEqual({
+      eligible: false,
+      display_name: null,
+      version: 0,
+      staff_setup: {
+        role_version: 1,
+        privacy_version: "adult-pilot-lifecycle-2026-10",
+      },
+    });
+    await db.exec("savepoint blocked_staff_name");
+    await expect(
+      db.query("select public.save_my_account_name('Cannot save',0,$1)", [
+        user,
+      ]),
+    ).rejects.toThrow(/Verified adult setup/);
+    await db.exec("rollback to savepoint blocked_staff_name");
+    expect(
+      (await db.query("select * from public.member_accounts")).rows,
+    ).toEqual([]);
+    expect((await db.query("select * from public.account_names")).rows).toEqual(
+      [],
+    );
+    expect(
+      (
+        await db.query("select * from public.account_roles where user_id=$1", [
+          user,
+        ])
+      ).rows,
+    ).toEqual(before);
+  });
+}
+
+it("names remain ineligible if a drifted member record has no privacy acknowledgement", async () => {
+  // Simulate unexpected legacy metadata in this disposable fixture only.
+  await db.exec(
+    "alter table public.member_accounts alter column privacy_acknowledged_at drop not null",
+  );
+  await db.query(
+    "update public.member_accounts set privacy_acknowledged_at=null where user_id=$1",
+    [parent],
+  );
+  await as(parent);
+  expect(
+    (await value<{ eligible: boolean }>("public.get_my_account_name()"))
+      .eligible,
+  ).toBe(false);
+  await expect(
+    db.query("select public.save_my_account_name('No consent',0,$1)", [parent]),
+  ).rejects.toThrow(/Verified adult setup/);
+});
+
+const staffPrivacyVersion = "adult-pilot-lifecycle-2026-10";
+async function finishStaffSetup(
+  target = owner,
+  version: number | null = 1,
+  adult: boolean | null = true,
+  privacy: boolean | null = true,
+  disclosure: string | null = staffPrivacyVersion,
+) {
+  return value<{
+    eligible: boolean;
+    display_name: string | null;
+    version: number;
+  }>("public.complete_my_staff_account_setup($1,$2,$3,$4,$5)", [
+    target,
+    version,
+    adult,
+    privacy,
+    disclosure,
+  ]);
+}
+for (const [label, user] of [
+  ["Owner", owner],
+  ["Manager", manager],
+  ["Coach", coach],
+] as const) {
+  it(`${label} explicitly accepts current adult/privacy setup with exact role and audit preserved, then saves a name`, async () => {
+    const roles = (
+      await db.query("select * from public.account_roles order by user_id")
+    ).rows;
+    const audit = (
+      await db.query("select * from public.account_role_audit order by id")
+    ).rows;
+    const users = (
+      await db.query("select id,email from auth.users order by id")
+    ).rows;
+    const coaches = (
+      await db.query("select * from public.coach_members order by user_id")
+    ).rows;
+    const profiles = (
+      await db.query("select * from public.player_profiles order by id")
+    ).rows;
+    await as(user);
+    expect(await finishStaffSetup(user)).toEqual({
+      eligible: true,
+      display_name: null,
+      version: 0,
+    });
+    const member = (
+      await db.query<{
+        privacy_version: string;
+        adult_confirmed_at: unknown;
+        privacy_acknowledged_at: unknown;
+      }>("select * from public.member_accounts")
+    ).rows[0];
+    expect(member.privacy_version).toBe(staffPrivacyVersion);
+    expect(member.adult_confirmed_at).not.toBeNull();
+    expect(member.privacy_acknowledged_at).not.toBeNull();
+    await db.query(
+      "select public.save_my_account_name('Fictional staff adult',0,$1)",
+      [user],
+    );
+    const beforeRetry = (await db.query("select * from public.member_accounts"))
+      .rows;
+    await finishStaffSetup(user);
+    expect(
+      (await db.query("select * from public.member_accounts")).rows,
+    ).toEqual(beforeRetry);
+    await as("", "postgres");
+    expect(
+      (await db.query("select * from public.account_roles order by user_id"))
+        .rows,
+    ).toEqual(roles);
+    expect(
+      (await db.query("select * from public.account_role_audit order by id"))
+        .rows,
+    ).toEqual(audit);
+    expect(
+      (await db.query("select id,email from auth.users order by id")).rows,
+    ).toEqual(users);
+    expect(
+      (await db.query("select * from public.coach_members order by user_id"))
+        .rows,
+    ).toEqual(coaches);
+    expect(
+      (await db.query("select * from public.player_profiles order by id")).rows,
+    ).toEqual(profiles);
+  });
+}
+for (const [adult, privacy, version] of [
+  [false, true, staffPrivacyVersion],
+  [true, false, staffPrivacyVersion],
+  [null, true, staffPrivacyVersion],
+  [true, null, staffPrivacyVersion],
+  [true, true, "profile-pilot-2026-10"],
+  [true, true, null],
+] as const) {
+  it(`staff setup refuses unchecked/current-version mismatch ${adult}/${privacy}/${version}`, async () => {
+    await as(owner);
+    await db.exec("savepoint no_consent");
+    await expect(
+      finishStaffSetup(owner, 1, adult, privacy, version),
+    ).rejects.toThrow(/Accept both adult/);
+    await db.exec("rollback to savepoint no_consent");
+    expect(
+      (await db.query("select * from public.member_accounts")).rows,
+    ).toEqual([]);
+  });
+}
+for (const condition of [
+  "unverified",
+  "guardian",
+  "linked",
+  "closing",
+  "failed closure",
+  "nonstaff",
+  "no role",
+] as const) {
+  it(`staff setup preserves ${condition} restriction without creating a member record`, async () => {
+    if (condition === "unverified")
+      await db.query(
+        "update auth.users set email_confirmed_at=null where id=$1",
+        [owner],
+      );
+    if (condition === "guardian")
+      await db.query(
+        "insert into public.guardian_managed_athletes(user_id) values($1)",
+        [owner],
+      );
+    if (condition === "linked")
+      await db.query(
+        "insert into public.family_athlete_links(profile_id,athlete_user_id) values($1,$2)",
+        [profile, owner],
+      );
+    if (condition === "closing" || condition === "failed closure")
+      await db.query(
+        "insert into public.account_closures(id,user_id,state) values($1,$2,$3)",
+        [request, owner, condition === "closing" ? "cleaning" : "failed"],
+      );
+    if (condition === "nonstaff")
+      await db.query(
+        "update public.account_roles set role='athlete' where user_id=$1",
+        [owner],
+      );
+    if (condition === "no role")
+      await db.query("delete from public.account_roles where user_id=$1", [
+        owner,
+      ]);
+    await as(owner);
+    expect(await value("public.get_my_account_name()")).toEqual({
+      eligible: false,
+      display_name: null,
+      version: 0,
+    });
+    await db.exec("savepoint no_setup");
+    await expect(finishStaffSetup()).rejects.toThrow(/Verified staff access/);
+    await db.exec("rollback to savepoint no_setup");
+    expect(
+      (await db.query("select * from public.member_accounts")).rows,
+    ).toEqual([]);
+  });
+}
+it("staff setup rejects stale identity and stale role versions before creating consent records", async () => {
+  await as(manager);
+  await db.exec("savepoint stale_staff");
+  await expect(finishStaffSetup(owner)).rejects.toThrow(
+    /signed-in account changed/,
+  );
+  await db.exec("rollback to savepoint stale_staff");
+  await expect(finishStaffSetup(manager, 0)).rejects.toThrow(
+    /staff access changed/,
+  );
+  await db.exec("rollback to savepoint stale_staff");
+  expect((await db.query("select * from public.member_accounts")).rows).toEqual(
+    [],
+  );
+});
+it("anonymous users cannot invoke staff setup or internal eligibility", async () => {
+  await as("", "anon");
+  for (const sql of [
+    "select public.can_complete_staff_account_setup()",
+    `select public.complete_my_staff_account_setup('${owner}',1,true,true,'${staffPrivacyVersion}')`,
+  ]) {
+    await db.exec("savepoint anonymous_staff");
+    await expect(db.query(sql)).rejects.toThrow(/permission denied/);
+    await db.exec("rollback to savepoint anonymous_staff");
+  }
+});
+it("staff setup never fills missing timestamps on an existing inconsistent member record", async () => {
+  await db.exec(
+    "alter table public.member_accounts alter column privacy_acknowledged_at drop not null",
+  );
+  await db.query(
+    "insert into public.member_accounts(user_id,account_type,privacy_acknowledged_at) values($1,'adult',null)",
+    [owner],
+  );
+  const before = (
+    await db.query("select * from public.member_accounts where user_id=$1", [
+      owner,
+    ])
+  ).rows;
+  await as(owner);
+  await db.exec("savepoint inconsistent_staff");
+  await expect(finishStaffSetup()).rejects.toThrow(
+    /Existing consent records need an approved review/,
+  );
+  await db.exec("rollback to savepoint inconsistent_staff");
+  expect((await db.query("select * from public.member_accounts")).rows).toEqual(
+    before,
+  );
+});
+
+it("an existing invited staff identity accepts current privacy without reassigning its role", async () => {
+  await db.query(
+    "update auth.users set created_at=now()+interval '1 day' where id=$1",
+    [manager],
+  );
+  await db.query(
+    "insert into public.account_invitations(id,email,intended_role,invited_by,target_user,state) values($1,$2,'manager',$3,$4,'accepted')",
+    [invite, `fictional-${manager}@example.test`, owner, manager],
+  );
+  await as(manager);
+  expect(await finishStaffSetup(manager)).toEqual({
+    eligible: true,
+    display_name: null,
+    version: 0,
+  });
+  expect(
+    (await db.query("select privacy_version from public.member_accounts")).rows,
+  ).toEqual([{ privacy_version: staffPrivacyVersion }]);
+});
+
+for (const user of [parent, other]) {
+  it(`an existing nonstaff adult ${user} cannot use staff-only setup`, async () => {
+    await as(user);
+    await expect(finishStaffSetup(user)).rejects.toThrow(
+      /Verified staff access/,
+    );
+  });
+}
+it("a completed staff setup cannot be repeated during closure and does not rewrite consent", async () => {
+  await as(owner);
+  await finishStaffSetup();
+  const before = (await db.query("select * from public.member_accounts")).rows;
+  await as("", "postgres");
+  await db.query(
+    "insert into public.account_closures(id,user_id,state) values($1,$2,'cleaning')",
+    [request, owner],
+  );
+  await as(owner);
+  await db.exec("savepoint closed_retry");
+  await expect(finishStaffSetup()).rejects.toThrow(/Verified staff access/);
+  await db.exec("rollback to savepoint closed_retry");
+  expect((await db.query("select * from public.member_accounts")).rows).toEqual(
+    before,
+  );
+});
+
+it("already verified approved staff after the customer legacy cutoff can explicitly consent without new Auth or role creation", async () => {
+  await db.query(
+    "update auth.users set created_at=now()+interval '1 day' where id=$1",
+    [owner],
+  );
+  const roles = (
+    await db.query("select * from public.account_roles order by user_id")
+  ).rows;
+  const users = (await db.query("select * from auth.users order by id")).rows;
+  await as(owner);
+  expect(await value("public.get_my_account_name()")).toEqual({
+    eligible: false,
+    display_name: null,
+    version: 0,
+    staff_setup: { role_version: 1, privacy_version: staffPrivacyVersion },
+  });
+  expect(await finishStaffSetup()).toEqual({
+    eligible: true,
+    display_name: null,
+    version: 0,
+  });
+  await as("", "postgres");
+  expect(
+    (await db.query("select * from public.account_roles order by user_id"))
+      .rows,
+  ).toEqual(roles);
+  expect((await db.query("select * from auth.users order by id")).rows).toEqual(
+    users,
+  );
 });
