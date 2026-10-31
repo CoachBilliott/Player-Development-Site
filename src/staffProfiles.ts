@@ -25,7 +25,7 @@ export const staffProfiles: PublicStaffProfile[] = [
       objectPosition: "center 15%",
     },
     name: "Victor Bennett",
-    title: "Owner",
+    title: "Co-Owner",
     bio: "Victor Bennett brings more than 20 years of experience training and developing young athletes. A former college football player and high school offensive coordinator, he specializes in position-specific training, game understanding, and athlete development. He also operates a youth basketball league that emphasizes confidence, teamwork, and sportsmanship. Victor helped start Repformed to help athletes understand their roles, make smarter decisions, and take ownership of their progress. His coaching centers on accountability, discipline, and developing the person first, building skills and character that last beyond sports.",
   },
   {
