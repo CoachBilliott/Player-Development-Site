@@ -28,7 +28,7 @@ for (const width of [320, 390, 768, 1024, 1440]) {
     await expect(cards.nth(0)).toHaveAccessibleName("Victor Bennett");
     await expect(cards.nth(1)).toHaveAccessibleName("Devyn Billiott");
     await expect(
-      cards.nth(0).getByText("Owner", { exact: true }),
+      cards.nth(0).getByText("Co-Owner", { exact: true }),
     ).toBeVisible();
     await expect(
       cards.nth(1).getByText("Co-Owner", { exact: true }),
